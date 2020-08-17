@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 
 namespace itk
 {
-/** \class VectorToRGBImageAdaptor
+/**
+ *\class VectorToRGBImageAdaptor
  * \brief Presents an image of pixel type Vector as being and image of
  * RGBPixel type.
  *
@@ -31,23 +32,19 @@ namespace itk
  *
  * \ingroup ITKImageAdaptors
  */
-template< typename TImage >
-class VectorToRGBImageAdaptor:public
-  ImageAdaptor< TImage,
-                Accessor::VectorToRGBPixelAccessor<
-                  typename TImage::PixelType::ValueType
-                  > >
+template <typename TImage>
+class VectorToRGBImageAdaptor
+  : public ImageAdaptor<TImage, Accessor::VectorToRGBPixelAccessor<typename TImage::PixelType::ValueType>>
 {
 public:
-  /** Standard class typedefs. */
-  typedef VectorToRGBImageAdaptor Self;
-  typedef ImageAdaptor< TImage,
-                        Accessor::VectorToRGBPixelAccessor<
-                          typename TImage::PixelType::ValueType
-                          >  > Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorToRGBImageAdaptor);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = VectorToRGBImageAdaptor;
+  using Superclass = ImageAdaptor<TImage, Accessor::VectorToRGBPixelAccessor<typename TImage::PixelType::ValueType>>;
+
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,18 +52,15 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorToRGBImageAdaptor, ImageAdaptor);
 
-  /** PixelContainer typedef support. Used to construct a container for
+  /** PixelContainer type alias support Used to construct a container for
    * the pixel data. */
-  typedef typename Superclass::PixelContainer             PixelContainer;
-  typedef typename Superclass::PixelContainerPointer      PixelContainerPointer;
-  typedef typename Superclass::PixelContainerConstPointer PixelContainerConstPointer;
+  using PixelContainer = typename Superclass::PixelContainer;
+  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
+  using PixelContainerConstPointer = typename Superclass::PixelContainerConstPointer;
 
 protected:
-  VectorToRGBImageAdaptor() {}
-  virtual ~VectorToRGBImageAdaptor() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorToRGBImageAdaptor);
+  VectorToRGBImageAdaptor() = default;
+  ~VectorToRGBImageAdaptor() override = default;
 };
 } // end namespace itk
 

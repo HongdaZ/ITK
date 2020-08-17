@@ -1,5 +1,5 @@
-Welcome to the Insight Segmentation and Registration Toolkit (ITK)
-==================================================================
+Welcome to the Insight Toolkit (ITK)
+====================================
 
 Here are suggested steps for the ITK beginner. Please refer to [ITK] for more
 information.
@@ -27,6 +27,5 @@ information.
 [ITK discussion]: https://discourse.itk.org/
 [ITK Software Guide]: https://itk.org/ItkSoftwareGuide.pdf
 [Sphinx examples]: https://itk.org/ITKExamples
-[Wiki examples]: https://itk.org/Wiki/ITK/Examples
 
 [CMake]: http://cmake.org

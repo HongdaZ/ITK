@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,192 +22,174 @@
 
 namespace itk
 {
-/** Constructor */
-template< unsigned int NDimensions >
-MetaTubeConverter< NDimensions >
-::MetaTubeConverter()
-{}
-
-template< unsigned int NDimensions >
-typename MetaTubeConverter< NDimensions >::MetaObjectType *
-MetaTubeConverter< NDimensions>
-::CreateMetaObject()
+template <unsigned int NDimensions>
+typename MetaTubeConverter<NDimensions>::MetaObjectType *
+MetaTubeConverter<NDimensions>::CreateMetaObject()
 {
   return dynamic_cast<MetaObjectType *>(new TubeMetaObjectType);
 }
 
 /** Convert a metaTube into an Tube SpatialObject  */
-template< unsigned int NDimensions >
-typename MetaTubeConverter< NDimensions >::SpatialObjectPointer
-MetaTubeConverter< NDimensions >
-::MetaObjectToSpatialObject(const MetaObjectType *mo)
+template <unsigned int NDimensions>
+typename MetaTubeConverter<NDimensions>::SpatialObjectPointer
+MetaTubeConverter<NDimensions>::MetaObjectToSpatialObject(const MetaObjectType * mo)
 {
-  const TubeMetaObjectType *tubeMO =
-    dynamic_cast<const TubeMetaObjectType *>(mo);
-  if(tubeMO == ITK_NULLPTR)
-    {
-    itkExceptionMacro(<< "Can't convert MetaObject to MetaTube" );
-    }
+  const auto * tubeMO = dynamic_cast<const TubeMetaObjectType *>(mo);
+  if (tubeMO == nullptr)
+  {
+    itkExceptionMacro(<< "Can't convert MetaObject to MetaTube");
+  }
 
   typename TubeSpatialObjectType::Pointer tubeSO = TubeSpatialObjectType::New();
-  double spacing[NDimensions];
 
-  unsigned int ndims = tubeMO->NDims();
-  for ( unsigned int i = 0; i < ndims; i++ )
-    {
-    spacing[i] = tubeMO->ElementSpacing()[i];
-    }
+  tubeSO->GetProperty().SetName(tubeMO->Name());
+  tubeSO->SetParentPoint(tubeMO->ParentPoint());
+  tubeSO->SetId(tubeMO->ID());
+  tubeSO->SetParentId(tubeMO->ParentID());
+  tubeSO->GetProperty().SetRed(tubeMO->Color()[0]);
+  tubeSO->GetProperty().SetGreen(tubeMO->Color()[1]);
+  tubeSO->GetProperty().SetBlue(tubeMO->Color()[2]);
+  tubeSO->GetProperty().SetAlpha(tubeMO->Color()[3]);
 
-  tubeSO->GetIndexToObjectTransform()->SetScaleComponent(spacing);
-  tubeSO->GetProperty()->SetName( tubeMO->Name() );
-  tubeSO->SetParentPoint( tubeMO->ParentPoint() );
-  tubeSO->SetId( tubeMO->ID() );
-  tubeSO->SetParentId( tubeMO->ParentID() );
-  tubeSO->GetProperty()->SetRed(tubeMO->Color()[0]);
-  tubeSO->GetProperty()->SetGreen(tubeMO->Color()[1]);
-  tubeSO->GetProperty()->SetBlue(tubeMO->Color()[2]);
-  tubeSO->GetProperty()->SetAlpha(tubeMO->Color()[3]);
+  using TubePointType = itk::TubeSpatialObjectPoint<NDimensions>;
 
-  typedef itk::TubeSpatialObjectPoint< NDimensions > TubePointType;
+  auto it2 = tubeMO->GetPoints().begin();
 
-  typedef MetaTube::PointListType ListType;
-  ListType::const_iterator it2 = tubeMO->GetPoints().begin();
+  itk::CovariantVector<double, NDimensions> v;
+  itk::Vector<double, NDimensions>          t;
 
-  itk::CovariantVector< double, NDimensions > v;
-  itk::Vector< double, NDimensions >          t;
-
-  for ( unsigned int identifier = 0; identifier < tubeMO->GetPoints().size(); identifier++ )
-    {
+  for (unsigned int identifier = 0; identifier < tubeMO->GetPoints().size(); identifier++)
+  {
     TubePointType pnt;
 
-    typedef typename TubeSpatialObjectType::PointType PointType;
-    PointType point;
+    typename TubePointType::PointType pos;
+    for (unsigned int d = 0; d < NDimensions; ++d)
+    {
+      pos[d] = (*it2)->m_X[d] * tubeMO->ElementSpacing(d);
+    }
+    pnt.SetPositionInObjectSpace(pos);
+    pnt.SetRadiusInObjectSpace((*it2)->m_R * tubeMO->ElementSpacing(0));
+    pnt.SetMedialness((*it2)->m_Medialness);
+    pnt.SetBranchness((*it2)->m_Branchness);
+    pnt.SetRidgeness((*it2)->m_Ridgeness);
+    pnt.SetCurvature((*it2)->m_Curvature);
+    pnt.SetLevelness((*it2)->m_Levelness);
+    pnt.SetRoundness((*it2)->m_Roundness);
+    pnt.SetIntensity((*it2)->m_Intensity);
 
-    for ( unsigned int i = 0; i < ndims; i++ )
-      {
-      point[i] = ( *it2 )->m_X[i];
-      }
+    for (unsigned int i = 0; i < NDimensions; i++)
+    {
+      v[i] = (*it2)->m_V1[i];
+    }
+    pnt.SetNormal1InObjectSpace(v);
 
-    pnt.SetPosition(point);
-    pnt.SetRadius( ( *it2 )->m_R );
+    for (unsigned int i = 0; i < NDimensions; i++)
+    {
+      v[i] = (*it2)->m_V2[i];
+    }
+    pnt.SetNormal2InObjectSpace(v);
 
-    for ( unsigned int i = 0; i < ndims; i++ )
-      {
-      v[i] = ( *it2 )->m_V1[i];
-      }
-    pnt.SetNormal1(v);
+    for (unsigned int i = 0; i < NDimensions; i++)
+    {
+      t[i] = (*it2)->m_T[i];
+    }
+    pnt.SetTangentInObjectSpace(t);
 
-    for ( unsigned int i = 0; i < ndims; i++ )
-      {
-      v[i] = ( *it2 )->m_V2[i];
-      }
-    pnt.SetNormal2(v);
+    pnt.SetAlpha1((*it2)->m_Alpha1);
+    pnt.SetAlpha2((*it2)->m_Alpha2);
+    pnt.SetAlpha3((*it2)->m_Alpha3);
 
-    for ( unsigned int i = 0; i < ndims; i++ )
-      {
-      t[i] = ( *it2 )->m_T[i];
-      }
-    pnt.SetTangent(t);
+    pnt.SetRed((*it2)->m_Color[0]);
+    pnt.SetGreen((*it2)->m_Color[1]);
+    pnt.SetBlue((*it2)->m_Color[2]);
+    pnt.SetAlpha((*it2)->m_Color[3]);
 
-    pnt.SetRed( ( *it2 )->m_Color[0] );
-    pnt.SetGreen( ( *it2 )->m_Color[1] );
-    pnt.SetBlue( ( *it2 )->m_Color[2] );
-    pnt.SetAlpha( ( *it2 )->m_Color[3] );
+    pnt.SetId((*it2)->m_ID);
 
-    pnt.SetID( ( *it2 )->m_ID );
-
-    tubeSO->GetPoints().push_back(pnt);
+    tubeSO->AddPoint(pnt);
 
     it2++;
-    }
+  }
 
   return tubeSO.GetPointer();
 }
 
 /** Convert a Tube SpatialObject into a metaTube */
-template< unsigned int NDimensions >
-typename MetaTubeConverter< NDimensions >::MetaObjectType *
-MetaTubeConverter< NDimensions >
-::SpatialObjectToMetaObject(const SpatialObjectType *spatialObject)
+template <unsigned int NDimensions>
+typename MetaTubeConverter<NDimensions>::MetaObjectType *
+MetaTubeConverter<NDimensions>::SpatialObjectToMetaObject(const SpatialObjectType * spatialObject)
 {
-  TubeSpatialObjectConstPointer tubeSO =
-    dynamic_cast<const TubeSpatialObjectType *>(spatialObject);
-  if(tubeSO.IsNull())
-    {
+  TubeSpatialObjectConstPointer tubeSO = dynamic_cast<const TubeSpatialObjectType *>(spatialObject);
+  if (tubeSO.IsNull())
+  {
     itkExceptionMacro(<< "Can't downcast SpatialObject to TubeSpatialObject");
-    }
+  }
 
-  MetaTube *tubeMO = new MetaTube(NDimensions);
+  auto * tubeMO = new MetaTube(NDimensions);
 
   // fill in the tube information
-  typename TubeSpatialObjectType::PointListType::const_iterator it;
-  for ( it = tubeSO->GetPoints().begin();
-        it != tubeSO->GetPoints().end();
-        it++ )
+  typename TubeSpatialObjectType::TubePointListType::const_iterator it;
+  for (it = tubeSO->GetPoints().begin(); it != tubeSO->GetPoints().end(); it++)
+  {
+    auto * pnt = new TubePnt(NDimensions);
+
+    for (unsigned int d = 0; d < NDimensions; d++)
     {
-    TubePnt *pnt = new TubePnt(NDimensions);
+      pnt->m_X[d] = (*it).GetPositionInObjectSpace()[d];
+    }
 
-    for ( unsigned int d = 0; d < NDimensions; d++ )
-      {
-      pnt->m_X[d] = ( *it ).GetPosition()[d];
-      }
+    pnt->m_ID = (*it).GetId();
+    pnt->m_R = (*it).GetRadiusInObjectSpace();
+    pnt->m_Alpha1 = (*it).GetAlpha1();
+    pnt->m_Alpha2 = (*it).GetAlpha2();
+    pnt->m_Alpha3 = (*it).GetAlpha3();
+    pnt->m_Medialness = (*it).GetMedialness();
+    pnt->m_Branchness = (*it).GetBranchness();
+    pnt->m_Ridgeness = (*it).GetRidgeness();
+    pnt->m_Curvature = (*it).GetCurvature();
+    pnt->m_Levelness = (*it).GetLevelness();
+    pnt->m_Roundness = (*it).GetRoundness();
+    pnt->m_Intensity = (*it).GetIntensity();
 
-    pnt->m_ID = ( *it ).GetID();
-    pnt->m_R = ( *it ).GetRadius();
+    for (unsigned int d = 0; d < NDimensions; d++)
+    {
+      pnt->m_V1[d] = (*it).GetNormal1InObjectSpace()[d];
+    }
 
-    for ( unsigned int d = 0; d < NDimensions; d++ )
-      {
-      pnt->m_V1[d] = ( *it ).GetNormal1()[d];
-      }
+    for (unsigned int d = 0; d < NDimensions; d++)
+    {
+      pnt->m_V2[d] = (*it).GetNormal2InObjectSpace()[d];
+    }
 
-    for ( unsigned int d = 0; d < NDimensions; d++ )
-      {
-      pnt->m_V2[d] = ( *it ).GetNormal2()[d];
-      }
+    for (unsigned int d = 0; d < NDimensions; d++)
+    {
+      pnt->m_T[d] = (*it).GetTangentInObjectSpace()[d];
+    }
 
-    for ( unsigned int d = 0; d < NDimensions; d++ )
-      {
-      pnt->m_T[d] = ( *it ).GetTangent()[d];
-      }
-
-    pnt->m_Color[0] = ( *it ).GetRed();
-    pnt->m_Color[1] = ( *it ).GetGreen();
-    pnt->m_Color[2] = ( *it ).GetBlue();
-    pnt->m_Color[3] = ( *it ).GetAlpha();
+    pnt->m_Color[0] = (*it).GetRed();
+    pnt->m_Color[1] = (*it).GetGreen();
+    pnt->m_Color[2] = (*it).GetBlue();
+    pnt->m_Color[3] = (*it).GetAlpha();
 
     tubeMO->GetPoints().push_back(pnt);
-    }
-
-  if ( NDimensions == 2 )
-    {
-    tubeMO->PointDim("x y r v1x v1y tx ty red green blue alpha id");
-    }
-  else
-    {
-    tubeMO->PointDim("x y z r v1x v1y v1z v2x v2y v2z tx ty tz red green blue alpha id");
-    }
+  }
 
   float color[4];
-  for ( unsigned int i = 0; i < 4; i++ )
-    {
-    color[i] = tubeSO->GetProperty()->GetColor()[i];
-    }
+  for (unsigned int i = 0; i < 4; i++)
+  {
+    color[i] = tubeSO->GetProperty().GetColor()[i];
+  }
 
   tubeMO->Color(color);
-  tubeMO->ID( tubeSO->GetId() );
+  tubeMO->ID(tubeSO->GetId());
 
-  if ( tubeSO->GetParent() )
-    {
-    tubeMO->ParentID( tubeSO->GetParent()->GetId() );
-    }
-  tubeMO->ParentPoint( tubeSO->GetParentPoint() );
-  tubeMO->NPoints(static_cast<int>( tubeMO->GetPoints().size() ) );
+  if (tubeSO->GetParent())
+  {
+    tubeMO->ParentID(tubeSO->GetParent()->GetId());
+  }
+  tubeMO->ParentPoint(tubeSO->GetParentPoint());
+  tubeMO->NPoints(static_cast<int>(tubeMO->GetPoints().size()));
 
-  for ( unsigned int i = 0; i < NDimensions; i++ )
-    {
-    tubeMO->ElementSpacing(i, tubeSO->GetIndexToObjectTransform()
-                         ->GetScaleComponent()[i]);
-    }
   return tubeMO;
 }
 

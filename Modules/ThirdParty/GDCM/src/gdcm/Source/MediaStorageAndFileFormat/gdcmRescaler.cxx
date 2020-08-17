@@ -16,7 +16,7 @@
 #include <algorithm> // std::max
 #include <stdlib.h> // abort
 #include <string.h> // memcpy
-#include <math.h> // floor
+#include <cmath> // std::lround
 
 namespace gdcm
 {
@@ -79,12 +79,8 @@ struct FImpl
 template < typename T >
 static inline T round_impl(const double d)
 {
-#ifdef GDCM_HAVE_LROUND
   // round() is C99, std::round() is C++11
-  return (T)lround(d);
-#else
-  return (T)((d > 0.0) ? floor(d + 0.5) : ceil(d - 0.5));
-#endif
+  return (T)std::lround(d);
 }
 
 template<typename TOut>
@@ -150,6 +146,11 @@ static inline PixelFormat::ScalarType ComputeBestFit(const PixelFormat &pf, doub
       {
       st = PixelFormat::UINT32;
       }
+    else if( max <= static_cast<double>(std::numeric_limits<uint64_t>::max()) )
+      {
+      // very large value in Rescale Slope ?
+      return PixelFormat::FLOAT64;
+      }
     else
       {
       gdcmErrorMacro( "Unhandled Pixel Format" );
@@ -172,6 +173,12 @@ static inline PixelFormat::ScalarType ComputeBestFit(const PixelFormat &pf, doub
       && min >= std::numeric_limits<int32_t>::min() )
       {
       st = PixelFormat::INT32;
+      }
+    else if( max <= static_cast<double>(std::numeric_limits<int64_t>::max())
+      && min >= static_cast<double>(std::numeric_limits<int64_t>::min() ) )
+      {
+      // very large value in Rescale Slope ?
+      return PixelFormat::FLOAT64;
       }
     else
       {
@@ -207,11 +214,12 @@ PixelFormat::ScalarType Rescaler::ComputeInterceptSlopePixelType()
 }
 
 template <typename TIn>
-void Rescaler::RescaleFunctionIntoBestFit(char *out, const TIn *in, size_t n)
+void Rescaler::RescaleFunctionIntoBestFit(char *out8, const TIn *in, size_t n)
 {
   double intercept = Intercept;
   double slope = Slope;
   PixelFormat::ScalarType output = ComputeInterceptSlopePixelType();
+  void *out = out8;
   if( UseTargetPixelType )
     {
     output = TargetScalarType;
@@ -252,11 +260,12 @@ void Rescaler::RescaleFunctionIntoBestFit(char *out, const TIn *in, size_t n)
  }
 
 template <typename TIn>
-void Rescaler::InverseRescaleFunctionIntoBestFit(char *out, const TIn *in, size_t n)
+void Rescaler::InverseRescaleFunctionIntoBestFit(char *out8, const TIn *in, size_t n)
 {
   const double intercept = Intercept;
   const double slope = Slope;
   PixelFormat output = ComputePixelTypeFromMinMax();
+  void *out = out8;
   switch(output)
     {
   case PixelFormat::SINGLEBIT:
@@ -287,9 +296,10 @@ void Rescaler::InverseRescaleFunctionIntoBestFit(char *out, const TIn *in, size_
  }
 
 
-bool Rescaler::InverseRescale(char *out, const char *in, size_t n)
+bool Rescaler::InverseRescale(char *out, const char *in8, size_t n)
 {
   bool fastpath = true;
+  const void* in = in8;
   switch(PF)
     {
   case PixelFormat::FLOAT32:
@@ -316,10 +326,10 @@ bool Rescaler::InverseRescale(char *out, const char *in, size_t n)
   switch(PF)
     {
   case PixelFormat::UINT8:
-    InverseRescaleFunctionIntoBestFit<uint8_t>(out,(uint8_t*)in,n);
+    InverseRescaleFunctionIntoBestFit<uint8_t>(out,(const uint8_t*)in,n);
     break;
   case PixelFormat::INT8:
-    InverseRescaleFunctionIntoBestFit<int8_t>(out,(int8_t*)in,n);
+    InverseRescaleFunctionIntoBestFit<int8_t>(out,(const int8_t*)in,n);
     break;
   case PixelFormat::UINT16:
     InverseRescaleFunctionIntoBestFit<uint16_t>(out,(const uint16_t*)in,n);
@@ -349,8 +359,9 @@ bool Rescaler::InverseRescale(char *out, const char *in, size_t n)
   return true;
 }
 
-bool Rescaler::Rescale(char *out, const char *in, size_t n)
+bool Rescaler::Rescale(char *out, const char *in8, size_t n)
 {
+  const void *in = in8;
   if( UseTargetPixelType == false )
     {
     // fast path:
@@ -414,8 +425,8 @@ static PixelFormat ComputeInverseBestFitFromMinMax(/*const PixelFormat &pf,*/ do
     dmax = (_min - intercept ) / slope;
     }
   assert( dmin <= dmax );
-  assert( dmax <= std::numeric_limits<int64_t>::max() );
-  assert( dmin >= std::numeric_limits<int64_t>::min() );
+  assert( dmax <= static_cast<double>(std::numeric_limits<int64_t>::max() ) );
+  assert( dmin >= static_cast<double>(std::numeric_limits<int64_t>::min() ) );
   /*
    * Tricky: what happen in the case where floating point approximate dmax as: 65535.000244081035
    * Take for instance: _max = 64527, intercept = -1024, slope = 1.000244140625
@@ -493,6 +504,21 @@ static PixelFormat ComputeInverseBestFitFromMinMax(/*const PixelFormat &pf,*/ do
   assert( st != PixelFormat::UNKNOWN );
   assert( st != PixelFormat::FLOAT32 && st != PixelFormat::FLOAT16 && st != PixelFormat::FLOAT64 );
   return st;
+}
+
+void Rescaler::SetMinMaxForPixelType(double min, double max)
+{
+  if( min < max )
+  {
+    ScalarRangeMin = min;
+    ScalarRangeMax = max;
+  }
+  else
+  {
+    gdcmWarningMacro( "Min > Max. Correcting" );
+    ScalarRangeMin = max;
+    ScalarRangeMax = min;
+  }
 }
 
 PixelFormat Rescaler::ComputePixelTypeFromMinMax()

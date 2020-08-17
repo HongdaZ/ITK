@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 
 namespace itk
 {
-/** \class CompositeValleyFunction
+/**
+ *\class CompositeValleyFunction
  * \brief Multiple valley shaped curve function
  *
  * Its functional form f(x) is :
@@ -54,7 +55,7 @@ namespace itk
  *    |
  *
  *
- * This is a part of the bias correction methods and implementaion that
+ * This is a part of the bias correction methods and implementation that
  * was initially developed and implemented
  * by Martin Styner, Univ. of North Carolina at Chapel Hill, and his
  * colleagues.
@@ -81,72 +82,98 @@ public:
   }
 
   /** Set/Get the mean of the function. */
-  void SetMean(double mean) { m_Mean = mean; }
-  double GetMean() { return m_Mean; }
+  void
+  SetMean(double mean)
+  {
+    m_Mean = mean;
+  }
+  double
+  GetMean() const
+  {
+    return m_Mean;
+  }
 
   /** Set/Get the standard deviation of the function. */
-  void SetSigma(double sigma) { m_Sigma = sigma; }
-  double GetSigma() { return m_Sigma; }
+  void
+  SetSigma(double sigma)
+  {
+    m_Sigma = sigma;
+  }
+  double
+  GetSigma() const
+  {
+    return m_Sigma;
+  }
 
 private:
   double m_Mean;
   double m_Sigma;
 }; // end of class
 
-class ITKBiasCorrection_EXPORT CompositeValleyFunction:public CacheableScalarFunction
+class ITKBiasCorrection_EXPORT CompositeValleyFunction : public CacheableScalarFunction
 {
 public:
-
   /** Superclass to this class. */
-  typedef CacheableScalarFunction Superclass;
+  using Superclass = CacheableScalarFunction;
 
   /** Cost value type. */
-  typedef  Superclass::MeasureType      MeasureType;
-  typedef  Superclass::MeasureArrayType MeasureArrayType;
+  using MeasureType = Superclass::MeasureType;
+  using MeasureArrayType = Superclass::MeasureArrayType;
 
   /** Constructor. */
-  CompositeValleyFunction(const MeasureArrayType & classMeans,
-                          const MeasureArrayType & classSigmas);
+  CompositeValleyFunction(const MeasureArrayType & classMeans, const MeasureArrayType & classSigmas);
 
   /** Destructor. */
-    virtual ~CompositeValleyFunction() ITK_OVERRIDE;
+  ~CompositeValleyFunction() override;
 
   /** Get energy table's higher bound. */
-  double GetUpperBound() { return m_UpperBound; }
+  double
+  GetUpperBound() const
+  {
+    return m_UpperBound;
+  }
 
   /** Get energy table's lower bound. */
-  double GetLowerBound() { return m_LowerBound; }
+  double
+  GetLowerBound() const
+  {
+    return m_LowerBound;
+  }
 
   /** Gets an energy value for the intensity difference between a pixel
    * and its corresponding bias. */
-  MeasureType operator()(MeasureType x)
+  MeasureType
+  operator()(MeasureType x)
   {
-    if ( x > m_UpperBound || x < m_LowerBound )
-      {
+    if (x > m_UpperBound || x < m_LowerBound)
+    {
       return 1;
-      }
+    }
 
-    if ( !this->IsCacheAvailable() )
-      {
+    if (!this->IsCacheAvailable())
+    {
       return this->Evaluate(x);
-      }
+    }
     else
-      {
+    {
       return GetCachedValue(x);
-      }
+    }
   }
 
   /** Evalaute the function at point x.  */
-  virtual MeasureType Evaluate(MeasureType x) ITK_OVERRIDE;
+  MeasureType
+  Evaluate(MeasureType x) override;
 
   /** Get an energy value for the valley. */
-  inline MeasureType valley(MeasureType d)
+  inline MeasureType
+  valley(MeasureType d)
   {
-    return 1 - 1 / ( 1 + d * d / 3 );
+    return 1 - 1 / (1 + d * d / 3);
   }
 
 protected:
-  void AddNewClass(double mean, double sigma)
+  void
+  AddNewClass(double mean, double sigma)
   {
     TargetClass aClass(mean, sigma);
 
@@ -154,11 +181,12 @@ protected:
   }
 
   /** calculate and save energy values  */
-  void Initialize();
+  void
+  Initialize();
 
 private:
   /** Storage for tissue classes' statistics. */
-  std::vector< TargetClass > m_Targets;
+  std::vector<TargetClass> m_Targets;
 
   /** The highest mean value + the sigma of the tissue class
    * which has the highest mean value * 9. */

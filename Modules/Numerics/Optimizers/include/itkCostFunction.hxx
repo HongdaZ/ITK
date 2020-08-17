@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,10 +22,9 @@
 
 namespace itk
 {
-template<typename ValueType>
+template <typename ValueType>
 void
-CostFunctionTemplate<ValueType>
-::PrintSelf(std::ostream & os, Indent indent) const
+CostFunctionTemplate<ValueType>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,41 +22,43 @@
 
 namespace itk
 {
-/** \class CheckerBoardImageFilter
+/**
+ *\class CheckerBoardImageFilter
  * \brief Combines two images in a checkerboard pattern.
  *
  * CheckerBoardImageFilter takes two input images that must have the same
  * dimension, size, origin and spacing and produces an output image of the same
- * size by combinining the pixels from the two input images in a checkerboard
+ * size by combining the pixels from the two input images in a checkerboard
  * pattern. This filter is commonly used for visually comparing two images, in
  * particular for evaluating the results of an image registration process.
  *
  * This filter is implemented as a multithreaded filter. It provides a
- * ThreadedGenerateData() method for its implementation.
+ * DynamicThreadedGenerateData() method for its implementation.
  *
  * \ingroup IntensityImageFilters  MultiThreaded
  * \ingroup ITKImageCompare
  *
- * \wiki
- * \wikiexample{Inspection/CheckerBoardImageFilter,Combine two images by alternating blocks of a checkerboard pattern}
- * \endwiki
+ * \sphinx
+ * \sphinxexample{Filtering/ImageCompare/CombineTwoImagesWithCheckerBoardPattern,Combine Two Images With Checker Board
+ * Pattern} \endsphinx
  */
-template< typename TImage >
-class ITK_TEMPLATE_EXPORT CheckerBoardImageFilter:
-  public ImageToImageFilter< TImage, TImage >
+template <typename TImage>
+class ITK_TEMPLATE_EXPORT CheckerBoardImageFilter : public ImageToImageFilter<TImage, TImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef CheckerBoardImageFilter              Self;
-  typedef ImageToImageFilter< TImage, TImage > Superclass;
-  typedef SmartPointer< Self >                 Pointer;
-  typedef SmartPointer< const Self >           ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CheckerBoardImageFilter);
 
-  typedef TImage                                InputImageType;
-  typedef TImage                                OutputImageType;
-  typedef typename InputImageType::ConstPointer InputImageConstPointer;
-  typedef typename OutputImageType::Pointer     OutputImagePointer;
-  typedef typename OutputImageType::RegionType  ImageRegionType;
+  /** Standard class type aliases. */
+  using Self = CheckerBoardImageFilter;
+  using Superclass = ImageToImageFilter<TImage, TImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+
+  using InputImageType = TImage;
+  using OutputImageType = TImage;
+  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using ImageRegionType = typename OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,18 +67,18 @@ public:
   itkTypeMacro(CheckerBoardImageFilter, ImageToImageFilter);
 
   /** Number of dimensions. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
   /** Type to hold the number of checker boxes per dimension. */
-  typedef FixedArray< unsigned int,
-                       TImage ::ImageDimension >  PatternArrayType;
+  using PatternArrayType = FixedArray<unsigned int, TImage ::ImageDimension>;
 
   /** Set the first operand for checker board. */
-  void SetInput1(const TImage *image1);
+  void
+  SetInput1(const TImage * image1);
 
   /** Set the second operand for checker board. */
-  void SetInput2(const TImage *image2);
+  void
+  SetInput2(const TImage * image2);
 
   /** Set/Get the checker pattern array, i.e. the number of checker boxes
    * per image dimension. */
@@ -85,29 +87,29 @@ public:
 
 protected:
   CheckerBoardImageFilter();
-  ~CheckerBoardImageFilter() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~CheckerBoardImageFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** CheckerBoardImageFilter can be implemented as a multithreaded filter. Therefore,
-   * this implementation provides a ThreadedGenerateData() routine which
+   * this implementation provides a DynamicThreadedGenerateData() routine which
    * is called for each processing thread. The output image data is allocated
-   * automatically by the superclass prior to calling ThreadedGenerateData().
-   * ThreadedGenerateData can only write to the portion of the output image
+   * automatically by the superclass prior to calling DynamicThreadedGenerateData().
+   * DynamicThreadedGenerateData can only write to the portion of the output image
    * specified by the parameter "outputRegionForThread"
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void ThreadedGenerateData(const ImageRegionType & outputRegionForThread,
-                            ThreadIdType threadId) ITK_OVERRIDE;
+  void
+  DynamicThreadedGenerateData(const ImageRegionType & outputRegionForThread) override;
+
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CheckerBoardImageFilter);
-
   PatternArrayType m_CheckerPattern;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCheckerBoardImageFilter.hxx"
+#  include "itkCheckerBoardImageFilter.hxx"
 #endif
 
 #endif

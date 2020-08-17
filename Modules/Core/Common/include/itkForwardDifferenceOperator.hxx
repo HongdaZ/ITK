@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,17 +23,15 @@
 
 namespace itk
 {
-template< typename TPixel, unsigned int VDimension, typename TAllocator >
-typename ForwardDifferenceOperator< TPixel, VDimension, TAllocator >
-::CoefficientVector
-ForwardDifferenceOperator< TPixel, VDimension, TAllocator >
-::GenerateCoefficients()
+template <typename TPixel, unsigned int VDimension, typename TAllocator>
+typename ForwardDifferenceOperator<TPixel, VDimension, TAllocator>::CoefficientVector
+ForwardDifferenceOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
 {
   CoefficientVector coeff(3);
 
-  coeff[0] = NumericTraits< PixelType >::ZeroValue();
-  coeff[1] = -1.0f *  NumericTraits< PixelType >::OneValue();
-  coeff[2] =  NumericTraits< PixelType >::OneValue();
+  coeff[0] = NumericTraits<PixelType>::ZeroValue();
+  coeff[1] = -1.0 * NumericTraits<PixelType>::OneValue();
+  coeff[2] = NumericTraits<PixelType>::OneValue();
 
   return coeff;
 }

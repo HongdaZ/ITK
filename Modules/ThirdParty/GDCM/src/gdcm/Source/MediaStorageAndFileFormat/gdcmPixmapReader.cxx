@@ -34,8 +34,7 @@ PixmapReader::PixmapReader():PixelData(new Pixmap)
 }
 
 PixmapReader::~PixmapReader()
-{
-}
+= default;
 
 const Pixmap& PixmapReader::GetPixmap() const
 {
@@ -617,7 +616,8 @@ bool PixmapReader::ReadImageInternal(MediaStorage const &ms, bool handlepixeldat
     isacrnema = true;
     const char *str = ds.GetDataElement( trecognitioncode ).GetByteValue()->GetPointer();
     assert( strncmp( str, "ACR-NEMA", strlen( "ACR-NEMA" ) ) == 0 ||
-      strncmp( str, "ACRNEMA", strlen( "ACRNEMA" ) ) == 0 );
+      strncmp( str, "ACRNEMA", strlen( "ACRNEMA" ) ) == 0 ||
+      strncmp( str, "MIPS 2.0", strlen( "MIPS 2.0" ) ) == 0 );
     (void)str;//warning removal
     }
 
@@ -992,6 +992,17 @@ bool PixmapReader::ReadImageInternal(MediaStorage const &ms, bool handlepixeldat
       bool need = PixelData->GetTransferSyntax() == TransferSyntax::ImplicitVRBigEndianPrivateGE;
       PixelData->SetNeedByteSwap( need );
       PixelData->SetDataElement( xde );
+      if( PixelData->GetTransferSyntax().IsEncapsulated() && PixelData->GetDataElement().GetByteValue() )
+      {
+        // Pixel Data attribute is not encapsulated, let's check for simple user error
+        const ByteValue *bv = PixelData->GetDataElement().GetByteValue();
+        if( bv->GetLength() == PixelData->GetBufferLength() ||
+            bv->GetLength() == PixelData->GetBufferLength() + 1 )
+        {
+          gdcmWarningMacro( "Pixel Data was found to be raw. Fixing invalid Transfer Syntax: " << PixelData->GetTransferSyntax() );
+          PixelData->SetTransferSyntax( TransferSyntax::ExplicitVRLittleEndian );
+        }
+      }
 
       // FIXME:
       // We should check that when PixelData is RAW that Col * Dim == PixelData->GetLength()
@@ -1082,7 +1093,11 @@ bool PixmapReader::ReadImageInternal(MediaStorage const &ms, bool handlepixeldat
   // Two cases:
   // - DataSet did not specify the lossyflag
   // - DataSet specify it to be 0, but there is still a chance it could be wrong:
-  if( !haslossyflag || !lossyflag )
+  // execute computation of lossy flag eny time the TS is encapsulated so as to
+  // update the correct PixelFormat as early as possible and not during
+  // decompression in case of mismatch:
+  if( (!haslossyflag || !lossyflag)
+   || PixelData->GetTransferSyntax().IsEncapsulated() )
     {
     PixelData->ComputeLossyFlag();
     if( PixelData->IsLossy() && (!lossyflag && haslossyflag ) )
@@ -1090,6 +1105,8 @@ bool PixmapReader::ReadImageInternal(MediaStorage const &ms, bool handlepixeldat
       // We always prefer the setting from the stream...
       gdcmWarningMacro( "DataSet set LossyFlag to 0, while Codec made the stream lossy" );
       }
+    // Make sure to combine DICOM info + pixel data bitstream:
+    PixelData->SetLossyFlag( PixelData->IsLossy() || lossyflag);
     }
 
   return true;

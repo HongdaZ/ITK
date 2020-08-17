@@ -35,10 +35,12 @@
 #include <iostream>
 #include "vnl_quaternion.h"
 
-#include <vcl_compiler.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 
-#include <vnl/vnl_cross.h>
-#include <vnl/vnl_math.h>
+#include "vnl_cross.h"
+#include "vnl_math.h"
 
 //: Creates a quaternion from its ordered components.
 // x, y, z denote the imaginary part, which are the  coordinates
@@ -305,6 +307,6 @@ vnl_vector_fixed<T,3> vnl_quaternion<T>::rotate(vnl_vector_fixed<T,3> const& v) 
 #undef VNL_QUATERNION_INSTANTIATE
 #define VNL_QUATERNION_INSTANTIATE(T) \
 template class VNL_EXPORT vnl_quaternion<T >;\
-VCL_INSTANTIATE_INLINE(std::ostream& operator<< (std::ostream&, vnl_quaternion<T > const&))
+/*template VNL_EXPORT std::ostream& operator<< (std::ostream&, vnl_quaternion<T > const&) */
 
 #endif // vnl_quaternion_hxx_

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TFeatureImage, typename TOutputPixelType >
-CannySegmentationLevelSetImageFilter< TInputImage, TFeatureImage,
-                                      TOutputPixelType >
-::CannySegmentationLevelSetImageFilter()
+template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType>
+CannySegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>::
+  CannySegmentationLevelSetImageFilter()
 {
   m_CannyFunction = CannyFunctionType::New();
 
-  this->SetSegmentationFunction( m_CannyFunction.GetPointer() );
+  this->SetSegmentationFunction(m_CannyFunction);
 }
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@
 
 namespace itk
 {
-template< typename TImageType, typename TFeatureImageType >
-void ShapeDetectionLevelSetFunction< TImageType, TFeatureImageType >
-::CalculateSpeedImage()
+template <typename TImageType, typename TFeatureImageType>
+void
+ShapeDetectionLevelSetFunction<TImageType, TFeatureImageType>::CalculateSpeedImage()
 {
   /* copy the feature image into the speed image */
-  ImageAlgorithm::Copy( this->GetFeatureImage(),
-                        this->GetSpeedImage(),
-                        this->GetFeatureImage()->GetRequestedRegion(),
-                        this->GetFeatureImage()->GetRequestedRegion() );
+  ImageAlgorithm::Copy(this->GetFeatureImage(),
+                       this->GetSpeedImage(),
+                       this->GetFeatureImage()->GetRequestedRegion(),
+                       this->GetFeatureImage()->GetRequestedRegion());
 }
 } // end namespace itk
 

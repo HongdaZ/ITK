@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ namespace itk
 
 // Allow using single precision by default
 #if defined(ITK_USE_FLOAT_SPACE_PRECISION)
-  typedef float  SpacePrecisionType;
+using SpacePrecisionType = float;
 #else
-  typedef double SpacePrecisionType;
+using SpacePrecisionType = double;
 #endif
 
-}
+} // namespace itk
 
-#endif  /* itkFloatTypes_h */
+#endif /* itkFloatTypes_h */

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ namespace itk
 {
 namespace Accessor
 {
-/** \class LogPixelAccessor
+/**
+ *\class LogPixelAccessor
  * \brief Give access to the std::log() function of a value
  *
  * LogPixelAccessor is templated over an internal type and an
@@ -37,27 +38,34 @@ namespace Accessor
  * \ingroup ITKImageAdaptors
  */
 
-template< typename TInternalType, typename TExternalType >
+template <typename TInternalType, typename TExternalType>
 class LogPixelAccessor
 {
 public:
-  /** External typedef. It defines the external aspect
+  /** External type alias. It defines the external aspect
    * that this class will exhibit. */
-  typedef TExternalType ExternalType;
+  using ExternalType = TExternalType;
 
-  /** Internal typedef. It defines the internal real
+  /** Internal type alias. It defines the internal real
    * representation of data. */
-  typedef TInternalType InternalType;
+  using InternalType = TInternalType;
 
-  static inline void Set(TInternalType & output, const TExternalType & input)
-  { output = (TInternalType)std::log( (double)input ); }
+  static inline void
+  Set(TInternalType & output, const TExternalType & input)
+  {
+    output = (TInternalType)std::log((double)input);
+  }
 
-  static inline TExternalType Get(const TInternalType & input)
-  { return (TExternalType)std::log( (double)input ); }
+  static inline TExternalType
+  Get(const TInternalType & input)
+  {
+    return (TExternalType)std::log((double)input);
+  }
 };
 } // end namespace Accessor
 
-/** \class LogImageAdaptor
+/**
+ *\class LogImageAdaptor
  * \brief Presents an image as being composed of the std::log() of its pixels
  *
  * Additional casting is performed according to the input and output image
@@ -66,23 +74,19 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TImage, typename TOutputPixelType >
-class LogImageAdaptor:public
-  ImageAdaptor< TImage,
-                Accessor::LogPixelAccessor<
-                  typename TImage::PixelType,
-                  TOutputPixelType >   >
+template <typename TImage, typename TOutputPixelType>
+class LogImageAdaptor
+  : public ImageAdaptor<TImage, Accessor::LogPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
 {
 public:
-  /** Standard class typedefs. */
-  typedef LogImageAdaptor Self;
-  typedef ImageAdaptor< TImage,
-                        Accessor::LogPixelAccessor<
-                          typename TImage::PixelType,
-                          TOutputPixelType > >  Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LogImageAdaptor);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = LogImageAdaptor;
+  using Superclass = ImageAdaptor<TImage, Accessor::LogPixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
+
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LogImageAdaptor, ImageAdaptor);
@@ -91,11 +95,8 @@ public:
   itkNewMacro(Self);
 
 protected:
-  LogImageAdaptor() {}
-  virtual ~LogImageAdaptor() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LogImageAdaptor);
+  LogImageAdaptor() = default;
+  ~LogImageAdaptor() override = default;
 };
 } // end namespace itk
 

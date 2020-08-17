@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@
 
 namespace itk
 {
-void SingleValuedCostFunction::GetValueAndDerivative(const ParametersType & parameters,
-                                   MeasureType & value,
-                                   DerivativeType & derivative) const
+void
+SingleValuedCostFunction::GetValueAndDerivative(const ParametersType & parameters,
+                                                MeasureType &          value,
+                                                DerivativeType &       derivative) const
 {
-    value = this->GetValue(parameters);
-    this->GetDerivative(parameters, derivative);
+  value = this->GetValue(parameters);
+  this->GetDerivative(parameters, derivative);
 }
 
-SingleValuedCostFunction::~SingleValuedCostFunction() {}
-}
+SingleValuedCostFunction::~SingleValuedCostFunction() = default;
+} // namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 #include "itkMacro.h"
 namespace itk
 {
-/** \class PixelAccessor
+/**
+ *\class PixelAccessor
  * \brief Give access to partial aspects of a type
  *
  * PixelAccessor is templated over an internal type and an
@@ -29,7 +30,7 @@ namespace itk
  * customized conversion between the internal and external
  * type representations.
  *
- * PixelAccessor is designed to be used in conjuntion with
+ * PixelAccessor is designed to be used in conjunction with
  * ImageAdaptors. An ImageAdaptor take an image and present it
  * as another image in which the pixels are a pixel-to-pixel
  * modification of the original image.
@@ -50,23 +51,29 @@ namespace itk
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TInternalType, typename TExternalType >
+template <typename TInternalType, typename TExternalType>
 class PixelAccessor
 {
 public:
-  /** External typedef. It defines the external aspect
+  /** External type alias. It defines the external aspect
    * that this class will exhibit. */
-  typedef TExternalType ExternalType;
+  using ExternalType = TExternalType;
 
-  /** Internal typedef. It defines the internal real
+  /** Internal type alias. It defines the internal real
    * representation of data. */
-  typedef TInternalType InternalType;
+  using InternalType = TInternalType;
 
-  inline void Set(TInternalType & output, const TExternalType & input) const
-  { output = (TInternalType)input; }
+  inline void
+  Set(TInternalType & output, const TExternalType & input) const
+  {
+    output = (TInternalType)input;
+  }
 
-  inline TExternalType Get(const TInternalType & input) const
-  { return (TExternalType)input; }
+  inline TExternalType
+  Get(const TInternalType & input) const
+  {
+    return (TExternalType)input;
+  }
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,23 +21,20 @@
 
 namespace itk
 {
-void GEAdwImageIOFactory::PrintSelf(std::ostream &, Indent) const
+void
+GEAdwImageIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 GEAdwImageIOFactory::GEAdwImageIOFactory()
 {
-  this->RegisterOverride( "itkImageIOBase",
-                          "itkGEAdwImageIO",
-                          "GEAdw Image IO",
-                          1,
-                          CreateObjectFunction< GEAdwImageIO >::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "itkGEAdwImageIO", "GEAdw Image IO", true, CreateObjectFunction<GEAdwImageIO>::New());
 }
 
-GEAdwImageIOFactory::~GEAdwImageIOFactory()
-{}
+GEAdwImageIOFactory::~GEAdwImageIOFactory() = default;
 
 const char *
-GEAdwImageIOFactory::GetITKSourceVersion(void) const
+GEAdwImageIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -53,13 +50,14 @@ GEAdwImageIOFactory::GetDescription() const
 
 static bool GEAdwImageIOFactoryHasBeenRegistered;
 
-void ITKIOGE_EXPORT GEAdwImageIOFactoryRegister__Private(void)
+void ITKIOGE_EXPORT
+     GEAdwImageIOFactoryRegister__Private()
 {
-  if( ! GEAdwImageIOFactoryHasBeenRegistered )
-    {
+  if (!GEAdwImageIOFactoryHasBeenRegistered)
+  {
     GEAdwImageIOFactoryHasBeenRegistered = true;
     GEAdwImageIOFactory::RegisterOneFactory();
-    }
+  }
 }
 
 } // end namespace itk

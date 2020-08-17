@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,26 +22,19 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TOutputImage >
-RegionGrowImageFilter< TInputImage, TOutputImage >
-::RegionGrowImageFilter()
+template <typename TInputImage, typename TOutputImage>
+RegionGrowImageFilter<TInputImage, TOutputImage>::RegionGrowImageFilter()
 {
   m_GridSize.Fill(2);
   m_MaximumNumberOfRegions = 0;
 }
 
-template< typename TInputImage, typename TOutputImage >
-RegionGrowImageFilter< TInputImage, TOutputImage >
-::~RegionGrowImageFilter()
-{}
-
 /**
  * PrintSelf
  */
-template< typename TInputImage, typename TOutputImage >
+template <typename TInputImage, typename TOutputImage>
 void
-RegionGrowImageFilter< TInputImage, TOutputImage >
-::PrintSelf(std::ostream & os, Indent indent) const
+RegionGrowImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Region grow image filter object" << std::endl;

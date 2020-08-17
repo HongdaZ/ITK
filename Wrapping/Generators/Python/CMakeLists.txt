@@ -1,28 +1,6 @@
 ###############################################################################
-# configure python (find PythonInterp first, as of cmake 3.1)
-find_package(PythonInterp)
-find_package(ITKPythonLibs)
 
-# require at least python 2.6
-if(PYTHON_VERSION_STRING VERSION_LESS 2.6)
-  message(WARNING "Python version less than 2.6: \"${PYTHON_VERSION_STRING}\".")
-endif()
-
-# check for version mismatch.
-if(PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND
-    AND NOT(PYTHON_VERSION_STRING VERSION_EQUAL PYTHONLIBS_VERSION_STRING))
-  message(WARNING "Python executable (\"${PYTHON_VERSION_STRING}\") and library (\"${PYTHONLIBS_VERSION_STRING}\") version mismatch.")
-endif()
-
-if(NOT EXTERNAL_WRAP_ITK_PROJECT)
-  CMAKE_DEPENDENT_OPTION(ITK_WRAP_PYTHON_LEGACY "Build Legacy Python support." ON
-                         "ITK_WRAP_PYTHON" OFF)
-else()
-  set(ITK_WRAP_PYTHON_LEGACY OFF)
-endif()
-
-mark_as_advanced(PYTHON_EXECUTABLE)
-include_directories("${PYTHON_INCLUDE_DIRS}")
+include_directories("${Python3_INCLUDE_DIRS}")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -43,15 +21,15 @@ file(MAKE_DIRECTORY ${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/python)
 
 ###############################################################################
 # Configure Python wrapping installation
-if(PYTHON_EXECUTABLE AND NOT PY_SITE_PACKAGES_PATH)
-  set(python_check "from __future__ import print_function\ntry:\n    import distutils.sysconfig\n    print(distutils.sysconfig.get_python_lib(plat_specific=1, prefix=''))\nexcept:\n    pass")
+if(Python3_EXECUTABLE AND NOT PY_SITE_PACKAGES_PATH)
+  set(python_check "try:\n    import distutils.sysconfig\n    print(distutils.sysconfig.get_python_lib(plat_specific=1, prefix=''))\nexcept:\n    pass")
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/detect_site_package_path.py ${python_check})
-  execute_process(COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/detect_site_package_path.py"
+  execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/detect_site_package_path.py"
     OUTPUT_VARIABLE py_spp
     ERROR_VARIABLE py_spp
   )
 
-  execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "from __future__ import print_function\nimport sys\nprint(sys.prefix)"
+  execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import sys\nprint(sys.prefix)"
     OUTPUT_VARIABLE py_prefix
     ERROR_VARIABLE py_prefix
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -165,12 +143,12 @@ if(NOT EXTERNAL_WRAP_ITK_PROJECT)
   # Create a list of Python files.
   # WrapITK/Python/*.py
   set(ITK_PYTHON_FILES
-    itk/__init__
     itkBase
     itkTemplate
     itkTypes
     itkExtras
     itkLazy
+    itkHelpers
     )
   # Done listing files.
 
@@ -207,10 +185,12 @@ if(NOT EXTERNAL_WRAP_ITK_PROJECT)
   endif()
 
   # Install the package python files.
-  list(GET ITK_WRAP_PYTHON_INSTALL_FILES 0 init_file)
+  set(init_file ${CMAKE_CURRENT_BINARY_DIR}/itk/__init__.py)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/itk/__init__.py.in
+    ${CMAKE_CURRENT_BINARY_DIR}/itk/__init__.py
+    )
   WRAP_ITK_PYTHON_BINDINGS_INSTALL(/itk "ITKCommon" ${init_file})
   set(python_modules ${ITK_WRAP_PYTHON_INSTALL_FILES})
-  list(REMOVE_AT python_modules 0)
   WRAP_ITK_PYTHON_BINDINGS_INSTALL(/ "ITKCommon" ${python_modules})
 endif()
 
@@ -252,6 +232,13 @@ macro(itk_wrap_module_python library_name)
   set(ITK_WRAP_PYTHON_LIBRARY_DECLS )
   set(ITK_WRAP_PYTHON_LIBRARY_CALLS )
   set(ITK_WRAP_PYTHON_CXX_FILES )
+  if(MSVC)
+    get_filename_component(python_library_directory "${Python3_LIBRARY}" DIRECTORY)
+    # It should use the following code inside `itk_end_wrap_module_python` but
+    # `target_link_directories()` was only added to CMake 3.13.
+    # target_link_directories(${lib} PUBLIC ${python_library_directory})
+    link_directories(${python_library_directory})
+  endif()
 endmacro()
 
 
@@ -297,15 +284,10 @@ macro(itk_setup_swig_python type base_name interface_file python_file cpp_file d
       "${doc_file}")
   endif()
 
-  set(py3arg)
-  if(PYTHON_VERSION_STRING VERSION_GREATER 3.0)
-    set(py3arg "-py3")
-  endif()
-
   add_custom_command(
     OUTPUT ${cpp_file} ${python_file}
     COMMAND ${swig_command} -c++ -python -O -features autodoc=1
-    ${py3arg}
+    -py3
     -Werror
     -w302 # Identifier 'name' redefined (ignored)
     -w303 # %extend defined for an undeclared class 'name' (to avoid warning about customization in pyBase.i)
@@ -323,6 +305,10 @@ macro(itk_setup_swig_python type base_name interface_file python_file cpp_file d
     -w508 # Declaration of 'name' shadows declaration accessible via operator->(), previous declaration of'declaration'
     -w509 # Overloaded method declaration effectively ignored, as it is shadowed by declaration
     -o ${cpp_file}
+    # The order of this include folder and the next one matters as otherwise the following exception is thrown:
+    # "This version of exception.i should not be used"
+    -I${SWIG_DIR}/python
+    -I${SWIG_DIR}
     -I${GENERATORS_SRC_DIR}
     -I${WRAP_ITK_TYPEDEFS_DIRECTORY}/python
     -I${WRAP_ITK_TYPEDEFS_DIRECTORY}
@@ -338,7 +324,6 @@ endmacro()
 
 
 macro(itk_end_wrap_module_python)
-
   # Loop over the extra swig input files and add them to the generated files
   # lists. Guess that the generated cxx output will have the same name as
   # the .i input file.
@@ -377,48 +362,36 @@ macro(itk_end_wrap_module_python)
     "${ITK_WRAP_PYTHON_BINARY_DIR}/Configuration/${WRAPPER_LIBRARY_NAME}Config.py"
   )
 
-  if(ITK_WRAP_PYTHON_LEGACY)
-    # create the advanced lib module python file
-    # this file lets the final user use something like "import ITKModuleName"
-    # backwards compatibility -- to be removed
-    set(CONFIG_LIBRARY_NAME "${WRAPPER_LIBRARY_NAME}")
-    configure_file("${ITK_WRAP_PYTHON_SOURCE_DIR}/ModuleLoader.py.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/${WRAPPER_LIBRARY_NAME}.py"
-      @ONLY)
-    WRAP_ITK_PYTHON_BINDINGS_INSTALL(/ "${WRAPPER_LIBRARY_NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${WRAPPER_LIBRARY_NAME}.py")
-  endif()
-
   set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_DECLS )
   set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_CALLS )
   if(NOT BUILD_SHARED_LIBS)
-    list(FIND WRAPPER_LIBRARY_LINK_LIBRARIES "ITKCommon" _links_to_ITKCommon)
     if(WRAPPER_LIBRARY_NAME STREQUAL "ITKCommon")
+
+      if(WIN32)
+        set(DO_NOT_WAIT_FOR_THREADS_DECLS "#include \"itkThreadPool.h\"")
+        set(DO_NOT_WAIT_FOR_THREADS_CALLS "itk::ThreadPool::SetDoNotWaitForThreads( true );")
+      endif()
+
       set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_DECLS "
 #define _ITKCommonPython_MODULE
 #include \"itkPyITKCommonCAPI.h\"
+${DO_NOT_WAIT_FOR_THREADS_DECLS}
 
 static
-_ITKCommonPython_GetGlobalTimeStamp_RETURN
-_ITKCommonPython_GetGlobalTimeStamp
-_ITKCommonPython_GetGlobalTimeStamp_PROTO
+_ITKCommonPython_GetGlobalSingletonIndex_RETURN
+_ITKCommonPython_GetGlobalSingletonIndex
+_ITKCommonPython_GetGlobalSingletonIndex_PROTO
 {
-  return itk::TimeStamp::GetGlobalTimeStamp();
+  return itk::SingletonIndex::GetInstance();
 }
 
-static
-_ITKCommonPython_GetObjectFactoryBase_RETURN
-_ITKCommonPython_GetObjectFactoryBase
-_ITKCommonPython_GetObjectFactoryBase_PROTO
-{
-  return itk::ObjectFactoryBase::GetObjectFactoryBase();
-}
 ")
+
       set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_CALLS "
   static void * _ITKCommonPython_API[_ITKCommonPython_API_pointers];
 
   /* Initialize the C API pointer array */
-  _ITKCommonPython_API[_ITKCommonPython_GetGlobalTimeStamp_NUM] = (void *)_ITKCommonPython_GetGlobalTimeStamp;
-  _ITKCommonPython_API[_ITKCommonPython_GetObjectFactoryBase_NUM] = (void *)_ITKCommonPython_GetObjectFactoryBase;
+  _ITKCommonPython_API[_ITKCommonPython_GetGlobalSingletonIndex_NUM] = (void *)_ITKCommonPython_GetGlobalSingletonIndex;
 
   /* Create a Capsule containing the API pointer array's address */
   PyObject * cAPIObject = PyCapsule_New((void *)_ITKCommonPython_API,
@@ -428,10 +401,12 @@ _ITKCommonPython_GetObjectFactoryBase_PROTO
     {
     PyModule_AddObject( m, \"_C_API\", cAPIObject );
     }
+  ${DO_NOT_WAIT_FOR_THREADS_CALLS}
 ")
-    elseif(NOT ${_links_to_ITKCommon} EQUAL -1)
+    elseif("ITKCommon" IN_LIST WRAPPER_LIBRARY_LINK_LIBRARIES)
       set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_DECLS "
 #include \"itkPyITKCommonCAPI.h\"
+${DO_NOT_WAIT_FOR_THREADS_DECLS}
 ")
       set(ITK_WRAP_PYTHON_GLOBAL_TIMESTAMP_CALLS "
   if( import__ITKCommonPython() < 0 )
@@ -442,8 +417,8 @@ _ITKCommonPython_GetObjectFactoryBase_PROTO
     return;
 #endif
     }
-  itk::TimeStamp::SetGlobalTimeStamp( _ITKCommonPython_GetGlobalTimeStamp() );
-  itk::ObjectFactoryBase::SynchronizeObjectFactoryBase( _ITKCommonPython_GetObjectFactoryBase() );
+  itk::SingletonIndex::SetInstance( _ITKCommonPython_GetGlobalSingletonIndex() );
+  ${DO_NOT_WAIT_FOR_THREADS_CALLS}
 ")
     endif()
   endif()
@@ -470,6 +445,7 @@ _ITKCommonPython_GetObjectFactoryBase_PROTO
   # if this is for an external library, let the user add extra swig args
   if(EXTERNAL_WRAP_ITK_PROJECT)
     set(WRAP_ITK_SWIG_ARGS_PYTHON "" CACHE STRING "Extra user-defined swig arguments to be to the swig executable.")
+    mark_as_advanced(WRAP_ITK_SWIG_ARGS_PYTHON)
   endif()
 
   # Run swig to produce the *Python.cpp and the *Python.py file
@@ -496,7 +472,7 @@ _ITKCommonPython_GetObjectFactoryBase_PROTO
     target_link_libraries(${lib} LINK_PUBLIC ${WRAPPER_LIBRARY_LINK_LIBRARIES})
     itk_target_link_libraries_with_dynamic_lookup(${lib} LINK_PUBLIC ${PYTHON_LIBRARY})
 
-    if(CMAKE_VERSION VERSION_GREATER 2.8.12 AND USE_COMPILER_HIDDEN_VISIBILITY)
+    if(USE_COMPILER_HIDDEN_VISIBILITY)
       # Prefer to use target properties supported by newer cmake
       set_target_properties(${lib} PROPERTIES CXX_VISIBILITY_PRESET hidden)
       set_target_properties(${lib} PROPERTIES C_VISIBILITY_PRESET hidden)
@@ -533,7 +509,6 @@ _ITKCommonPython_GetObjectFactoryBase_PROTO
       endforeach()
     endif()
   endif()
-
 endmacro()
 
 
@@ -603,9 +578,8 @@ macro(itk_end_wrap_submodule_python group_name)
 
   # add this wrap_*.cmake stuff to the list of modules to init in the main module.
   # first the extern c declaration and then the call of the extern function
-  if(PYTHON_VERSION_STRING VERSION_GREATER 3.0)
-    set(ITK_WRAP_PYTHON_LIBRARY_DECLS "${ITK_WRAP_PYTHON_LIBRARY_DECLS} extern \"C\" PyMODINIT_FUNC PyInit__${group_name}Python();\n")
-    set(ITK_WRAP_PYTHON_LIBRARY_CALLS "${ITK_WRAP_PYTHON_LIBRARY_CALLS}
+  set(ITK_WRAP_PYTHON_LIBRARY_DECLS "${ITK_WRAP_PYTHON_LIBRARY_DECLS} extern \"C\" PyMODINIT_FUNC PyInit__${group_name}Python();\n")
+  set(ITK_WRAP_PYTHON_LIBRARY_CALLS "${ITK_WRAP_PYTHON_LIBRARY_CALLS}
   PyObject * ${group_name}SysModules = PyImport_GetModuleDict();
   PyObject * ${group_name}AlreadyImported = PyDict_GetItemString(${group_name}SysModules, \"_${group_name}Python\");
   if( ${group_name}AlreadyImported == NULL )
@@ -616,10 +590,6 @@ macro(itk_end_wrap_submodule_python group_name)
     Py_DECREF( ${group_name}Module );
     }
 ")
-  else()
-    set(ITK_WRAP_PYTHON_LIBRARY_DECLS "${ITK_WRAP_PYTHON_LIBRARY_DECLS} extern \"C\" PyMODINIT_FUNC init_${group_name}Python();\n")
-    set(ITK_WRAP_PYTHON_LIBRARY_CALLS "${ITK_WRAP_PYTHON_LIBRARY_CALLS} init_${group_name}Python();\n")
-  endif()
 
 endmacro()
 
@@ -642,8 +612,8 @@ macro(ADD_PYTHON_CONFIG_TEMPLATE base_name wrap_class swig_name template_params)
     else()
       set(class_in_module "False")
     endif()
-  # build the name - type association list used in *Config.py
 
+  # build the name - type association list used in *Config.py
   if("${template_params}" STREQUAL "")
     set(ITK_WRAP_PYTHON_CONFIGURATION_TEMPLATES "${ITK_WRAP_PYTHON_CONFIGURATION_TEMPLATES}  ('${base_name}', '${wrap_class}', '${swig_name}', ${class_in_module}),\n")
   else()
@@ -654,9 +624,7 @@ endmacro()
 
 
 macro(itk_wrap_submodule_python module)
-  set(ITK_WRAP_PYTHON_SWIG_EXT "")
-  # To address Python 2.7 hypot bug, https://bugs.python.org/issue11566
-  set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%begin %{\n#include \"PatchedPython27pyconfig.h\"\n%}\n\n")
+  set(ITK_WRAP_PYTHON_SWIG_EXT "\n")
 
   # register the module for the lib module
   set(ITK_WRAP_PYTHON_LIBRARY_IMPORTS "${ITK_WRAP_PYTHON_LIBRARY_IMPORTS}from ${module}Python import *\n")
@@ -676,6 +644,14 @@ macro(itk_wrap_template_python name types)
     # generate the typemap which let pass an ImageSource instead of an Image
     set(image_source "${ITK_WRAP_PYTHON_CURRENT_SWIG_NAME}${name}")
     set(image "${ITKN_${name}}")
+    # An empty value for ${ITKN_${name}} means that the mangled type ${name}
+    # was not requested when wrapping ITK. But we want to allow external
+    # modules to redefine those missing types if they use it internally.
+    if(image STREQUAL "")
+      # Replace the mangled type I with itkImage
+      string(REPLACE "I" "itkImage" imageTemplate ${name})
+      set(image ${imageTemplate})
+    endif()
 
     set(text "\n\n")
     set(text "${text}%typemap(in) ${image} * {\n")
@@ -738,11 +714,18 @@ macro(itk_wrap_simple_type_python wrap_class swig_name)
   # must be done first so the typemap are used in the %template commands
   if("${swig_name}" MATCHES "_Pointer$")
     string(REGEX REPLACE "_Pointer$" "" smart_pointed "${swig_name}")
-    ADD_PYTHON_POINTER_TYPEMAP("${smart_pointed}")
+    string(REGEX REPLACE "(.)([A-Z][a-z]+)" "\\1_\\2" snake_name "${simple_name}")
+    string(REGEX REPLACE "([a-z0-9])([A-Z])" "\\1_\\2" snake_name "${snake_name}")
+    string(REGEX REPLACE "__" "_" snake_name "${snake_name}")
+    string(TOLOWER "${snake_name}" snake_name)
+    ADD_PYTHON_POINTER_TYPEMAP("${smart_pointed}" ${simple_name} ${snake_name})
   endif()
 
 
   # and now, generate the typemaps and other customizations
+  if("${cpp_name}" STREQUAL "itk::Matrix")
+    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_ITK_MATRIX(${swig_name})\n")
+  endif()
 
   if("${cpp_name}" STREQUAL "std::complex")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_STD_COMPLEX_CLASS(${swig_name})\n")
@@ -784,11 +767,19 @@ macro(itk_wrap_simple_type_python wrap_class swig_name)
   if("${cpp_name}" STREQUAL "itk::ImageBase" AND NOT "${swig_name}" MATCHES "Pointer$")
     # add the templated method non seen by gccxml, in a more python-friendly way
     # than the c++ version
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetBufferedRegion")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetLargestPossibleRegion")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetRequestedRegion")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_IMAGEBASE_CLASS(${swig_name}, ${template_params})\n")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%inline %{\n")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}#include \"itkContinuousIndexSwigInterface.h\"\n")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%}\n")
   endif()
+
+  if("${cpp_name}" STREQUAL "itk::Image")
+    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_IMAGE_CLASS(${swig_name})\n\n")
+  endif()
+
 
   if("${cpp_name}" STREQUAL "itk::StatisticsLabelObject" AND NOT "${swig_name}" MATCHES "Pointer$")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(map${swig_name}) std::map< unsigned long, ${swig_name}_Pointer, std::less< unsigned long > >;\n")
@@ -807,8 +798,27 @@ macro(itk_wrap_simple_type_python wrap_class swig_name)
   endif()
 
   if("${cpp_name}" STREQUAL "itk::ImageRegion")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetIndex")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetModifiableIndex")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetSize")
+    ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS("${swig_name}" "GetModifiableSize")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_IMAGEREGION_CLASS(${swig_name})%template(vector${swig_name}) std::vector< ${swig_name} >;\n")
     ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
+  endif()
+
+  if("${cpp_name}" STREQUAL "itk::Image" AND NOT "${swig_name}" MATCHES "Pointer$")
+    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_STD_VEC_RAW_TO_SMARTPTR_TYPEMAP(${swig_name}, ${swig_name}_Pointer)\n")
+    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(vector${swig_name}) std::vector< ${swig_name}_Pointer >;\n")
+    ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} > ")
+  endif()
+
+  if("${cpp_name}" STREQUAL "itk::PCAShapeSignedDistanceFunction" AND NOT "${swig_name}" MATCHES "Pointer$")
+
+    set(import_text "%include ${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/python/itkImage_ext.i\n")
+    string(FIND ${ITK_WRAP_PYTHON_SWIG_EXT} ${import_text} pos)
+    if(${pos} EQUAL -1)
+        set(ITK_WRAP_PYTHON_SWIG_EXT "${import_text}${ITK_WRAP_PYTHON_SWIG_EXT}")
+    endif()
   endif()
 
 
@@ -862,9 +872,9 @@ macro(itk_wrap_simple_type_python wrap_class swig_name)
     ADD_PYTHON_VARIABLE_LENGTH_SEQ_TYPEMAP("${swig_name}" "${template_params}")
   endif()
 
-  if("${swig_name}" STREQUAL "itkTransformBase")
+  if("${cpp_name}" STREQUAL "itk::TransformBaseTemplate" AND NOT "${ext_def}" MATCHES "Pointer")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(list${swig_name}_Pointer) std::list< ${swig_name}_Pointer >;\n")
-    ADD_PYTHON_CONFIG_TEMPLATE("list" "std::list" "list${swig_name}_Pointer" "itk::TransformBase")
+    ADD_PYTHON_CONFIG_TEMPLATE("list" "std::list" "list${swig_name}_Pointer" "${cpp_name}< ${template_params}>")
   endif()
 
   if("${cpp_name}" STREQUAL "itk::SpatialObjectPoint")
@@ -872,30 +882,46 @@ macro(itk_wrap_simple_type_python wrap_class swig_name)
     ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
   endif()
 
-  if("${cpp_name}" STREQUAL "itk::ContourSpatialObjectPoint")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(vector${swig_name}) std::vector< ${swig_name} >;\n")
-    ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
-  endif()
-
-  if("${cpp_name}" STREQUAL "itk::LineSpatialObjectPoint")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(vector${swig_name}) std::vector< ${swig_name} >;\n")
-    ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
-  endif()
-
-  if("${cpp_name}" STREQUAL "itk::SurfaceSpatialObjectPoint")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(vector${swig_name}) std::vector< ${swig_name} >;\n")
-    ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
-  endif()
+  foreach(sopClassName IN ITEMS "itk::ContourSpatialObjectPoint"
+                                "itk::DTITubeSpatialObjectPoint"
+                                "itk::LineSpatialObjectPoint"
+                                "itk::SurfaceSpatialObjectPoint"
+                                "itk::TubeSpatialObjectPoint")
+    if("${cpp_name}" STREQUAL "${sopClassName}")
+      set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(vector${swig_name}) std::vector< ${swig_name} >;\n")
+      ADD_PYTHON_CONFIG_TEMPLATE("vector" "std::vector" "vector${swig_name}" "${cpp_name}< ${template_params} >")
+    endif()
+  endforeach()
 
   if("${cpp_name}" STREQUAL "itk::SpatialObject" AND NOT "${ext_def}" MATCHES "Pointer")
     set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(list${swig_name}_Pointer) std::list< ${swig_name}_Pointer >;\n")
     ADD_PYTHON_CONFIG_TEMPLATE("list" "std::list" "list${swig_name}_Pointer" "${cpp_name}< ${template_params} >")
   endif()
 
-  if("${cpp_name}" STREQUAL "itk::EllipseSpatialObject" AND NOT "${ext_def}" MATCHES "Pointer")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(list${swig_name}_Pointer) std::list< ${swig_name}_Pointer >;\n")
-    ADD_PYTHON_CONFIG_TEMPLATE("list" "std::list" "list${swig_name}_Pointer" "${cpp_name}< ${template_params} >")
-  endif()
+  foreach(soClassName IN ITEMS "itk::ArrowSpatialObjectPoint"
+                               "itk::BlogSpatialObject"
+                               "itk::BoxSpatialObject"
+                               "itk::ContourSpatialObject"
+                               "itk::EllipseSpatialObject"
+                               "itk::GaussianSpatialObject"
+                               "itk::GroupSpatialObject"
+                               "itk::ImageMaskSpatialObject"
+                               "itk::ImageSpatialObject"
+                               "itk::LandmarkSpatialObject"
+                               "itk::LineSpatialObject"
+                               "itk::PointBasedSpatialObject"
+                               "itk::PolygonSpatialObject"
+                               "itk::SurfaceSpatialObject"
+                               "itk::TubeSpatialObject")
+    if("${cpp_name}" STREQUAL "${soClassName}" AND NOT "${ext_def}" MATCHES "Pointer")
+      set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%template(list${swig_name}_Pointer) std::list< ${swig_name}_Pointer >;\n")
+      ADD_PYTHON_CONFIG_TEMPLATE("list" "std::list" "list${swig_name}_Pointer" "${cpp_name}< ${template_params} >")
+    endif()
+  endforeach()
+endmacro()
+
+macro(ADD_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS type function)
+  set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}DECL_PYTHON_OUTPUT_RETURN_BY_VALUE_CLASS(${type}, ${function})\n")
 endmacro()
 
 
@@ -920,42 +946,8 @@ macro(ADD_PYTHON_VARIABLE_LENGTH_SEQ_TYPEMAP type value_type)
 endmacro()
 
 
-macro(ADD_PYTHON_POINTER_TYPEMAP template_params)
-  set(text "DECLARE_REF_COUNT_CLASS(${template_params})\n")
-
-# set(text "\n\n")
-# set(text "${text} // Python typemaps for Smart Pointers to ${template_params} class. \n\n")
-#        set(text "${text}// pointers and references\n")
-#        set(text "${text}%typemap(out) ${template_params} *, ${template_params} & {\n")
-#        set(text "${text}        // always tell SWIG_NewPointerObj we're the owner\n")
-#        set(text "${text}        \$result = SWIG_NewPointerObj((void *) \$1, \$1_descriptor, 1);\n")
-#        set(text "${text}        if (\$1) {\n")
-#        set(text "${text}                \$1->Register();\n")
-#        set(text "${text}        }\n")
-#        set(text "${text}}\n")
-# set(text "${text}\n")
-# set(text "${text}// transform smart pointers in raw pointers\n")
-#        set(text "${text}%typemap(out) ${template_params}_Pointer {\n")
-#        set(text "${text}  // get the raw pointer from the smart pointer\n")
-#        set(text "${text}  ${template_params} * ptr = \$1.GetPointer();\n")
-#        set(text "${text}        // always tell SWIG_NewPointerObj we're the owner\n")
-#        set(text "${text}        \$result = SWIG_NewPointerObj((void *) ptr, \$descriptor(${template_params} *), 1);\n")
-#        set(text "${text}        // register the object, it it exists\n")
-#        set(text "${text}        if (ptr) {\n")
-#        set(text "${text}                ptr->Register();\n")
-#        set(text "${text}        }\n")
-#        set(text "${text}}\n")
-# set(text "${text}\n")
-#        set(text "${text}// make deletion in scripting language just decrement ref. count\n")
-#        set(text "${text}%extend ${template_params} {\n")
-#        set(text "${text}        public:\n")
-#        set(text "${text}        ~${template_params}() {self->UnRegister();};\n")
-#        set(text "${text}}\n")
-# set(text "${text}\n")
-#        set(text "${text}%ignore ${template_params}::~${template_params};\n")
-# set(text "${text}\n")
-# set(text "${text}%ignore ${template_params}_Pointer;\n")
-# set(text "${text}\n\n")
+macro(ADD_PYTHON_POINTER_TYPEMAP typemap_name)
+  set(text "DECLARE_REF_COUNT_CLASS(${typemap_name})\n")
 
   set(ITK_WRAP_PYTHON_SWIG_EXT "${text}${ITK_WRAP_PYTHON_SWIG_EXT}")
 endmacro()
@@ -965,7 +957,7 @@ endmacro()
 if(NOT EXTERNAL_WRAP_ITK_PROJECT)
 
   # Add the Python tests
-  if(BUILD_TESTING AND ITK_SOURCE_DIR AND ITK_BUILD_DEFAULT_MODULES)
+  if(BUILD_TESTING AND ITK_SOURCE_DIR)
     add_subdirectory(Tests)
   endif()
 

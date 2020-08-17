@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ struct ITKCommon_EXPORT ImageSourceCommon
   /**
    * Provide access to a common static object for image region splitting
    */
-  static  const ImageRegionSplitterBase*  GetGlobalDefaultSplitter();
+  static const ImageRegionSplitterBase *
+  GetGlobalDefaultSplitter();
 };
 
 } // end namespace itk

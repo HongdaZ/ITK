@@ -12,20 +12,20 @@
 //  Peter Vanroose - 15 Oct. 2001 - Added vnl_matrix_fixed interface
 // \endverbatim
 
-#include <vnl/vnl_matrix_fixed.h>
+#include "vnl_matrix_fixed.h"
 #include "vnl/vnl_export.h"
 
 //: 2x2 matrix
-template <class T> VNL_TEMPLATE_EXPORT T vnl_det(T const *row0,
+template <class T> VNL_EXPORT T vnl_det(T const *row0,
                              T const *row1);
 
 //: 3x3 matrix
-template <class T> VNL_TEMPLATE_EXPORT T vnl_det(T const *row0,
+template <class T> VNL_EXPORT T vnl_det(T const *row0,
                              T const *row1,
                              T const *row2);
 
 //: 4x4 matrix
-template <class T> VNL_TEMPLATE_EXPORT T vnl_det(T const *row0,
+template <class T> VNL_EXPORT T vnl_det(T const *row0,
                              T const *row1,
                              T const *row2,
                              T const *row3);

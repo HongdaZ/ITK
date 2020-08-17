@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #==========================================================================
 #
-#   Copyright Insight Software Consortium
+#   Copyright NumFOCUS
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ validate_MD5() {
 download_object() {
   algo="$1" ; hash="$2" ; path="$3"
   mkdir -p $(dirname "$path") &&
-  if wget "https://www.itk.org/files/ExternalData/$algo/$hash" -O "$path.tmp$$" 1>&2 || \
-     wget "https://slicer.kitware.com/midas3/api/rest?method=midas.bitstream.download&checksum=${hash}&algorithm=${algo}" -O "$path.tmp$$" 1>&2; then
+  if curl -L "https://www.itk.org/files/ExternalData/$algo/$hash" -o "$path.tmp$$" 1>&2; then
     mv "$path.tmp$$" "$path"
   else
     rm -f "$path.tmp$$"

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkLog10ImageFilter_h
 #define itkLog10ImageFilter_h
 
-#include "itkUnaryFunctorImageFilter.h"
+#include "itkUnaryGeneratorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,29 +30,34 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template< typename TInput, typename TOutput >
+template <typename TInput, typename TOutput>
 class Log10
 {
 public:
-  Log10() {}
-  ~Log10() {}
-  bool operator!=(const Log10 &) const
+  Log10() = default;
+  ~Log10() = default;
+  bool
+  operator!=(const Log10 &) const
   {
     return false;
   }
 
-  bool operator==(const Log10 & other) const
+  bool
+  operator==(const Log10 & other) const
   {
-    return !( *this != other );
+    return !(*this != other);
   }
 
-  inline TOutput operator()(const TInput & A) const
+  inline TOutput
+  operator()(const TInput & A) const
   {
-    return static_cast< TOutput >( std::log10( static_cast< double >( A ) ) );
+    return static_cast<TOutput>(std::log10(static_cast<double>(A)));
   }
 };
-}
-/** \class Log10ImageFilter
+} // namespace Functor
+
+/**
+ *\class Log10ImageFilter
  * \brief Computes the log10 of each pixel.
  *
  * The computation is performed using std::log10(x).
@@ -61,47 +66,41 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template< typename TInputImage, typename TOutputImage >
-class Log10ImageFilter:
-  public
-  UnaryFunctorImageFilter< TInputImage, TOutputImage,
-                           Functor::Log10<
-                             typename TInputImage::PixelType,
-                             typename TOutputImage::PixelType >   >
+template <typename TInputImage, typename TOutputImage>
+class Log10ImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef Log10ImageFilter Self;
-  typedef UnaryFunctorImageFilter<
-    TInputImage, TOutputImage,
-    Functor::Log10< typename TInputImage::PixelType,
-                     typename TOutputImage::PixelType > >  Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(Log10ImageFilter);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = Log10ImageFilter;
+  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+  using FunctorType = Functor::Log10<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(Log10ImageFilter,
-               UnaryFunctorImageFilter);
+  itkTypeMacro(Log10ImageFilter, UnaryGeneratorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputConvertibleToDoubleCheck,
-                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
-  itkConceptMacro( DoubleConvertibleToOutputCheck,
-                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
+  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
+  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
   // End concept checking
 #endif
 
 protected:
-  Log10ImageFilter() {}
-  virtual ~Log10ImageFilter() ITK_OVERRIDE {}
+  Log10ImageFilter()
+  {
+#if !defined(ITK_WRAPPING_PARSER)
+    Superclass::SetFunctor(FunctorType());
+#endif
+  }
 
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Log10ImageFilter);
+  ~Log10ImageFilter() override = default;
 };
 } // end namespace itk
 

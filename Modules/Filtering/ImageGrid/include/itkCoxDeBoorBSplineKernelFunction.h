@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@
 
 namespace itk
 {
-/** \class CoxDeBoorBSplineKernelFunction
- * \brief BSpline kernel used for density estimation and nonparameteric
+/**
+ *\class CoxDeBoorBSplineKernelFunction
+ * \brief BSpline kernel used for density estimation and nonparametric
  *  regression.
  *
- * This class enscapsulates BSpline kernel for
- * density estimation or nonparameteric regression.
+ * This class encapsulates BSpline kernel for
+ * density estimation or nonparametric regression.
  * See documentation for KernelFunctionBase for more details.
  *
  * This class is templated over the spline order to cohere with
@@ -53,70 +54,77 @@ namespace itk
  *
  * \ingroup ITKImageGrid
  */
-template<unsigned int VSplineOrder = 3, typename TRealValueType = double>
-class ITK_TEMPLATE_EXPORT CoxDeBoorBSplineKernelFunction:
-  public KernelFunctionBase<TRealValueType>
+template <unsigned int VSplineOrder = 3, typename TRealValueType = double>
+class ITK_TEMPLATE_EXPORT CoxDeBoorBSplineKernelFunction : public KernelFunctionBase<TRealValueType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef CoxDeBoorBSplineKernelFunction     Self;
-  typedef KernelFunctionBase<TRealValueType> Superclass;
-  typedef SmartPointer<Self>                 Pointer;
-  typedef SmartPointer<const Self>           ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CoxDeBoorBSplineKernelFunction);
 
-  typedef typename Superclass::RealType  RealType;
+  /** Standard class type aliases. */
+  using Self = CoxDeBoorBSplineKernelFunction;
+  using Superclass = KernelFunctionBase<TRealValueType>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+
+  using RealType = typename Superclass::RealType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( CoxDeBoorBSplineKernelFunction, KernelFunctionBase );
+  itkTypeMacro(CoxDeBoorBSplineKernelFunction, KernelFunctionBase);
 
-  typedef vnl_vector<TRealValueType> VectorType;
-  typedef vnl_real_polynomial        PolynomialType;
-  typedef vnl_matrix<TRealValueType> MatrixType;
+  using VectorType = vnl_vector<TRealValueType>;
+  using PolynomialType = vnl_real_polynomial;
+  using MatrixType = vnl_matrix<TRealValueType>;
 
   /** Set the spline order. */
-  void SetSplineOrder( const unsigned int );
+  void
+  SetSplineOrder(const unsigned int);
 
   /** Get the spline order. */
-  itkGetConstMacro( SplineOrder, unsigned int );
+  itkGetConstMacro(SplineOrder, unsigned int);
 
   /** Evaluate the function. */
-  TRealValueType Evaluate( const TRealValueType & ) const ITK_OVERRIDE;
+  TRealValueType
+  Evaluate(const TRealValueType &) const override;
 
   /** Evaluate the first derivative. */
-  TRealValueType EvaluateDerivative( const TRealValueType & ) const;
+  TRealValueType
+  EvaluateDerivative(const TRealValueType &) const;
 
   /** Evaluate the Nth derivative. */
-  TRealValueType EvaluateNthDerivative( const TRealValueType &, const unsigned int ) const;
+  TRealValueType
+  EvaluateNthDerivative(const TRealValueType &, const unsigned int) const;
 
   /**
    * For a specific order, return the ceil( 0.5*(m_SplineOrder+1) )
    * pieces of the single basis function centered at zero for positive
    * parametric values.
    */
-  MatrixType GetShapeFunctions();
+  MatrixType
+  GetShapeFunctions();
 
   /**
    * For a specific order, generate and return the (this->m_SplineOrder+1)
    * pieces of the different basis functions in the [0, 1] interval.
    */
-  MatrixType GetShapeFunctionsInZeroToOneInterval();
+  MatrixType
+  GetShapeFunctionsInZeroToOneInterval();
 
 protected:
   CoxDeBoorBSplineKernelFunction();
-  virtual ~CoxDeBoorBSplineKernelFunction() ITK_OVERRIDE;
-  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
+  ~CoxDeBoorBSplineKernelFunction() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CoxDeBoorBSplineKernelFunction);
-
   /**
    * For a specific order, generate the (this->m_SplineOrder+1) pieces of
    * the single basis function centered at zero.
    */
-  void GenerateBSplineShapeFunctions( const unsigned int );
+  void
+  GenerateBSplineShapeFunctions(const unsigned int);
 
   /**
    * Use the CoxDeBoor recursion relation to generate the piecewise
@@ -124,16 +132,16 @@ private:
    * See, for example, L. Piegl, L. Tiller, "The NURBS Book,"
    * Springer 1997, p. 50.
    */
-  PolynomialType CoxDeBoor( const unsigned short, const VectorType,
-    const unsigned int, const unsigned int );
+  PolynomialType
+  CoxDeBoor(const unsigned short, const VectorType, const unsigned int, const unsigned int);
 
-  MatrixType                       m_BSplineShapeFunctions;
-  unsigned int                     m_SplineOrder;
+  MatrixType   m_BSplineShapeFunctions;
+  unsigned int m_SplineOrder;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCoxDeBoorBSplineKernelFunction.hxx"
+#  include "itkCoxDeBoorBSplineKernelFunction.hxx"
 #endif
 
 #endif

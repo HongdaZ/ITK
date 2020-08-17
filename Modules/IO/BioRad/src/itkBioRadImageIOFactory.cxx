@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,15 +33,11 @@ namespace itk
 {
 BioRadImageIOFactory::BioRadImageIOFactory()
 {
-  this->RegisterOverride( "itkImageIOBase",
-                          "itkBioRadImageIO",
-                          "BioRad Image IO",
-                          1,
-                          CreateObjectFunction< BioRadImageIO >::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "itkBioRadImageIO", "BioRad Image IO", true, CreateObjectFunction<BioRadImageIO>::New());
 }
 
-BioRadImageIOFactory::~BioRadImageIOFactory()
-{}
+BioRadImageIOFactory::~BioRadImageIOFactory() = default;
 
 const char *
 BioRadImageIOFactory::GetITKSourceVersion() const
@@ -60,13 +56,14 @@ BioRadImageIOFactory::GetDescription() const
 
 static bool BioRadImageIOFactoryHasBeenRegistered;
 
-void ITKIOBioRad_EXPORT BioRadImageIOFactoryRegister__Private(void)
+void ITKIOBioRad_EXPORT
+     BioRadImageIOFactoryRegister__Private()
 {
-  if( ! BioRadImageIOFactoryHasBeenRegistered )
-    {
+  if (!BioRadImageIOFactoryHasBeenRegistered)
+  {
     BioRadImageIOFactoryHasBeenRegistered = true;
     BioRadImageIOFactory::RegisterOneFactory();
-    }
+  }
 }
 
 } // end namespace itk

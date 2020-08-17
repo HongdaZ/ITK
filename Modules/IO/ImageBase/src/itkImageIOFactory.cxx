@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@
 
 #include "itkImageIOFactory.h"
 
-#include "itkMutexLockHolder.h"
-#include "itkSimpleFastMutexLock.h"
+#include <mutex>
 
 
 namespace itk
@@ -27,51 +26,46 @@ namespace itk
 
 namespace
 {
-SimpleFastMutexLock createImageIOLock;
+std::mutex createImageIOLock;
 }
 
 ImageIOBase::Pointer
-ImageIOFactory::CreateImageIO(const char *path, FileModeType mode)
+ImageIOFactory::CreateImageIO(const char * path, IOFileModeEnum mode)
 {
-  std::list< ImageIOBase::Pointer > possibleImageIO;
-  std::list< LightObject::Pointer > allobjects =
-    ObjectFactoryBase::CreateAllInstance("itkImageIOBase");
+  std::list<ImageIOBase::Pointer> possibleImageIO;
 
-  MutexLockHolder<SimpleFastMutexLock> mutexHolder(createImageIOLock);
+  std::lock_guard<std::mutex> mutexHolder(createImageIOLock);
 
-  for ( std::list< LightObject::Pointer >::iterator i = allobjects.begin();
-        i != allobjects.end(); ++i )
+  for (auto & allobject : ObjectFactoryBase::CreateAllInstance("itkImageIOBase"))
+  {
+    auto * io = dynamic_cast<ImageIOBase *>(allobject.GetPointer());
+    if (io)
     {
-    ImageIOBase *io = dynamic_cast< ImageIOBase * >( i->GetPointer() );
-    if ( io )
-      {
-      possibleImageIO.push_back(io);
-      }
+      possibleImageIO.emplace_back(io);
+    }
     else
-      {
-      std::cerr << "Error ImageIO factory did not return an ImageIOBase: "
-                << ( *i )->GetNameOfClass()
-                << std::endl;
-      }
-    }
-  for ( std::list< ImageIOBase::Pointer >::iterator k = possibleImageIO.begin();
-        k != possibleImageIO.end(); ++k )
     {
-    if ( mode == ReadMode )
+      std::cerr << "Error ImageIO factory did not return an ImageIOBase: " << allobject->GetNameOfClass() << std::endl;
+    }
+  }
+  for (auto & k : possibleImageIO)
+  {
+    if (mode == IOFileModeEnum::ReadMode)
+    {
+      if (k->CanReadFile(path))
       {
-      if ( ( *k )->CanReadFile(path) )
-        {
-        return *k;
-        }
-      }
-    else if ( mode == WriteMode )
-      {
-      if ( ( *k )->CanWriteFile(path) )
-        {
-        return *k;
-        }
+        return k;
       }
     }
-  return ITK_NULLPTR;
+    else if (mode == IOFileModeEnum::WriteMode)
+    {
+      if (k->CanWriteFile(path))
+      {
+        return k;
+      }
+    }
+  }
+  return nullptr;
 }
+
 } // end namespace itk

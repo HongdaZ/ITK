@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,18 +19,21 @@
 #include "itkIsBaseOf.h"
 #include "itkStaticAssert.h"
 
-struct Base {};
-struct Child : Base {};
+struct Base
+{};
+struct Child : Base
+{};
 
-int itkIsBaseOf(int, char*[])
+int
+itkIsBaseOf(int, char *[])
 {
   itkStaticAssert((itk::mpl::IsConvertible<char, double>::Value), "Unit test failed");
-  itkStaticAssert((! itk::mpl::IsConvertible<char, char*>::Value), "Unit test failed");
+  itkStaticAssert((!itk::mpl::IsConvertible<char, char *>::Value), "Unit test failed");
 
   itkStaticAssert((itk::mpl::IsBaseOf<Base, Child>::Value), "Unit test failed");
   itkStaticAssert((!itk::mpl::IsBaseOf<Child, Base>::Value), "Unit test failed");
 
-  itkStaticAssert((! itk::mpl::IsBaseOf<void, Child>::Value), "Unit test failed");
+  itkStaticAssert((!itk::mpl::IsBaseOf<void, Child>::Value), "Unit test failed");
 
   return EXIT_SUCCESS;
 }

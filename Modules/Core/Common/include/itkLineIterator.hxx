@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,18 +22,16 @@
 
 namespace itk
 {
-template< typename TImage >
-LineIterator< TImage >
-::LineIterator(ImageType *imagePtr, const IndexType & firstIndex, const IndexType & lastIndex):
-  LineConstIterator< TImage >(imagePtr, firstIndex, lastIndex)
+template <typename TImage>
+LineIterator<TImage>::LineIterator(ImageType * imagePtr, const IndexType & firstIndex, const IndexType & lastIndex)
+  : LineConstIterator<TImage>(imagePtr, firstIndex, lastIndex)
 {}
 
-template< typename TImage >
-LineIterator< TImage > &
-LineIterator< TImage >
-::operator=(const Self & it)
+template <typename TImage>
+LineIterator<TImage> &
+LineIterator<TImage>::operator=(const Self & it)
 {
-  this->LineConstIterator< TImage >::operator=(it);
+  this->LineConstIterator<TImage>::operator=(it);
   return *this;
 }
 } // end namespace itk

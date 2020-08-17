@@ -1,6 +1,6 @@
- /*=========================================================================
+/*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,13 +30,17 @@ namespace mpl
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template<typename, typename> struct IsSame : public FalseType { };
+template <typename, typename>
+struct IsSame : public FalseType
+{};
 
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template<typename T> struct IsSame<T, T> : public TrueType {};
+template <typename T>
+struct IsSame<T, T> : public TrueType
+{};
 /// \endcond
 
-} // end namespace itk::mpl
+} // end namespace mpl
 
 // itk::IsSame have move to itk::mpl
 // Expect them to be deprecated.
@@ -46,4 +50,4 @@ using mpl::IsSame;
 
 } // end namespace itk
 
-#endif //itkIsSame_h
+#endif // itkIsSame_h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ namespace itk
 namespace Statistics
 {
 /** \class ScalarImageToCooccurrenceMatrixFilter
- *  \brief This class computes a co-occurence matrix (histogram) from
- * a given image and a mask image if provided. Coocurrence matrces are
+ *  \brief This class computes a co-occurrence matrix (histogram) from
+ * a given image and a mask image if provided. Coocurrence matrices are
  * used for image texture description.
  *
- * This filters creates a grey-level co-occurence matrix from a N-D scalar
+ * This filters creates a grey-level co-occurrence matrix from a N-D scalar
  * image. This is the first step in texture description a la Haralick. (See
  * Haralick, R.M., K. Shanmugam and I. Dinstein. 1973. Textural Features for
  * Image Classification. IEEE Transactions on Systems, Man and Cybernetics.
@@ -42,23 +42,23 @@ namespace Statistics
  *
  * The basic idea is as follows:
  * Given an image and an offset (e.g. (1, -1) for a 2-d image), grey-level
- * co-occurences are pairs of intensity values for a specific pixel and the
- * pixel at that offset from the specified pixel. These co-occurences can provide
+ * co-occurrences are pairs of intensity values for a specific pixel and the
+ * pixel at that offset from the specified pixel. These co-occurrences can provide
  * information about the visual texture of an image region -- for example, an
  * eight-bit image of alternating pixel-wide white and black vertical lines
- * would have a large number of (0, 255) and (255, 0) co-occurences for offset
+ * would have a large number of (0, 255) and (255, 0) co-occurrences for offset
  * (1, 0).
  *
- * The offset (or offsets) along which the co-occurences are calculated can be
+ * The offset (or offsets) along which the co-occurrences are calculated can be
  * set by the user. Traditionally, only one offset is used per histogram, and
  * offset components in the range [-1, 1] are used. For rotation-invariant features,
  * averages of features computed over several histograms with different offsets
  * are generally used, instead of computing features from one histogram created
  * with several offsets. Additionally, instead of using offsets of two or more
- * pixels in any direction, multy-resulution techniques (e.g. image pyramids)
+ * pixels in any direction, multi-resolution techniques (e.g. image pyramids)
  * are generally used to deal with texture at different spatial resolutions.
  *
- * This class calculates a 2-d histogram of all the co-occurence pairs in the
+ * This class calculates a 2-d histogram of all the co-occurrence pairs in the
  * given image's requested region, for a given set of offsets. That is, if a given
  * offset falls outside of the requested region at a particular point, that
  * co-occurrence pair will not be added to the matrix.
@@ -90,16 +90,17 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template< typename TImageType,
-          typename THistogramFrequencyContainer = DenseFrequencyContainer2 >
-class ITK_TEMPLATE_EXPORT ScalarImageToCooccurrenceMatrixFilter:public ProcessObject
+template <typename TImageType, typename THistogramFrequencyContainer = DenseFrequencyContainer2>
+class ITK_TEMPLATE_EXPORT ScalarImageToCooccurrenceMatrixFilter : public ProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef ScalarImageToCooccurrenceMatrixFilter Self;
-  typedef ProcessObject                         Superclass;
-  typedef SmartPointer< Self >                  Pointer;
-  typedef SmartPointer< const Self >            ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarImageToCooccurrenceMatrixFilter);
+
+  /** Standard type alias */
+  using Self = ScalarImageToCooccurrenceMatrixFilter;
+  using Superclass = ProcessObject;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ScalarImageToCooccurrenceMatrixFilter, ProcessObject);
@@ -107,32 +108,33 @@ public:
   /** standard New() method support */
   itkNewMacro(Self);
 
-  typedef TImageType                                   ImageType;
-  typedef typename ImageType::Pointer                  ImagePointer;
-  typedef typename ImageType::ConstPointer             ImageConstPointer;
-  typedef typename ImageType::PixelType                PixelType;
-  typedef typename ImageType::RegionType               RegionType;
-  typedef typename ImageType::SizeType                 RadiusType;
-  typedef typename ImageType::OffsetType               OffsetType;
-  typedef VectorContainer< unsigned char, OffsetType > OffsetVector;
-  typedef typename OffsetVector::Pointer               OffsetVectorPointer;
-  typedef typename OffsetVector::ConstPointer          OffsetVectorConstPointer;
+  using ImageType = TImageType;
+  using ImagePointer = typename ImageType::Pointer;
+  using ImageConstPointer = typename ImageType::ConstPointer;
+  using PixelType = typename ImageType::PixelType;
+  using RegionType = typename ImageType::RegionType;
+  using RadiusType = typename ImageType::SizeType;
+  using OffsetType = typename ImageType::OffsetType;
+  using OffsetVector = VectorContainer<unsigned char, OffsetType>;
+  using OffsetVectorPointer = typename OffsetVector::Pointer;
+  using OffsetVectorConstPointer = typename OffsetVector::ConstPointer;
 
-  typedef typename NumericTraits< PixelType >::RealType MeasurementType;
+  using MeasurementType = typename NumericTraits<PixelType>::RealType;
 
-  typedef Histogram< MeasurementType, THistogramFrequencyContainer > HistogramType;
-  typedef typename HistogramType::Pointer                            HistogramPointer;
-  typedef typename HistogramType::ConstPointer                       HistogramConstPointer;
-  typedef typename HistogramType::MeasurementVectorType              MeasurementVectorType;
+  using HistogramType = Histogram<MeasurementType, THistogramFrequencyContainer>;
+  using HistogramPointer = typename HistogramType::Pointer;
+  using HistogramConstPointer = typename HistogramType::ConstPointer;
+  using MeasurementVectorType = typename HistogramType::MeasurementVectorType;
 
-  itkStaticConstMacro(DefaultBinsPerAxis, unsigned int, 256);
+  static constexpr unsigned int DefaultBinsPerAxis = 256;
 
   /** Get/Set the offset or offsets over which the co-occurrence pairs will be computed.
       Calling either of these methods clears the previous offsets. */
   itkSetConstObjectMacro(Offsets, OffsetVector);
   itkGetConstObjectMacro(Offsets, OffsetVector);
 
-  void SetOffset(const OffsetType offset);
+  void
+  SetOffset(const OffsetType offset);
 
   /** Set number of histogram bins along each axis */
   itkSetMacro(NumberOfBinsPerAxis, unsigned int);
@@ -140,7 +142,8 @@ public:
 
   /** Set the min and max (inclusive) pixel value that will be placed in the
     histogram */
-  void SetPixelValueMinMax(PixelType min, PixelType max);
+  void
+  SetPixelValueMinMax(PixelType min, PixelType max);
 
   itkGetConstMacro(Min, PixelType);
   itkGetConstMacro(Max, PixelType);
@@ -153,17 +156,22 @@ public:
 
   /** Method to set/get the image */
   using Superclass::SetInput;
-  void SetInput(const ImageType *image);
+  void
+  SetInput(const ImageType * image);
 
-  const ImageType * GetInput() const;
+  const ImageType *
+  GetInput() const;
 
   /** Method to set/get the mask image */
-  void SetMaskImage(const ImageType *image);
+  void
+  SetMaskImage(const ImageType * image);
 
-  const ImageType * GetMaskImage() const;
+  const ImageType *
+  GetMaskImage() const;
 
   /** method to get the Histogram */
-  const HistogramType * GetOutput() const;
+  const HistogramType *
+  GetOutput() const;
 
   /** Set the pixel value of the mask that should be considered "inside" the
     object. Defaults to one. */
@@ -172,27 +180,31 @@ public:
 
 protected:
   ScalarImageToCooccurrenceMatrixFilter();
-  virtual ~ScalarImageToCooccurrenceMatrixFilter() ITK_OVERRIDE {}
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~ScalarImageToCooccurrenceMatrixFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  virtual void FillHistogram(RadiusType radius, RegionType region);
+  virtual void
+  FillHistogram(RadiusType radius, RegionType region);
 
-  virtual void FillHistogramWithMask(RadiusType radius, RegionType region, const ImageType *maskImage);
+  virtual void
+  FillHistogramWithMask(RadiusType radius, RegionType region, const ImageType * maskImage);
 
   /** Standard itk::ProcessObject subclass method. */
-  typedef DataObject::Pointer DataObjectPointer;
+  using DataObjectPointer = DataObject::Pointer;
 
-  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  DataObjectPointer
+  MakeOutput(DataObjectPointerArraySizeType idx) override;
 
   /** This method causes the filter to generate its output. */
-  virtual void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarImageToCooccurrenceMatrixFilter);
-
-  void NormalizeHistogram();
+  void
+  NormalizeHistogram();
 
   OffsetVectorConstPointer m_Offsets;
   PixelType                m_Min;
@@ -209,7 +221,7 @@ private:
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkScalarImageToCooccurrenceMatrixFilter.hxx"
+#  include "itkScalarImageToCooccurrenceMatrixFilter.hxx"
 #endif
 
 #endif

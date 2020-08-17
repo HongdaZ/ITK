@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,20 +24,11 @@
 namespace itk
 {
 // ----------------------------------------------------------------------------
-template< typename TInput, unsigned int VDimension, typename TOutput >
-LevelSetImage< TInput, VDimension, TOutput >
-::LevelSetImage()
+template <typename TInput, unsigned int VDimension, typename TOutput>
+LevelSetImage<TInput, VDimension, TOutput>::LevelSetImage()
 {
-  this->m_NeighborhoodScales.Fill( NumericTraits< OutputRealType >::OneValue() );
-  this->m_DomainOffset.Fill( NumericTraits< OffsetValueType >::ZeroValue() );
+  this->m_NeighborhoodScales.Fill(NumericTraits<OutputRealType>::OneValue());
+  this->m_DomainOffset.Fill(NumericTraits<OffsetValueType>::ZeroValue());
 }
-
-// ----------------------------------------------------------------------------
-template< typename TInput, unsigned int VDimension, typename TOutput >
-LevelSetImage< TInput, VDimension, TOutput >
-::~LevelSetImage()
-{
-}
-
-}
+} // namespace itk
 #endif // itkLevelSetImage_hxx

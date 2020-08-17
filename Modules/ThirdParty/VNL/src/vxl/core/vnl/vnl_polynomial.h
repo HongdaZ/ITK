@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_polynomial.h
 #ifndef vnl_polynomial_h_
 #define vnl_polynomial_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Evaluation of univariate polynomials
@@ -32,10 +29,14 @@
 //   20 Aug 2011 - Peter Vanroose - internal repr change: coeff vector reversed
 // \endverbatim
 
+#include <utility>
+
 #include <vector>
 #include <iosfwd>
-#include <vcl_compiler.h>
-#include <vcl_cassert.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include <cassert>
 #include "vnl/vnl_export.h"
 
 //: Evaluation of polynomials.
@@ -51,7 +52,7 @@
 //  the constant term. Hence coeffs_[n] is the coefficient of $X^n$,
 
 template <class T>
-class VNL_TEMPLATE_EXPORT vnl_polynomial
+class VNL_EXPORT vnl_polynomial
 {
  public:
   //: Initialize the polynomial from its coefficients, lowest order first.
@@ -60,7 +61,9 @@ class VNL_TEMPLATE_EXPORT vnl_polynomial
   // as opposed to the C array constructor!
   // An assertion makes sure that the input vector is in normalised form, i.e.,
   // that it is either empty or that the highest order coefficient is nonzero.
-  vnl_polynomial(std::vector<T> const& a): coeffs_(a) { assert(a.begin()==a.end() || a.back() != T(0)); }
+   vnl_polynomial(std::vector<T> a) : coeffs_(std::move(a)) {
+     assert(a.begin() == a.end() || a.back() != T(0));
+   }
 
   //: Initialize polynomial from C array, highest order first.
   // The parameter \p len is the number of coefficients passed in,
@@ -165,7 +168,7 @@ class VNL_TEMPLATE_EXPORT vnl_polynomial
   std::vector<T> coeffs_;
 };
 
-template <class T> VNL_TEMPLATE_EXPORT
+template <class T>
 std::ostream& operator<<(std::ostream& os, vnl_polynomial<T> const& p) { p.print(os); return os; }
 
 #define VNL_POLYNOMIAL_INSTANTIATE(T) extern "please #include vnl/vnl_polynomial.hxx instead"

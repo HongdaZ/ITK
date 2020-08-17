@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,21 +26,20 @@
 
 namespace itk
 {
-template< typename TImageType, typename TFeatureImageType >
-void VectorThresholdSegmentationLevelSetFunction< TImageType, TFeatureImageType >
-::CalculateSpeedImage()
+template <typename TImageType, typename TFeatureImageType>
+void
+VectorThresholdSegmentationLevelSetFunction<TImageType, TFeatureImageType>::CalculateSpeedImage()
 {
-  ImageRegionConstIterator< FeatureImageType >
-  fit( this->GetFeatureImage(), this->GetFeatureImage()->GetRequestedRegion() );
-  ImageRegionIterator< ImageType >
-  sit( this->GetSpeedImage(), this->GetFeatureImage()->GetRequestedRegion() );
+  ImageRegionConstIterator<FeatureImageType> fit(this->GetFeatureImage(),
+                                                 this->GetFeatureImage()->GetRequestedRegion());
+  ImageRegionIterator<ImageType>             sit(this->GetSpeedImage(), this->GetFeatureImage()->GetRequestedRegion());
 
   ScalarValueType threshold;
-  for ( fit.GoToBegin(), sit.GoToBegin(); !fit.IsAtEnd(); ++sit, ++fit )
-    {
-    threshold = m_Threshold - std::sqrt( m_Mahalanobis->Evaluate( fit.Get() ) );
-    sit.Set( static_cast< ScalarValueType >( threshold ) );
-    }
+  for (fit.GoToBegin(), sit.GoToBegin(); !fit.IsAtEnd(); ++sit, ++fit)
+  {
+    threshold = m_Threshold - std::sqrt(m_Mahalanobis->Evaluate(fit.Get()));
+    sit.Set(static_cast<ScalarValueType>(threshold));
+  }
 }
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
 
 namespace itk
 {
-/** \class HistogramToEntropyImageFilter
+/**
+ *\class HistogramToEntropyImageFilter
  * \brief The class takes a histogram as an input and gives the entropy
  * image as the output. A pixel, at position I,  in the output image is given by
  *
@@ -51,70 +52,72 @@ namespace itk
 
 namespace Function
 {
-template< typename TInput, typename TOutput = double >
+template <typename TInput, typename TOutput = double>
 class HistogramEntropyFunction
 {
 public:
-
-  //Probability function = Number of occurrences in each bin /
+  // Probability function = Number of occurrences in each bin /
   //   Total Number of occurrences.
   //
   // Returns pixels of float..
-  typedef  TOutput OutputPixelType;
+  using OutputPixelType = TOutput;
 
-  HistogramEntropyFunction():
-    m_TotalFrequency(1) {}
+  HistogramEntropyFunction() = default;
 
-  ~HistogramEntropyFunction() {}
+  ~HistogramEntropyFunction() = default;
 
-  inline OutputPixelType operator()(const TInput & A) const
+  inline OutputPixelType
+  operator()(const TInput & A) const
   {
-    if ( A )
-      {
-      const double p = static_cast< OutputPixelType >( A )
-                       / static_cast< OutputPixelType >( m_TotalFrequency );
-      return static_cast< OutputPixelType >( ( -1 ) * p * std::log(p) / std::log(2.0) );
-      }
+    if (A)
+    {
+      const double p = static_cast<OutputPixelType>(A) / static_cast<OutputPixelType>(m_TotalFrequency);
+      return static_cast<OutputPixelType>((-1) * p * std::log(p) / std::log(2.0));
+    }
     else
-      {
-      const double p = static_cast< OutputPixelType >( A + 1 )
-                       / static_cast< OutputPixelType >( m_TotalFrequency );
-      return static_cast< OutputPixelType >( ( -1 ) * p * std::log(p) / std::log(2.0) );
-      }
+    {
+      const double p = static_cast<OutputPixelType>(A + 1) / static_cast<OutputPixelType>(m_TotalFrequency);
+      return static_cast<OutputPixelType>((-1) * p * std::log(p) / std::log(2.0));
+    }
   }
 
-  void SetTotalFrequency(const SizeValueType n)
+  void
+  SetTotalFrequency(const SizeValueType n)
   {
     m_TotalFrequency = n;
   }
 
-  SizeValueType GetTotalFrequency() const
+  SizeValueType
+  GetTotalFrequency() const
   {
     return m_TotalFrequency;
   }
 
 private:
-  SizeValueType m_TotalFrequency;
+  SizeValueType m_TotalFrequency{ 1 };
 };
-}
+} // namespace Function
 
-template< typename THistogram, typename TImage=Image< double, 3> >
-class HistogramToEntropyImageFilter:
-  public HistogramToImageFilter< THistogram, TImage,
-                                 Function::HistogramEntropyFunction< SizeValueType, typename TImage::PixelType > >
+template <typename THistogram, typename TImage = Image<double, 3>>
+class HistogramToEntropyImageFilter
+  : public HistogramToImageFilter<THistogram,
+                                  TImage,
+                                  Function::HistogramEntropyFunction<SizeValueType, typename TImage::PixelType>>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToEntropyImageFilter);
 
-  /** Standard class typedefs. */
-  typedef HistogramToEntropyImageFilter Self;
+  /** Standard class type aliases. */
+  using Self = HistogramToEntropyImageFilter;
 
-  /** Standard "Superclass" typedef. */
-  typedef HistogramToImageFilter< THistogram, TImage,
-                                 Function::HistogramEntropyFunction< SizeValueType, typename TImage::PixelType > >
-  Superclass;
+  /** Standard "Superclass" type alias. */
+  using Superclass =
+    HistogramToImageFilter<THistogram,
+                           TImage,
+                           Function::HistogramEntropyFunction<SizeValueType, typename TImage::PixelType>>;
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(HistogramToEntropyImageFilter, HistogramToImageFilter);
@@ -123,11 +126,8 @@ public:
   itkNewMacro(Self);
 
 protected:
-  HistogramToEntropyImageFilter() {}
-  virtual ~HistogramToEntropyImageFilter() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToEntropyImageFilter);
+  HistogramToEntropyImageFilter() = default;
+  ~HistogramToEntropyImageFilter() override = default;
 };
 } // end namespace itk
 

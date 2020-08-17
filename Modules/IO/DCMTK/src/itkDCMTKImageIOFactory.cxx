@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,18 +23,14 @@ namespace itk
 {
 DCMTKImageIOFactory::DCMTKImageIOFactory()
 {
-  this->RegisterOverride( "itkImageIOBase",
-                          "itkDCMTKImageIO",
-                          "DICOM Image IO",
-                          1,
-                          CreateObjectFunction< DCMTKImageIO >::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "itkDCMTKImageIO", "DICOM Image IO", true, CreateObjectFunction<DCMTKImageIO>::New());
 }
 
-DCMTKImageIOFactory::~DCMTKImageIOFactory()
-{}
+DCMTKImageIOFactory::~DCMTKImageIOFactory() = default;
 
 const char *
-DCMTKImageIOFactory::GetITKSourceVersion(void) const
+DCMTKImageIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -50,13 +46,14 @@ DCMTKImageIOFactory::GetDescription() const
 
 static bool DCMTKImageIOFactoryHasBeenRegistered;
 
-void ITKIODCMTK_EXPORT DCMTKImageIOFactoryRegister__Private(void)
+void ITKIODCMTK_EXPORT
+     DCMTKImageIOFactoryRegister__Private()
 {
-  if( ! DCMTKImageIOFactoryHasBeenRegistered )
-    {
+  if (!DCMTKImageIOFactoryHasBeenRegistered)
+  {
     DCMTKImageIOFactoryHasBeenRegistered = true;
     DCMTKImageIOFactory::RegisterOneFactory();
-    }
+  }
 }
 
 } // end namespace itk

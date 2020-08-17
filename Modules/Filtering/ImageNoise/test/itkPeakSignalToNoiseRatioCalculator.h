@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 namespace itk
 {
 
-/** \class PeakSignalToNoiseRatioCalculator
+/**
+ *\class PeakSignalToNoiseRatioCalculator
  * \brief Compute the PSNR of a noisy image
  *
  * \todo This class needs to be refactored and made into a proper
@@ -32,15 +33,17 @@ namespace itk
  *
  * \ingroup ITKImageNoise
  */
-template < class TInputImage >
+template <class TInputImage>
 class ITK_TEMPLATE_EXPORT PeakSignalToNoiseRatioCalculator : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef PeakSignalToNoiseRatioCalculator Self;
-  typedef Object                           Superclass;
-  typedef SmartPointer<Self>               Pointer;
-  typedef SmartPointer<const Self>         ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PeakSignalToNoiseRatioCalculator);
+
+  /** Standard class type aliases. */
+  using Self = PeakSignalToNoiseRatioCalculator;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -49,64 +52,66 @@ public:
   itkTypeMacro(PeakSignalToNoiseRatioCalculator, Object);
 
   /** Extract the dimension of the image. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Standard image type within this class. */
-  typedef TInputImage InputImageType;
+  using InputImageType = TInputImage;
 
   /** Standard image type pointer within this class. */
-  typedef typename InputImageType::Pointer      InputImagePointer;
-  typedef typename InputImageType::ConstPointer InputImageConstPointer;
-  typedef typename InputImageType::PixelType    InputPixelType;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  using InputPixelType = typename InputImageType::PixelType;
 
   /** Set the input image. */
-  virtual void SetImage( const InputImageType * image )
+  virtual void
+  SetImage(const InputImageType * image)
   {
-    if ( m_Image != image )
-      {
+    if (m_Image != image)
+    {
       m_Image = image;
       this->Modified();
       m_Valid = false;
-      }
+    }
   }
 
-  virtual void SetNoisyImage( const InputImageType * image )
+  virtual void
+  SetNoisyImage(const InputImageType * image)
   {
-    if ( m_NoisyImage != image )
-      {
+    if (m_NoisyImage != image)
+    {
       m_NoisyImage = image;
       this->Modified();
       m_Valid = false;
-      }
+    }
   }
 
-  void Compute();
+  void
+  Compute();
 
-  const double & GetOutput() const;
+  const double &
+  GetOutput() const;
 
 protected:
   PeakSignalToNoiseRatioCalculator();
-  virtual ~PeakSignalToNoiseRatioCalculator() ITK_OVERRIDE {}
+  ~PeakSignalToNoiseRatioCalculator() override = default;
 
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PeakSignalToNoiseRatioCalculator);
-
-  bool   m_Valid;                              // Have moments been computed
-                                               // yet?
+  bool m_Valid; // Have moments been computed
+                // yet?
   double m_Output;
 
   InputImageConstPointer m_Image;
   InputImageConstPointer m_NoisyImage;
 
-};  // class PeakSignalToNoiseRatioCalculator
+}; // class PeakSignalToNoiseRatioCalculator
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkPeakSignalToNoiseRatioCalculator.hxx"
+#  include "itkPeakSignalToNoiseRatioCalculator.hxx"
 #endif
 
 #endif /* itkPeakSignalToNoiseRatioCalculator_h */

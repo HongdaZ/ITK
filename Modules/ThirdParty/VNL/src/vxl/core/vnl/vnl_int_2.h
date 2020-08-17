@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_int_2.h
 #ifndef vnl_int_2_h_
 #define vnl_int_2_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Contains class vnl_int_2
@@ -15,7 +12,7 @@
 //   Peter Vanroose, 21 Oct 1999: vnl_vector_fixed<int,2> already instantiated
 // \endverbatim
 
-#include <vnl/vnl_T_n.h>
+#include "vnl_T_n.h"
 
 //: class vnl_int_2 : a vnl_vector of 2 ints.
 vnl_T_n_impl(int,2);

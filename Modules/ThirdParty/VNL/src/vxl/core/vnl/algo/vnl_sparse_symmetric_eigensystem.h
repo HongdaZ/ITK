@@ -1,9 +1,6 @@
 // This is core/vnl/algo/vnl_sparse_symmetric_eigensystem.h
 #ifndef vnl_sparse_symmetric_eigensystem_h_
 #define vnl_sparse_symmetric_eigensystem_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Find the eigenvalues of a sparse symmetric matrix
@@ -19,7 +16,9 @@
 
 #include <vector>
 #include <vnl/vnl_sparse_matrix.h>
-#include <vcl_compiler.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 #include <vnl/algo/vnl_algo_export.h>
 
 //: Find the eigenvalues of a sparse symmetric matrix
@@ -70,16 +69,16 @@ class VNL_ALGO_EXPORT vnl_sparse_symmetric_eigensystem
   int RestoreVectors(int n, int m, double* q, int base);
 
  protected:
-  int nvalues;  // this is the size of the next two arrays.
-  vnl_vector<double> * vectors; // eigenvectors
-  double * values;              // eigenvalues
+   int nvalues{0}; // this is the size of the next two arrays.
+   vnl_vector<double> *vectors{nullptr}; // eigenvectors
+   double *values{nullptr};              // eigenvalues
 
-  // Matrix A of A*x = lambda*x (or lambda*B*x)
-  vnl_sparse_matrix<double> * mat;
-  // Matrix B of A*x = lambda*B*x
-  vnl_sparse_matrix<double> * Bmat;
+   // Matrix A of A*x = lambda*x (or lambda*B*x)
+   vnl_sparse_matrix<double> *mat;
+   // Matrix B of A*x = lambda*B*x
+   vnl_sparse_matrix<double> *Bmat;
 
-  std::vector<double*> temp_store;
+   std::vector<double *> temp_store;
 };
 
 #endif // vnl_sparse_symmetric_eigensystem_h_

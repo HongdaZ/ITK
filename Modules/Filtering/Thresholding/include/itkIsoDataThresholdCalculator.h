@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 namespace itk
 {
 
-/** \class IsoDataThresholdCalculator
+/**
+ *\class IsoDataThresholdCalculator
  * \brief Computes the IsoData threshold for an image. Aka intermeans
  *
  * Iterative procedure based on the isodata algorithm [T.W. Ridler, S. Calvard, Picture
@@ -50,15 +51,17 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKThresholding
  */
-template <typename THistogram, typename TOutput=double>
+template <typename THistogram, typename TOutput = double>
 class ITK_TEMPLATE_EXPORT IsoDataThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  /** Standard class typedefs. */
-  typedef IsoDataThresholdCalculator                        Self;
-  typedef HistogramThresholdCalculator<THistogram, TOutput> Superclass;
-  typedef SmartPointer<Self>                                Pointer;
-  typedef SmartPointer<const Self>                          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(IsoDataThresholdCalculator);
+
+  /** Standard class type aliases. */
+  using Self = IsoDataThresholdCalculator;
+  using Superclass = HistogramThresholdCalculator<THistogram, TOutput>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,27 +70,24 @@ public:
   itkTypeMacro(IsoDataThresholdCalculator, HistogramThresholdCalculator);
 
   /** Type definition for the input image. */
-  typedef THistogram  HistogramType;
-  typedef TOutput     OutputType;
+  using HistogramType = THistogram;
+  using OutputType = TOutput;
 
 protected:
-  IsoDataThresholdCalculator() {}
-  virtual ~IsoDataThresholdCalculator() ITK_OVERRIDE {}
-  void GenerateData(void) ITK_OVERRIDE;
+  IsoDataThresholdCalculator() = default;
+  ~IsoDataThresholdCalculator() override = default;
+  void
+  GenerateData() override;
 
-  typedef typename HistogramType::SizeValueType               SizeValueType;
-  typedef typename HistogramType::InstanceIdentifier          InstanceIdentifier;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IsoDataThresholdCalculator);
-
+  using SizeValueType = typename HistogramType::SizeValueType;
+  using InstanceIdentifier = typename HistogramType::InstanceIdentifier;
 };
 
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkIsoDataThresholdCalculator.hxx"
+#  include "itkIsoDataThresholdCalculator.hxx"
 #endif
 
 #endif

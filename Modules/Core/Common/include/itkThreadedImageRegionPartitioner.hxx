@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,30 +24,22 @@ namespace itk
 {
 
 template <unsigned int VDimension>
-ThreadedImageRegionPartitioner<VDimension>
-::ThreadedImageRegionPartitioner()
+ThreadedImageRegionPartitioner<VDimension>::ThreadedImageRegionPartitioner()
 {
   this->m_ImageRegionSplitter = ImageRegionSplitterType::New();
 }
 
 template <unsigned int VDimension>
-ThreadedImageRegionPartitioner<VDimension>
-::~ThreadedImageRegionPartitioner()
-{
-}
-
-template <unsigned int VDimension>
 ThreadIdType
-ThreadedImageRegionPartitioner<VDimension>
-::PartitionDomain( const ThreadIdType threadId,
-                        const ThreadIdType requestedTotal,
-                        const DomainType &completeRegion,
-                        DomainType& subRegion) const
+ThreadedImageRegionPartitioner<VDimension>::PartitionDomain(const ThreadIdType threadId,
+                                                            const ThreadIdType requestedTotal,
+                                                            const DomainType & completeRegion,
+                                                            DomainType &       subRegion) const
 {
   subRegion = completeRegion;
-  const unsigned int maxNumberOfSplits = m_ImageRegionSplitter->GetSplit( threadId, requestedTotal, subRegion );
+  const unsigned int maxNumberOfSplits = m_ImageRegionSplitter->GetSplit(threadId, requestedTotal, subRegion);
 
-  return static_cast<ThreadIdType>( maxNumberOfSplits );
+  return static_cast<ThreadIdType>(maxNumberOfSplits);
 }
 
 } // end namespace itk

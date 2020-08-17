@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,16 +29,17 @@ namespace itk
  *
  * \ingroup ITKFEM
  */
-template< unsigned int NDimensions = 3,
+template <unsigned int NDimensions = 3,
           typename PixelType = unsigned char,
-          typename TMeshTraits = DefaultStaticMeshTraits< PixelType, NDimensions, NDimensions >
-          >
-class FEMSpatialObjectWriter : public SpatialObjectWriter<NDimensions,PixelType,TMeshTraits>
+          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, NDimensions, NDimensions>>
+class FEMSpatialObjectWriter : public SpatialObjectWriter<NDimensions, PixelType, TMeshTraits>
 {
 public:
-  typedef FEMSpatialObjectWriter                                 Self;
-  typedef SpatialObjectWriter<NDimensions,PixelType,TMeshTraits> Superclass;
-  typedef SmartPointer< Self >                                   Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FEMSpatialObjectWriter);
+
+  using Self = FEMSpatialObjectWriter;
+  using Superclass = SpatialObjectWriter<NDimensions, PixelType, TMeshTraits>;
+  using Pointer = SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Superclass, Self);
@@ -47,25 +48,18 @@ public:
   itkNewMacro(Self);
 
 protected:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FEMSpatialObjectWriter);
-
   std::string m_FileName;
 
   FEMSpatialObjectWriter();
-  virtual ~FEMSpatialObjectWriter() ITK_OVERRIDE {}
-
+  ~FEMSpatialObjectWriter() override = default;
 };
 
-template< unsigned int NDimensions,
-          typename PixelType,
-          typename TMeshTraits >
-FEMSpatialObjectWriter< NDimensions, PixelType, TMeshTraits >
-::FEMSpatialObjectWriter()
+template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
+FEMSpatialObjectWriter<NDimensions, PixelType, TMeshTraits>::FEMSpatialObjectWriter()
 {
-  this->RegisterMetaConverter("FEMObject","FEMObjectSpatialObject",
-                              MetaFEMObjectConverter<NDimensions>::New());
+  this->RegisterMetaConverter("FEMObject", "FEMObjectSpatialObject", MetaFEMObjectConverter<NDimensions>::New());
 }
 
-}
+} // namespace itk
 
 #endif // itkFEMSpatialObjectWriter_h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@
 
 namespace itk
 {
-/** \class SegmentationRegion
+/**
+ *\class SegmentationRegion
  * \brief Base class for SegmentationRegion object
  *
  * itkSegmentationRegion is the base class for the SegmentationRegion
- * objects. It provides the basic function definitons that are inherent to a
+ * objects. It provides the basic function definitions that are inherent to a
  * SegmentationRegion objects.  A region object is defined by the label it
  * owns.  We use integer labels to represent a region.
  * This object stores the region label.  The user can get the
@@ -44,14 +45,16 @@ namespace itk
  * \ingroup RegionGrowingSegmentation
  * \ingroup ITKKLMRegionGrowing
  */
-class ITKKLMRegionGrowing_EXPORT SegmentationRegion:public Object
+class ITKKLMRegionGrowing_EXPORT SegmentationRegion : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef SegmentationRegion         Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SegmentationRegion);
+
+  /** Standard class type aliases. */
+  using Self = SegmentationRegion;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -60,12 +63,14 @@ public:
   itkTypeMacro(SegmentationRegion, Object);
 
   /** Type definition for a segmentation region label. */
-  typedef unsigned int RegionLabelType;
+  using RegionLabelType = unsigned int;
 
   /** Define a virtual SegmentationRegion function that is meant to be
    * used in derived classes if some operation needs to be
    * performed on a region object. */
-  virtual void ApplySegmentationRegion(){}
+  virtual void
+  ApplySegmentationRegion()
+  {}
 
   /** Set/Get the region with parameter values
    * defining the region. */
@@ -78,14 +83,13 @@ public:
 
 protected:
   SegmentationRegion();
-  ~SegmentationRegion() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~SegmentationRegion() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SegmentationRegion);
-
-  RegionLabelType m_RegionLabel;
-  double          m_RegionArea;
+  RegionLabelType m_RegionLabel{ 0 };
+  double          m_RegionArea{ 0 };
 };
 } // end namespace itk
 

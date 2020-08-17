@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 
 namespace itk
 {
-/** \class FileListVideoIOFactory
+/**
+ *\class FileListVideoIOFactory
  * \brief Create instances of FileListVideoIO objects using an object factory.
  *
  * \ingroup ITKVideoIO
@@ -32,16 +33,20 @@ namespace itk
 class ITKVideoIO_EXPORT FileListVideoIOFactory : public ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef FileListVideoIOFactory     Self;
-  typedef ObjectFactoryBase          Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FileListVideoIOFactory);
+
+  /** Standard class type aliases. */
+  using Self = FileListVideoIOFactory;
+  using Superclass = ObjectFactoryBase;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
+  const char *
+  GetITKSourceVersion() const override;
 
-  virtual const char * GetDescription(void) const ITK_OVERRIDE;
+  const char *
+  GetDescription() const override;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -50,7 +55,8 @@ public:
   itkTypeMacro(FileListVideoIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void)
+  static void
+  RegisterOneFactory()
   {
     FileListVideoIOFactory::Pointer FileListFactory = FileListVideoIOFactory::New();
 
@@ -59,11 +65,7 @@ public:
 
 protected:
   FileListVideoIOFactory();
-  ~FileListVideoIOFactory() ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FileListVideoIOFactory);
-
+  ~FileListVideoIOFactory() override;
 };
 } // end namespace itk
 

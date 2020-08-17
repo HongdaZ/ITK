@@ -6,6 +6,7 @@ include(${_ITKModuleMacros_DIR}/ITKModuleAPI.cmake)
 include(${_ITKModuleMacros_DIR}/ITKModuleDoxygen.cmake)
 include(${_ITKModuleMacros_DIR}/ITKModuleHeaderTest.cmake)
 include(${_ITKModuleMacros_DIR}/ITKModuleKWStyleTest.cmake)
+include(${_ITKModuleMacros_DIR}/ITKModuleClangFormat.cmake)
 include(${_ITKModuleMacros_DIR}/CppcheckTargets.cmake)
 include(${_ITKModuleMacros_DIR}/ITKModuleCPPCheckTest.cmake)
 
@@ -331,11 +332,13 @@ macro(itk_module_test)
 endmacro()
 
 macro(itk_module_examples)
-  set(_build_examples_default OFF)
-  if(BUILD_EXAMPLES OR ITK_BUILD_EXAMPLES)
-    set(_build_examples_default ON)
-  endif()
-  set(Module_${itk-module}_BUILD_EXAMPLES ${_build_examples_default} CACHE BOOL "Build the examples for Module_${itk-module}")
+  #Some modules have examples, and those should be hidden if the module is disabled, or examples are not requested
+  cmake_dependent_option(Module_${itk-module}_BUILD_EXAMPLES
+    "Build the examples for Module_${itk-module}"
+    ON
+    "BUILD_EXAMPLES OR ITK_BUILD_EXAMPLES;Module_${itk-module}"
+    OFF
+  )
   if(Module_${itk-module}_BUILD_EXAMPLES)
     if(ITK_SOURCE_DIR)
       # If configuration is done from within ITK,
@@ -387,8 +390,10 @@ macro(itk_module_target_label _target_name)
 endmacro()
 
 macro(itk_module_target_name _name)
-  set_property(TARGET ${_name} PROPERTY VERSION 1)
-  set_property(TARGET ${_name} PROPERTY SOVERSION 1)
+  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+    set_property(TARGET ${_name} PROPERTY VERSION 1)
+    set_property(TARGET ${_name} PROPERTY SOVERSION 1)
+  endif()
   if("${_name}" MATCHES "^[Ii][Tt][Kk]")
     set(_itk "")
   else()
@@ -464,6 +469,16 @@ macro(itk_module_add_library _name)
     set(_LIBRARY_BUILD_TYPE)
   endif()
   add_library(${_name} ${_LIBRARY_BUILD_TYPE} ${ARGN})
+  target_compile_features(${_name} PUBLIC cxx_nullptr
+                                          cxx_override
+                                          cxx_constexpr
+                                          cxx_range_for
+                                          cxx_rvalue_references
+                                          cxx_static_assert
+                                          cxx_strong_enums
+                                          cxx_lambdas
+                                          cxx_noexcept
+                                          cxx_alias_templates )
   itk_module_link_dependencies()
   itk_module_target(${_name})
 endmacro()

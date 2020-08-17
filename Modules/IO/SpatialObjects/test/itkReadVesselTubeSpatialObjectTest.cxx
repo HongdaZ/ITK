@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,44 +17,43 @@
  *=========================================================================*/
 
 #include "itkSpatialObjectReader.h"
+#include "itkTestingMacros.h"
 
-int itkReadVesselTubeSpatialObjectTest( int argc, char * argv[] )
+int
+itkReadVesselTubeSpatialObjectTest(int argc, char * argv[])
 {
-  if( argc < 2 )
-    {
-    std::cerr << "Usage: "
-              << argv[0]
-              << " <inputVessel.tre>"
-              << std::endl;
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " <inputVessel.tre>" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   const char * inputVessel = argv[1];
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::SpatialObjectReader< Dimension > ReaderType;
+  using ReaderType = itk::SpatialObjectReader<Dimension>;
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( inputVessel );
+  reader->SetFileName(inputVessel);
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch( itk::ExceptionObject & error )
-    {
+  }
+  catch (const itk::ExceptionObject & error)
+  {
     std::cerr << "Exception caught: " << error << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  ReaderType::GroupPointer group = reader->GetGroup();
-  const unsigned int numberOfChildren = group->GetNumberOfChildren();
+  ReaderType::SpatialObjectPointer soScene = reader->GetOutput();
+  const unsigned int               numberOfChildren = soScene->GetNumberOfChildren(2);
   std::cout << "Number of children: " << numberOfChildren << std::endl;
-  if( numberOfChildren != 1 )
-    {
+  if (numberOfChildren != 2)
+  {
     std::cerr << "Unexpected number of children." << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,15 +23,13 @@
 namespace itk
 {
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ParametricImageSource< TOutputImage >
-::PrintSelf(std::ostream& os, Indent indent) const
+ParametricImageSource<TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "NumberOfParameters: " << this->GetNumberOfParameters()
-     << std::endl;
+  os << indent << "NumberOfParameters: " << this->GetNumberOfParameters() << std::endl;
 }
 } // end namespace itk
 

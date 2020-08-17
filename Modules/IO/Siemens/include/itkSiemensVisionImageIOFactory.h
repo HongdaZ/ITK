@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,23 +25,28 @@
 
 namespace itk
 {
-/** \class SiemensVisionImageIOFactory
-   * \brief Create instances of SiemensVisionImageIO objects using an object factory.
-   * \ingroup ITKIOSiemens
-   */
-class ITKIOSiemens_EXPORT SiemensVisionImageIOFactory:public ObjectFactoryBase
+/**
+ *\class SiemensVisionImageIOFactory
+ * \brief Create instances of SiemensVisionImageIO objects using an object factory.
+ * \ingroup ITKIOSiemens
+ */
+class ITKIOSiemens_EXPORT SiemensVisionImageIOFactory : public ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef SiemensVisionImageIOFactory Self;
-  typedef ObjectFactoryBase           Superclass;
-  typedef SmartPointer< Self >        Pointer;
-  typedef SmartPointer< const Self >  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SiemensVisionImageIOFactory);
+
+  /** Standard class type aliases. */
+  using Self = SiemensVisionImageIOFactory;
+  using Superclass = ObjectFactoryBase;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
+  const char *
+  GetITKSourceVersion() const override;
 
-  virtual const char * GetDescription(void) const ITK_OVERRIDE;
+  const char *
+  GetDescription() const override;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -50,7 +55,8 @@ public:
   itkTypeMacro(SiemensVisionImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void)
+  static void
+  RegisterOneFactory()
   {
     SiemensVisionImageIOFactory::Pointer metaFactory = SiemensVisionImageIOFactory::New();
 
@@ -59,11 +65,9 @@ public:
 
 protected:
   SiemensVisionImageIOFactory();
-  ~SiemensVisionImageIOFactory() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SiemensVisionImageIOFactory);
+  ~SiemensVisionImageIOFactory() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 };
 } // end namespace itk
 

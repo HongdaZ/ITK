@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright NumFOCUS
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
   try
     {
     std::ofstream redirectStream;
-    std::streambuf *redirectBuf, *oldCoutBuf = ITK_NULLPTR;
+    std::streambuf *redirectBuf, *oldCoutBuf = nullptr;
+    RedirectOutputParameters& redirectOutputParameters = GetRedirectOutputParameters();
     if (redirectOutputParameters.redirect)
       {
       std::cout << "Test output has been redirected to: " << redirectOutputParameters.fileName << std::endl;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ namespace fem
 class ITKFEM_EXPORT LoadBC : public Load
 {
 public:
-  /** Standard class typedefs. */
-  typedef LoadBC                   Self;
-  typedef Load                     Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  /** Standard class type aliases. */
+  using Self = LoadBC;
+  using Superclass = Load;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
@@ -49,32 +49,38 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
+  ::itk::LightObject::Pointer
+  CreateAnother() const override;
 
   /** Default constructor */
-  LoadBC() : m_DegreeOfFreedom(0), m_Value()
-  {
-  }
+  LoadBC()
+    : m_Value()
+  {}
 
   /** Set the number of degrees of freedom*/
-  void SetDegreeOfFreedom(int dof);
+  void
+  SetDegreeOfFreedom(int dof);
 
   /** Get the number of degrees of freedom*/
-  int GetDegreeOfFreedom() const;
+  int
+  GetDegreeOfFreedom() const;
 
   /** Set the boundary condition using vector representation*/
-  void SetValue(const vnl_vector<Element::Float> val);
+  void
+  SetValue(const vnl_vector<Element::Float> val);
 
   /** Get the boundary condition as vector representation*/
-  vnl_vector<Element::Float> GetValue() const;
+  vnl_vector<Element::Float>
+  GetValue() const;
 
 protected:
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /**
    * Local DOF number within the Element object.
    */
-  unsigned int m_DegreeOfFreedom;
+  unsigned int m_DegreeOfFreedom{ 0 };
 
   /**
    * Value which the DOF is being fixed.
@@ -86,8 +92,7 @@ protected:
    */
   vnl_vector<Element::Float> m_Value;
 };
+} // end namespace fem
+} // end namespace itk
 
-}
-}  // end namespace itk::fem
-
-#endif // #ifndef itkFEMLoadBC_h
+#endif // itkFEMLoadBC_h

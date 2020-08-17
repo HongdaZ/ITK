@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,36 +35,34 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TOutputImage, typename TKernel >
-BinaryMorphologicalOpeningImageFilter< TInputImage, TOutputImage, TKernel >
-::BinaryMorphologicalOpeningImageFilter()
+template <typename TInputImage, typename TOutputImage, typename TKernel>
+BinaryMorphologicalOpeningImageFilter<TInputImage, TOutputImage, TKernel>::BinaryMorphologicalOpeningImageFilter()
 {
-  m_ForegroundValue = NumericTraits< PixelType >::max();
-  m_BackgroundValue = NumericTraits< PixelType >::ZeroValue();
+  m_ForegroundValue = NumericTraits<PixelType>::max();
+  m_BackgroundValue = NumericTraits<PixelType>::ZeroValue();
 }
 
-template< typename TInputImage, typename TOutputImage, typename TKernel >
+template <typename TInputImage, typename TOutputImage, typename TKernel>
 void
-BinaryMorphologicalOpeningImageFilter< TInputImage, TOutputImage, TKernel >
-::GenerateData()
+BinaryMorphologicalOpeningImageFilter<TInputImage, TOutputImage, TKernel>::GenerateData()
 {
   // Allocate the outputs
   this->AllocateOutputs();
 
   /** set up erosion and dilation methods */
-  typename BinaryDilateImageFilter< TInputImage, TOutputImage, TKernel >::Pointer
-  dilate = BinaryDilateImageFilter< TInputImage, TOutputImage, TKernel >::New();
+  typename BinaryDilateImageFilter<TInputImage, TOutputImage, TKernel>::Pointer dilate =
+    BinaryDilateImageFilter<TInputImage, TOutputImage, TKernel>::New();
 
-  typename BinaryErodeImageFilter< TInputImage, TInputImage, TKernel >::Pointer
-  erode = BinaryErodeImageFilter< TInputImage, TInputImage, TKernel >::New();
+  typename BinaryErodeImageFilter<TInputImage, TInputImage, TKernel>::Pointer erode =
+    BinaryErodeImageFilter<TInputImage, TInputImage, TKernel>::New();
 
-  dilate->SetKernel( this->GetKernel() );
+  dilate->SetKernel(this->GetKernel());
   dilate->ReleaseDataFlagOn();
-  erode->SetKernel( this->GetKernel() );
+  erode->SetKernel(this->GetKernel());
   erode->ReleaseDataFlagOn();
-  dilate->SetDilateValue(m_ForegroundValue);
-  erode->SetErodeValue(m_ForegroundValue);
-  erode->SetBackgroundValue(m_BackgroundValue);
+  dilate->SetForegroundValue(m_ForegroundValue); // Intensity value to dilate
+  erode->SetForegroundValue(m_ForegroundValue);  // Intensity value to erode
+  erode->SetBackgroundValue(m_BackgroundValue);  // Replacement value for eroded voxels
 
   /** set up the minipipeline */
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
@@ -72,28 +70,28 @@ BinaryMorphologicalOpeningImageFilter< TInputImage, TOutputImage, TKernel >
   progress->RegisterInternalFilter(erode, .5f);
   progress->RegisterInternalFilter(dilate, .5f);
 
-  erode->SetInput( this->GetInput() );
-  dilate->SetInput( erode->GetOutput() );
-  dilate->GraftOutput( this->GetOutput() );
+  erode->SetInput(this->GetInput());
+  dilate->SetInput(erode->GetOutput());
+  dilate->GraftOutput(this->GetOutput());
 
   /** execute the minipipeline */
   dilate->Update();
 
   /** graft the minipipeline output back into this filter's output */
-  this->GraftOutput( dilate->GetOutput() );
+  this->GraftOutput(dilate->GetOutput());
 }
 
-template< typename TInputImage, typename TOutputImage, typename TKernel >
+template <typename TInputImage, typename TOutputImage, typename TKernel>
 void
-BinaryMorphologicalOpeningImageFilter< TInputImage, TOutputImage, TKernel >
-::PrintSelf(std::ostream & os, Indent indent) const
+BinaryMorphologicalOpeningImageFilter<TInputImage, TOutputImage, TKernel>::PrintSelf(std::ostream & os,
+                                                                                     Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "ForegroundValue: "
-     << static_cast< typename NumericTraits< PixelType >::PrintType >( m_ForegroundValue ) << std::endl;
-  os << indent << "BackgroundValue: "
-     << static_cast< typename NumericTraits< PixelType >::PrintType >( m_BackgroundValue ) << std::endl;
+  os << indent << "ForegroundValue: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_ForegroundValue)
+     << std::endl;
+  os << indent << "BackgroundValue: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_BackgroundValue)
+     << std::endl;
 }
 } // end namespace itk
 #endif

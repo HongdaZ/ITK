@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_matrix_fixed_ref.h
 #ifndef vnl_matrix_fixed_ref_h_
 #define vnl_matrix_fixed_ref_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Fixed size stack-stored vnl_matrix
@@ -142,12 +139,14 @@
 
 #include <iosfwd>
 #include <cstring>
-#include <vcl_cassert.h>
-#include <vcl_compiler.h>
-#include <vnl/vnl_matrix_fixed.h>
-#include <vnl/vnl_vector_fixed.h>
-#include <vnl/vnl_vector_fixed_ref.h>
-#include <vnl/vnl_c_vector.h>
+#include <cassert>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include "vnl_matrix_fixed.h"
+#include "vnl_vector_fixed.h"
+#include "vnl_vector_fixed_ref.h"
+#include "vnl_c_vector.h"
 #include "vnl/vnl_export.h"
 
 //: Fixed size stack-stored vnl_matrix
@@ -168,7 +167,7 @@
 //
 
 template <class T, unsigned num_rows, unsigned num_cols>
-class VNL_TEMPLATE_EXPORT vnl_matrix_fixed_ref_const
+class VNL_EXPORT vnl_matrix_fixed_ref_const
 {
  protected:
   const T* data_;
@@ -351,7 +350,11 @@ class VNL_TEMPLATE_EXPORT vnl_matrix_fixed_ref_const
 
   //: abort if size is not as expected
   // This function does or tests nothing if NDEBUG is defined
+#ifndef NDEBUG
   void assert_size(unsigned rowz, unsigned colz) const
+#else
+  void assert_size(unsigned , unsigned ) const
+#endif
   {
 #ifndef NDEBUG
     assert_size_internal(rowz, colz);
@@ -392,7 +395,7 @@ class VNL_TEMPLATE_EXPORT vnl_matrix_fixed_ref_const
 
 
 template <class T, unsigned num_rows, unsigned num_cols>
-class VNL_TEMPLATE_EXPORT vnl_matrix_fixed_ref : public vnl_matrix_fixed_ref_const<T,num_rows,num_cols>
+class VNL_EXPORT vnl_matrix_fixed_ref : public vnl_matrix_fixed_ref_const<T,num_rows,num_cols>
 {
   typedef vnl_matrix_fixed_ref_const<T,num_rows,num_cols> base;
 
@@ -705,28 +708,28 @@ class VNL_TEMPLATE_EXPORT vnl_matrix_fixed_ref : public vnl_matrix_fixed_ref_con
   // it. This prevents a const vnl_matrix_fixed from being cast into a
   // non-const vnl_matrix reference, giving a slight increase in type safety.
 
-  //: Explicit conversion to a vnl_matrix_ref.
+  //: Explicit conversion to a vnl_matrix_ref or vnl_matrix.
   // This is a cheap conversion for those functions that have an interface
   // for vnl_matrix_ref but not for vnl_matrix_fixed_ref. There is also a
   // conversion operator that should work most of the time.
   // \sa vnl_matrix_ref::non_const
-  vnl_matrix_ref<T> as_ref() { return vnl_matrix_ref<T>( num_rows, num_cols, data_block() ); }
-
-  //: Explicit conversion to a vnl_matrix_ref.
-  // This is a cheap conversion for those functions that have an interface
-  // for vnl_matrix_ref but not for vnl_matrix_fixed_ref. There is also a
-  // conversion operator that should work most of the time.
-  // \sa vnl_matrix_ref::non_const
+  vnl_matrix_ref<T> as_ref() { return vnl_matrix_ref<T>( num_rows, num_cols, const_cast<T*>(data_block()) ); }
   const vnl_matrix_ref<T> as_ref() const { return vnl_matrix_ref<T>( num_rows, num_cols, const_cast<T*>(data_block()) ); }
+  vnl_matrix<T> as_matrix() const { return vnl_matrix<T>(const_cast<T*>(data_block()),num_rows,num_cols); }
 
   //: Cheap conversion to vnl_matrix_ref
   // Sometimes, such as with templated functions, the compiler cannot
   // use this user-defined conversion. For those cases, use the
   // explicit as_ref() method instead.
+#if ! VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS
+  explicit operator const vnl_matrix_ref<T>() const { return vnl_matrix_ref<T>( num_rows, num_cols, const_cast<T*>(data_block()) ); }
+#else
+#if VXL_LEGACY_FUTURE_REMOVE
+  VXL_DEPRECATED_MSG("Implicit cast conversion is dangerous.\nUSE: .as_vector() or .as_ref() member function for clarity.")
+#endif
   operator const vnl_matrix_ref<T>() const { return vnl_matrix_ref<T>( num_rows, num_cols, const_cast<T*>(data_block()) ); }
-
-  //: Convert to a vnl_matrix.
-  const vnl_matrix<T> as_matrix() const { return vnl_matrix<T>(const_cast<T*>(data_block()),num_rows,num_cols); }
+#endif
+  explicit operator vnl_matrix<T>() const { return this->as_matrix(); }
 
   //----------------------------------------------------------------------
 

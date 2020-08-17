@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ EStateID ULActionDT1::PerformAction(Subject *s, ULEvent& inEvent, ULConnection& 
   for (itor = theDataPDUs.begin(); itor < theDataPDUs.end(); itor++) {
 
     PDataTFPDU* dataPDU = dynamic_cast<PDataTFPDU*>(*itor);
-    if (dataPDU == NULL)
+    if (dataPDU == nullptr)
       {
       throw Exception("Data sending event PDU malformed.");
       }
@@ -208,7 +208,7 @@ EStateID ULActionDT1::PerformAction(Subject *s, ULEvent& inEvent, ULConnection& 
   if ( pStream )
     {
     PDataTFPDU* dataPDU = dynamic_cast<PDataTFPDU*>(theDataPDUs[0]);
-    if (dataPDU == NULL)
+    if (dataPDU == nullptr)
       {
       throw Exception("Data sending event PDU malformed.");
       }

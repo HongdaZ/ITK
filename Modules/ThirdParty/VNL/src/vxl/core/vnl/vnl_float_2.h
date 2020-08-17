@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_float_2.h
 #ifndef vnl_float_2_h_
 #define vnl_float_2_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Contains class vnl_float_2
@@ -17,7 +14,7 @@
 //   Peter Vanroose, 24 Mar. 2007: removed deprecated cross_2d() alias
 // \endverbatim
 
-#include <vnl/vnl_T_n.h>
+#include "vnl_T_n.h"
 
 //: class vnl_float_2 : a vnl_vector of 2 floats.
 vnl_T_n_impl(float,2);

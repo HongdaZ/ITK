@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,11 +27,10 @@ namespace itk
 /**
  *
  */
-template< typename TInputImage, typename TOutputImage >
-WrapPadImageFilter< TInputImage, TOutputImage >
-::WrapPadImageFilter()
+template <typename TInputImage, typename TOutputImage>
+WrapPadImageFilter<TInputImage, TOutputImage>::WrapPadImageFilter()
 {
-  this->InternalSetBoundaryCondition( &m_InternalBoundaryCondition );
+  this->InternalSetBoundaryCondition(&m_InternalBoundaryCondition);
 }
 
 } // end namespace itk

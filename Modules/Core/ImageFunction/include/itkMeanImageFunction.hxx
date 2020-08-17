@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,67 +19,71 @@
 #define itkMeanImageFunction_hxx
 
 #include "itkMeanImageFunction.h"
-#include "itkConstNeighborhoodIterator.h"
+
+#include "itkImage.h"
+#include "itkShapedImageNeighborhoodRange.h"
 
 namespace itk
 {
 
-template< typename TInputImage, typename TCoordRep >
-MeanImageFunction< TInputImage, TCoordRep >
-::MeanImageFunction() :
-  m_NeighborhoodRadius( 1 )
-{
-}
+template <typename TInputImage, typename TCoordRep>
+MeanImageFunction<TInputImage, TCoordRep>::MeanImageFunction()
 
-template< typename TInputImage, typename TCoordRep >
-typename MeanImageFunction< TInputImage, TCoordRep >
-::RealType
-MeanImageFunction< TInputImage, TCoordRep >
-::EvaluateAtIndex(const IndexType & index) const
+  = default;
+
+template <typename TInputImage, typename TCoordRep>
+typename MeanImageFunction<TInputImage, TCoordRep>::RealType
+MeanImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
 {
   RealType sum;
 
-  sum = NumericTraits< RealType >::ZeroValue();
+  sum = NumericTraits<RealType>::ZeroValue();
 
-  if ( !this->GetInputImage() )
-    {
-    return ( NumericTraits< RealType >::max() );
-    }
+  const InputImageType * const image = this->GetInputImage();
 
-  if ( !this->IsInsideBuffer(index) )
-    {
-    return ( NumericTraits< RealType >::max() );
-    }
+  if (image == nullptr)
+  {
+    return (NumericTraits<RealType>::max());
+  }
 
-  // Create an N-d neighborhood kernel, using a zeroflux boundary condition
-  typename InputImageType::SizeType kernelSize;
-  kernelSize.Fill(m_NeighborhoodRadius);
+  if (!this->IsInsideBuffer(index))
+  {
+    return (NumericTraits<RealType>::max());
+  }
 
-  ConstNeighborhoodIterator< InputImageType >
-  it( kernelSize, this->GetInputImage(), this->GetInputImage()->GetBufferedRegion() );
-
-  // Set the iterator at the desired location
-  it.SetLocation(index);
+  const Experimental::ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(
+    *image, index, m_NeighborhoodOffsets);
 
   // Walk the neighborhood
-  const unsigned int size = it.Size();
-  for ( unsigned int i = 0; i < size; ++i )
-    {
-    sum += static_cast< RealType >( it.GetPixel(i) );
-    }
-  sum /= double( it.Size() );
+  for (const InputPixelType pixelValue : neighborhoodRange)
+  {
+    sum += static_cast<RealType>(pixelValue);
+  }
 
-  return sum;
+  return sum / static_cast<double>(neighborhoodRange.size());
 }
 
-template< typename TInputImage, typename TCoordRep >
+
+template <typename TInputImage, typename TCoordRep>
 void
-MeanImageFunction< TInputImage, TCoordRep >
-::PrintSelf(std::ostream & os, Indent indent) const
+MeanImageFunction<TInputImage, TCoordRep>::SetNeighborhoodRadius(const unsigned int radius)
+{
+  if (m_NeighborhoodRadius != radius)
+  {
+    m_NeighborhoodOffsets = Experimental::GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
+    m_NeighborhoodRadius = radius;
+    this->Modified();
+  }
+}
+
+
+template <typename TInputImage, typename TCoordRep>
+void
+MeanImageFunction<TInputImage, TCoordRep>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "NeighborhoodRadius: "  << m_NeighborhoodRadius << std::endl;
+  os << indent << "NeighborhoodRadius: " << m_NeighborhoodRadius << std::endl;
 }
 } // end namespace itk
 

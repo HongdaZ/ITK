@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ namespace itk
  * \brief Closing by reconstruction of an image
  *
  * This filter is similar to the morphological closing, but contrary
- * to the mophological closing, the closing by reconstruction
+ * to the morphological closing, the closing by reconstruction
  * preserves the shape of the components.  The closing by
  * reconstruction of an image "f" is defined as:
  *
@@ -48,45 +48,43 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKMathematicalMorphology
  */
-template< typename TInputImage, typename TOutputImage, typename TKernel >
-class ITK_TEMPLATE_EXPORT ClosingByReconstructionImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TOutputImage, typename TKernel>
+class ITK_TEMPLATE_EXPORT ClosingByReconstructionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ClosingByReconstructionImageFilter              Self;
-  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
-  typedef SmartPointer< Self >                            Pointer;
-  typedef SmartPointer< const Self >                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ClosingByReconstructionImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                           InputImageType;
-  typedef typename InputImageType::Pointer      InputImagePointer;
-  typedef typename InputImageType::ConstPointer InputImageConstPointer;
-  typedef typename InputImageType::RegionType   InputImageRegionType;
-  typedef typename InputImageType::PixelType    InputImagePixelType;
+  /** Standard class type aliases. */
+  using Self = ClosingByReconstructionImageFilter;
+  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
-  typedef TOutputImage                           OutputImageType;
-  typedef typename OutputImageType::Pointer      OutputImagePointer;
-  typedef typename OutputImageType::ConstPointer OutputImageConstPointer;
-  typedef typename OutputImageType::RegionType   OutputImageRegionType;
-  typedef typename OutputImageType::PixelType    OutputImagePixelType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
 
-  /** Kernel typedef. */
-  typedef TKernel KernelType;
+  using OutputImageType = TOutputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using OutputImageConstPointer = typename OutputImageType::ConstPointer;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using OutputImagePixelType = typename OutputImageType::PixelType;
+
+  /** Kernel type alias. */
+  using KernelType = TKernel;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ClosingByReconstructionImageFilter,
-               ImageToImageFilter);
+  itkTypeMacro(ClosingByReconstructionImageFilter, ImageToImageFilter);
 
   /** Set kernel (structuring element). */
   itkSetMacro(Kernel, KernelType);
@@ -106,7 +104,7 @@ public:
 
   /**
    * Set/Get whether the original intensities of the image retained for
-   * those pixels unaffected by the opening by reconstrcution. If Off,
+   * those pixels unaffected by the opening by reconstruction. If Off,
    * the output pixel contrast will be reduced. */
   itkSetMacro(PreserveIntensities, bool);
   itkGetConstReferenceMacro(PreserveIntensities, bool);
@@ -114,29 +112,30 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputConvertibleToOutputCheck,
-                   ( Concept::Convertible< InputImagePixelType, OutputImagePixelType > ) );
+  itkConceptMacro(InputConvertibleToOutputCheck, (Concept::Convertible<InputImagePixelType, OutputImagePixelType>));
   // End concept checking
 #endif
 
 protected:
   ClosingByReconstructionImageFilter();
-  ~ClosingByReconstructionImageFilter() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~ClosingByReconstructionImageFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** ClosingByReconstructionImageFilter needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** ClosingByReconstructionImageFilter will produce the entire output. */
-  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) ) ITK_OVERRIDE;
+  void
+  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ClosingByReconstructionImageFilter);
-
   /** kernel or structuring element to use. */
   KernelType m_Kernel;
   bool       m_FullyConnected;
@@ -145,7 +144,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkClosingByReconstructionImageFilter.hxx"
+#  include "itkClosingByReconstructionImageFilter.hxx"
 #endif
 
 #endif

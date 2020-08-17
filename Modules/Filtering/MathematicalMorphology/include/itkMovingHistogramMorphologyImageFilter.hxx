@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,25 +23,24 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram >
-MovingHistogramMorphologyImageFilter< TInputImage, TOutputImage, TKernel, THistogram >
-::MovingHistogramMorphologyImageFilter() :
-  m_Boundary( NumericTraits< PixelType >::ZeroValue() )
-{
-}
+template <typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram>
+MovingHistogramMorphologyImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::
+  MovingHistogramMorphologyImageFilter()
+  : m_Boundary(NumericTraits<PixelType>::ZeroValue())
+{}
 
-template< typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram >
+template <typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram>
 void
-MovingHistogramMorphologyImageFilter< TInputImage, TOutputImage, TKernel, THistogram >
-::ConfigureHistogram(THistogram & histogram)
+MovingHistogramMorphologyImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::ConfigureHistogram(
+  THistogram & histogram)
 {
   histogram.SetBoundary(m_Boundary);
 }
 
-template< typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram >
+template <typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram>
 void
-MovingHistogramMorphologyImageFilter< TInputImage, TOutputImage, TKernel, THistogram >
-::PrintSelf(std::ostream & os, Indent indent) const
+MovingHistogramMorphologyImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::PrintSelf(std::ostream & os,
+                                                                                                Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

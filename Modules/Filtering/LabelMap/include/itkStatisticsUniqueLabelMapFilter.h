@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 
 namespace itk
 {
-/** \class StatisticsUniqueLabelMapFilter
+/**
+ *\class StatisticsUniqueLabelMapFilter
  * \brief Remove some pixels in the label object according to the value of
  * their statistics attribute to ensure that a pixel is not in multiple
  * objects.
@@ -38,29 +39,30 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template< typename TImage >
-class ITK_TEMPLATE_EXPORT StatisticsUniqueLabelMapFilter:
-  public ShapeUniqueLabelMapFilter< TImage >
+template <typename TImage>
+class ITK_TEMPLATE_EXPORT StatisticsUniqueLabelMapFilter : public ShapeUniqueLabelMapFilter<TImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef StatisticsUniqueLabelMapFilter      Self;
-  typedef ShapeUniqueLabelMapFilter< TImage > Superclass;
-  typedef SmartPointer< Self >                Pointer;
-  typedef SmartPointer< const Self >          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsUniqueLabelMapFilter);
 
-  /** Some convenient typedefs. */
-  typedef TImage                              ImageType;
-  typedef typename ImageType::Pointer         ImagePointer;
-  typedef typename ImageType::ConstPointer    ImageConstPointer;
-  typedef typename ImageType::PixelType       PixelType;
-  typedef typename ImageType::IndexType       IndexType;
-  typedef typename ImageType::LabelObjectType LabelObjectType;
+  /** Standard class type aliases. */
+  using Self = StatisticsUniqueLabelMapFilter;
+  using Superclass = ShapeUniqueLabelMapFilter<TImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
-  typedef typename LabelObjectType::AttributeType AttributeType;
+  /** Some convenient type alias. */
+  using ImageType = TImage;
+  using ImagePointer = typename ImageType::Pointer;
+  using ImageConstPointer = typename ImageType::ConstPointer;
+  using PixelType = typename ImageType::PixelType;
+  using IndexType = typename ImageType::IndexType;
+  using LabelObjectType = typename ImageType::LabelObjectType;
+
+  using AttributeType = typename LabelObjectType::AttributeType;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -81,17 +83,15 @@ public:
 
 protected:
   StatisticsUniqueLabelMapFilter();
-  ~StatisticsUniqueLabelMapFilter() ITK_OVERRIDE {}
+  ~StatisticsUniqueLabelMapFilter() override = default;
 
-  virtual void GenerateData() ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsUniqueLabelMapFilter);
+  void
+  GenerateData() override;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkStatisticsUniqueLabelMapFilter.hxx"
+#  include "itkStatisticsUniqueLabelMapFilter.hxx"
 #endif
 
 #endif

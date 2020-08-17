@@ -1,11 +1,12 @@
 set(ITKFFT_SRCS
   itkFFTWGlobalConfiguration.cxx
+  itkComplexToComplexFFTImageFilter.cxx
   )
 
-# this library is only needed if FFTW is used
-if( ITK_USE_FFTWF OR ITK_USE_FFTWD )
-  itk_module_add_library(ITKFFT ${ITKFFT_SRCS})
+itk_module_add_library(ITKFFT ${ITKFFT_SRCS})
 
+# this library is only needed if FFTW is used
+if( ITK_USE_FFTWF OR ITK_USE_FFTWD AND NOT ITK_USE_CUFFTW)
   if(ITK_USE_FFTWD)
     if(ITK_USE_SYSTEM_FFTW)
       target_link_libraries(ITKFFT LINK_PUBLIC ${FFTWD_LIB})
@@ -14,7 +15,7 @@ if( ITK_USE_FFTWF OR ITK_USE_FFTWD )
       endif()
     else()
       add_dependencies(ITKFFT fftwd)
-      target_link_libraries(ITKFFT LINK_PUBLIC fftw3 fftw3_threads)
+      target_link_libraries(ITKFFT LINK_PUBLIC fftw3_threads fftw3)
     endif()
   endif()
 
@@ -26,7 +27,7 @@ if( ITK_USE_FFTWF OR ITK_USE_FFTWD )
       endif()
     else()
       add_dependencies(ITKFFT fftwf)
-      target_link_libraries(ITKFFT LINK_PUBLIC fftw3f fftw3f_threads)
+      target_link_libraries(ITKFFT LINK_PUBLIC fftw3f_threads fftw3f)
     endif()
   endif()
 endif()

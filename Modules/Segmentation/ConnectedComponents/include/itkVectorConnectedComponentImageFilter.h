@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ namespace itk
 {
 namespace Functor
 {
-/** \class SimilarVectorsFunctor
+/**
+ *\class SimilarVectorsFunctor
  *
  *  \brief A connected components filter that labels the
  *         objects in a vector image.  Two vectors are pointing
@@ -46,38 +47,47 @@ namespace Functor
  * \ingroup ITKConnectedComponents
  */
 
-template< typename TInput >
+template <typename TInput>
 class SimilarVectorsFunctor
 {
 public:
-  SimilarVectorsFunctor()
-  { m_Threshold = itk::NumericTraits< typename TInput::ValueType >::ZeroValue(); }
+  SimilarVectorsFunctor() { m_Threshold = itk::NumericTraits<typename TInput::ValueType>::ZeroValue(); }
 
-  ~SimilarVectorsFunctor() {}
+  ~SimilarVectorsFunctor() = default;
 
-  void SetDistanceThreshold(const typename TInput::ValueType & thresh)
-  { m_Threshold = thresh; }
-  typename TInput::ValueType GetDistanceThreshold() { return ( m_Threshold ); }
+  void
+  SetDistanceThreshold(const typename TInput::ValueType & thresh)
+  {
+    m_Threshold = thresh;
+  }
+  typename TInput::ValueType
+  GetDistanceThreshold()
+  {
+    return (m_Threshold);
+  }
 
-  bool operator!=(const SimilarVectorsFunctor &) const
+  bool
+  operator!=(const SimilarVectorsFunctor &) const
   {
     return false;
   }
 
-  bool operator==(const SimilarVectorsFunctor & other) const
+  bool
+  operator==(const SimilarVectorsFunctor & other) const
   {
-    return !( *this != other );
+    return !(*this != other);
   }
 
-  bool operator()(const TInput & a, const TInput & b) const
+  bool
+  operator()(const TInput & a, const TInput & b) const
   {
-    typedef typename NumericTraits<typename TInput::ValueType>::RealType RealValueType;
+    using RealValueType = typename NumericTraits<typename TInput::ValueType>::RealType;
     RealValueType dotProduct = NumericTraits<RealValueType>::ZeroValue();
-    for ( unsigned int i = 0; i < NumericTraits<TInput>::GetLength(a); ++i)
-      {
-      dotProduct += a[i]*b[i];
-      }
-    return ( static_cast<typename TInput::ValueType>( 1.0 - itk::Math::abs(dotProduct) ) <= m_Threshold );
+    for (unsigned int i = 0; i < NumericTraits<TInput>::GetLength(a); ++i)
+    {
+      dotProduct += a[i] * b[i];
+    }
+    return (static_cast<typename TInput::ValueType>(1.0 - itk::Math::abs(dotProduct)) <= m_Threshold);
   }
 
 protected:
@@ -85,7 +95,8 @@ protected:
 };
 } // end namespace Functor
 
-/** \class VectorConnectedComponentImageFilter
+/**
+ *\class VectorConnectedComponentImageFilter
  *
  *  \brief A connected components filter that labels the
  *         objects in a vector image.  Two vectors are pointing
@@ -94,20 +105,25 @@ protected:
  *         are similar.  Assumes that vectors are normalized.
  * \ingroup ITKConnectedComponents
  */
-template< typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage >
-class VectorConnectedComponentImageFilter:
-  public ConnectedComponentFunctorImageFilter< TInputImage, TOutputImage,
-                                               Functor::SimilarVectorsFunctor< typename TInputImage::ValueType >,
-                                               TMaskImage >
+template <typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage>
+class VectorConnectedComponentImageFilter
+  : public ConnectedComponentFunctorImageFilter<TInputImage,
+                                                TOutputImage,
+                                                Functor::SimilarVectorsFunctor<typename TInputImage::ValueType>,
+                                                TMaskImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef VectorConnectedComponentImageFilter Self;
-  typedef ConnectedComponentFunctorImageFilter< TInputImage, TOutputImage,
-                                                Functor::SimilarVectorsFunctor< typename TInputImage::ValueType >,
-                                                TMaskImage >                      Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorConnectedComponentImageFilter);
+
+  /** Standard class type aliases. */
+  using Self = VectorConnectedComponentImageFilter;
+  using Superclass =
+    ConnectedComponentFunctorImageFilter<TInputImage,
+                                         TOutputImage,
+                                         Functor::SimilarVectorsFunctor<typename TInputImage::ValueType>,
+                                         TMaskImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -115,29 +131,30 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorConnectedComponentImageFilter, ConnectedComponentFunctorImageFilter);
 
-  typedef typename TInputImage::PixelType::ValueType InputValueType;
+  using InputValueType = typename TInputImage::PixelType::ValueType;
 
-  virtual void SetDistanceThreshold(const InputValueType & thresh)
-  { this->GetFunctor().SetDistanceThreshold(thresh); }
+  virtual void
+  SetDistanceThreshold(const InputValueType & thresh)
+  {
+    this->GetFunctor().SetDistanceThreshold(thresh);
+  }
 
-  virtual InputValueType GetDistanceThreshold()
-  { return ( this->GetFunctor().GetDistanceThreshold() ); }
+  virtual InputValueType
+  GetDistanceThreshold()
+  {
+    return (this->GetFunctor().GetDistanceThreshold());
+  }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputValueHasNumericTraitsCheck,
-                   ( Concept::HasNumericTraits< InputValueType > ) );
-  itkConceptMacro( InputValyeTypeIsFloatingCheck,
-                   ( Concept::IsFloatingPoint< InputValueType > ) );
+  itkConceptMacro(InputValueHasNumericTraitsCheck, (Concept::HasNumericTraits<InputValueType>));
+  itkConceptMacro(InputValyeTypeIsFloatingCheck, (Concept::IsFloatingPoint<InputValueType>));
   // End concept checking
 #endif
 
 protected:
-  VectorConnectedComponentImageFilter() {}
-  virtual ~VectorConnectedComponentImageFilter() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorConnectedComponentImageFilter);
+  VectorConnectedComponentImageFilter() = default;
+  ~VectorConnectedComponentImageFilter() override = default;
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,47 +19,104 @@
 #define itkFloatingPointExceptions_h
 
 #include "itkMacro.h" // for ITKCommon_EXPORT
+#include "itkSingletonMacro.h"
 
 namespace itk
 {
+/**\class FloatingPointExceptionsEnums
+ * \brief Contains all enum classes used by FloatingPointExceptions class.
+ * \ingroup ITKCommon
+ */
+class FloatingPointExceptionsEnums
+{
+public:
+  /**\class ExceptionAction
+   * \ingroup ITKCommon
+   * defines what should happen when exceptions occur */
+  enum class ExceptionAction : uint8_t
+  {
+    ABORT,
+    EXIT
+  };
+};
+// Define how to print enumeration
+extern ITKCommon_EXPORT std::ostream &
+                        operator<<(std::ostream & out, const FloatingPointExceptionsEnums::ExceptionAction value);
+
 /** \class itkFloatingPointExceptions
  *  \brief Allows floating point exceptions to be caught during program execution.
  *
  * Allows floating point exceptions to be caught during program execution.
  * \ingroup ITKCommon
  */
+
+struct ExceptionGlobals;
+
 class ITKCommon_EXPORT FloatingPointExceptions
 {
 public:
-  /** defines what should happen when exceptions occur */
-  typedef enum { ABORT, EXIT } ExceptionAction;
-  /** Enable floating point exceptions */
-  static void Enable();
+  ITK_DISALLOW_COPY_AND_ASSIGN(FloatingPointExceptions);
+  // default constructor required for wrapping to succeed
+  FloatingPointExceptions() = default;
+  virtual ~FloatingPointExceptions() = default;
 
-  /** Disable floating point exceptions. */
-  static void Disable();
+  using ExceptionActionEnum = FloatingPointExceptionsEnums::ExceptionAction;
+#if !defined(ITK_LEGACY_REMOVE)
+  /**Exposes enum values at class level for backwards compatibility*/
+  using ExceptionAction = ExceptionActionEnum;
+  static constexpr ExceptionActionEnum ABORT = ExceptionActionEnum::ABORT;
+  static constexpr ExceptionActionEnum EXIT = ExceptionActionEnum::EXIT;
+#endif
+
+  /** Enable floating point exceptions.
+   *
+   * If floating point exceptions are not supported on the platform, the program
+   * will either abort or exit displaying the error message `FloatingPointExceptions
+   * are not supported on this platform.`.
+   *
+   * Choice between Exit or Abort is based on the value returned by
+   * based GetExceptionAction().
+   *
+   * \sa Disable, SetEnabled, GetEnabled
+   */
+  static void
+  Enable();
+
+  /** Disable floating point exceptions.
+   *
+   * \sa Enable, SetEnabled, GetEnabled
+   */
+  static void
+  Disable();
 
   /** Return the current state of FP Exceptions */
-  static bool GetEnabled();
-  /** Set the state to specified value */
-  static void SetEnabled(bool val);
+  static bool
+  GetEnabled();
+
+  /** Set the state to specified value.
+   *
+   * \sa Enable, Disable, GetEnabled
+   */
+  static void
+  SetEnabled(bool val);
 
   /** Control whether exit(255) or abort() is called on an exception */
-  static void SetExceptionAction(ExceptionAction a);
+  static void
+  SetExceptionAction(ExceptionActionEnum a);
 
   /** Access current ExceptionAction */
-  static ExceptionAction GetExceptionAction();
+  static ExceptionActionEnum
+  GetExceptionAction();
+
+  /** Return if floating point exceptions are supported on this platform */
+  static bool
+  HasFloatingPointExceptionsSupport();
 
 private:
-  FloatingPointExceptions();                                // Not implemented.
-  FloatingPointExceptions(const FloatingPointExceptions &); // Not
-                                                            // implemented.
-  void operator=(const FloatingPointExceptions &);          // Not implemented.
-
+  itkGetGlobalDeclarationMacro(ExceptionGlobals, PimplGlobals);
   /** static member that controls what happens during an exception */
-  static ExceptionAction m_ExceptionAction;
-  static bool            m_Enabled;
+  static ExceptionGlobals * m_PimplGlobals;
 };
-}
+} // namespace itk
 
 #endif

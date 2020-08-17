@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,27 +18,28 @@
 #include "itkMemoryProbesCollectorBase.h"
 #include "itkTestingMacros.h"
 #if defined(TEST_WITH_SLEEP)
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <windows.h>
-#else
-#include <unistd.h>
-inline
-void Sleep(unsigned int milleseconds)
+#  if defined(_WIN32) && !defined(__CYGWIN__)
+#    include <windows.h>
+#  else
+#    include <unistd.h>
+inline void
+Sleep(unsigned int milleseconds)
 {
   sleep(milleseconds / 1000);
 }
-#endif
+#  endif
 #else
-#define Sleep(x) // Empty
-#endif //defined(TEST_WITH_SLEEP)
+#  define Sleep(x) // Empty
+#endif             // defined(TEST_WITH_SLEEP)
 
 
-int itkMemoryProbesCollecterBaseTest(int, char *[])
+int
+itkMemoryProbesCollecterBaseTest(int, char *[])
 {
-  const size_t megabyte = 1024L * 1024L;
+  const size_t mebibyte = 1024L * 1024L;
 
   itk::MemoryProbesCollectorBase mcollecter;
-  itk::MemoryProbe probe;
+  itk::MemoryProbe               probe;
   mcollecter.Start("Update");
   Sleep(5000);
   mcollecter.Stop("Update");
@@ -46,30 +47,38 @@ int itkMemoryProbesCollecterBaseTest(int, char *[])
   mcollecter.Clear();
   mcollecter.Start("Update");
   probe.Start();
-  char *buf = new char[megabyte];
-  for(unsigned int i = 0; i < megabyte; i++)
-    {
+  auto * buf = new char[mebibyte];
+  for (unsigned int i = 0; i < mebibyte; i++)
+  {
     buf[i] = static_cast<char>(i & 0xff);
-    }
+  }
   Sleep(5000);
   mcollecter.Stop("Update");
   probe.Stop();
-  size_t total = probe.GetTotal();
+  itk::MemoryProbe::MemoryLoadType total = probe.GetTotal();
   std::cout << " Total Value " << probe.GetTotal() << std::endl;
-  if(total == 0)
-    {
+  if (total == 0)
+  {
     std::cout << "WARNING: Total memory usage should be greater than zero"
-              << "Memory Probes do not work on this platform"
-              << std::endl;
+              << "Memory Probes do not work on this platform" << std::endl;
     delete[] buf;
     return EXIT_SUCCESS;
-    }
+  }
   mcollecter.Report();
+  probe.Start();
   delete[] buf;
+  Sleep(5000);
+  probe.Stop();
+  if (total != 0 && total < probe.GetTotal())
+  {
+    std::cerr << "Freeing memory should result in less memory but it is " << probe.GetTotal() << probe.GetUnit()
+              << " instead of " << total << probe.GetUnit() << std::endl;
+    return EXIT_FAILURE;
+  }
 
 
-  TRY_EXPECT_EXCEPTION(mcollecter.GetProbe("IDoNotExist"));
-  TRY_EXPECT_NO_EXCEPTION(mcollecter.GetProbe("Update"));
+  ITK_TRY_EXPECT_EXCEPTION(mcollecter.GetProbe("IDoNotExist"));
+  ITK_TRY_EXPECT_NO_EXCEPTION(mcollecter.GetProbe("Update"));
 
   return EXIT_SUCCESS;
 }

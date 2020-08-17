@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,18 +41,16 @@ namespace itk
  * A protected default constructor allows the New() routine to create an
  * instance of PointSet.  All the containers are initialized to non-existent.
  */
-template< typename TInput, typename TOutput, unsigned int VDimension >
-Path< TInput, TOutput, VDimension >
-::Path()
+template <typename TInput, typename TOutput, unsigned int VDimension>
+Path<TInput, TOutput, VDimension>::Path()
 {
   m_ZeroOffset.Fill(0);
   m_ZeroIndex.Fill(0);
 }
 
-template< typename TInput, typename TOutput, unsigned int VDimension >
+template <typename TInput, typename TOutput, unsigned int VDimension>
 void
-Path< TInput, TOutput, VDimension >
-::PrintSelf(std::ostream & os, Indent indent) const
+Path<TInput, TOutput, VDimension>::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
 

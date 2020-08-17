@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,54 +20,118 @@
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkFilterWatcher.h"
+#include "itkSimpleFilterWatcher.h"
 #include "itkTestingMacros.h"
 
-int itkIntermodesThresholdImageFilterTest(int argc, char* argv[] )
+
+int
+itkIntermodesThresholdImageFilterTest(int argc, char * argv[])
 {
-  if( argc < 3 )
-    {
-    std::cerr << "Usage: " << argv[0];
-    std::cerr << " inputImageFile outputImageFile";
-    std::cerr << std::endl;
+  if (argc != 8)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImageFile"
+              << " outputImageFile"
+              << " numberOfHistogramBins"
+              << " autoMinimumMaximum"
+              << " maximumSmoothingIterations"
+              << " useInterMode"
+              << " expectedThreshold" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  typedef  short          InputPixelType;
-  typedef  unsigned char  OutputPixelType;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputPixelType = short;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::IntermodesThresholdImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
-
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
-
+  using ReaderType = itk::ImageFileReader<InputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName(argv[1]);
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+
+
+  using FilterType = itk::IntermodesThresholdImageFilter<InputImageType, OutputImageType>;
   FilterType::Pointer filter = FilterType::New();
+
+  itk::SimpleFilterWatcher watcher(filter);
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, IntermodesThresholdImageFilter, HistogramThresholdImageFilter);
+
+
+  auto insideValue = static_cast<FilterType::OutputPixelType>(255);
+  filter->SetInsideValue(insideValue);
+  ITK_TEST_SET_GET_VALUE(insideValue, filter->GetInsideValue());
+
+  auto outsideValue = static_cast<FilterType::OutputPixelType>(0);
+  filter->SetOutsideValue(outsideValue);
+  ITK_TEST_SET_GET_VALUE(outsideValue, filter->GetOutsideValue());
+
+  auto numberOfHistogramBins = static_cast<itk::SizeValueType>(std::stoi(argv[3]));
+  filter->SetNumberOfHistogramBins(numberOfHistogramBins);
+  ITK_TEST_SET_GET_VALUE(numberOfHistogramBins, filter->GetNumberOfHistogramBins());
+
+  auto autoMinimumMaximum = static_cast<bool>(std::stoi(argv[4]));
+  ITK_TEST_SET_GET_BOOLEAN(filter, AutoMinimumMaximum, autoMinimumMaximum);
+
+  // Test no histogram exception (no input set)
+  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+
+
+  filter->SetInput(reader->GetOutput());
+
+  // Test no calculator set exception
+  filter->SetCalculator(0);
+  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+
+
+  FilterType::CalculatorType::Pointer calculator = FilterType::CalculatorType::New();
+  filter->SetCalculator(calculator);
+  ITK_TEST_SET_GET_VALUE(calculator, filter->GetCalculator());
+
+
+  // Test exceeding maximum iterations for histogram smoothing exception
+  filter->SetMaximumSmoothingIterations(10);
+  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+
+  unsigned long maximumSmoothingIterations = std::stoi(argv[5]);
+  filter->SetMaximumSmoothingIterations(maximumSmoothingIterations);
+  ITK_TEST_SET_GET_VALUE(maximumSmoothingIterations, filter->GetMaximumSmoothingIterations());
+
+  bool useInterMode = static_cast<bool>(std::stoi(argv[6]));
+  filter->SetUseInterMode(useInterMode);
+  ITK_TEST_SET_GET_VALUE(useInterMode, filter->GetUseInterMode());
+
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+
+  // Regression test: compare computed threshold
+  FilterType::InputPixelType expectedThreshold = std::stod(argv[7]);
+  FilterType::InputPixelType resultThreshold = filter->GetThreshold();
+  if (itk::Math::NotAlmostEquals(expectedThreshold, resultThreshold))
+  {
+    std::cerr << "Test failed!" << std::endl;
+    std::cerr << "Error in GetThreshold()" << std::endl;
+    std::cerr << "Expected: " << itk::NumericTraits<FilterType::InputPixelType>::PrintType(expectedThreshold)
+              << ", but got: " << itk::NumericTraits<FilterType::InputPixelType>::PrintType(resultThreshold)
+              << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // Write output image
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
+  writer->SetInput(filter->GetOutput());
+  writer->SetFileName(argv[2]);
 
-  FilterWatcher watcher(filter);
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
-  filter->SetInsideValue( 255 );
-  TEST_SET_GET_VALUE( 255, filter->GetInsideValue() );
 
-  filter->SetOutsideValue( 0 );
-  TEST_SET_GET_VALUE( 0, filter->GetOutsideValue() );
-
-  reader->SetFileName( argv[1] );
-  filter->SetInput( reader->GetOutput() );
-  // filter->SetNumberOfHistogramBins (atoi(argv[3]));
-  writer->SetInput( filter->GetOutput() );
-  filter->Update();
-  std::cout << "Computed Threshold is: "
-            << itk::NumericTraits<FilterType::InputPixelType>::PrintType(filter->GetThreshold())
-            << std::endl;
-  writer->SetFileName( argv[2] );
-  writer->Update();
-
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

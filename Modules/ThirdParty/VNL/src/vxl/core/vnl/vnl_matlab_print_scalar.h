@@ -9,8 +9,10 @@
 
 #include <iosfwd>
 #include <complex>
-#include <vcl_compiler.h>
-#include <vnl/vnl_matlab_print_format.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include "vnl_matlab_print_format.h"
 #include "vnl/vnl_export.h"
 
 //: print real or complex scalar into character buffer.
@@ -31,7 +33,7 @@ vnl_matlab_print_scalar_declare(std::complex<double>);
 vnl_matlab_print_scalar_declare(std::complex<long double>);
 
 //: print scalar to std::ostream.
-VCL_TEMPLATE_EXPORT template <class T> VNL_TEMPLATE_EXPORT
+template <class T> VNL_EXPORT
 std::ostream &vnl_matlab_print_scalar(std::ostream &,
                                      T value,
                                      vnl_matlab_print_format =vnl_matlab_print_format_default);

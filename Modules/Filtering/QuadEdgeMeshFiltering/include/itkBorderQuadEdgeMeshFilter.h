@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,40 @@
 #include "itkQuadEdgeMesh.h"
 #include "itkQuadEdgeMeshToQuadEdgeMeshFilter.h"
 #include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.h"
+#include "ITKQuadEdgeMeshFilteringExport.h"
 
 namespace itk
 {
+/**\class BorderQuadEdgeMeshFilterEnums
+ * \brief Contains all enum classes used by
+ * \ingroup ITKQuadEdgeMeshFiltering
+ */
+class BorderQuadEdgeMeshFilterEnums
+{
+public:
+  /**\class BorderTransform
+   * \ingroup ITKQuadEdgeMeshFiltering
+   * */
+  enum class BorderTransform : uint8_t
+  {
+    SQUARE_BORDER_TRANSFORM = 0,
+    DISK_BORDER_TRANSFORM
+  };
+
+  /**\class BorderPick
+   * \ingroup ITKQuadEdgeMeshFiltering
+   * */
+  enum class BorderPick : uint8_t
+  {
+    LONGEST = 0,
+    LARGEST
+  };
+};
+// Define how to print enumeration
+extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
+                                       operator<<(std::ostream & out, const BorderQuadEdgeMeshFilterEnums::BorderTransform value);
+extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
+                                       operator<<(std::ostream & out, const BorderQuadEdgeMeshFilterEnums::BorderPick value);
 /**
  * \class BorderQuadEdgeMeshFilter
  * \brief Transform one border of a QuadEdgeMesh into either a circle
@@ -47,104 +78,103 @@ namespace itk
  * \sa ParameterizationQuadEdgeMeshFilter
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template< typename TInputMesh, typename TOutputMesh=TInputMesh >
-class ITK_TEMPLATE_EXPORT BorderQuadEdgeMeshFilter:
-  public QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
+template <typename TInputMesh, typename TOutputMesh = TInputMesh>
+class ITK_TEMPLATE_EXPORT BorderQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BorderQuadEdgeMeshFilter);
+
   /** Basic types. */
-  typedef BorderQuadEdgeMeshFilter    Self;
-  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh,
-                                            TOutputMesh >
-                                      Superclass;
-  typedef SmartPointer< Self >        Pointer;
-  typedef SmartPointer< const Self >  ConstPointer;
+  using Self = BorderQuadEdgeMeshFilter;
+  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
-  typedef TInputMesh                                  InputMeshType;
-  typedef typename InputMeshType::ConstPointer        InputMeshConstPointer;
-  typedef typename InputMeshType::CoordRepType        InputCoordRepType;
-  typedef typename InputMeshType::PointType           InputPointType;
-  typedef typename InputMeshType::Traits              InputTraits;
-  typedef typename InputMeshType::PointIdentifier     InputPointIdentifier;
-  typedef typename InputMeshType::QEType              InputQEType;
-  typedef typename InputQEType::IteratorGeom          InputIteratorGeom;
-  typedef typename InputMeshType::VectorType          InputVectorType;
-  typedef typename InputMeshType::EdgeListType        InputEdgeListType;
-  typedef AutoPointer< InputEdgeListType >            InputEdgeListPointerType;
-  typedef typename InputEdgeListType::iterator        InputEdgeListIterator;
-  typedef typename InputMeshType::EdgeCellType        InputEdgeCellType;
-  typedef typename InputMeshType::PolygonCellType     InputPolygonCellType;
-  typedef typename InputMeshType::PointIdList         InputPointIdList;
-  typedef typename InputMeshType::PointsContainer     InputPointsContainer;
-  typedef typename InputMeshType::PointsContainerConstIterator
-  InputPointsContainerConstIterator;
-  typedef typename InputMeshType::CellsContainerConstIterator
-  InputCellsContainerConstIterator;
+  using InputMeshType = TInputMesh;
+  using InputMeshConstPointer = typename InputMeshType::ConstPointer;
+  using InputCoordRepType = typename InputMeshType::CoordRepType;
+  using InputPointType = typename InputMeshType::PointType;
+  using InputTraits = typename InputMeshType::Traits;
+  using InputPointIdentifier = typename InputMeshType::PointIdentifier;
+  using InputQEType = typename InputMeshType::QEType;
+  using InputIteratorGeom = typename InputQEType::IteratorGeom;
+  using InputVectorType = typename InputMeshType::VectorType;
+  using InputEdgeListType = typename InputMeshType::EdgeListType;
+  using InputEdgeListPointerType = AutoPointer<InputEdgeListType>;
+  using InputEdgeListIterator = typename InputEdgeListType::iterator;
+  using InputEdgeCellType = typename InputMeshType::EdgeCellType;
+  using InputPolygonCellType = typename InputMeshType::PolygonCellType;
+  using InputPointIdList = typename InputMeshType::PointIdList;
+  using InputPointsContainer = typename InputMeshType::PointsContainer;
+  using InputPointsContainerConstIterator = typename InputMeshType::PointsContainerConstIterator;
+  using InputCellsContainerConstIterator = typename InputMeshType::CellsContainerConstIterator;
 
-  typedef TOutputMesh                              OutputMeshType;
-  typedef typename OutputMeshType::Pointer         OutputMeshPointer;
-  typedef typename OutputMeshType::CoordRepType    OutputCoordRepType;
-  typedef typename OutputMeshType::PointType       OutputPointType;
-  typedef typename OutputMeshType::Traits          OutputTraits;
-  typedef typename OutputMeshType::PointIdentifier OutputPointIdentifier;
-  typedef typename OutputMeshType::QEType          OutputQEType;
-  typedef typename OutputMeshType::VectorType      OutputVectorType;
-  typedef typename OutputMeshType::EdgeListType    OutputEdgeListType;
-  typedef typename OutputMeshType::EdgeCellType    OutputEdgeCellType;
-  typedef typename OutputMeshType::PolygonCellType OutputPolygonCellType;
-  typedef typename OutputMeshType::PointIdList     OutputPointIdList;
-  typedef typename OutputMeshType::PointsContainer OutputPointsContainer;
-  typedef typename OutputMeshType::PointsContainerConstIterator
-  OutputPointsContainerConstIterator;
-  typedef typename OutputMeshType::CellsContainerConstIterator
-  OutputCellsContainerConstIterator;
+  using OutputMeshType = TOutputMesh;
+  using OutputMeshPointer = typename OutputMeshType::Pointer;
+  using OutputCoordRepType = typename OutputMeshType::CoordRepType;
+  using OutputPointType = typename OutputMeshType::PointType;
+  using OutputTraits = typename OutputMeshType::Traits;
+  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
+  using OutputQEType = typename OutputMeshType::QEType;
+  using OutputVectorType = typename OutputMeshType::VectorType;
+  using OutputEdgeListType = typename OutputMeshType::EdgeListType;
+  using OutputEdgeCellType = typename OutputMeshType::EdgeCellType;
+  using OutputPolygonCellType = typename OutputMeshType::PolygonCellType;
+  using OutputPointIdList = typename OutputMeshType::PointIdList;
+  using OutputPointsContainer = typename OutputMeshType::PointsContainer;
+  using OutputPointsContainerConstIterator = typename OutputMeshType::PointsContainerConstIterator;
+  using OutputCellsContainerConstIterator = typename OutputMeshType::CellsContainerConstIterator;
 
   itkNewMacro(Self);
   itkTypeMacro(BorderQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
-  itkStaticConstMacro(PointDimension, unsigned int,
-                      InputTraits::PointDimension);
+  static constexpr unsigned int PointDimension = InputTraits::PointDimension;
 
-  typedef std::vector< InputPointType >                           InputVectorPointType;
-  typedef std::map< InputPointIdentifier, OutputPointIdentifier > MapPointIdentifier;
-  typedef typename MapPointIdentifier::iterator                   MapPointIdentifierIterator;
+  using InputVectorPointType = std::vector<InputPointType>;
+  using MapPointIdentifier = std::map<InputPointIdentifier, OutputPointIdentifier>;
+  using MapPointIdentifierIterator = typename MapPointIdentifier::iterator;
 
-  typedef QuadEdgeMeshBoundaryEdgesMeshFunction< InputMeshType > BoundaryRepresentativeEdgesType;
-  typedef typename BoundaryRepresentativeEdgesType::Pointer      BoundaryRepresentativeEdgesPointer;
+  using BoundaryRepresentativeEdgesType = QuadEdgeMeshBoundaryEdgesMeshFunction<InputMeshType>;
+  using BoundaryRepresentativeEdgesPointer = typename BoundaryRepresentativeEdgesType::Pointer;
 
-  enum BorderTransformType {
-    SQUARE_BORDER_TRANSFORM = 0,
-    DISK_BORDER_TRANSFORM
-    };
+  using BorderTransformEnum = itk::BorderQuadEdgeMeshFilterEnums::BorderTransform;
+  using BorderPickEnum = itk::BorderQuadEdgeMeshFilterEnums::BorderPick;
+#if !defined(ITK_LEGACY_REMOVE)
+  /** Exposes enums values for backwards compatibility*/
+  static constexpr BorderTransformEnum SQUARE_BORDER_TRANSFORM = BorderTransformEnum::SQUARE_BORDER_TRANSFORM;
+  static constexpr BorderTransformEnum DISK_BORDER_TRANSFORM = BorderTransformEnum::DISK_BORDER_TRANSFORM;
 
-  enum BorderPickType {
-    LONGEST = 0,
-    LARGEST
-    };
+  static constexpr BorderPickEnum LONGEST = BorderPickEnum::LONGEST;
+  static constexpr BorderPickEnum LARGEST = BorderPickEnum::LARGEST;
+#endif
 
-  itkSetMacro(TransformType, BorderTransformType);
-  itkGetConstMacro(TransformType, BorderTransformType);
+  itkSetEnumMacro(TransformType, BorderTransformEnum);
+  itkGetConstMacro(TransformType, BorderTransformEnum);
 
-  itkSetMacro( BorderPick, BorderPickType );
-  itkGetConstMacro( BorderPick, BorderPickType );
+  itkSetEnumMacro(BorderPick, BorderPickEnum);
+  itkGetConstMacro(BorderPick, BorderPickEnum);
 
   itkSetMacro(Radius, InputCoordRepType);
   itkGetConstMacro(Radius, InputCoordRepType);
 
-  void ComputeTransform();
+  void
+  ComputeTransform();
 
-  MapPointIdentifier GetBoundaryPtMap();
+  MapPointIdentifier
+  GetBoundaryPtMap();
 
-  InputVectorPointType GetBorder();
+  InputVectorPointType
+  GetBorder();
 
 protected:
   BorderQuadEdgeMeshFilter();
 
-  virtual ~BorderQuadEdgeMeshFilter() ITK_OVERRIDE {}
+  ~BorderQuadEdgeMeshFilter() override = default;
 
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  BorderTransformType m_TransformType;
-  BorderPickType      m_BorderPick;
+  BorderTransformEnum m_TransformType;
+  BorderPickEnum      m_BorderPick;
 
   InputCoordRepType m_Radius;
 
@@ -152,29 +182,34 @@ protected:
 
   MapPointIdentifier m_BoundaryPtMap;
 
-  void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
-  void ComputeBoundary();
+  void
+  ComputeBoundary();
 
-  InputQEType* ComputeLongestBorder();
+  InputQEType *
+  ComputeLongestBorder();
 
-  InputQEType* ComputeLargestBorder();
+  InputQEType *
+  ComputeLargestBorder();
 
-  void DiskTransform();
+  void
+  DiskTransform();
 
-  InputPointType GetMeshBarycentre();
+  InputPointType
+  GetMeshBarycentre();
 
-  InputCoordRepType RadiusMaxSquare();
+  InputCoordRepType
+  RadiusMaxSquare();
 
-  void ArcLengthSquareTransform();
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BorderQuadEdgeMeshFilter);
+  void
+  ArcLengthSquareTransform();
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkBorderQuadEdgeMeshFilter.hxx"
+#  include "itkBorderQuadEdgeMeshFilter.hxx"
 #endif
 
 #endif

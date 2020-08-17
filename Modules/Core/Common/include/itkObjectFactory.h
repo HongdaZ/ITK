@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,15 +51,16 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template< typename T >
-class ObjectFactory:public ObjectFactoryBase
+template <typename T>
+class ObjectFactory : public ObjectFactoryBase
 {
 public:
-  static typename T::Pointer Create()
+  static typename T::Pointer
+  Create()
   {
-    LightObject::Pointer ret = CreateInstance( typeid( T ).name() );
+    LightObject::Pointer ret = CreateInstance(typeid(T).name());
 
-    return dynamic_cast< T * >( ret.GetPointer() );
+    return dynamic_cast<T *>(ret.GetPointer());
   }
 };
 } // end namespace itk

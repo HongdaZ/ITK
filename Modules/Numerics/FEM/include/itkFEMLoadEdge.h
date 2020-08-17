@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace fem
  * \brief A generic load that can be applied to an edge of the element.
  *
  * Can also be used to apply natural (Neumann) boundary condition on the
- * edge of the element. In this case m_Edge defines the edge or surfance
+ * edge of the element. In this case m_Edge defines the edge or surface
  * of the element on which the BC exists and matrix m_Force holds the actual
  * prescribed values of the BC.
  * \ingroup ITKFEM
@@ -40,11 +40,11 @@ namespace fem
 class ITKFEM_EXPORT LoadEdge : public LoadElement
 {
 public:
-  /** Standard class typedefs. */
-  typedef LoadEdge                 Self;
-  typedef LoadElement              Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  /** Standard class type aliases. */
+  using Self = LoadEdge;
+  using Superclass = LoadElement;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** New macro for creation of through the object factory. */
   itkSimpleNewMacro(Self);
@@ -54,34 +54,42 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
+  ::itk::LightObject::Pointer
+  CreateAnother() const override;
 
   /**
    * Set the edge number on which the force is being applied
    */
-  void SetEdge(int edge);
+  void
+  SetEdge(int edge);
 
   /**
    * Get the edge number on which the force is being applied
    */
-  int GetEdge() const;
+  int
+  GetEdge() const;
 
   /**
    * Set the edge force values
    */
-  void SetForce(const vnl_matrix<itk::fem::Element::Float> force);
+  void
+  SetForce(const vnl_matrix<itk::fem::Element::Float> force);
 
   /**
    * Get the edge force values
    */
-  const vnl_matrix<itk::fem::Element::Float> & GetForce() const;
-  vnl_matrix<itk::fem::Element::Float> & GetForce();
+  const vnl_matrix<itk::fem::Element::Float> &
+  GetForce() const;
+  vnl_matrix<itk::fem::Element::Float> &
+  GetForce();
 
   /** Apply the load to the specified element */
-  virtual void ApplyLoad(Element::ConstPointer element, Element::VectorType & Fe) ITK_OVERRIDE;
+  void
+  ApplyLoad(Element::ConstPointer element, Element::VectorType & Fe) override;
 
 protected:
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /**
    * Local number of the edge (face) of the element on which the load acts.
@@ -97,7 +105,7 @@ protected:
    * are normal (1st component) and tangential (2nd component) force
    * acting on the edge of the element. A positive normal load acts in
    * a direction INTO the element. A positive tangential load acts in
-   * an ANTICLOCKWISE direction with respect to the loaded elemenet.
+   * an ANTICLOCKWISE direction with respect to the loaded element.
    * Each nodal force is stored in a column of the matrix. The number
    * of columns in the Force matrix must correspond to the number of
    * nodes that define the edge (face...). The force is interpolated
@@ -107,8 +115,7 @@ protected:
    */
   vnl_matrix<Float> m_Force;
 };
+} // end namespace fem
+} // end namespace itk
 
-}
-}  // end namespace itk::fem
-
-#endif // #ifndef itkFEMLoadEdge_h
+#endif // itkFEMLoadEdge_h

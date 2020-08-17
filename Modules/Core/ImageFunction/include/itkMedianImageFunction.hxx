@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@
 #define itkMedianImageFunction_hxx
 
 #include "itkMedianImageFunction.h"
-#include "itkConstNeighborhoodIterator.h"
+#include "itkImage.h"
+#include "itkShapedImageNeighborhoodRange.h"
 
 #include <vector>
 #include <algorithm>
@@ -29,72 +30,63 @@ namespace itk
 /**
  * Constructor
  */
-template< typename TInputImage, typename TCoordRep >
-MedianImageFunction< TInputImage, TCoordRep >
-::MedianImageFunction() : m_NeighborhoodRadius(1)
+template <typename TInputImage, typename TCoordRep>
+MedianImageFunction<TInputImage, TCoordRep>::MedianImageFunction() = default;
+
+template <typename TInputImage, typename TCoordRep>
+void
+MedianImageFunction<TInputImage, TCoordRep>::SetNeighborhoodRadius(const unsigned int radius)
 {
+  if (m_NeighborhoodRadius != radius)
+  {
+    m_NeighborhoodOffsets = Experimental::GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
+    m_NeighborhoodRadius = radius;
+    this->Modified();
+  }
 }
 
 
 /**
  *
  */
-template< typename TInputImage, typename TCoordRep >
+template <typename TInputImage, typename TCoordRep>
 void
-MedianImageFunction< TInputImage, TCoordRep >
-::PrintSelf(std::ostream & os, Indent indent) const
+MedianImageFunction<TInputImage, TCoordRep>::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "NeighborhoodRadius: "  << m_NeighborhoodRadius << std::endl;
+  os << indent << "NeighborhoodRadius: " << m_NeighborhoodRadius << std::endl;
 }
 
 /**
  *
  */
-template< typename TInputImage, typename TCoordRep >
-typename MedianImageFunction< TInputImage, TCoordRep >
-::OutputType
-MedianImageFunction< TInputImage, TCoordRep >
-::EvaluateAtIndex(const IndexType & index) const
+template <typename TInputImage, typename TCoordRep>
+typename MedianImageFunction<TInputImage, TCoordRep>::OutputType
+MedianImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
 {
-  unsigned int i;
+  const InputImageType * const image = this->GetInputImage();
 
-  if ( !this->GetInputImage() )
-    {
-    return ( NumericTraits< OutputType >::max() );
-    }
+  if (image == nullptr)
+  {
+    return (NumericTraits<OutputType>::max());
+  }
 
-  if ( !this->IsInsideBuffer(index) )
-    {
-    return ( NumericTraits< OutputType >::max() );
-    }
+  if (!this->IsInsideBuffer(index))
+  {
+    return (NumericTraits<OutputType>::max());
+  }
 
-  // Create an N-d neighborhood kernel, using a zeroflux boundary condition
-  typename InputImageType::SizeType kernelSize;
-  kernelSize.Fill( m_NeighborhoodRadius );
-
-  ConstNeighborhoodIterator< InputImageType >
-  it( kernelSize, this->GetInputImage(), this->GetInputImage()->GetBufferedRegion() );
-
-  // Set the iterator at the desired location
-  it.SetLocation(index);
+  const Experimental::ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(
+    *image, index, m_NeighborhoodOffsets);
 
   // We have to copy the pixels so we can run std::nth_element.
-  std::vector< InputPixelType > pixels;
-  typename std::vector< InputPixelType >::iterator medianIterator;
-
-  // Walk the neighborhood
-  for ( i = 0; i < it.Size(); ++i )
-    {
-    pixels.push_back( it.GetPixel(i) );
-    }
+  std::vector<InputPixelType> pixels(neighborhoodRange.cbegin(), neighborhoodRange.cend());
 
   // Get the median value
-  unsigned int medianPosition = it.Size() / 2;
-  medianIterator = pixels.begin() + medianPosition;
-  std::nth_element( pixels.begin(), medianIterator, pixels.end() );
+  const auto medianIterator = pixels.begin() + (pixels.size() / 2);
+  std::nth_element(pixels.begin(), medianIterator, pixels.end());
 
-  return ( *medianIterator );
+  return (*medianIterator);
 }
 } // namespace itk
 

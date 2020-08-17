@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,11 +28,61 @@
 #include "itkRGBPixel.h"
 #include "itkRGBAPixel.h"
 #include "itkDiffusionTensor3D.h"
+#include "ITKDenoisingExport.h"
 
 namespace itk
 {
+/**\class PatchBasedDenoisingBaseImageFilterEnums
+ * \brief Contains all enum classes used by the PatchBasedDenoisingBaseImageFilter class.
+ * \ingroup ITKDenoising
+ */
+class PatchBasedDenoisingBaseImageFilterEnums
+{
+public:
+  /**\class NoiseModel
+   * \ingroup Filtering
+   * \ingroup ITKDenoising
+   * Type definition for selecting the noise model. */
+  enum class NoiseModel : uint8_t
+  {
+    NOMODEL = 0,
+    GAUSSIAN = 1,
+    RICIAN = 2,
+    POISSON = 3
+  };
 
-/** \class PatchBasedDenoisingBaseImageFilter
+  /**\class ComponentState
+   * \ingroup Filtering
+   * \ingroup ITKDenoising
+   * Type definition to determine which space to do calculations in.
+   * TODO add comment about why no noise model can be used for RIEMANNIAN space
+   */
+  enum class ComponentSpace : uint8_t
+  {
+    EUCLIDEAN = 0,
+    RIEMANNIAN = 1
+  };
+
+  /**\class FilterState
+   * \ingroup Filtering
+   * \ingroup ITKDenoising
+   * State that the filter is in, i.e. UNINITIALIZED or INITIALIZED. */
+  enum class FilterState : uint8_t
+  {
+    UNINITIALIZED = 0,
+    INITIALIZED = 1
+  };
+};
+// Define how to print enumeration
+extern ITKDenoising_EXPORT std::ostream &
+                           operator<<(std::ostream & out, const PatchBasedDenoisingBaseImageFilterEnums::NoiseModel value);
+extern ITKDenoising_EXPORT std::ostream &
+                           operator<<(std::ostream & out, const PatchBasedDenoisingBaseImageFilterEnums::ComponentSpace value);
+// Define how to print enumeration
+extern ITKDenoising_EXPORT std::ostream &
+                           operator<<(std::ostream & out, const PatchBasedDenoisingBaseImageFilterEnums::FilterState value);
+/**
+ *\class PatchBasedDenoisingBaseImageFilter
  * \brief Base class for patch-based denoising algorithms.
  *
  * Implementation of a denoising filter that uses iterative non-local, or semi-local, weighted
@@ -91,59 +141,67 @@ namespace itk
  */
 
 template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT PatchBasedDenoisingBaseImageFilter :
-  public ImageToImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT PatchBasedDenoisingBaseImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef PatchBasedDenoisingBaseImageFilter            Self;
-  typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef SmartPointer<Self>                            Pointer;
-  typedef SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PatchBasedDenoisingBaseImageFilter);
+
+  /** Standard class type aliases. */
+  using Self = PatchBasedDenoisingBaseImageFilter;
+  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PatchBasedDenoisingBaseImageFilter, ImageToImageFilter);
 
   /** Input and output image types. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
 
   /** Image dimension, assumed to be the same for input and output data. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      InputImageType::ImageDimension);
+  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
   /** Type definition for the input and output pixel types.
    *  Output pixel type will be used in computations.
    */
-  typedef typename InputImageType::PixelType           InputPixelType;
-  typedef typename OutputImageType::PixelType          OutputPixelType;
-  typedef OutputPixelType                              PixelType;
-  typedef typename NumericTraits<PixelType>::ValueType PixelValueType;
+  using InputPixelType = typename InputImageType::PixelType;
+  using OutputPixelType = typename OutputImageType::PixelType;
+  using PixelType = OutputPixelType;
+  using PixelValueType = typename NumericTraits<PixelType>::ValueType;
 
-  /** Type definition for selecting the noise model. */
-  typedef enum { NOMODEL = 0, GAUSSIAN = 1, RICIAN = 2, POISSON = 3 } NoiseModelType;
+  using NoiseModelEnum = PatchBasedDenoisingBaseImageFilterEnums::NoiseModel;
+  using ComponentSpaceEnum = PatchBasedDenoisingBaseImageFilterEnums::ComponentSpace;
+  using FilterStateEnum = PatchBasedDenoisingBaseImageFilterEnums::FilterState;
+#if !defined(ITK_LEGACY_REMOVE)
+  using NoiseModelType = PatchBasedDenoisingBaseImageFilterEnums::NoiseModel;
+  using ComponentSpaceType = PatchBasedDenoisingBaseImageFilterEnums::ComponentSpace;
+  using FilterStateType = PatchBasedDenoisingBaseImageFilterEnums::FilterState;
+  /**Exposes enums values for backwards compatibility*/
+  static constexpr NoiseModelEnum NOMODEL = NoiseModelEnum::NOMODEL;
+  static constexpr NoiseModelEnum GAUSSIAN = NoiseModelEnum::GAUSSIAN;
+  static constexpr NoiseModelEnum RICIAN = NoiseModelEnum::RICIAN;
+  static constexpr NoiseModelEnum POISSON = NoiseModelEnum::POISSON;
 
-  /** Type definition to determine which space to do calculations in. */
-  /** TODO add comment about why no noise model can be used for RIEMANNIAN space
-    */
-  typedef enum { EUCLIDEAN = 0, RIEMANNIAN = 1 } ComponentSpaceType;
+  static constexpr ComponentSpaceEnum EUCLIDEAN = ComponentSpaceEnum::EUCLIDEAN;
+  static constexpr ComponentSpaceEnum RIEMANNIAN = ComponentSpaceEnum::RIEMANNIAN;
 
-  /** State that the filter is in, i.e. UNINITIALIZED or INITIALIZED. */
-  typedef enum { UNINITIALIZED = 0, INITIALIZED = 1 } FilterStateType;
+  static constexpr FilterStateEnum UNINITIALIZED = FilterStateEnum::UNINITIALIZED;
+  static constexpr FilterStateEnum INITIALIZED = FilterStateEnum::INITIALIZED;
+#endif
 
   /** This data structure type is used to store the weights (mask) for pixels in a patch in order to
    *  make the patch more isotropic and less rectangular.
    */
-  typedef Array<float> PatchWeightsType;
+  using PatchWeightsType = Array<float>;
   /** This data structure type is used for efficiently accessing patch values
    *  from the image data structure.
    */
-  typedef ZeroFluxNeumannBoundaryCondition<OutputImageType> BoundaryConditionType;
-  typedef typename::itk::Statistics::ImageToNeighborhoodSampleAdaptor<
-      OutputImageType, BoundaryConditionType >              ListAdaptorType;
-  typedef typename ListAdaptorType::NeighborhoodRadiusType  PatchRadiusType;
-  typedef ConstNeighborhoodIterator<
-      InputImageType, BoundaryConditionType >               InputImagePatchIterator;
+  using BoundaryConditionType = ZeroFluxNeumannBoundaryCondition<OutputImageType>;
+  using ListAdaptorType =
+    typename ::itk::Statistics::ImageToNeighborhoodSampleAdaptor<OutputImageType, BoundaryConditionType>;
+  using PatchRadiusType = typename ListAdaptorType::NeighborhoodRadiusType;
+  using InputImagePatchIterator = ConstNeighborhoodIterator<InputImageType, BoundaryConditionType>;
 
   /** Set/Get the patch radius specified in physical coordinates.
    * Patch radius is preferably set to an even number.
@@ -153,26 +211,31 @@ public:
   itkSetMacro(PatchRadius, unsigned int);
   itkGetConstMacro(PatchRadius, unsigned int);
 
-  PatchRadiusType GetPatchRadiusInVoxels() const;
+  PatchRadiusType
+  GetPatchRadiusInVoxels() const;
 
-  PatchRadiusType GetPatchDiameterInVoxels() const;
+  PatchRadiusType
+  GetPatchDiameterInVoxels() const;
 
-  typename PatchRadiusType::SizeValueType GetPatchLengthInVoxels() const;
+  typename PatchRadiusType::SizeValueType
+  GetPatchLengthInVoxels() const;
 
   /** Set/Get the patch weights, or mask, that make the patch more isotropic (less rectangular).
    * This function allows the user to set arbitrary patch weights
    * by providing a 1-D array of weights.
    */
-  void SetPatchWeights(const PatchWeightsType& weights);
+  void
+  SetPatchWeights(const PatchWeightsType & weights);
 
-  PatchWeightsType GetPatchWeights() const;
+  PatchWeightsType
+  GetPatchWeights() const;
 
   /** Set/Get the noise model type.
    * Defaults to NOMODEL.
    * To use the noise model during denoising, NoiseModelFidelityWeight must be positive.
    */
-  itkSetMacro(NoiseModel, NoiseModelType);
-  itkGetConstMacro(NoiseModel, NoiseModelType);
+  itkSetEnumMacro(NoiseModel, NoiseModelEnum);
+  itkGetConstMacro(NoiseModel, NoiseModelEnum);
 
   /** Set/Get the weight on the smoothing term.
    *  This option is used when a noise model is specified.
@@ -204,14 +267,14 @@ public:
    *  Must be a positive integer.
    *  Defaults to 3, i.e. bandwidth updated after every 3 denoising iteration.
    */
-  itkSetClampMacro(KernelBandwidthUpdateFrequency, unsigned int, 1, NumericTraits<unsigned int>::max() );
+  itkSetClampMacro(KernelBandwidthUpdateFrequency, unsigned int, 1, NumericTraits<unsigned int>::max());
   itkGetConstMacro(KernelBandwidthUpdateFrequency, unsigned int);
 
   /** Set/Get the number of denoising iterations to perform.
    *  Must be a positive integer.
    *  Defaults to 1.
    */
-  itkSetClampMacro(NumberOfIterations, unsigned int, 1, NumericTraits<unsigned int>::max() );
+  itkSetClampMacro(NumberOfIterations, unsigned int, 1, NumericTraits<unsigned int>::max());
   itkGetConstReferenceMacro(NumberOfIterations, unsigned int);
 
   /** Get the number of elapsed iterations of the filter. */
@@ -226,15 +289,17 @@ public:
   itkGetConstMacro(AlwaysTreatComponentsAsEuclidean, bool);
 
   /** Set the state of the filter to INITIALIZED. */
-  virtual void SetStateToInitialized();
+  virtual void
+  SetStateToInitialized();
 
   /** Set the state of the filter to UNINITIALIZED. */
-  virtual void SetStateToUninitialized();
+  virtual void
+  SetStateToUninitialized();
 
   /** Set/Get the state of the filter. */
 #if !defined(ITK_WRAPPING_PARSER)
-  itkSetMacro(State, FilterStateType);
-  itkGetConstReferenceMacro(State, FilterStateType);
+  itkSetEnumMacro(State, FilterStateEnum);
+  itkGetConstReferenceMacro(State, FilterStateEnum);
 #endif
 
   /** Indicates whether the filter automatically resets to UNINITIALIZED state
@@ -247,113 +312,134 @@ public:
 
 protected:
   PatchBasedDenoisingBaseImageFilter();
-  ~PatchBasedDenoisingBaseImageFilter() ITK_OVERRIDE;
+  ~PatchBasedDenoisingBaseImageFilter() override = default;
 
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void
+  GenerateInputRequestedRegion() override;
 
-  virtual void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
-  virtual void CopyInputToOutput() = 0;
+  virtual void
+  CopyInputToOutput() = 0;
 
   /** Allocate memory and initialize patch weights. */
-  virtual void InitializePatchWeights();
+  virtual void
+  InitializePatchWeights();
 
-  virtual void Initialize() { }
+  virtual void
+  Initialize()
+  {}
 
   /** Allocate memory for a temporary update container in the subclass. */
-  virtual void AllocateUpdateBuffer() = 0;
+  virtual void
+  AllocateUpdateBuffer() = 0;
 
-  virtual void PreProcessInput() { }
+  virtual void
+  PreProcessInput()
+  {}
 
-  virtual void InitializeIteration() { }
+  virtual void
+  InitializeIteration()
+  {}
 
   /** Automatically estimate kernel bandwidth from the image data. */
-  virtual void ComputeKernelBandwidthUpdate() = 0;
+  virtual void
+  ComputeKernelBandwidthUpdate() = 0;
 
   /** Perform one iteration of image denoising. */
-  virtual void ComputeImageUpdate() = 0;
+  virtual void
+  ComputeImageUpdate() = 0;
 
-  virtual void ApplyUpdate() = 0;
+  virtual void
+  ApplyUpdate() = 0;
 
-  virtual void PostProcessOutput() { }
+  virtual void
+  PostProcessOutput()
+  {}
 
   /** Check and indicate whether to continue iterations or stop. */
-  virtual bool Halt();
+  virtual bool
+  Halt();
 
-  virtual bool ThreadedHalt(void *itkNotUsed(threadInfo) )
+  virtual bool
+  ThreadedHalt(void * itkNotUsed(threadInfo))
   {
-  return this->Halt();
+    return this->Halt();
   }
 
   itkSetMacro(ElapsedIterations, unsigned int);
 
   /** Determine the component space based on pixel type */
-  ComponentSpaceType DetermineComponentSpace(const RGBPixel<PixelValueType>& itkNotUsed(p) )
+  ComponentSpaceEnum
+  DetermineComponentSpace(const RGBPixel<PixelValueType> & itkNotUsed(p))
   {
-  return EUCLIDEAN;
+    return ComponentSpaceEnum::EUCLIDEAN;
   }
 
-  ComponentSpaceType DetermineComponentSpace(const RGBAPixel<PixelValueType>& itkNotUsed(p) )
+  ComponentSpaceEnum
+  DetermineComponentSpace(const RGBAPixel<PixelValueType> & itkNotUsed(p))
   {
-  return EUCLIDEAN;
+    return ComponentSpaceEnum::EUCLIDEAN;
   }
 
-  ComponentSpaceType DetermineComponentSpace(const DiffusionTensor3D<PixelValueType>& itkNotUsed(p) )
+  ComponentSpaceEnum
+  DetermineComponentSpace(const DiffusionTensor3D<PixelValueType> & itkNotUsed(p))
   {
-  return RIEMANNIAN;
+    return ComponentSpaceEnum::RIEMANNIAN;
   }
 
   template <typename PixelT>
-  ComponentSpaceType DetermineComponentSpace(const PixelT& itkNotUsed(p) )
+  ComponentSpaceEnum
+  DetermineComponentSpace(const PixelT & itkNotUsed(p))
   {
-  return EUCLIDEAN;
+    return ComponentSpaceEnum::EUCLIDEAN;
   }
 
   /** Set/Get the component space type. */
-  itkSetMacro(ComponentSpace, ComponentSpaceType);
-  itkGetConstMacro(ComponentSpace, ComponentSpaceType);
+  itkSetEnumMacro(ComponentSpace, ComponentSpaceEnum);
+  itkGetConstMacro(ComponentSpace, ComponentSpaceEnum);
 
   // Cache input and output pointer to get rid of thousands of calls
   // to GetInput and GetOutput.
-  const InputImageType *m_InputImage;
-  OutputImageType      *m_OutputImage;
+  const InputImageType * m_InputImage;
+  OutputImageType *      m_OutputImage;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PatchBasedDenoisingBaseImageFilter);
-
   /** Parameters that define patch size and patch weights (mask). */
-  unsigned int     m_PatchRadius;
+  unsigned int     m_PatchRadius{ 4 };
   PatchWeightsType m_PatchWeights;
 
   /** Parameters that define the strategy for kernel-bandwidth estimation. */
-  bool         m_KernelBandwidthEstimation;
-  unsigned int m_KernelBandwidthUpdateFrequency;
+  bool         m_KernelBandwidthEstimation{ false };
+  unsigned int m_KernelBandwidthUpdateFrequency{ 3 };
 
   /** Parameters that define the total number of denoising iterations to perform
    *  and those completed so far. */
-  unsigned int m_NumberOfIterations;
-  unsigned int m_ElapsedIterations;
+  unsigned int m_NumberOfIterations{ 1 };
+  unsigned int m_ElapsedIterations{ 0 };
 
   /** Parameters defining the usage of a specific noise model, if desired. */
-  NoiseModelType m_NoiseModel;
-  double         m_SmoothingWeight;
-  double         m_NoiseModelFidelityWeight;
+  NoiseModelEnum m_NoiseModel{ NoiseModelEnum::NOMODEL };
+  double         m_SmoothingWeight{ 1.0 };
+  double         m_NoiseModelFidelityWeight{ 0.0 };
 
   /** Parameter indicating whether components should be treated as if they are in
       Euclidean space regardless of pixel type. */
-  bool               m_AlwaysTreatComponentsAsEuclidean;
-  ComponentSpaceType m_ComponentSpace;
+  bool               m_AlwaysTreatComponentsAsEuclidean{ false };
+  ComponentSpaceEnum m_ComponentSpace{ ComponentSpaceEnum::EUCLIDEAN };
 
-  bool m_ManualReinitialization;
+  bool m_ManualReinitialization{ false };
 
-  FilterStateType m_State;
+  FilterStateEnum m_State{ FilterStateEnum::UNINITIALIZED };
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkPatchBasedDenoisingBaseImageFilter.hxx"
+#  include "itkPatchBasedDenoisingBaseImageFilter.hxx"
 #endif
 
 #endif

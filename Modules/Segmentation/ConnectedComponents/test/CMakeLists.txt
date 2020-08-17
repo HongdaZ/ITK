@@ -80,3 +80,9 @@ itk_add_test(NAME itkMaskConnectedComponentImageFilterTest
     --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/MaskConnectedComponentImageFilterTest.png,:}
               ${ITK_TEST_OUTPUT_DIR}/MaskConnectedComponentImageFilterTest.png
     itkMaskConnectedComponentImageFilterTest DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/MaskConnectedComponentImageFilterTest.png 130 145)
+
+set(ITKConnectedComponentsGTests
+        itkRelabelComponentImageFilterGTest.cxx
+        itkConnectedComponentImageFilterGTest.cxx
+        )
+CreateGoogleTestDriver(ITKConnectedComponents "${ITKConnectedComponents-Test_LIBRARIES}" "${ITKConnectedComponentsGTests}")

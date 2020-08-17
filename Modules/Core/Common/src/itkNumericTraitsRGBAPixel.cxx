@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ namespace itk
 // Helper macro for initializing the Zero and One static member of the
 // NumericTraits<>.
 //
-#define RGBAPIXELSTATICTRAITSMACRO(T)                                                                     \
-  template< >                                                                                             \
-  ITKCommon_EXPORT const RGBAPixel< T >  NumericTraits< RGBAPixel< T > >::Zero = RGBAPixel< T >(NumericTraits< T >::Zero); \
-  template< >                                                                                             \
-  ITKCommon_EXPORT const RGBAPixel< T >  NumericTraits< RGBAPixel< T > >::One = RGBAPixel< T >(NumericTraits< T >::One);
+#define RGBAPIXELSTATICTRAITSMACRO(T)                                                                                  \
+  template <>                                                                                                          \
+  ITKCommon_EXPORT const RGBAPixel<T> NumericTraits<RGBAPixel<T>>::Zero = RGBAPixel<T>(NumericTraits<T>::Zero);        \
+  template <>                                                                                                          \
+  ITKCommon_EXPORT const RGBAPixel<T> NumericTraits<RGBAPixel<T>>::One = RGBAPixel<T>(NumericTraits<T>::One);
 
 //
 // List here the specializations of the Traits:

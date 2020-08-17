@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_float_2x2.h
 #ifndef vnl_float_2x2_h_
 #define vnl_float_2x2_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 //  \file
 //  \brief 2x2 matrix of float
@@ -16,7 +13,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <vnl/vnl_matrix_fixed.h>
+#include "vnl_matrix_fixed.h"
 
 typedef vnl_matrix_fixed<float,2,2> vnl_float_2x2;
 

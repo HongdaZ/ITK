@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_vector_fixed_ref.h
 #ifndef vnl_vector_fixed_ref_h_
 #define vnl_vector_fixed_ref_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Fixed size vnl_vector using user-supplied storage
@@ -21,13 +18,15 @@
 // \endverbatim
 
 #include <iosfwd>
-#include <vcl_cassert.h>
-#include <vnl/vnl_vector_fixed.h>
-#include <vcl_compiler.h>
+#include <cassert>
+#include "vnl_vector_fixed.h"
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 #include "vnl/vnl_export.h"
 
 template <class T, unsigned int n>
-class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref_const
+class VNL_EXPORT vnl_vector_fixed_ref_const
 {
  protected:
   const T* data_;
@@ -86,18 +85,29 @@ class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref_const
   // it. This prevents a vnl_vector_fixed_ref_const from being cast into a
   // non-const vnl_vector reference, giving a slight increase in type safety.
 
-  //: Explicit conversion to a vnl_vector_ref.
+  //: Explicit conversion to a vnl_vector_ref or vnl_vector.
   // This is a cheap conversion for those functions that have an interface
   // for vnl_vector_ref but not for vnl_vector_fixed_ref. There is also a
   // conversion operator that should work most of the time.
   // \sa vnl_vector_ref::non_const
-  const vnl_vector_ref<T> as_ref() const { return vnl_vector_ref<T>( n, const_cast<T*>(data_) ); }
+  vnl_vector_ref<T> as_ref() { return vnl_vector_ref<T>( n, const_cast<T*>(data_block()) ); }
+  const vnl_vector_ref<T> as_ref() const { return vnl_vector_ref<T>( n, const_cast<T*>(data_block()) ); }
+  vnl_vector<T> as_vector() const { return vnl_vector<T>(const_cast<T*>(data_block()), n); }
 
   //: Cheap conversion to vnl_vector_ref
   // Sometimes, such as with templated functions, the compiler cannot
   // use this user-defined conversion. For those cases, use the
   // explicit as_ref() method instead.
-  operator const vnl_vector_ref<T>() const { return vnl_vector_ref<T>( n, const_cast<T*>(data_) ); }
+  explicit operator vnl_vector_ref<T>() { return this->as_ref(); }
+#if ! VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS
+  explicit operator const vnl_vector_ref<T>() const { return vnl_vector_ref<T>( n, const_cast<T*>(data_) ); }
+#else
+#if VXL_LEGACY_FUTURE_REMOVE
+  VXL_DEPRECATED_MSG("Implicit cast conversion is dangerous.\nUSE: .as_vector() or .as_ref() member function for clarity.")
+#endif
+  operator const vnl_vector_ref<T>() const { return vnl_vector_ref<T>( n, const_cast<T*>(data_) ); } //Implicit for backwards compatibility
+#endif
+  explicit operator vnl_vector<T>() const { return this->as_vector(); }
 
   //----------------------------------------------------------------------
 
@@ -131,10 +141,6 @@ class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref_const
 
   //: Returns a subvector specified by the start index and length. O(n).
   vnl_vector<T> extract (unsigned int len, unsigned int start=0) const;
-
-  //: Convert to a vnl_vector.
-  vnl_vector<T> as_vector() const { return extract(n); }
-
 
   // norms etc
   typedef typename vnl_c_vector<T>::abs_t abs_t;
@@ -301,7 +307,7 @@ class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref_const
 // Non const vector fixed reference
 
 template <class T, unsigned n>
-class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref : public vnl_vector_fixed_ref_const<T,n>
+class VNL_EXPORT vnl_vector_fixed_ref : public vnl_vector_fixed_ref_const<T,n>
 {
   typedef vnl_vector_fixed_ref_const<T,n> base;
 
@@ -369,9 +375,6 @@ class VNL_TEMPLATE_EXPORT vnl_vector_fixed_ref : public vnl_vector_fixed_ref_con
 
   //: Return the i-th element
   T& operator[] ( unsigned int i ) const { return data_block()[i]; }
-
-  // \sa vnl_vector_ref::non_const
-  vnl_vector_ref<T> as_ref() { return vnl_vector_ref<T>( n, data_block() ); }
 
   typedef T       *iterator;
   //: Iterator pointing to start of data

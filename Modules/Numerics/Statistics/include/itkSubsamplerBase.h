@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,12 @@
 #include "itkSample.h"
 #include "itkSubsample.h"
 
-namespace itk {
-namespace Statistics {
-/** \class SubsamplerBase
+namespace itk
+{
+namespace Statistics
+{
+/**
+ *\class SubsamplerBase
  * \brief This is the base subsampler class which defines the subsampler API.
  *
  * This class will search a Sample provided by SetSample and return a
@@ -42,16 +45,18 @@ namespace Statistics {
  * \ingroup ITKStatistics
  */
 
-template < typename TSample >
+template <typename TSample>
 class ITK_TEMPLATE_EXPORT SubsamplerBase : public Object
 {
 public:
-  /** Standard class typedefs */
-  typedef SubsamplerBase                        Self;
-  typedef Object                                Superclass;
-  typedef Self                                  Baseclass;
-  typedef SmartPointer<Self>                    Pointer;
-  typedef SmartPointer<const Self>              ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SubsamplerBase);
+
+  /** Standard class type aliases */
+  using Self = SubsamplerBase;
+  using Superclass = Object;
+  using Baseclass = Self;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(SubsamplerBase, Object);
@@ -59,17 +64,17 @@ public:
   /** implement type-specific clone method */
   itkCloneMacro(Self);
 
-  /** typedef alias for the source data container */
-  typedef TSample                                          SampleType;
-  typedef typename SampleType::ConstPointer                SampleConstPointer;
-  typedef typename TSample::MeasurementVectorType          MeasurementVectorType;
-  typedef typename TSample::InstanceIdentifier             InstanceIdentifier;
+  /** type alias alias for the source data container */
+  using SampleType = TSample;
+  using SampleConstPointer = typename SampleType::ConstPointer;
+  using MeasurementVectorType = typename TSample::MeasurementVectorType;
+  using InstanceIdentifier = typename TSample::InstanceIdentifier;
 
-  typedef Subsample<TSample>                               SubsampleType;
-  typedef typename SubsampleType::Pointer                  SubsamplePointer;
-  typedef typename SubsampleType::ConstIterator            SubsampleConstIterator;
-  typedef typename SubsampleType::InstanceIdentifierHolder InstanceIdentifierHolder;
-  typedef unsigned int                                     SeedType;
+  using SubsampleType = Subsample<TSample>;
+  using SubsamplePointer = typename SubsampleType::Pointer;
+  using SubsampleConstIterator = typename SubsampleType::ConstIterator;
+  using InstanceIdentifierHolder = typename SubsampleType::InstanceIdentifierHolder;
+  using SeedType = unsigned int;
 
   /** Plug in the actual sample data */
   itkSetConstObjectMacro(Sample, SampleType);
@@ -91,7 +96,8 @@ public:
 
   /** Specify whether the subsampler should return all possible
    * matches. */
-  virtual void RequestMaximumNumberOfResults()
+  virtual void
+  RequestMaximumNumberOfResults()
   {
     if (!this->m_RequestMaximumNumberOfResults)
     {
@@ -105,8 +111,8 @@ public:
    * them as a Subsample.  The definition of similar will be subclass-
    * specific.  And could mean spatial similarity or feature similarity
    * etc.  */
-  virtual void Search(const InstanceIdentifier& query,
-                      SubsamplePointer& results) = 0;
+  virtual void
+  Search(const InstanceIdentifier & query, SubsamplePointer & results) = 0;
 
 protected:
   /**
@@ -114,28 +120,26 @@ protected:
    * This does a complete copy of the subsampler state
    * to the new subsampler
    */
-  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  typename LightObject::Pointer
+  InternalClone() const override;
 
   SubsamplerBase();
-  virtual ~SubsamplerBase() ITK_OVERRIDE {};
+  ~SubsamplerBase() override = default;
 
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   SampleConstPointer m_Sample;
   bool               m_RequestMaximumNumberOfResults;
   bool               m_CanSelectQuery;
   SeedType           m_Seed;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SubsamplerBase);
-
 }; // end of class SubsamplerBase
 
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkSubsamplerBase.hxx"
+#  include "itkSubsamplerBase.hxx"
 #endif
 
 #endif

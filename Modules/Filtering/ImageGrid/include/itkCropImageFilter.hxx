@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,33 +22,32 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TOutputImage >
+template <typename TInputImage, typename TOutputImage>
 void
-CropImageFilter< TInputImage, TOutputImage >
-::GenerateOutputInformation()
+CropImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
-  const TInputImage *inputPtr = this->GetInput();
+  const TInputImage * inputPtr = this->GetInput();
 
-  if ( !inputPtr )
-    {
+  if (!inputPtr)
+  {
     return;
-    }
+  }
 
   // Compute the new region size
   OutputImageRegionType croppedRegion;
   SizeType              sz;
   OutputImageIndexType  idx;
 
-  InputImageSizeType input_sz =
-    inputPtr->GetLargestPossibleRegion().GetSize();
-  InputImageIndexType input_idx =
-    inputPtr->GetLargestPossibleRegion().GetIndex();
+  InputImageSizeType  input_sz = inputPtr->GetLargestPossibleRegion().GetSize();
+  InputImageIndexType input_idx = inputPtr->GetLargestPossibleRegion().GetIndex();
 
-  for( unsigned int i = 0; i < InputImageDimension; ++i )
-    {
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
+  {
     idx[i] = input_idx[i] + m_LowerBoundaryCropSize[i];
-    sz[i]  = input_sz[i]  - ( m_UpperBoundaryCropSize[i] + m_LowerBoundaryCropSize[i] );
-    }
+
+    assert(input_sz[i] >= (m_UpperBoundaryCropSize[i] + m_LowerBoundaryCropSize[i]));
+    sz[i] = input_sz[i] - (m_UpperBoundaryCropSize[i] + m_LowerBoundaryCropSize[i]);
+  }
 
   croppedRegion.SetSize(sz);
   croppedRegion.SetIndex(idx);
@@ -59,17 +58,34 @@ CropImageFilter< TInputImage, TOutputImage >
   Superclass::GenerateOutputInformation();
 }
 
-template< typename TInputImage, typename TOutputImage >
+
+template <typename TInputImage, typename TOutputImage>
 void
-CropImageFilter< TInputImage, TOutputImage >
-::PrintSelf(std::ostream & os, Indent indent) const
+CropImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() ITKv5_CONST
+{
+  Superclass::VerifyInputInformation();
+
+  const TInputImage * inputPtr = this->GetInput();
+
+  InputImageSizeType input_sz = inputPtr->GetLargestPossibleRegion().GetSize();
+
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
+  {
+    if (input_sz[i] < (m_UpperBoundaryCropSize[i] + m_LowerBoundaryCropSize[i]))
+    {
+      itkExceptionMacro("The input image's size " << input_sz << " is less than the total of the crop size!");
+    }
+  }
+}
+
+template <typename TInputImage, typename TOutputImage>
+void
+CropImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "UpperBoundaryCropSize: " << m_UpperBoundaryCropSize
-     << std::endl;
-  os << indent << "LowerBoundaryCropSize: " << m_LowerBoundaryCropSize
-     << std::endl;
+  os << indent << "UpperBoundaryCropSize: " << m_UpperBoundaryCropSize << std::endl;
+  os << indent << "LowerBoundaryCropSize: " << m_LowerBoundaryCropSize << std::endl;
 }
 } // end namespace itk
 

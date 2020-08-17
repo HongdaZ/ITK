@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_least_squares_function.h
 #ifndef vnl_least_squares_function_h_
 #define vnl_least_squares_function_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Abstract base for minimising functions
@@ -21,8 +18,8 @@
 //
 // not used? #include <vcl_compiler.h>
 #include <string>
-#include <vnl/vnl_vector.h>
-#include <vnl/vnl_matrix.h>
+#include "vnl_vector.h"
+#include "vnl_matrix.h"
 #include "vnl/vnl_export.h"
 
 //:  Abstract base for minimising functions.
@@ -56,7 +53,7 @@ class VNL_EXPORT vnl_least_squares_function
     use_gradient_(g == use_gradient)
   { dim_warning(p_,n_); }
 
-  virtual ~vnl_least_squares_function() {}
+  virtual ~vnl_least_squares_function() = default;
 
   // the virtuals may call this to signal a failure.
   void throw_failure() { failure = true; }

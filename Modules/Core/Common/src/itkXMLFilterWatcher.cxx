@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,50 +19,43 @@
 
 namespace itk
 {
-void XMLFilterWatcher::ShowProgress()
+void
+XMLFilterWatcher::ShowProgress()
 {
-    if ( this->GetProcess() )
+  if (this->GetProcess())
+  {
+    int steps = this->GetSteps();
+    steps++;
+    this->SetSteps(steps);
+    if (!this->GetQuiet())
     {
-        int steps = this->GetSteps();
-        steps++;
-        this->SetSteps(steps);
-        if ( !this->GetQuiet() )
-        {
-            std::cout << "<filter-progress>"
-            << this->GetProcess()->GetProgress()
-            << "</filter-progress>"
-            << std::endl;
-            std::cout << std::flush;
-        }
+      std::cout << "<filter-progress>" << this->GetProcess()->GetProgress() << "</filter-progress>" << std::endl;
+      std::cout << std::flush;
     }
+  }
 }
 
-void XMLFilterWatcher::StartFilter()
+void
+XMLFilterWatcher::StartFilter()
 {
-    this->SetSteps(0);
-    this->SetIterations(0);
-    this->GetTimeProbe().Start();
-    if ( !this->GetQuiet() )
-    {
-        std::cout << "<filter-start>"
-        << std::endl;
-        std::cout << "<filter-name>"
-        << ( this->GetProcess()
-            ? this->GetProcess()->GetNameOfClass() : "None" )
-        << "</filter-name>"
-        << std::endl;
-        std::cout << "<filter-comment>"
-        << " \"" << this->GetComment() << "\" "
-        << "</filter-comment>"
-        << std::endl;
-        std::cout << "</filter-start>"
-        << std::endl;
-        std::cout << std::flush;
-    }
+  this->SetSteps(0);
+  this->SetIterations(0);
+  this->GetTimeProbe().Start();
+  if (!this->GetQuiet())
+  {
+    std::cout << "<filter-start>" << std::endl;
+    std::cout << "<filter-name>" << (this->GetProcess() ? this->GetProcess()->GetNameOfClass() : "None")
+              << "</filter-name>" << std::endl;
+    std::cout << "<filter-comment>"
+              << " \"" << this->GetComment() << "\" "
+              << "</filter-comment>" << std::endl;
+    std::cout << "</filter-start>" << std::endl;
+    std::cout << std::flush;
+  }
 }
 
-void XMLFilterWatcher::EndFilter()
-{
-}
+void
+XMLFilterWatcher::EndFilter()
+{}
 
-}
+} // namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@
 // Macports gcc 4.9.2: Fails
 // Macports gcc 4.9.2: with native headers : Compiles
 
-int main(void)
+int
+main()
 {
   typedef int (^IntBlock)();
   return 0;

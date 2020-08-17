@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@
 namespace itk
 {
 
-/** \class ImageToVTKImageFilter
+/**
+ *\class ImageToVTKImageFilter
  * \brief Converts an ITK image into a VTK image and plugs a
  *  itk data pipeline to a VTK datapipeline.
  *
@@ -37,20 +38,22 @@ namespace itk
  *
  * \ingroup   ITKVtkGlue
  *
- * \wiki
- * \wikiexample{IO/ImageToVTKImageFilter,Display an ITK image}
- * \wikiexample{IO/itkVtkImageConvertDICOM,Uses a custom user matrix to align the image with DICOM physical space}
- * \endwiki
+ * \sphinx
+ * \sphinxexample{Bridge/VtkGlue/ConvertAnitkImageTovtkImageData,Convert an itk::Image to vtkImageData in a pipeline}
+ * \sphinxexample{Bridge/VtkGlue/ConvertRGBvtkImageDataToAnitkImage,Convert RGB vtkImageData to an itk::Image}
+ * \endsphinx
  */
-template <typename TInputImage >
+template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ImageToVTKImageFilter : public ProcessObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ImageToVTKImageFilter     Self;
-  typedef ProcessObject             Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVTKImageFilter);
+
+  /** Standard class type aliases. */
+  using Self = ImageToVTKImageFilter;
+  using Superclass = ProcessObject;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,53 +61,58 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToVTKImageFilter, ProcessObject);
 
-  /** Some typedefs. */
-  typedef TInputImage                            InputImageType;
-  typedef typename InputImageType::ConstPointer  InputImagePointer;
+  /** Some type alias. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::ConstPointer;
 
-  typedef VTKImageExport< InputImageType>        ExporterFilterType;
-  typedef typename ExporterFilterType::Pointer   ExporterFilterPointer;
+  using ExporterFilterType = VTKImageExport<InputImageType>;
+  using ExporterFilterPointer = typename ExporterFilterType::Pointer;
 
   /** Get the output in the form of a vtkImage.
       This call is delegated to the internal vtkImageImporter filter  */
-  vtkImageData *  GetOutput() const;
+  vtkImageData *
+  GetOutput() const;
 
   /** Set the input in the form of an itk::Image */
   using Superclass::SetInput;
-  void SetInput( const InputImageType * );
-  InputImageType * GetInput();
+  void
+  SetInput(const InputImageType *);
+  InputImageType *
+  GetInput();
 
   /** Return the internal VTK image importer filter.
       This is intended to facilitate users the access
       to methods in the importer */
-  vtkImageImport * GetImporter() const;
+  vtkImageImport *
+  GetImporter() const;
 
   /** Return the internal ITK image exporter filter.
       This is intended to facilitate users the access
       to methods in the exporter */
-  ExporterFilterType * GetExporter() const;
+  ExporterFilterType *
+  GetExporter() const;
 
   /** This call delegates the update to the importer */
-  virtual void Update() ITK_OVERRIDE;
+  void
+  Update() override;
 
   /** This call delegates the update to the importer */
-  virtual void UpdateLargestPossibleRegion() ITK_OVERRIDE;
+  void
+  UpdateLargestPossibleRegion() override;
 
 protected:
   ImageToVTKImageFilter();
-  virtual ~ImageToVTKImageFilter();
+  ~ImageToVTKImageFilter() override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVTKImageFilter);
-
-  ExporterFilterPointer       m_Exporter;
-  vtkImageImport *            m_Importer;
+  ExporterFilterPointer m_Exporter;
+  vtkImageImport *      m_Importer;
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkImageToVTKImageFilter.hxx"
+#  include "itkImageToVTKImageFilter.hxx"
 #endif
 
 #endif

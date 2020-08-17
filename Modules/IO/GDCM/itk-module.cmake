@@ -5,9 +5,10 @@ readers and writers of the medical imaging DICOM standard.")
 itk_module(ITKIOGDCM
   ENABLE_SHARED
   DEPENDS
-    ITKGDCM
-  PRIVATE_DEPENDS
+    ITKCommon
     ITKIOImageBase
+  PRIVATE_DEPENDS
+    ITKGDCM
   TEST_DEPENDS
     ITKTestKernel
     ITKGDCM
