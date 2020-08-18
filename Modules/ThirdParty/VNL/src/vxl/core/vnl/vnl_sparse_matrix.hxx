@@ -8,14 +8,16 @@
 #include <iostream>
 #include "vnl_sparse_matrix.h"
 
-#include <vcl_cassert.h>
-#include <vcl_compiler.h>
+#include <cassert>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 
-#include <vnl/vnl_math.h>
-#include <vnl/vnl_complex_traits.h>
+#include "vnl_math.h"
+#include "vnl_complex_traits.h"
 
 #ifdef DEBUG_SPARSE
-# include <vnl/vnl_matrix.h>
+# include "vnl_matrix.h"
 #endif
 
 // Implementation of vnl_sparse_matrix

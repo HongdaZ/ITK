@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@
 //
 //  The whole process is illustrated in Figure
 //  \ref{fig:ResampleImageFilterTransformComposition1}. In order to correctly
-//  interpret the process of the ResampleImageFilter you should be aware of the
-//  origin and spacing settings of both the input and output images.
+//  interpret the process of the ResampleImageFilter you should be aware of
+//  the origin and spacing settings of both the input and output images.
 //
 //  \index{itk::ResampleImageFilter!Image internal transform}
 //
@@ -57,52 +57,53 @@
 #include "itkNearestNeighborInterpolateImageFunction.h"
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile";
     std::cerr << "  [exampleAction={0,1,2,3,4}]" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   int exampleAction = 0;
 
-  if( argc >= 4 )
-    {
-    exampleAction = atoi( argv[3] );
-    }
+  if (argc >= 4)
+  {
+    exampleAction = std::stoi(argv[3]);
+  }
 
-  const     unsigned int   Dimension = 2;
-  typedef   unsigned char  InputPixelType;
-  typedef   unsigned char  OutputPixelType;
+  constexpr unsigned int Dimension = 2;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
 
-  typedef itk::ResampleImageFilter<
-                  InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::ResampleImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
-  typedef itk::AffineTransform< double, Dimension >  TransformType;
+  using TransformType = itk::AffineTransform<double, Dimension>;
   TransformType::Pointer transform = TransformType::New();
 
-  typedef itk::NearestNeighborInterpolateImageFunction<
-                       InputImageType, double >  InterpolatorType;
+  using InterpolatorType =
+    itk::NearestNeighborInterpolateImageFunction<InputImageType, double>;
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  filter->SetInterpolator( interpolator );
+  filter->SetInterpolator(interpolator);
 
 
   //  Software Guide : BeginLatex
@@ -115,7 +116,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetDefaultPixelValue( 50 );
+  filter->SetDefaultPixelValue(50);
   // Software Guide : EndCodeSnippet
 
 
@@ -127,24 +128,25 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // pixel spacing in millimeters along X & Y
-    const double spacing[ Dimension ] = { 1.0, 1.0 };
-    filter->SetOutputSpacing( spacing );
+    const double spacing[Dimension] = { 1.0, 1.0 };
+    filter->SetOutputSpacing(spacing);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
-  //  We will preserve the orientation of the input image by using the following call.
+  //  We will preserve the orientation of the input image by using the
+  //  following call.
   //
   //  \index{itk::ResampleImageFilter!SetOutputOrigin()}
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOutputDirection( reader->GetOutput()->GetDirection() );
+  filter->SetOutputDirection(reader->GetOutput()->GetDirection());
   // Software Guide : EndCodeSnippet
 
 
@@ -158,23 +160,23 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // space coordinate of origin
-    const double origin[ Dimension ] = { 30.0, 40.0 };
-    filter->SetOutputOrigin( origin );
+    const double origin[Dimension] = { 30.0, 40.0 };
+    filter->SetOutputOrigin(origin);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
 
-  InputImageType::SizeType   size;
+  InputImageType::SizeType size;
 
-  size[0] = 300;  // number of pixels along X
-  size[1] = 300;  // number of pixels along Y
-  filter->SetSize( size );
+  size[0] = 300; // number of pixels along X
+  size[1] = 300; // number of pixels along Y
+  filter->SetSize(size);
 
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
 
 
   //  Software Guide : BeginLatex
@@ -189,14 +191,14 @@ int main( int argc, char * argv[] )
 
   // Software Guide : BeginCodeSnippet
   transform->SetIdentity();
-  filter->SetTransform( transform );
+  filter->SetTransform(transform);
   // Software Guide : EndCodeSnippet
 
 
-  if( exampleAction == 0 )
-    {
+  if (exampleAction == 0)
+  {
     writer->Update();
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -231,9 +233,9 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 150;  // number of pixels along X
-  size[1] = 200;  // number of pixels along Y
-  filter->SetSize( size );
+  size[0] = 150; // number of pixels along X
+  size[1] = 200; // number of pixels along Y
+  filter->SetSize(size);
   // Software Guide : EndCodeSnippet
 
 
@@ -243,19 +245,19 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // space coordinate of origin
-    const double origin[ Dimension ] = { 60.0, 30.0 };
-    filter->SetOutputOrigin( origin );
+    const double origin[Dimension] = { 60.0, 30.0 };
+    filter->SetOutputOrigin(origin);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
 
-  if( exampleAction == 1 )
-    {
+  if (exampleAction == 1)
+  {
     writer->Update();
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -293,8 +295,8 @@ int main( int argc, char * argv[] )
   // \includegraphics[width=\textwidth]{ResampleImageFilterTransformComposition3}
   // \itkcaption[ResampleImageFilter selecting the origin of the input
   // image]{Effect of selecting the origin of the input
-  // image with ResampleImageFilter.} \label{fig:ResampleImageFilterTransformComposition3}
-  // \end{figure}
+  // image with ResampleImageFilter.}
+  // \label{fig:ResampleImageFilterTransformComposition3} \end{figure}
   //
   //  The pixel with index $I=(56,120)$ on the output image has coordinates
   //  $P=(116,150)$ in physical space. The identity transform maps $P$ to the
@@ -304,10 +306,10 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
 
-  if( exampleAction == 2 )
-    {
+  if (exampleAction == 2)
+  {
     writer->Update();
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -320,13 +322,13 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // space coordinate of origin
-    const double origin[ Dimension ] = { 0.0, 0.0 };
-    filter->SetOutputOrigin( origin );
+    const double origin[Dimension] = { 0.0, 0.0 };
+    filter->SetOutputOrigin(origin);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -336,13 +338,13 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // pixel spacing in millimeters
-    const double spacing[ Dimension ] = { 2.0, 3.0 };
-    filter->SetOutputSpacing( spacing );
+    const double spacing[Dimension] = { 2.0, 3.0 };
+    filter->SetOutputSpacing(spacing);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -355,9 +357,9 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 80;  // number of pixels along X
-  size[1] = 50;  // number of pixels along Y
-  filter->SetSize( size );
+  size[0] = 80; // number of pixels along X
+  size[1] = 50; // number of pixels along Y
+  filter->SetSize(size);
   // Software Guide : EndCodeSnippet
 
 
@@ -398,8 +400,8 @@ int main( int argc, char * argv[] )
   // \begin{figure}
   // \center
   // \includegraphics[width=\textwidth]{ResampleImageFilterTransformComposition4}
-  // \itkcaption[ResampleImageFilter and output image spacing]{Effect of selecting
-  // the spacing on the output image.}
+  // \itkcaption[ResampleImageFilter and output image spacing]{Effect of
+  // selecting the spacing on the output image.}
   // \label{fig:ResampleImageFilterTransformComposition4}
   // \end{figure}
   //
@@ -414,10 +416,10 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  if( exampleAction == 3 )
-    {
+  if (exampleAction == 3)
+  {
     writer->Update();
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -442,9 +444,9 @@ int main( int argc, char * argv[] )
   //  as viewed with a naive image viewer (left) and with a correct image
   //  viewer (right).
   //
-  //  The following code is used to transform this non-unit spacing input image
-  //  into another non-unit spacing image located at a non-zero origin. The
-  //  comparison between input and output in a common reference system is
+  //  The following code is used to transform this non-unit spacing input
+  //  image into another non-unit spacing image located at a non-zero origin.
+  //  The comparison between input and output in a common reference system is
   //  presented in figure \ref{fig:ResampleImageFilterTransformComposition5}.
   //
   //  Software Guide : EndLatex
@@ -457,13 +459,13 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
     // space coordinate of origin
-    const double origin[ Dimension ] = { 25.0, 35.0 };
-    filter->SetOutputOrigin( origin );
+    const double origin[Dimension] = { 25.0, 35.0 };
+    filter->SetOutputOrigin(origin);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -474,9 +476,9 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 40;  // number of pixels along X
-  size[1] = 45;  // number of pixels along Y
-  filter->SetSize( size );
+  size[0] = 40; // number of pixels along X
+  size[1] = 45; // number of pixels along Y
+  filter->SetSize(size);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -487,17 +489,17 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-    {
+  {
     // Software Guide : BeginCodeSnippet
-    const double spacing[ Dimension ] = { 4.0, 4.5 };
-    filter->SetOutputSpacing( spacing );
+    const double spacing[Dimension] = { 4.0, 4.5 };
+    filter->SetOutputSpacing(spacing);
     // Software Guide : EndCodeSnippet
-    }
+  }
 
-  if( exampleAction == 4 )
-    {
+  if (exampleAction == 4)
+  {
     writer->Update();
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -527,8 +529,8 @@ int main( int argc, char * argv[] )
   //
   //  Note also that the discretization of the image is more visible on the
   //  output presented on the right side of Figure
-  //  \ref{fig:ResampleImageFilterTransformComposition5} due to the choice of a
-  //  low resolution---just $40 \times 45$ pixels.
+  //  \ref{fig:ResampleImageFilterTransformComposition5} due to the choice of
+  //  a low resolution---just $40 \times 45$ pixels.
   //
   //  Software Guide : EndLatex
 

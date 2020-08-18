@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
  *=========================================================================*/
 
 #include "lsqrDense.h"
+#include "vcl_compiler_detection.h"
 
 lsqrDense::lsqrDense()
 {
-  this->A = 0;
+  this->A = nullptr;
 }
 
 
-lsqrDense::~lsqrDense()
-{
-}
+lsqrDense::~lsqrDense() = default;
 
 
 void

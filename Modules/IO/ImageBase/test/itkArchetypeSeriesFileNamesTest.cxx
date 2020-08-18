@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,43 +17,40 @@
  *=========================================================================*/
 
 #include "itkArchetypeSeriesFileNames.h"
+#include "itkTestingMacros.h"
 
-int itkArchetypeSeriesFileNamesTest(int argc, char* argv[])
+int
+itkArchetypeSeriesFileNamesTest(int argc, char * argv[])
 {
 
-  if(argc < 2)
-    {
-    std::cerr << "Usage: " << argv[0]
-              << "One or more filenames (with directory)";
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << "One or more filenames (with directory)";
     return EXIT_FAILURE;
-    }
+  }
 
 
   std::cout << "Number of arguments: " << argc << std::endl;
 
-  for (int i=1; i < argc; i++)
-    {
+  for (int i = 1; i < argc; i++)
+  {
     std::cout << "Testing argument " << i << std::endl;
     std::cout << "Archetype name: " << argv[i] << std::endl;
 
     itk::ArchetypeSeriesFileNames::Pointer fit = itk::ArchetypeSeriesFileNames::New();
-    fit->SetArchetype ( argv[i] );
+    fit->SetArchetype(argv[i]);
 
-    std::vector<std::string> names = fit->GetFileNames();
+    std::vector<std::string>           names = fit->GetFileNames();
     std::vector<std::string>::iterator nit;
 
     std::cout << "List of returned filenames: " << std::endl;
-    for (nit = names.begin();
-         nit != names.end();
-         ++nit)
-      {
+    for (nit = names.begin(); nit != names.end(); ++nit)
+    {
       std::cout << "File: " << (*nit).c_str() << std::endl;
-      }
-
-    std::cout << fit;
-
     }
 
-  return EXIT_SUCCESS;
+    std::cout << fit;
+  }
 
+  return EXIT_SUCCESS;
 }

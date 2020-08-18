@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_double_2.h
 #ifndef vnl_double_2_h_
 #define vnl_double_2_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 //  \file
 //  \brief  alias for vnl_vector_fixed<double,2>
@@ -17,7 +14,7 @@
 //   Peter Vanroose, 24 Mar. 2007: removed deprecated cross_2d() alias
 // \endverbatim
 
-#include <vnl/vnl_T_n.h>
+#include "vnl_T_n.h"
 
 //: class vnl_double_2 : a vnl_vector of 2 doubles.
 vnl_T_n_impl(double,2);

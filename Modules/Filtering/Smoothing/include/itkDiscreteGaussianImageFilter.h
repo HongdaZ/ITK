@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 #include "itkImageToImageFilter.h"
 #include "itkImage.h"
+#include "itkZeroFluxNeumannBoundaryCondition.h"
 
 namespace itk
 {
@@ -53,21 +54,22 @@ namespace itk
  * \ingroup ImageFeatureExtraction
  * \ingroup ITKSmoothing
  *
- * \wiki
- * \wikiexample{Smoothing/DiscreteGaussianImageFilter,Smooth an image with a discrete Gaussian filter}
- * \endwiki
+ * \sphinx
+ * \sphinxexample{Filtering/Smoothing/SmoothWithRecursiveGaussian,Computes the smoothing with Gaussian kernel}
+ * \endsphinx
  */
 
-template< typename TInputImage, typename TOutputImage >
-class ITK_TEMPLATE_EXPORT DiscreteGaussianImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TOutputImage = TInputImage>
+class ITK_TEMPLATE_EXPORT DiscreteGaussianImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DiscreteGaussianImageFilter                     Self;
-  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
-  typedef SmartPointer< Self >                            Pointer;
-  typedef SmartPointer< const Self >                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteGaussianImageFilter);
+
+  /** Standard class type aliases. */
+  using Self = DiscreteGaussianImageFilter;
+  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,27 +78,40 @@ public:
   itkTypeMacro(DiscreteGaussianImageFilter, ImageToImageFilter);
 
   /** Image type information. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  typedef typename TOutputImage::PixelType         OutputPixelType;
-  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
-  typedef typename TInputImage::PixelType          InputPixelType;
-  typedef typename TInputImage::InternalPixelType  InputInternalPixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
+  using InputPixelType = typename TInputImage::PixelType;
+  using InputInternalPixelType = typename TInputImage::InternalPixelType;
 
   /** Pixel value type for Vector pixel types **/
-  typedef typename NumericTraits<InputPixelType>::ValueType InputPixelValueType;
-  typedef typename NumericTraits<OutputPixelType>::ValueType OutputPixelValueType;
+  using InputPixelValueType = typename NumericTraits<InputPixelType>::ValueType;
+  using OutputPixelValueType = typename NumericTraits<OutputPixelType>::ValueType;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+
+  /** Type of the pixel to use for intermediate results */
+  using RealOutputPixelType = typename NumericTraits<OutputPixelType>::RealType;
+  using RealOutputImageType = Image<OutputPixelType, ImageDimension>;
+  using RealOutputPixelValueType = typename NumericTraits<RealOutputPixelType>::ValueType;
+
+  /** Typedef to describe the boundary condition. */
+  using BoundaryConditionType = ImageBoundaryCondition<TInputImage>;
+  using InputBoundaryConditionPointerType = BoundaryConditionType *;
+  using InputDefaultBoundaryConditionType = ZeroFluxNeumannBoundaryCondition<TInputImage>;
+  using RealBoundaryConditionPointerType = ImageBoundaryCondition<RealOutputImageType> *;
+  using RealDefaultBoundaryConditionType = ZeroFluxNeumannBoundaryCondition<RealOutputImageType>;
 
   /** Typedef of double containers */
-  typedef FixedArray< double, itkGetStaticConstMacro(ImageDimension) > ArrayType;
+  using ArrayType = FixedArray<double, Self::ImageDimension>;
+  using SigmaArrayType = ArrayType;
+  using ScalarRealType = double;
 
   /** The variance for the discrete Gaussian kernel.  Sets the variance
    * independently for each dimension, but
@@ -126,74 +141,132 @@ public:
   itkGetConstMacro(FilterDimensionality, unsigned int);
   itkSetMacro(FilterDimensionality, unsigned int);
 
+  /** Set/get the boundary condition. */
+  itkSetMacro(InputBoundaryCondition, InputBoundaryConditionPointerType);
+  itkGetConstMacro(InputBoundaryCondition, InputBoundaryConditionPointerType);
+  itkSetMacro(RealBoundaryCondition, RealBoundaryConditionPointerType);
+  itkGetConstMacro(RealBoundaryCondition, RealBoundaryConditionPointerType);
+
   /** Convenience Set methods for setting all dimensional parameters
    *  to the same values. */
-  void SetVariance(const typename ArrayType::ValueType v)
+  void
+  SetVariance(const typename ArrayType::ValueType v)
   {
     m_Variance.Fill(v);
     this->Modified();
   }
 
-  void SetMaximumError(const typename ArrayType::ValueType v)
+  void
+  SetMaximumError(const typename ArrayType::ValueType v)
   {
     m_MaximumError.Fill(v);
     this->Modified();
   }
 
-  void SetVariance(const double *v)
+  void
+  SetVariance(const double * v)
   {
     ArrayType dv;
 
-    for ( unsigned int i = 0; i < ImageDimension; i++ )
-      {
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
       dv[i] = v[i];
-      }
+    }
     this->SetVariance(dv);
   }
 
-  void SetVariance(const float *v)
+  void
+  SetVariance(const float * v)
   {
     ArrayType dv;
 
-    for ( unsigned int i = 0; i < ImageDimension; i++ )
-      {
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
       dv[i] = v[i];
-      }
+    }
     this->SetVariance(dv);
   }
 
-  void SetMaximumError(const double *v)
+  /** Set the standard deviation of the Gaussian used for smoothing.
+   * Sigma is measured in the units of image spacing. You may use the method
+   * SetSigma to set the same value across each axis or use the method
+   * SetSigmaArray if you need different values along each axis. */
+  void
+  SetSigmaArray(const ArrayType & sigmas)
+  {
+    ArrayType variance;
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
+      variance[i] = sigmas[i] * sigmas[i];
+    }
+    this->SetVariance(variance);
+  }
+  void
+  SetSigma(double sigma)
+  {
+    this->SetVariance(sigma * sigma);
+  }
+
+  /** Get the Sigma value. */
+  ArrayType
+  GetSigmaArray() const
+  {
+    ArrayType sigmas;
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
+      sigmas[i] = std::sqrt(m_Variance[i]);
+    }
+    return sigmas;
+  }
+
+  /** Get the Sigma scalar. If the Sigma is anisotropic, we will just
+   * return the Sigma along the first dimension. */
+  double
+  GetSigma() const
+  {
+    return std::sqrt(m_Variance[0]);
+  }
+
+  void
+  SetMaximumError(const double * v)
   {
     ArrayType dv;
 
-    for ( unsigned int i = 0; i < ImageDimension; i++ )
-      {
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
       dv[i] = v[i];
-      }
+    }
     this->SetMaximumError(dv);
   }
 
-  void SetMaximumError(const float *v)
+  void
+  SetMaximumError(const float * v)
   {
     ArrayType dv;
 
-    for ( unsigned int i = 0; i < ImageDimension; i++ )
-      {
+    for (unsigned int i = 0; i < ImageDimension; i++)
+    {
       dv[i] = v[i];
-      }
+    }
     this->SetMaximumError(dv);
   }
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want to specify Gaussian variance in real world units.  Default is
    *   ImageSpacingOn. */
-  void SetUseImageSpacingOn()
-  { this->SetUseImageSpacing(true); }
+  void
+  SetUseImageSpacingOn()
+  {
+    this->SetUseImageSpacing(true);
+  }
 
   /** Ignore the image spacing. Use this option if you want to specify Gaussian
       variance in pixels.  Default is ImageSpacingOn. */
-  void SetUseImageSpacingOff()
-  { this->SetUseImageSpacing(false); }
+  void
+  SetUseImageSpacingOff()
+  {
+    this->SetUseImageSpacing(false);
+  }
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -209,8 +282,8 @@ public:
    * This parameter was introduced to reduce the memory used by images
    * internally, at the cost of performance.
    */
-  itkSetMacro(InternalNumberOfStreamDivisions, unsigned int);
-  itkGetConstReferenceMacro(InternalNumberOfStreamDivisions, unsigned int);
+  itkLegacyMacro(unsigned int GetInternalNumberOfStreamDivisions() const);
+  itkLegacyMacro(void SetInternalNumberOfStreamDivisions(unsigned int));
 
   /** DiscreteGaussianImageFilter needs a larger input requested region
    * than the output requested region (larger by the size of the
@@ -218,13 +291,13 @@ public:
    * provide an implementation for GenerateInputRequestedRegion() in
    * order to inform the pipeline execution model.
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void
+  GenerateInputRequestedRegion() override;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
 
-  itkConceptMacro( OutputHasNumericTraitsCheck,
-                   ( Concept::HasNumericTraits< OutputPixelValueType > ) );
+  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputPixelValueType>));
 
   // End concept checking
 #endif
@@ -237,22 +310,23 @@ protected:
     m_MaximumKernelWidth = 32;
     m_UseImageSpacing = true;
     m_FilterDimensionality = ImageDimension;
-    m_InternalNumberOfStreamDivisions = ImageDimension * ImageDimension;
+    m_InputBoundaryCondition = &m_InputDefaultBoundaryCondition;
+    m_RealBoundaryCondition = &m_RealDefaultBoundaryCondition;
   }
 
-  virtual ~DiscreteGaussianImageFilter() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~DiscreteGaussianImageFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Standard pipeline method. While this class does not implement a
    * ThreadedGenerateData(), its GenerateData() delegates all
    * calculations to an NeighborhoodOperatorImageFilter.  Since the
    * NeighborhoodOperatorImageFilter is multithreaded, this filter is
    * multithreaded by default. */
-  void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteGaussianImageFilter);
-
   /** The variance of the gaussian blurring kernel in each dimensional
     direction. */
   ArrayType m_Variance;
@@ -272,14 +346,23 @@ private:
   /** Flag to indicate whether to use image spacing */
   bool m_UseImageSpacing;
 
-  /** Number of pieces to divide the input on the internal composite
-  pipeline. The upstream pipeline will not be effected. */
-  unsigned int m_InternalNumberOfStreamDivisions;
+  /** Pointer to a persistent boundary condition object used
+   ** for the image iterator. */
+  InputBoundaryConditionPointerType m_InputBoundaryCondition;
+
+  /** Default boundary condition */
+  InputDefaultBoundaryConditionType m_InputDefaultBoundaryCondition;
+
+  /** Boundary condition use for the intermediate filters */
+  RealBoundaryConditionPointerType m_RealBoundaryCondition;
+
+  /** Default boundary condition use for the intermediate filters */
+  RealDefaultBoundaryConditionType m_RealDefaultBoundaryCondition;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkDiscreteGaussianImageFilter.hxx"
+#  include "itkDiscreteGaussianImageFilter.hxx"
 #endif
 
 #endif

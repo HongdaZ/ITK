@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,18 +23,13 @@ namespace itk
 {
 VXLVideoIOFactory::VXLVideoIOFactory()
 {
-  this->RegisterOverride( "itkVideoIOBase",
-                          "itkVXLVideoIO",
-                          "VXL Video IO",
-                          1,
-                          CreateObjectFunction< VXLVideoIO >::New() );
+  this->RegisterOverride("itkVideoIOBase", "itkVXLVideoIO", "VXL Video IO", 1, CreateObjectFunction<VXLVideoIO>::New());
 }
 
-VXLVideoIOFactory::~VXLVideoIOFactory()
-{}
+VXLVideoIOFactory::~VXLVideoIOFactory() {}
 
 const char *
-VXLVideoIOFactory::GetITKSourceVersion(void) const
+VXLVideoIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -50,13 +45,14 @@ VXLVideoIOFactory::GetDescription() const
 
 static bool VXLVideoIOFactoryHasBeenRegistered;
 
-void VXLVideoIOFactoryRegister__Private(void)
+void
+VXLVideoIOFactoryRegister__Private()
 {
-  if( ! VXLVideoIOFactoryHasBeenRegistered )
-    {
+  if (!VXLVideoIOFactoryHasBeenRegistered)
+  {
     VXLVideoIOFactoryHasBeenRegistered = true;
     VXLVideoIOFactory::RegisterOneFactory();
-    }
+  }
 }
 
 } // end namespace itk

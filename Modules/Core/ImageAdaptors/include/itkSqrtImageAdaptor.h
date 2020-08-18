@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ namespace itk
 {
 namespace Accessor
 {
-/** \class SqrtPixelAccessor
+/**
+ *\class SqrtPixelAccessor
  * \brief Give access to the std::sqrt() function of a value
  *
  * SqrtPixelAccessor is templated over an internal type and an
@@ -36,27 +37,34 @@ namespace Accessor
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TInternalType, typename TExternalType >
+template <typename TInternalType, typename TExternalType>
 class SqrtPixelAccessor
 {
 public:
-  /** External typedef. It defines the external aspect
+  /** External type alias. It defines the external aspect
    * that this class will exhibit. */
-  typedef TExternalType ExternalType;
+  using ExternalType = TExternalType;
 
-  /** Internal typedef. It defines the internal real
+  /** Internal type alias. It defines the internal real
    * representation of data. */
-  typedef TInternalType InternalType;
+  using InternalType = TInternalType;
 
-  static inline void Set(TInternalType & output, const TExternalType & input)
-  { output = (TInternalType)std::sqrt( (double)input ); }
+  static inline void
+  Set(TInternalType & output, const TExternalType & input)
+  {
+    output = (TInternalType)std::sqrt((double)input);
+  }
 
-  static inline TExternalType Get(const TInternalType & input)
-  { return (TExternalType)std::sqrt( (double)input ); }
+  static inline TExternalType
+  Get(const TInternalType & input)
+  {
+    return (TExternalType)std::sqrt((double)input);
+  }
 };
 } // end namespace Accessor
 
-/** \class SqrtImageAdaptor
+/**
+ *\class SqrtImageAdaptor
  * \brief Presents an image as being composed of the std::sqrt() of its pixels
  *
  * Additional casting is performed according to the input and output image
@@ -65,21 +73,19 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TImage, typename TOutputPixelType >
-class SqrtImageAdaptor:public
-  ImageAdaptor< TImage, Accessor::SqrtPixelAccessor<
-                  typename TImage::PixelType,
-                  TOutputPixelType >   >
+template <typename TImage, typename TOutputPixelType>
+class SqrtImageAdaptor
+  : public ImageAdaptor<TImage, Accessor::SqrtPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SqrtImageAdaptor Self;
-  typedef ImageAdaptor< TImage, Accessor::SqrtPixelAccessor<
-                          typename TImage::PixelType,
-                          TOutputPixelType > > Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SqrtImageAdaptor);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = SqrtImageAdaptor;
+  using Superclass = ImageAdaptor<TImage, Accessor::SqrtPixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
+
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -88,11 +94,8 @@ public:
   itkTypeMacro(SqrtImageAdaptor, ImageAdaptor);
 
 protected:
-  SqrtImageAdaptor() {}
-  virtual ~SqrtImageAdaptor() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SqrtImageAdaptor);
+  SqrtImageAdaptor() = default;
+  ~SqrtImageAdaptor() override = default;
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@
 //  Software Guide : BeginLatex
 //
 //  A \doxygen{Mesh} can contain a variety of cell types. Typical cells are
-//  the \doxygen{LineCell}, \doxygen{TriangleCell}, \doxygen{QuadrilateralCell},
-//  \doxygen{TetrahedronCell}, and \doxygen{PolygonCell}. Additional
-//  flexibility is provided for managing cells at the price of a bit more of
-//  complexity than in the case of point management.
+//  the \doxygen{LineCell}, \doxygen{TriangleCell},
+//  \doxygen{QuadrilateralCell}, \doxygen{TetrahedronCell}, and
+//  \doxygen{PolygonCell}. Additional flexibility is provided for managing
+//  cells at the price of a bit more of complexity than in the case of point
+//  management.
 //
 //  The following code creates a polygonal line in order to illustrate the
-//  simplest case of cell management in a mesh. The only cell type used here is
-//  the \code{LineCell}. The header file of this class must be included.
+//  simplest case of cell management in a mesh. The only cell type used here
+//  is the \code{LineCell}. The header file of this class must be included.
 //
 //  \index{itk::LineCell!Header}
 //
@@ -40,10 +41,11 @@
 // Software Guide : EndCodeSnippet
 
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
-  typedef float                             PixelType;
-  typedef itk::Mesh< PixelType, 3 >         MeshType;
+  using PixelType = float;
+  using MeshType = itk::Mesh<PixelType, 3>;
 
   //  Software Guide : BeginLatex
   //
@@ -60,7 +62,7 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef MeshType::CellType CellType;
+  using CellType = MeshType::CellType;
   // Software Guide : EndCodeSnippet
 
 
@@ -74,7 +76,7 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::LineCell< CellType >         LineType;
+  using LineType = itk::LineCell<CellType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -99,35 +101,39 @@ int main(int, char *[])
   //
   //  Managing cells by pointers adds another level of complexity to the Mesh
   //  since it is now necessary to establish a protocol to make clear who is
-  //  responsible for allocating and releasing the cells' memory. This protocol
-  //  is implemented in the form of a specific type of pointer called the
-  //  \code{CellAutoPointer}. This pointer, based on the \doxygen{AutoPointer},
-  //  differs in many respects from the \code{SmartPointer}. The \code{CellAutoPointer}
-  //  has an internal pointer to the actual object and a boolean flag that indicates
-  //  whether the \code{CellAutoPointer} is responsible for releasing the cell memory
-  //  when the time comes for its own destruction. It is said that a
+  //  responsible for allocating and releasing the cells' memory. This
+  //  protocol is implemented in the form of a specific type of pointer called
+  //  the \code{CellAutoPointer}. This pointer, based on the
+  //  \doxygen{AutoPointer}, differs in many respects from the
+  //  \code{SmartPointer}. The \code{CellAutoPointer} has an internal pointer
+  //  to the actual object and a boolean flag that indicates whether the
+  //  \code{CellAutoPointer} is responsible for releasing the cell memory when
+  //  the time comes for its own destruction. It is said that a
   //  \code{CellAutoPointer} \emph{owns} the cell when it is responsible for
-  //  its destruction. At any given time many \code{CellAutoPointer}s can point to
-  //  the same cell, but only \textbf{one} \code{CellAutoPointer} can own the cell.
+  //  its destruction. At any given time many \code{CellAutoPointer}s can
+  //  point to the same cell, but only \textbf{one} \code{CellAutoPointer} can
+  //  own the cell.
   //
-  //  The \code{CellAutoPointer} trait is defined in the \code{MeshType} and can be
-  //  extracted as follows.
+  //  The \code{CellAutoPointer} trait is defined in the \code{MeshType} and
+  //  can be extracted as follows.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef CellType::CellAutoPointer CellAutoPointer;
+  using CellAutoPointer = CellType::CellAutoPointer;
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  Note that the \code{CellAutoPointer} points to a generic cell type. It is
-  //  not aware of the actual type of the cell, which could be (for example) a
-  //  \code{LineCell}, \code{TriangleCell} or \code{TetrahedronCell}. This fact
-  //  will influence the way in which we access cells later on.
+  //  Note that the \code{CellAutoPointer} points to a generic cell type. It
+  //  is not aware of the actual type of the cell, which could be (for
+  //  example) a \code{LineCell}, \code{TriangleCell} or
+  //  \code{TetrahedronCell}. This fact will influence the way in which we
+  //  access cells later on.
   //
-  //  At this point we can actually create a mesh and insert some points on it.
+  //  At this point we can actually create a mesh and insert some points on
+  //  it.
   //
   //  \index{itk::Mesh!New()}
   //  \index{itk::Mesh!SetPoint()}
@@ -136,19 +142,25 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  MeshType::Pointer  mesh = MeshType::New();
+  MeshType::Pointer mesh = MeshType::New();
 
   MeshType::PointType p0;
   MeshType::PointType p1;
   MeshType::PointType p2;
 
-  p0[0] = -1.0; p0[1] = 0.0; p0[2] = 0.0;
-  p1[0] =  1.0; p1[1] = 0.0; p1[2] = 0.0;
-  p2[0] =  1.0; p2[1] = 1.0; p2[2] = 0.0;
+  p0[0] = -1.0;
+  p0[1] = 0.0;
+  p0[2] = 0.0;
+  p1[0] = 1.0;
+  p1[1] = 0.0;
+  p1[2] = 0.0;
+  p2[0] = 1.0;
+  p2[1] = 1.0;
+  p2[2] = 0.0;
 
-  mesh->SetPoint( 0, p0 );
-  mesh->SetPoint( 1, p1 );
-  mesh->SetPoint( 2, p2 );
+  mesh->SetPoint(0, p0);
+  mesh->SetPoint(1, p1);
+  mesh->SetPoint(2, p2);
   // Software Guide : EndCodeSnippet
 
 
@@ -174,8 +186,8 @@ int main(int, char *[])
   CellAutoPointer line0;
   CellAutoPointer line1;
 
-  line0.TakeOwnership( new LineType );
-  line1.TakeOwnership( new LineType );
+  line0.TakeOwnership(new LineType);
+  line1.TakeOwnership(new LineType);
   // Software Guide : EndCodeSnippet
 
 
@@ -200,11 +212,11 @@ int main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  line0->SetPointId( 0, 0 ); // line between points 0 and 1
-  line0->SetPointId( 1, 1 );
+  line0->SetPointId(0, 0); // line between points 0 and 1
+  line0->SetPointId(1, 1);
 
-  line1->SetPointId( 0, 1 ); // line between points 1 and 2
-  line1->SetPointId( 1, 2 );
+  line1->SetPointId(0, 1); // line between points 1 and 2
+  line1->SetPointId(1, 2);
   // Software Guide : EndCodeSnippet
 
 
@@ -224,8 +236,8 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  mesh->SetCell( 0, line0 );
-  mesh->SetCell( 1, line1 );
+  mesh->SetCell(0, line0);
+  mesh->SetCell(1, line1);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -250,7 +262,7 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  std::cout << "Cells  = " << mesh->GetNumberOfCells()  << std::endl;
+  std::cout << "Cells  = " << mesh->GetNumberOfCells() << std::endl;
   // Software Guide : EndCodeSnippet
 
 
@@ -263,7 +275,7 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef MeshType::CellsContainer::Iterator  CellIterator;
+  using CellIterator = MeshType::CellsContainer::Iterator;
   // Software Guide : EndCodeSnippet
 
 
@@ -282,8 +294,8 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  CellIterator  cellIterator = mesh->GetCells()->Begin();
-  CellIterator  end          = mesh->GetCells()->End();
+  CellIterator cellIterator = mesh->GetCells()->Begin();
+  CellIterator end = mesh->GetCells()->End();
   // Software Guide : EndCodeSnippet
 
 
@@ -311,17 +323,17 @@ int main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  while( cellIterator != end )
-    {
+  while (cellIterator != end)
+  {
     MeshType::CellType * cellptr = cellIterator.Value();
-    LineType * line = dynamic_cast<LineType *>( cellptr );
-    if(line == ITK_NULLPTR)
-      {
+    auto *               line = dynamic_cast<LineType *>(cellptr);
+    if (line == nullptr)
+    {
       continue;
-      }
+    }
     std::cout << line->GetNumberOfPoints() << std::endl;
     ++cellIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

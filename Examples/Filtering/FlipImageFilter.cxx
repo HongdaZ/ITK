@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,18 +24,18 @@
 
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{FlipImageFilter} is used for flipping the image content in any
-//  of the coordinate axes. This filter must be used with \textbf{EXTREME}
+//  The \doxygen{FlipImageFilter} is used for flipping the image content in
+//  any of the coordinate axes. This filter must be used with \textbf{EXTREME}
 //  caution. You probably don't want to appear in the newspapers as
 //  responsible for a surgery mistake in which a doctor extirpates the left
 //  kidney when he should have extracted the right one\footnote{\emph{Wrong
-//  side} surgery accounts for $2\%$ of the reported medical errors in the United
-//  States. Trivial... but equally dangerous.} . If that prospect doesn't
-//  scare you, maybe it is time for you to reconsider your career in medical
-//  image processing. Flipping effects which seem innocuous at first view may
-//  still have dangerous consequences. For example, flipping the cranio-caudal
-//  axis of a CT scan forces an observer to flip the left-right axis in order
-//  to make sense of the image.
+//  side} surgery accounts for $2\%$ of the reported medical errors in the
+//  United States. Trivial... but equally dangerous.} . If that prospect
+//  doesn't scare you, maybe it is time for you to reconsider your career in
+//  medical image processing. Flipping effects which seem innocuous at first
+//  view may still have dangerous consequences. For example, flipping the
+//  cranio-caudal axis of a CT scan forces an observer to flip the left-right
+//  axis in order to make sense of the image.
 //
 //  \index{itk::FlipImageFilter}
 //
@@ -60,38 +60,41 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 5 )
-    {
+  if (argc < 5)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile   outputImageFile   flipAxisX   flipAxisY" << std::endl;
+    std::cerr << argv[0]
+              << "  inputImageFile   outputImageFile   flipAxisX   flipAxisY"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
   //
-  //  Then the pixel types for input and output image must be defined and, with
-  //  them, the image types can be instantiated.
+  //  Then the pixel types for input and output image must be defined and,
+  //  with them, the image types can be instantiated.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   unsigned char  PixelType;
+  using PixelType = unsigned char;
 
-  typedef itk::Image< PixelType,  2 >   ImageType;
+  using ImageType = itk::Image<PixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< ImageType >  ReaderType;
-  typedef itk::ImageFileWriter< ImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
+  using WriterType = itk::ImageFileWriter<ImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -105,7 +108,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::FlipImageFilter< ImageType >  FilterType;
+  using FilterType = itk::FlipImageFilter<ImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -122,14 +125,14 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef FilterType::FlipAxesArrayType     FlipAxesArrayType;
+  using FlipAxesArrayType = FilterType::FlipAxesArrayType;
 
   FlipAxesArrayType flipArray;
 
-  flipArray[0] = atoi( argv[3] );
-  flipArray[1] = atoi( argv[4] );
+  flipArray[0] = std::stoi(argv[3]);
+  flipArray[1] = std::stoi(argv[4]);
 
-  filter->SetFlipAxes( flipArray );
+  filter->SetFlipAxes(flipArray);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -146,8 +149,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -158,8 +161,8 @@ int main( int argc, char * argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{FlipImageFilterOutput}
-  // \itkcaption[Effect of the FlipImageFilter]{Effect of the FlipImageFilter on a slice
-  // from a MRI proton density brain image.}
+  // \itkcaption[Effect of the FlipImageFilter]{Effect of the FlipImageFilter
+  // on a slice from a MRI proton density brain image.}
   // \label{fig:FlipImageFilterOutput}
   // \end{figure}
   //

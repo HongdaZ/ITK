@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,59 +20,60 @@
 #include "itkBioRadImageIO.h"
 #include "itkImage.h"
 
-#define SPECIFIC_IMAGEIO_MODULE_TEST
+// Specific ImageIO test
 
-int itkBioRadImageIOTest(int argc, char* argv[])
+int
+itkBioRadImageIOTest(int argc, char * argv[])
 {
-  if(argc < 3)
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << argv[0] << " BioRad.pic OutputImage.pic\n";
     return EXIT_FAILURE;
-    }
+  }
 
-  typedef unsigned char                          InputPixelType;
-  typedef itk::Image< InputPixelType, 2 >        InputImageType;
-  typedef itk::ImageFileReader< InputImageType > ReaderType;
-  typedef itk::BioRadImageIO                     ImageIOType;
+  using InputPixelType = unsigned char;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using ImageIOType = itk::BioRadImageIO;
 
-  const char *filename = argv[1];
-  const char *outfilename = argv[2];
+  const char * filename = argv[1];
+  const char * outfilename = argv[2];
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( filename );
+  reader->SetFileName(filename);
 
   ImageIOType::Pointer bioradImageIO = ImageIOType::New();
-  reader->SetImageIO( bioradImageIO );
+  reader->SetImageIO(bioradImageIO);
   bioradImageIO->DebugOn();
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch (itk::ExceptionObject & e)
-    {
+  }
+  catch (const itk::ExceptionObject & e)
+  {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //
-  typedef itk::ImageFileWriter< InputImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<InputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetImageIO( bioradImageIO );
-  writer->SetFileName( outfilename );
-  writer->SetInput( reader->GetOutput() );
+  writer->SetImageIO(bioradImageIO);
+  writer->SetFileName(outfilename);
+  writer->SetInput(reader->GetOutput());
 
   try
-    {
+  {
     writer->Update();
-    }
-  catch (itk::ExceptionObject & e)
-    {
+  }
+  catch (const itk::ExceptionObject & e)
+  {
     std::cerr << "exception in file writer " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   bioradImageIO->Print(std::cout);
 

@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_transpose.h
 #ifndef vnl_transpose_h_
 #define vnl_transpose_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Efficient matrix transpose
@@ -16,8 +13,10 @@
 // \endverbatim
 
 #include <iostream>
-#include <vcl_compiler.h>
-#include <vnl/vnl_fastops.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include "vnl_fastops.h"
 #include "vnl/vnl_export.h"
 
 //: Efficient matrix transpose
@@ -29,14 +28,14 @@
 //  If the operation has not been specialized, the vnl_transpose performs
 //  a copying conversion to a matrix, printing a message to stdout.
 //  At that stage, the user may choose to implement the particular operation
-//  or use vnl_transpose::asMatrix() to clear the warning.
+//  or use vnl_transpose::as_matrix() to clear the warning.
 //
 //  NOTE: This is a reference class, so should be shorter-lived than the
 //  matrix to which it refers.
 //
 //  NOTE: This only works for arguments of type vnl_matrix<double>
 
-class VNL_TEMPLATE_EXPORT vnl_transpose
+class VNL_EXPORT vnl_transpose
 {
   const vnl_matrix<double>& M_;
  public:
@@ -45,13 +44,26 @@ class VNL_TEMPLATE_EXPORT vnl_transpose
   vnl_transpose(const vnl_matrix<double>& M): M_(M) {}
 
   //: Noisily convert a vnl_transpose to a matrix
+
+
+#if ! VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS
+  explicit operator vnl_matrix<double> () const { return M_.transpose(); }
+#else
+#if VXL_LEGACY_FUTURE_REMOVE
+  VXL_DEPRECATED_MSG("Implicit cast conversion is dangerous.\nUSE: .as_vector() or .as_ref() member function for clarity.")
+#endif
   operator vnl_matrix<double> () const {
     std::cerr << "vnl_transpose being converted to matrix -- help! I don't wanna go!\n";
     return M_.transpose();
   }
+#endif
 
-  //: Quietly convert a vnl_transpose to a matrix
-  vnl_matrix<double> asMatrix () const { return M_.transpose(); }
+//: Quietly convert a vnl_transpose to a matrix
+vnl_matrix<double> as_matrix( ) const { return M_.transpose(); }
+#if ! VXL_LEGACY_FUTURE_REMOVE
+  VXL_DEPRECATED_MSG("Deprecated inconsistent name.\nUSE: .as_matrix() new consistent name.")
+  vnl_matrix<double> asMatrix () const { return this->as_matrix(); }
+#endif
 
   //: Return M' * O
   vnl_matrix<double> operator* (const vnl_matrix<double>& O) {

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,21 +34,16 @@ itkGPUKernelClassMacro(GPUImageOpsKernel);
 class GPUImageOps
 {
 public:
-  /** Standard class typedefs. */
-  typedef GPUImageOps Self;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUImageOps);
+  GPUImageOps() = default;
+  virtual ~GPUImageOps() = default;
+
+  /** Standard class type aliases. */
+  using Self = GPUImageOps;
 
   /** Get OpenCL Kernel source as a string, creates a GetOpenCLSource method */
   itkGetOpenCLSourceFromKernelMacro(GPUImageOpsKernel);
-
-private:
-  GPUImageOps();
-  virtual ~GPUImageOps();
-
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUImageOps);
-
 };
-
-
 } // end of namespace itk
 
 #endif

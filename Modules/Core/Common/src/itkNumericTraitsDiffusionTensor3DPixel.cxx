@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ namespace itk
 // NumericTraits<>.
 //
 
-#define DIFFUSIONTENSOR3DPIXELSTATICTRAITSMACRO(T)                                                      \
-  template< >                                                                                           \
-  ITKCommon_EXPORT const DiffusionTensor3D< T >  NumericTraits< DiffusionTensor3D< T > >::Zero = DiffusionTensor3D< T >( \
-    NumericTraits< T >::Zero);                                                                          \
-  template< >                                                                                           \
-  ITKCommon_EXPORT const DiffusionTensor3D< T >  NumericTraits< DiffusionTensor3D< T > >::One = DiffusionTensor3D< T >( \
-    NumericTraits< T >::One);
+#define DIFFUSIONTENSOR3DPIXELSTATICTRAITSMACRO(T)                                                                     \
+  template <>                                                                                                          \
+  ITKCommon_EXPORT const DiffusionTensor3D<T> NumericTraits<DiffusionTensor3D<T>>::Zero =                              \
+    DiffusionTensor3D<T>(NumericTraits<T>::Zero);                                                                      \
+  template <>                                                                                                          \
+  ITKCommon_EXPORT const DiffusionTensor3D<T> NumericTraits<DiffusionTensor3D<T>>::One =                               \
+    DiffusionTensor3D<T>(NumericTraits<T>::One);
 
 //
 // List here the specializations of the Traits:

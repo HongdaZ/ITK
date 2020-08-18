@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@
 #include "itkNiftiImageIOTest.h"
 
 
-#define SPECIFIC_IMAGEIO_MODULE_TEST
+// Specific ImageIO test
 
-int itkNiftiImageIOTest9(int ac, char *av[])
+int
+itkNiftiImageIOTest9(int ac, char * av[])
 {
-  return RGBTest<itk::RGBPixel<unsigned char> >(ac,av);
+  return RGBTest<itk::RGBPixel<unsigned char>>(ac, av);
 }

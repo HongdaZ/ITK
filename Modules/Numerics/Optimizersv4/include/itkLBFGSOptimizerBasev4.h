@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@
 #include "itkSingleValuedNonLinearVnlOptimizerv4.h"
 #include "vnl/algo/vnl_lbfgs.h"
 #include "vnl/algo/vnl_lbfgsb.h"
-#include "itkAutoPointer.h"
+#include <memory>
 #include "ITKOptimizersv4Export.h"
 
 namespace itk
 {
 /* Necessary forward declaration see below for definition */
-/** \class LBFGSOptimizerBaseHelperv4
+/**
+ *\class LBFGSOptimizerBaseHelperv4
  * \brief Wrapper helper around vnl optimizer.
  *
  * This class is used to translate iteration events, etc, from
@@ -36,15 +37,16 @@ namespace itk
  * \ingroup ITKOptimizersv4
  */
 // Forward reference because of circular dependencies
-template< typename TInternalVnlOptimizerType >
-class  ITK_TEMPLATE_EXPORT LBFGSOptimizerBaseHelperv4;
+template <typename TInternalVnlOptimizerType>
+class ITK_TEMPLATE_EXPORT LBFGSOptimizerBaseHelperv4;
 
-/** \class LBFGSOptimizerBasev4
+/**
+ *\class LBFGSOptimizerBasev4
  * \brief Abstract base for vnl lbfgs algorithm optimizers in ITKv4 registration framework.
  *
  * \note The StopConditionDescription returned by this class is directly from the vnl
  * optimizer by calling <tt> m_VnlOptimizer->get_failure_code() </tt>. This seems to
- * return "Failure" even when no error has occured. The same behavior is observed
+ * return "Failure" even when no error has occurred. The same behavior is observed
  * in the ITKv3 version of this optimizer.
  *
  * \note Local-support (high-density) transforms.
@@ -53,7 +55,7 @@ class  ITK_TEMPLATE_EXPORT LBFGSOptimizerBaseHelperv4;
  *
  * \note 1) Parameter updates:
  * In SingleValuedNonLinearCostFunctionAdaptor, the handling of the gradient
- * must be changed to accomodate the fact that local-support transforms expect
+ * must be changed to accommodate the fact that local-support transforms expect
  * a gradient to be added to the transform parameters using the
  * UpdateTransformParameters method of the local support transform. Other optimizers
  * in the v4 framework use this method, but the use of the vnl optimizers here
@@ -70,52 +72,58 @@ class  ITK_TEMPLATE_EXPORT LBFGSOptimizerBaseHelperv4;
  *
  * \ingroup ITKOptimizersv4
  */
-template< typename TInternalVnlOptimizerType >
-class ITK_TEMPLATE_EXPORT  LBFGSOptimizerBasev4:
-    public SingleValuedNonLinearVnlOptimizerv4
+template <typename TInternalVnlOptimizerType>
+class ITK_TEMPLATE_EXPORT LBFGSOptimizerBasev4 : public SingleValuedNonLinearVnlOptimizerv4
 {
 public:
-  /** Standard "Self" typedef. */
-  typedef LBFGSOptimizerBasev4                Self;
-  typedef SingleValuedNonLinearVnlOptimizerv4 Superclass;
-  typedef SmartPointer< Self >                Pointer;
-  typedef SmartPointer< const Self >          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizerBasev4);
+
+  /** Standard "Self" type alias. */
+  using Self = LBFGSOptimizerBasev4;
+  using Superclass = SingleValuedNonLinearVnlOptimizerv4;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LBFGSOptimizerBasev4, SingleValuedNonLinearVnlOptimizerv4);
 
-  typedef Superclass::MetricType     MetricType;
-  typedef Superclass::ParametersType ParametersType;
-  typedef Superclass::ScalesType     ScalesType;
+  using MetricType = Superclass::MetricType;
+  using ParametersType = Superclass::ParametersType;
+  using ScalesType = Superclass::ScalesType;
 
   /** Stop condition return string type */
-  typedef Superclass::StopConditionReturnStringType StopConditionReturnStringType;
+  using StopConditionReturnStringType = Superclass::StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  typedef Superclass::StopConditionDescriptionType  StopConditionDescriptionType;
+  using StopConditionDescriptionType = Superclass::StopConditionDescriptionType;
 
   /** The vnl optimizer */
-  typedef LBFGSOptimizerBaseHelperv4<TInternalVnlOptimizerType>   InternalOptimizerType;
+  using InternalOptimizerType = LBFGSOptimizerBaseHelperv4<TInternalVnlOptimizerType>;
 
   /** Method for getting access to the internal optimizer. */
-  InternalOptimizerType * GetOptimizer();
+  InternalOptimizerType *
+  GetOptimizer();
 
   /** Start optimization with an initial value. */
-  virtual void StartOptimization(bool doOnlyInitialization = false) ITK_OVERRIDE;
+  void
+  StartOptimization(bool doOnlyInitialization = false) override;
 
   /** Plug in a Cost Function into the optimizer  */
-  virtual void SetMetric(MetricType *metric) ITK_OVERRIDE;
+  void
+  SetMetric(MetricType * metric) override;
 
   /** Set/Get the optimizer trace flag. If set to true, the optimizer
    * prints out information every iteration.
    */
-  virtual void SetTrace(bool flag);
+  virtual void
+  SetTrace(bool flag);
 
   itkGetConstMacro(Trace, bool);
   itkBooleanMacro(Trace);
 
   /** Set/Get the maximum number of function evaluations allowed. */
-  virtual void SetMaximumNumberOfFunctionEvaluations(unsigned int n);
+  virtual void
+  SetMaximumNumberOfFunctionEvaluations(unsigned int n);
 
   itkGetConstMacro(MaximumNumberOfFunctionEvaluations, unsigned int);
 
@@ -124,46 +132,45 @@ public:
    * be found. The optimization terminates when:
    * ||G|| < gtol max(1,||X||) where ||.|| denotes the Euclidean norm.
    */
-  virtual void SetGradientConvergenceTolerance(double gtol);
+  virtual void
+  SetGradientConvergenceTolerance(double gtol);
 
   itkGetConstMacro(GradientConvergenceTolerance, double);
 
   /** Get the reason for termination */
-  virtual const StopConditionReturnStringType GetStopConditionDescription() const ITK_OVERRIDE;
+  const StopConditionReturnStringType
+  GetStopConditionDescription() const override;
 
 protected:
   LBFGSOptimizerBasev4();
-  virtual ~LBFGSOptimizerBasev4() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~LBFGSOptimizerBasev4() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
+  using CostFunctionAdaptorType = Superclass::CostFunctionAdaptorType;
 
-  bool                         m_OptimizerInitialized;
+  bool m_OptimizerInitialized{ false };
 
-  typedef AutoPointer<InternalOptimizerType>  InternalOptimizerAutoPointer;
-  InternalOptimizerAutoPointer  m_VnlOptimizer;
+  using InternalOptimizerAutoPointer = std::unique_ptr<InternalOptimizerType>;
+  InternalOptimizerAutoPointer m_VnlOptimizer;
 
-  mutable std::ostringstream    m_StopConditionDescription;
+  mutable std::ostringstream m_StopConditionDescription;
 
-  bool         m_Trace;
-  unsigned int m_MaximumNumberOfFunctionEvaluations;
-  double       m_GradientConvergenceTolerance;
-  double       m_InfinityNormOfProjectedGradient;
-  double       m_CostFunctionConvergenceFactor;
+  bool         m_Trace{ false };
+  unsigned int m_MaximumNumberOfFunctionEvaluations{ 2000 };
+  double       m_GradientConvergenceTolerance{ 1e-5 };
+  double       m_InfinityNormOfProjectedGradient{ 0.0 };
+  double       m_CostFunctionConvergenceFactor{ 1e+7 };
 
   // give the helper access to member variables, to update iteration
   // counts, etc.
   friend class LBFGSOptimizerBaseHelperv4<TInternalVnlOptimizerType>;
   friend class LBFGSBOptimizerHelperv4;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizerBasev4);
-
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkLBFGSOptimizerBasev4.hxx"
+#  include "itkLBFGSOptimizerBasev4.hxx"
 #endif
 
 #endif

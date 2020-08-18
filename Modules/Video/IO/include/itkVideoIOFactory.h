@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,29 @@
 
 namespace itk
 {
-
-/** \class VideoIOFactory
+/**\class VideoIOFactoryEnums
+ * \brief Contains all enum classes used by VideoIOFactory class
+ * \ingroup ITKVideoIO
+ */
+class VideoIOFactoryEnums
+{
+public:
+  /**
+   *\class IOModeEnum
+   * \ingroup ITKVideoIO
+   * Mode in which the VideoIO is intended to be used */
+  enum class IOMode : uint8_t
+  {
+    ReadFileMode,
+    ReadCameraMode,
+    WriteMode
+  };
+};
+// Define how to print enumeration
+extern ITKVideoIO_EXPORT std::ostream &
+                         operator<<(std::ostream & out, const VideoIOFactoryEnums::IOMode value);
+/**
+ *\class VideoIOFactory
  * \brief Create instances of VideoIO objects using an object factory.
  *
  * This class will create a VideoIO instance that can read/write to/from the
@@ -38,15 +59,22 @@ namespace itk
 class ITKVideoIO_EXPORT VideoIOFactory : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef VideoIOFactory             Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VideoIOFactory);
 
-  /** Mode in which the VideoIO is intended to be used */
-  typedef enum { ReadFileMode, ReadCameraMode, WriteMode } IOModeType;
+  /** Standard class type aliases. */
+  using Self = VideoIOFactory;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
+  using IOModeEnum = VideoIOFactoryEnums::IOMode;
+#if !defined(ITK_LEGACY_REMOVE)
+  // We need to expose the enum values at the class level
+  // for backwards compatibility
+  static constexpr IOModeEnum ReadFileMode = IOModeEnum::ReadFileMode;
+  static constexpr IOModeEnum ReadCameraMode = IOModeEnum::ReadCameraMode;
+  static constexpr IOModeEnum WriteMode = IOModeEnum::WriteMode;
+#endif
   /** Runtime type information (and related methods). **/
   itkTypeMacro(VideoIOFactory, Object);
 
@@ -55,17 +83,13 @@ public:
    *        a string containing an integer to use for a cameraID if reading
    *        from a camera
    */
-  static VideoIOBase::Pointer CreateVideoIO( IOModeType mode, const char* arg );
+  static VideoIOBase::Pointer
+  CreateVideoIO(IOModeEnum mode, const char * arg);
 
 protected:
   VideoIOFactory();
-  ~VideoIOFactory() ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoIOFactory);
-
+  ~VideoIOFactory() override;
 };
-
 } // end namespace itk
 
 #endif

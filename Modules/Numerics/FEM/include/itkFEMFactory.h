@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,20 +42,16 @@ template <typename T>
 class FEMFactory : public FEMFactoryBase
 {
 public:
-  static void RegisterType()
+  static void
+  RegisterType()
   {
     typename T::Pointer t = T::New();
 
     FEMFactoryBase::Pointer f = FEMFactoryBase::GetFactory();
 
-    f->RegisterType( t->GetNameOfClass(),
-                     t->GetNameOfClass(),
-                     t->GetNameOfClass(),
-                     1,
-                     CreateObjectFunction<T>::New() );
+    f->RegisterType(t->GetNameOfClass(), t->GetNameOfClass(), t->GetNameOfClass(), 1, CreateObjectFunction<T>::New());
   }
-
 };
 } // end namespace itk
 
-#endif
+#endif // itkFEMFactory_h

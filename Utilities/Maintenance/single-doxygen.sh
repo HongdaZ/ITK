@@ -1,7 +1,7 @@
 #!/bin/bash
 #==========================================================================
 #
-#   Copyright Insight Software Consortium
+#   Copyright NumFOCUS
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #
 # 1) run cmake
 #
-# 2) TURN ON BUILD_DOCUMENTATION
+# 2) TURN ON ITK_BUILD_DOCUMENTATION
 #
 # 3) cd into the ITK binary build directory
 #

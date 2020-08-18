@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,15 +50,17 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
-    std::cerr << " outputImageFileErosion  outputImageFileDilation" << std::endl;
+    std::cerr << " outputImageFileErosion  outputImageFileDilation"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -69,17 +71,17 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
-  typedef unsigned char   InputPixelType;
-  typedef unsigned char   OutputPixelType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
 
   //  Software Guide : BeginLatex
@@ -101,36 +103,35 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::BinaryBallStructuringElement<
-                      InputPixelType,
-                      Dimension  >             StructuringElementType;
+  using StructuringElementType =
+    itk::BinaryBallStructuringElement<InputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
   //
-  //  The structuring element type is then used along with the input and output
-  //  image types for instantiating the type of the filters.
+  //  The structuring element type is then used along with the input and
+  //  output image types for instantiating the type of the filters.
   //
   //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::GrayscaleErodeImageFilter<
-                            InputImageType,
-                            OutputImageType,
-                            StructuringElementType >  ErodeFilterType;
+  using ErodeFilterType =
+    itk::GrayscaleErodeImageFilter<InputImageType,
+                                   OutputImageType,
+                                   StructuringElementType>;
 
-  typedef itk::GrayscaleDilateImageFilter<
-                            InputImageType,
-                            OutputImageType,
-                            StructuringElementType >  DilateFilterType;
+  using DilateFilterType =
+    itk::GrayscaleDilateImageFilter<InputImageType,
+                                    OutputImageType,
+                                    StructuringElementType>;
   // Software Guide : EndCodeSnippet
 
 
   // Creation of Reader and Writer filters
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writerDilation = WriterType::New();
-  WriterType::Pointer writerErosion  = WriterType::New();
+  WriterType::Pointer writerErosion = WriterType::New();
 
 
   //  Software Guide : BeginLatex
@@ -146,7 +147,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ErodeFilterType::Pointer  grayscaleErode  = ErodeFilterType::New();
+  ErodeFilterType::Pointer  grayscaleErode = ErodeFilterType::New();
   DilateFilterType::Pointer grayscaleDilate = DilateFilterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -155,11 +156,11 @@ int main( int argc, char * argv[] )
   //  The structuring element is not a reference counted class. Thus it is
   //  created as a C++ stack object instead of using \code{New()} and
   //  SmartPointers. The radius of the neighborhood associated with the
-  //  structuring element is defined with the \code{SetRadius()} method and the
-  //  \code{CreateStructuringElement()} method is invoked in order to initialize the
-  //  operator.  The resulting structuring element is passed to the
-  //  mathematical morphology filter through the \code{SetKernel()} method, as
-  //  illustrated below.
+  //  structuring element is defined with the \code{SetRadius()} method and
+  //  the \code{CreateStructuringElement()} method is invoked in order to
+  //  initialize the operator.  The resulting structuring element is passed to
+  //  the mathematical morphology filter through the \code{SetKernel()}
+  //  method, as illustrated below.
   //
   //  \index{itk::BinaryBallStructuringElement!SetRadius()}
   //  \index{itk::BinaryBallStructuringElement!CreateStructuringElement()}
@@ -174,34 +175,34 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  StructuringElementType  structuringElement;
+  StructuringElementType structuringElement;
 
-  structuringElement.SetRadius( 1 );  // 3x3 structuring element
+  structuringElement.SetRadius(1); // 3x3 structuring element
 
   structuringElement.CreateStructuringElement();
 
-  grayscaleErode->SetKernel(  structuringElement );
-  grayscaleDilate->SetKernel( structuringElement );
+  grayscaleErode->SetKernel(structuringElement);
+  grayscaleDilate->SetKernel(structuringElement);
   // Software Guide : EndCodeSnippet
 
 
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
-  writerErosion->SetFileName(  argv[2] );
-  writerDilation->SetFileName( argv[3] );
+  writerErosion->SetFileName(argv[2]);
+  writerDilation->SetFileName(argv[3]);
 
 
   //  Software Guide : BeginLatex
   //
-  //  A grayscale image is provided as input to the filters. This image might be,
-  //  for example, the output of a reader.
+  //  A grayscale image is provided as input to the filters. This image might
+  //  be, for example, the output of a reader.
   //
   //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
-  grayscaleErode->SetInput(  reader->GetOutput() );
-  grayscaleDilate->SetInput( reader->GetOutput() );
+  grayscaleErode->SetInput(reader->GetOutput());
+  grayscaleDilate->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -217,11 +218,11 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  writerDilation->SetInput( grayscaleDilate->GetOutput() );
+  writerDilation->SetInput(grayscaleDilate->GetOutput());
   writerDilation->Update();
   // Software Guide : EndCodeSnippet
 
-  writerErosion->SetInput( grayscaleErode->GetOutput() );
+  writerErosion->SetInput(grayscaleErode->GetOutput());
   writerErosion->Update();
 
   //  Software Guide : BeginLatex
@@ -231,8 +232,8 @@ int main( int argc, char * argv[] )
   // \includegraphics[width=0.32\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.32\textwidth]{MathematicalMorphologyGrayscaleErosionOutput}
   // \includegraphics[width=0.32\textwidth]{MathematicalMorphologyGrayscaleDilationOutput}
-  // \itkcaption[Effect of erosion and dilation in a grayscale image.]{Effect of
-  // erosion and dilation in a grayscale image.}
+  // \itkcaption[Effect of erosion and dilation in a grayscale image.]{Effect
+  // of erosion and dilation in a grayscale image.}
   // \label{fig:MathematicalMorphologyGrayscaleFilters}
   // \end{figure}
   //

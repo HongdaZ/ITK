@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 namespace itk
 {
 
-/** \class PhysicalPointImageSource
+/**
+ *\class PhysicalPointImageSource
  * \brief Generate an image of the physical locations of each pixel.
  *
  * This image source supports image which have a multi-component pixel
@@ -34,26 +35,27 @@ namespace itk
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
-template< typename TOutputImage >
-class ITK_TEMPLATE_EXPORT PhysicalPointImageSource
-  : public GenerateImageSource< TOutputImage >
+template <typename TOutputImage>
+class ITK_TEMPLATE_EXPORT PhysicalPointImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  typedef PhysicalPointImageSource            Self;
-  typedef GenerateImageSource< TOutputImage > Superclass;
-  typedef SmartPointer< Self >                Pointer;
-  typedef SmartPointer< const Self>           ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhysicalPointImageSource);
 
-  /** Output image typedefs */
-  typedef TOutputImage                            OutputImageType;
-  typedef typename OutputImageType::PixelType     PixelType;
-  typedef typename OutputImageType::RegionType    RegionType;
-  typedef typename OutputImageType::SpacingType   SpacingType;
-  typedef typename OutputImageType::PointType     PointType;
-  typedef typename OutputImageType::DirectionType DirectionType;
+  using Self = PhysicalPointImageSource;
+  using Superclass = GenerateImageSource<TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+
+  /** Output image type alias */
+  using OutputImageType = TOutputImage;
+  using PixelType = typename OutputImageType::PixelType;
+  using RegionType = typename OutputImageType::RegionType;
+  using SpacingType = typename OutputImageType::SpacingType;
+  using PointType = typename OutputImageType::PointType;
+  using DirectionType = typename OutputImageType::DirectionType;
 
 
-  typedef typename RegionType::SizeType SizeType;
+  using SizeType = typename RegionType::SizeType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PhysicalPointImageSource, GenerateImageSource);
@@ -62,20 +64,23 @@ public:
   itkNewMacro(Self);
 
 protected:
-  PhysicalPointImageSource( ) {};
-  // virtual ~PhysicalPointImageSource() default implementation ok
+  PhysicalPointImageSource()
+  {
+    this->DynamicMultiThreadingOn();
+    this->ThreaderUpdateProgressOff();
+  };
+  ~PhysicalPointImageSource() override = default;
 
-  virtual void GenerateOutputInformation() ITK_OVERRIDE;
+  void
+  GenerateOutputInformation() override;
 
-  virtual void ThreadedGenerateData (const RegionType &outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PhysicalPointImageSource);
+  void
+  DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
 };
-}
+} // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkPhysicalPointImageSource.hxx"
+#  include "itkPhysicalPointImageSource.hxx"
 #endif
 
 #endif

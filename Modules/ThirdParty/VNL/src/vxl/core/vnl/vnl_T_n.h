@@ -12,7 +12,7 @@
 //
 // Inspired by the numerous double-3, int-2 things lying around.
 
-#include <vnl/vnl_vector_fixed.h>
+#include "vnl_vector_fixed.h"
 #include "vnl/vnl_export.h"
 
 //: cpp traits!
@@ -25,7 +25,7 @@
 //: this macro defines the class.
 // e.g. use vnl_T_n_impl(int,2) to implement class vnl_int_2.
 #define vnl_T_n_class_impl(T,n) \
-class VNL_TEMPLATE_EXPORT vnl_##T##_##n : public vnl_vector_fixed<T ,n> \
+class vnl_##T##_##n : public vnl_vector_fixed<T ,n> \
 { \
  public: \
   vnl_##T##_##n() { } \

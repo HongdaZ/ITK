@@ -28,8 +28,7 @@ namespace gdcm
 
 
 Scanner::~Scanner()
-{
-}
+= default;
 
 void Scanner::ClearTags()
 {
@@ -225,10 +224,7 @@ void Scanner::PrintTable( std::ostream & os ) const
     {
     const char *filename = file->c_str();
     assert( filename && *filename );
-    bool b = IsKey(filename);
-    const char *comment = !b ? "could not be read" : "could be read";
     os << '"' << filename << '"' << "\t";
-    //const FilenameToValue &mapping = Mappings[*tag];
     TagsType::const_iterator tag = Tags.begin();
     const TagToValue &mapping = GetMapping(filename);
     for( ; tag != Tags.end(); ++tag )
@@ -238,7 +234,6 @@ void Scanner::PrintTable( std::ostream & os ) const
       const char *value = "";
       if( mapping.find(t) != mapping.end() ) {
         const char * v = mapping.find(t)->second;
-        //const char* value =  this->GetValue(filename, *tag);
         if(v) value = v;
       }
       os << '"' << (isui ? String<>::Trim( value ) : value) << '"';
@@ -302,12 +297,12 @@ const char* Scanner::GetValue(const char *filename, Tag const &t) const
     {
     return ftv.find(t)->second;
     }
-  return NULL;
+  return nullptr;
 }
 
 const char *Scanner::GetFilenameFromTagToValue(Tag const &t, const char *valueref) const
 {
-  const char *filenameref = 0;
+  const char *filenameref = nullptr;
   if( valueref )
     {
     Directory::FilenamesType::const_iterator file = Filenames.begin();

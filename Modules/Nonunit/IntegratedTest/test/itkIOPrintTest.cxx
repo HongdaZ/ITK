@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@
 #include "itkTIFFImageIO.h"
 #include "itkVTKImageIO.h"
 
-int itkIOPrintTest(int , char* [])
+int
+itkIOPrintTest(int, char *[])
 {
-  typedef itk::Image<unsigned char,2> ImageType;
-  itk::ImageFileReader<ImageType>::Pointer reader =
-    itk::ImageFileReader<ImageType>::New();
+  using ImageType = itk::Image<unsigned char, 2>;
+  itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 
   itk::PNGImageIO::Pointer PNGio;
   PNGio = itk::PNGImageIO::New();

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ namespace itk
 {
 namespace Accessor
 {
-/** \class ExpPixelAccessor
+/**
+ *\class ExpPixelAccessor
  * \brief Give access to the std::exp() function of a value
  *
  * ExpPixelAccessor is templated over an internal type and an
@@ -36,27 +37,34 @@ namespace Accessor
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TInternalType, typename TExternalType >
+template <typename TInternalType, typename TExternalType>
 class ExpPixelAccessor
 {
 public:
-  /** External typedef. It defines the external aspect
-    * that this class will exhibit. */
-  typedef TExternalType ExternalType;
+  /** External type alias. It defines the external aspect
+   * that this class will exhibit. */
+  using ExternalType = TExternalType;
 
-  /** Internal typedef. It defines the internal real
+  /** Internal type alias. It defines the internal real
    * representation of data. */
-  typedef TInternalType InternalType;
+  using InternalType = TInternalType;
 
-  static inline void Set(TInternalType & output, const TExternalType & input)
-  { output = (TInternalType)std::exp( (double)input ); }
+  static inline void
+  Set(TInternalType & output, const TExternalType & input)
+  {
+    output = (TInternalType)std::exp((double)input);
+  }
 
-  static inline TExternalType Get(const TInternalType & input)
-  { return (TExternalType)std::exp( (double)input ); }
+  static inline TExternalType
+  Get(const TInternalType & input)
+  {
+    return (TExternalType)std::exp((double)input);
+  }
 };
 } // end namespace Accessor
 
-/** \class ExpImageAdaptor
+/**
+ *\class ExpImageAdaptor
  * \brief Presents an image as being composed of the std::exp() of its pixels
  *
  * Additional casting is performed according to the input and output image
@@ -65,21 +73,19 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template< typename TImage, typename TOutputPixelType >
-class ExpImageAdaptor:public
-  ImageAdaptor< TImage, Accessor::ExpPixelAccessor<
-                  typename TImage::PixelType,
-                  TOutputPixelType >   >
+template <typename TImage, typename TOutputPixelType>
+class ExpImageAdaptor
+  : public ImageAdaptor<TImage, Accessor::ExpPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ExpImageAdaptor Self;
-  typedef ImageAdaptor<
-    TImage, Accessor::ExpPixelAccessor<
-      typename TImage::PixelType, TOutputPixelType > >   Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ExpImageAdaptor);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = ExpImageAdaptor;
+  using Superclass = ImageAdaptor<TImage, Accessor::ExpPixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
+
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -88,11 +94,8 @@ public:
   itkTypeMacro(ExpImageAdaptor, ImageAdaptor);
 
 protected:
-  ExpImageAdaptor() {}
-  virtual ~ExpImageAdaptor() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpImageAdaptor);
+  ExpImageAdaptor() = default;
+  ~ExpImageAdaptor() override = default;
 };
 } // end namespace itk
 

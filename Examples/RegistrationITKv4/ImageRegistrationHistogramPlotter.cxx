@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,34 +30,33 @@
 //  When fine tuning the parameters of an image registration process it is not
 //  always clear what factor are having a larger impact on the behavior of the
 //  registration. Even plotting the values of the metric and the transform
-//  parameters may not provide a clear indication on the best way to modify the
-//  optimizer and metric parameters in order to improve the convergence rate
-//  and stability. In such circumstances it is useful to take a closer look at
-//  the internals of the components involved in computing the registration. One
-//  of the critical components is, of course, the image metric. This section
-//  illustrates a mechanism that can be used for monitoring the behavior of the
-//  Mutual Information metric by continuously looking at the joint histogram at
-//  regular intervals during the iterations of the optimizer.
+//  parameters may not provide a clear indication on the best way to modify
+//  the optimizer and metric parameters in order to improve the convergence
+//  rate and stability. In such circumstances it is useful to take a closer
+//  look at the internals of the components involved in computing the
+//  registration. One of the critical components is, of course, the image
+//  metric. This section illustrates a mechanism that can be used for
+//  monitoring the behavior of the Mutual Information metric by continuously
+//  looking at the joint histogram at regular intervals during the iterations
+//  of the optimizer.
 //
 //  This particular example shows how to use the
-//  \doxygen{HistogramToEntropyImageFilter} class in order to get access to the
-//  joint histogram that is internally computed by the metric. This class
+//  \doxygen{HistogramToEntropyImageFilter} class in order to get access to
+//  the joint histogram that is internally computed by the metric. This class
 //  represents the joint histogram as a $2D$ image and therefore can take
-//  advantage of the IO functionalities described in chapter~\ref{sec:IO}.  The
+//  advantage of the IO functionalities described in chapter~\ref{sec:IO}. The
 //  example registers two images using the gradient descent optimizer.  The
 //  transform used here is a simple translation transform. The metric is a
 //  \doxygen{MutualInformationHistogramImageToImageMetric}.
 //
 //  In the code below we create a helper class called the
 //  \code{HistogramWriter}.  Its purpose is to save the joint histogram into a
-//  file using any of the file formats supported by ITK. This object is invoked
-//  after every iteration of the optimizer.  The writer here saves the joint
-//  histogram into files with names: \code{JointHistogramXXX.mhd} where
-//  \code{XXX} is replaced with the iteration number. The output image contains
-//  the joint entropy histogram given by
-//  \begin{equation}
-//  f_{ij} = -p_{ij} \log_2 ( p_{ij} )
-//  \end{equation}
+//  file using any of the file formats supported by ITK. This object is
+//  invoked after every iteration of the optimizer.  The writer here saves the
+//  joint histogram into files with names: \code{JointHistogramXXX.mhd} where
+//  \code{XXX} is replaced with the iteration number. The output image
+//  contains the joint entropy histogram given by \begin{equation} f_{ij} =
+//  -p_{ij} \log_2 ( p_{ij} ) \end{equation}
 //
 //  where the indices $i$ and $j$ identify the location of a bin in the Joint
 //  Histogram of the two images and are in the ranges $i \in [0:N-1]$ and  $j
@@ -72,10 +71,11 @@
 //  The value $q_{ij}$ is the frequency of a bin in the histogram and it is
 //  computed as the number of pixels where the Fixed image has intensities in
 //  the range of bin $i$ and the Moving image has intensities on the range of
-//  bin $j$.  The value $p_{ij}$ is therefore the probability of the occurrence
-//  of the measurement vector centered in the bin ${ij}$.  The filter produces
-//  an output image of pixel type \code{double}. For details on the use of
-//  Histograms in ITK please refer to section~\ref{sec:Histogram}.
+//  bin $j$.  The value $p_{ij}$ is therefore the probability of the
+//  occurrence of the measurement vector centered in the bin ${ij}$.  The
+//  filter produces an output image of pixel type \code{double}. For details
+//  on the use of Histograms in ITK please refer to
+//  section~\ref{sec:Histogram}.
 //
 //  Depending on whether you want to see the joint histogram frequencies
 //  directly, or the joint probabilities, or log of joint probabilities, you
@@ -128,34 +128,35 @@
 
 #include "itkCommand.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 // Functor to rescale plot the histogram on a log scale and invert it.
-template< class TInput >
+template <class TInput>
 class RescaleDynamicRangeFunctor
 {
 public:
-  typedef unsigned char OutputPixelType;
-  RescaleDynamicRangeFunctor() {};
-  ~RescaleDynamicRangeFunctor() {};
-  inline OutputPixelType operator()( const TInput &A )
+  using OutputPixelType = unsigned char;
+  RescaleDynamicRangeFunctor() = default;
+  ~RescaleDynamicRangeFunctor() = default;
+  inline OutputPixelType
+  operator()(const TInput & A)
+  {
+    if ((A > 0.0))
     {
-    if( (A > 0.0) )
+      if (-(30.0 * std::log(A)) > 255)
       {
-      if( -(30.0 * std::log(A)) > 255 )
-        {
-        return static_cast<OutputPixelType>( 255 );
-        }
-      else
-        {
-        return itk::Math::Round<OutputPixelType>( -(30.0 * std::log(A)) );
-        }
+        return static_cast<OutputPixelType>(255);
       }
-    else
+      else
       {
-      return static_cast<OutputPixelType>(255);
+        return itk::Math::Round<OutputPixelType>(-(30.0 * std::log(A)));
       }
     }
+    else
+    {
+      return static_cast<OutputPixelType>(255);
+    }
+  }
 };
 
 // Class to write the joint histograms.
@@ -173,43 +174,43 @@ namespace
 class HistogramWriter
 {
 public:
-  typedef float InternalPixelType;
-  itkStaticConstMacro( Dimension, unsigned int, 2);
+  using InternalPixelType = float;
+  static constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InternalPixelType, Dimension > InternalImageType;
+  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
 
-  typedef itk::MutualInformationHistogramImageToImageMetric<
-                                        InternalImageType,
-                                        InternalImageType >    MetricType;
+  using MetricType =
+    itk::MutualInformationHistogramImageToImageMetric<InternalImageType,
+                                                      InternalImageType>;
   // Software Guide : EndCodeSnippet
 
-  typedef MetricType::Pointer   MetricPointer;
+  using MetricPointer = MetricType::Pointer;
 
   // Software Guide : BeginCodeSnippet
-  typedef MetricType::HistogramType   HistogramType;
+  using HistogramType = MetricType::HistogramType;
 
-  typedef itk::HistogramToEntropyImageFilter< HistogramType, InternalImageType>
-                                HistogramToEntropyImageFilterType;
+  using HistogramToEntropyImageFilterType =
+    itk::HistogramToEntropyImageFilter<HistogramType, InternalImageType>;
 
-  typedef HistogramToEntropyImageFilterType::Pointer
-                                HistogramToImageFilterPointer;
+  using HistogramToImageFilterPointer =
+    HistogramToEntropyImageFilterType::Pointer;
 
-  typedef HistogramToEntropyImageFilterType::OutputImageType OutputImageType;
+  using OutputImageType = HistogramToEntropyImageFilterType::OutputImageType;
 
-  typedef itk::ImageFileWriter< OutputImageType > HistogramFileWriterType;
-  typedef HistogramFileWriterType::Pointer        HistogramFileWriterPointer;
+  using HistogramFileWriterType = itk::ImageFileWriter<OutputImageType>;
+  using HistogramFileWriterPointer = HistogramFileWriterType::Pointer;
   // Software Guide : EndCodeSnippet
 
-  typedef HistogramToEntropyImageFilterType::OutputPixelType OutputPixelType;
+  using OutputPixelType = HistogramToEntropyImageFilterType::OutputPixelType;
 
-  HistogramWriter():
-    m_Metric(0)
-    {
+  HistogramWriter()
+    : m_Metric(nullptr)
+  {
 
     // Software Guide : BeginLatex
     //
-    // The \code{HistogramWriter} has a member variable \code{m\_Filter} of type
-    // HistogramToEntropyImageFilter.
+    // The \code{HistogramWriter} has a member variable \code{m\_Filter} of
+    // type HistogramToEntropyImageFilter.
     //
     // Software Guide : EndLatex
 
@@ -219,86 +220,87 @@ public:
 
     // Software Guide : BeginLatex
     //
-    // It also has an ImageFileWriter that has been instantiated using the image
-    // type that is produced as output from the histogram to image filter. We
-    // connect the output of the filter as input to the writer.
+    // It also has an ImageFileWriter that has been instantiated using the
+    // image type that is produced as output from the histogram to image
+    // filter. We connect the output of the filter as input to the writer.
     //
     // Software Guide : EndLatex
 
     // Software Guide : BeginCodeSnippet
     this->m_HistogramFileWriter = HistogramFileWriterType::New();
-    this->m_HistogramFileWriter->SetInput( this->m_Filter->GetOutput() );
+    this->m_HistogramFileWriter->SetInput(this->m_Filter->GetOutput());
     // Software Guide : EndCodeSnippet
+  }
 
-    }
+  ~HistogramWriter() = default;
 
-  ~HistogramWriter() { };
-
-  void SetMetric( MetricPointer metric )
-    {
-    this->m_Metric = metric;
-    }
-
-  MetricPointer GetMetric() const
-    {
-    return this->m_Metric;
-    }
-
-  void WriteHistogramFile( unsigned int iterationNumber )
+  void
+  SetMetric(MetricPointer metric)
   {
-    std::string outputFileBase = "JointHistogram";
+    this->m_Metric = metric;
+  }
+
+  MetricPointer
+  GetMetric() const
+  {
+    return this->m_Metric;
+  }
+
+  void
+  WriteHistogramFile(unsigned int iterationNumber)
+  {
+    std::string        outputFileBase = "JointHistogram";
     std::ostringstream outputFilename;
-    outputFilename << outputFileBase
-                   << "."
-                   << std::setfill('0') << std::setw(3) << iterationNumber
-                   << "."
+    outputFilename << outputFileBase << "." << std::setfill('0')
+                   << std::setw(3) << iterationNumber << "."
                    << "mhd";
-    m_HistogramFileWriter->SetFileName( outputFilename.str() );
-    this->m_Filter->SetInput( this->GetMetric()->GetHistogram() );
+    m_HistogramFileWriter->SetFileName(outputFilename.str());
+    this->m_Filter->SetInput(this->GetMetric()->GetHistogram());
     this->m_Filter->Modified();
 
     try
-      {
+    {
       m_Filter->Update();
-      }
-    catch( itk::ExceptionObject & err )
-      {
+    }
+    catch (const itk::ExceptionObject & err)
+    {
       std::cerr << "ERROR: ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
-      }
+    }
 
     try
-      {
+    {
       m_HistogramFileWriter->Update();
-      }
-    catch( itk::ExceptionObject & excp )
-      {
+    }
+    catch (const itk::ExceptionObject & excp)
+    {
       std::cerr << "Exception thrown " << excp << std::endl;
-      }
+    }
 
     std::cout << "Joint Histogram file: ";
     std::cout << outputFilename.str() << " written" << std::endl;
-
-    }
+  }
 
   // Software Guide : BeginLatex
   //
   // The method of this class that is most relevant to our discussion is the
-  // one that writes the image into a file. In this method we assign the output
-  // histogram of the metric to the input of the histogram to image filter. In
-  // this way we construct an ITK $2D$ image where every pixel corresponds to
-  // one of the Bins of the joint histogram computed by the Metric.
+  // one that writes the image into a file. In this method we assign the
+  // output histogram of the metric to the input of the histogram to image
+  // filter. In this way we construct an ITK $2D$ image where every pixel
+  // corresponds to one of the Bins of the joint histogram computed by the
+  // Metric.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  void WriteHistogramFile( std::string &outputFilename  )
-    {
+  void
+  WriteHistogramFile(std::string & outputFilename)
+  {
     // Software Guide : EndCodeSnippet
 
 
     // Software Guide : BeginCodeSnippet
-    this->m_Filter->SetInput( this->GetMetric()->GetHistogram() );
+    this->m_Filter->SetInput(this->GetMetric()->GetHistogram());
     this->m_Filter->Modified();
 
     // Software Guide : EndCodeSnippet
@@ -306,116 +308,112 @@ public:
     // Software Guide : BeginLatex
     //
     // The output of the filter is connected to a filter that will rescale the
-    // intensities in order to improve the visualization of the values. This is
-    // done because it is common to find histograms of medical images that have
-    // a minority of bins that are largely dominant. Visualizing such histogram
-    // in direct values is challenging because only the dominant bins tend to
-    // become visible.
+    // intensities in order to improve the visualization of the values. This
+    // is done because it is common to find histograms of medical images that
+    // have a minority of bins that are largely dominant. Visualizing such
+    // histogram in direct values is challenging because only the dominant
+    // bins tend to become visible.
     //
     // Software Guide : EndLatex
 
 
-    //Write the joint histogram as outputFilename. Also intensity window
-    //the image by lower and upper thresholds and rescale the image to
-    //8 bits.
-    typedef itk::Image< unsigned char, Dimension > RescaledOutputImageType;
+    // Write the joint histogram as outputFilename. Also intensity window
+    // the image by lower and upper thresholds and rescale the image to
+    // 8 bits.
+    using RescaledOutputImageType = itk::Image<unsigned char, Dimension>;
 
-    typedef RescaleDynamicRangeFunctor<
-                              OutputPixelType
-                                      > RescaleDynamicRangeFunctorType;
+    using RescaleDynamicRangeFunctorType =
+      RescaleDynamicRangeFunctor<OutputPixelType>;
 
-    typedef itk::UnaryFunctorImageFilter<
-                                OutputImageType,
-                                RescaledOutputImageType,
-                                RescaleDynamicRangeFunctorType
-                                      > RescaleDynamicRangeFilterType;
+    using RescaleDynamicRangeFilterType =
+      itk::UnaryFunctorImageFilter<OutputImageType,
+                                   RescaledOutputImageType,
+                                   RescaleDynamicRangeFunctorType>;
 
     RescaleDynamicRangeFilterType::Pointer rescaler =
-                                RescaleDynamicRangeFilterType::New();
+      RescaleDynamicRangeFilterType::New();
 
-    rescaler->SetInput( m_Filter->GetOutput() );
+    rescaler->SetInput(m_Filter->GetOutput());
 
-    typedef itk::ImageFileWriter< RescaledOutputImageType > RescaledWriterType;
+    using RescaledWriterType = itk::ImageFileWriter<RescaledOutputImageType>;
 
-    RescaledWriterType::Pointer rescaledWriter =
-                                RescaledWriterType::New();
+    RescaledWriterType::Pointer rescaledWriter = RescaledWriterType::New();
 
-    rescaledWriter->SetInput( rescaler->GetOutput() );
+    rescaledWriter->SetInput(rescaler->GetOutput());
 
-    rescaledWriter->SetFileName( outputFilename );
+    rescaledWriter->SetFileName(outputFilename);
 
     try
-      {
+    {
       m_Filter->Update();
-      }
-    catch( itk::ExceptionObject & err )
-      {
+    }
+    catch (const itk::ExceptionObject & err)
+    {
       std::cerr << "ERROR: ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
-      }
-
-    try
-      {
-      rescaledWriter->Update();
-      }
-    catch( itk::ExceptionObject & excp )
-      {
-      std::cerr << "Exception thrown " << excp << std::endl;
-      }
-
-    std::cout << "Joint Histogram file: " << outputFilename <<
-        " written" << std::endl;
     }
 
-// Software Guide : BeginLatex
-//
-// The following are the member variables of our \code{HistogramWriter} class.
-//
-// Software Guide : EndLatex
+    try
+    {
+      rescaledWriter->Update();
+    }
+    catch (const itk::ExceptionObject & excp)
+    {
+      std::cerr << "Exception thrown " << excp << std::endl;
+    }
+
+    std::cout << "Joint Histogram file: " << outputFilename << " written"
+              << std::endl;
+  }
+
+  // Software Guide : BeginLatex
+  //
+  // The following are the member variables of our \code{HistogramWriter}
+  // class.
+  //
+  // Software Guide : EndLatex
 
 
-// Software Guide : BeginCodeSnippet
+  // Software Guide : BeginCodeSnippet
 
 private:
-  MetricPointer                   m_Metric;
-  HistogramToImageFilterPointer   m_Filter;
-  HistogramFileWriterPointer      m_HistogramFileWriter;
+  MetricPointer                 m_Metric;
+  HistogramToImageFilterPointer m_Filter;
+  HistogramFileWriterPointer    m_HistogramFileWriter;
   // Software Guide : EndCodeSnippet
-  std::string   m_OutputFile;
+  std::string m_OutputFile;
 };
 
 // Command - observer invoked after every iteration of the optimizer
 class CommandIterationUpdate : public itk::Command
 {
 public:
-  typedef  CommandIterationUpdate   Self;
-  typedef  itk::Command             Superclass;
-  typedef  itk::SmartPointer<Self>  Pointer;
-  itkSimpleNewMacro( Self );
+  using Self = CommandIterationUpdate;
+  using Superclass = itk::Command;
+  using Pointer = itk::SmartPointer<Self>;
+  itkSimpleNewMacro(Self);
 
 protected:
-  CommandIterationUpdate()
-    {
-    m_WriteHistogramsAfterEveryIteration = false;
-    }
+  CommandIterationUpdate() { m_WriteHistogramsAfterEveryIteration = false; }
 
 public:
+  using OptimizerType = itk::RegularStepGradientDescentOptimizer;
+  using OptimizerPointer = const OptimizerType *;
 
-  typedef   itk::RegularStepGradientDescentOptimizer     OptimizerType;
-  typedef   const OptimizerType *                        OptimizerPointer;
+  void
+  Execute(itk::Object * caller, const itk::EventObject & event) override
+  {
+    Execute((const itk::Object *)caller, event);
+  }
 
-  void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
+  void
+  Execute(const itk::Object * object, const itk::EventObject & event) override
+  {
+    auto optimizer = static_cast<OptimizerPointer>(object);
+    if (!itk::IterationEvent().CheckEvent(&event) || optimizer == nullptr)
     {
-    Execute( (const itk::Object *)caller, event);
-    }
-
-  void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
-    {
-    OptimizerPointer optimizer = static_cast< OptimizerPointer >( object );
-    if( ! itk::IterationEvent().CheckEvent( &event ) || optimizer == ITK_NULLPTR )
-      {
       return;
-      }
+    }
     std::cout << optimizer->GetCurrentIteration() << "   ";
     std::cout << optimizer->GetValue() << "   ";
     std::cout << optimizer->GetCurrentPosition() << std::endl;
@@ -424,9 +422,9 @@ public:
     // where \code{XXX} is the iteration number
 
 
-    //Write Joint Entropy Histogram prior to registration.
-    if( optimizer->GetCurrentIteration() == 0 )
-      {
+    // Write Joint Entropy Histogram prior to registration.
+    if (optimizer->GetCurrentIteration() == 0)
+    {
       // Software Guide : BeginLatex
       //
       // We invoke the histogram writer within the Command/Observer of the
@@ -435,73 +433,74 @@ public:
       // Software Guide : EndLatex
 
       // Software Guide : BeginCodeSnippet
-      m_JointHistogramWriter.WriteHistogramFile( m_InitialHistogramFile );
+      m_JointHistogramWriter.WriteHistogramFile(m_InitialHistogramFile);
       // Software Guide : EndCodeSnippet
-      }
-    if( m_WriteHistogramsAfterEveryIteration )
-      {
+    }
+    if (m_WriteHistogramsAfterEveryIteration)
+    {
       m_JointHistogramWriter.WriteHistogramFile(
-                                           optimizer->GetCurrentIteration() );
-      }
+        optimizer->GetCurrentIteration());
     }
+  }
 
-  void SetWriteHistogramsAfterEveryIteration( bool value )
-    {
+  void
+  SetWriteHistogramsAfterEveryIteration(bool value)
+  {
     m_WriteHistogramsAfterEveryIteration = value;
-    }
+  }
 
-  void SetInitialHistogramFile( const char * filename )
-    {
+  void
+  SetInitialHistogramFile(const char * filename)
+  {
     m_InitialHistogramFile = filename;
-    }
+  }
 
   HistogramWriter m_JointHistogramWriter;
 
 private:
-  bool              m_WriteHistogramsAfterEveryIteration;
-  std::string       m_InitialHistogramFile;
-
+  bool        m_WriteHistogramsAfterEveryIteration;
+  std::string m_InitialHistogramFile;
 };
 
 } // end anonymous namespace
 
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 8 )
-    {
+  if (argc < 8)
+  {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile WriteJointHistogramsAfterEveryIteration ";
     std::cerr << "JointHistogramPriorToRegistrationFile ";
     std::cerr << "JointHistogramAfterRegistrationFile ";
-    std::cerr << "NumberOfHistogramBinsForWritingTheMutualInformationHistogramMetric";
-    std::cerr <<  std::endl;
+    std::cerr
+      << "NumberOfHistogramBinsForWritingTheMutualInformationHistogramMetric";
+    std::cerr << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  typedef  unsigned char  PixelType;
+  using PixelType = unsigned char;
 
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< PixelType, Dimension >         FixedImageType;
-  typedef itk::Image< PixelType, Dimension >         MovingImageType;
-  typedef   float                                    InternalPixelType;
-  typedef itk::Image< InternalPixelType, Dimension > InternalImageType;
+  using FixedImageType = itk::Image<PixelType, Dimension>;
+  using MovingImageType = itk::Image<PixelType, Dimension>;
+  using InternalPixelType = float;
+  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
 
-  typedef itk::TranslationTransform< double, Dimension > TransformType;
-  typedef itk::RegularStepGradientDescentOptimizer       OptimizerType;
-  typedef itk::LinearInterpolateImageFunction<
-                                    InternalImageType,
-                                    double             > InterpolatorType;
-  typedef itk::ImageRegistrationMethod<
-                                    InternalImageType,
-                                    InternalImageType >  RegistrationType;
+  using TransformType = itk::TranslationTransform<double, Dimension>;
+  using OptimizerType = itk::RegularStepGradientDescentOptimizer;
+  using InterpolatorType =
+    itk::LinearInterpolateImageFunction<InternalImageType, double>;
+  using RegistrationType =
+    itk::ImageRegistrationMethod<InternalImageType, InternalImageType>;
 
-  typedef itk::MutualInformationHistogramImageToImageMetric<
-                                          InternalImageType,
-                                          InternalImageType >    MetricType;
+  using MetricType =
+    itk::MutualInformationHistogramImageToImageMetric<InternalImageType,
+                                                      InternalImageType>;
 
   // Software Guide : BeginLatex
   //
@@ -510,25 +509,26 @@ int main( int argc, char *argv[] )
   //
   // Software Guide : EndLatex
 
-  TransformType::Pointer      transform     = TransformType::New();
-  OptimizerType::Pointer      optimizer     = OptimizerType::New();
-  InterpolatorType::Pointer   interpolator  = InterpolatorType::New();
-  RegistrationType::Pointer   registration  = RegistrationType::New();
-  MetricType::Pointer         metric        = MetricType::New();
+  TransformType::Pointer    transform = TransformType::New();
+  OptimizerType::Pointer    optimizer = OptimizerType::New();
+  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  RegistrationType::Pointer registration = RegistrationType::New();
+  MetricType::Pointer       metric = MetricType::New();
 
 
-  registration->SetOptimizer(     optimizer     );
-  registration->SetTransform(     transform     );
-  registration->SetInterpolator(  interpolator  );
+  registration->SetOptimizer(optimizer);
+  registration->SetTransform(transform);
+  registration->SetInterpolator(interpolator);
 
   // Software Guide : BeginLatex
   //
-  // The number of bins in the metric is set with the \code{SetHistogramSize()}
-  // method. This will determine the number of pixels along each dimension of
-  // the joint histogram. Note that in this case we arbitrarily decided to use
-  // the same number of bins for the intensities of the Fixed image and those
-  // of the Moving image. However, this does not have to be the case, we could
-  // have selected different numbers of bins for each image.
+  // The number of bins in the metric is set with the
+  // \code{SetHistogramSize()} method. This will determine the number of
+  // pixels along each dimension of the joint histogram. Note that in this
+  // case we arbitrarily decided to use the same number of bins for the
+  // intensities of the Fixed image and those of the Moving image. However,
+  // this does not have to be the case, we could have selected different
+  // numbers of bins for each image.
   //
   // \index{Mutual\-Information\-Histogram\-Image\-To\-Image\-Metric!SetHistogramSize()}
   // \index{SetHistogramSize(),Mutual\-Information\-Histogram\-Image\-To\-Image\-Metric}
@@ -536,125 +536,121 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  unsigned int numberOfHistogramBins = atoi( argv[7] );
+  unsigned int numberOfHistogramBins = std::stoi(argv[7]);
   MetricType::HistogramType::SizeType histogramSize;
   histogramSize.SetSize(2);
   histogramSize[0] = numberOfHistogramBins;
   histogramSize[1] = numberOfHistogramBins;
-  metric->SetHistogramSize( histogramSize );
+  metric->SetHistogramSize(histogramSize);
   // Software Guide : EndCodeSnippet
 
   const unsigned int numberOfParameters = transform->GetNumberOfParameters();
-  typedef MetricType::ScalesType ScalesType;
-  ScalesType scales( numberOfParameters );
-  scales.Fill( 1.0 );
+  using ScalesType = MetricType::ScalesType;
+  ScalesType scales(numberOfParameters);
+  scales.Fill(1.0);
   metric->SetDerivativeStepLengthScales(scales);
 
   CommandIterationUpdate::Pointer observer = CommandIterationUpdate::New();
 
   // Set the metric for the joint histogram writer
-  observer->m_JointHistogramWriter.SetMetric( metric );
+  observer->m_JointHistogramWriter.SetMetric(metric);
 
-  registration->SetMetric( metric  );
+  registration->SetMetric(metric);
 
-  typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
-  typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
+  using FixedImageReaderType = itk::ImageFileReader<FixedImageType>;
+  using MovingImageReaderType = itk::ImageFileReader<MovingImageType>;
 
-  FixedImageReaderType::Pointer  fixedImageReader  = FixedImageReaderType::New();
-  MovingImageReaderType::Pointer movingImageReader = MovingImageReaderType::New();
+  FixedImageReaderType::Pointer fixedImageReader =
+    FixedImageReaderType::New();
+  MovingImageReaderType::Pointer movingImageReader =
+    MovingImageReaderType::New();
 
-  fixedImageReader->SetFileName(  argv[1] );
-  movingImageReader->SetFileName( argv[2] );
+  fixedImageReader->SetFileName(argv[1]);
+  movingImageReader->SetFileName(argv[2]);
 
 
-  typedef itk::NormalizeImageFilter<
-                                FixedImageType,
-                                InternalImageType
-                                        > FixedNormalizeFilterType;
+  using FixedNormalizeFilterType =
+    itk::NormalizeImageFilter<FixedImageType, InternalImageType>;
 
-  typedef itk::NormalizeImageFilter<
-                                MovingImageType,
-                                InternalImageType
-                                              > MovingNormalizeFilterType;
+  using MovingNormalizeFilterType =
+    itk::NormalizeImageFilter<MovingImageType, InternalImageType>;
 
   FixedNormalizeFilterType::Pointer fixedNormalizer =
-                                            FixedNormalizeFilterType::New();
+    FixedNormalizeFilterType::New();
 
   MovingNormalizeFilterType::Pointer movingNormalizer =
-                                            MovingNormalizeFilterType::New();
-  typedef itk::DiscreteGaussianImageFilter<
-                                      InternalImageType,
-                                      InternalImageType
-                                                    > GaussianFilterType;
+    MovingNormalizeFilterType::New();
+  using GaussianFilterType =
+    itk::DiscreteGaussianImageFilter<InternalImageType, InternalImageType>;
 
-  GaussianFilterType::Pointer fixedSmoother  = GaussianFilterType::New();
+  GaussianFilterType::Pointer fixedSmoother = GaussianFilterType::New();
   GaussianFilterType::Pointer movingSmoother = GaussianFilterType::New();
 
-  fixedSmoother->SetVariance( 2.0 );
-  movingSmoother->SetVariance( 2.0 );
-  fixedNormalizer->SetInput(  fixedImageReader->GetOutput() );
-  movingNormalizer->SetInput( movingImageReader->GetOutput() );
+  fixedSmoother->SetVariance(2.0);
+  movingSmoother->SetVariance(2.0);
+  fixedNormalizer->SetInput(fixedImageReader->GetOutput());
+  movingNormalizer->SetInput(movingImageReader->GetOutput());
 
-  fixedSmoother->SetInput( fixedNormalizer->GetOutput() );
-  movingSmoother->SetInput( movingNormalizer->GetOutput() );
+  fixedSmoother->SetInput(fixedNormalizer->GetOutput());
+  movingSmoother->SetInput(movingNormalizer->GetOutput());
 
-  registration->SetFixedImage(    fixedSmoother->GetOutput()    );
-  registration->SetMovingImage(   movingSmoother->GetOutput()   );
+  registration->SetFixedImage(fixedSmoother->GetOutput());
+  registration->SetMovingImage(movingSmoother->GetOutput());
 
 
   try
-    {
+  {
     fixedNormalizer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   registration->SetFixedImageRegion(
-       fixedNormalizer->GetOutput()->GetBufferedRegion() );
+    fixedNormalizer->GetOutput()->GetBufferedRegion());
 
-  typedef RegistrationType::ParametersType ParametersType;
-  ParametersType initialParameters( transform->GetNumberOfParameters() );
+  using ParametersType = RegistrationType::ParametersType;
+  ParametersType initialParameters(transform->GetNumberOfParameters());
 
-  initialParameters[0] = 0.0;  // Initial offset in mm along X
-  initialParameters[1] = 0.0;  // Initial offset in mm along Y
+  initialParameters[0] = 0.0; // Initial offset in mm along X
+  initialParameters[1] = 0.0; // Initial offset in mm along Y
 
-  registration->SetInitialTransformParameters( initialParameters );
+  registration->SetInitialTransformParameters(initialParameters);
 
 
-  optimizer->SetMaximumStepLength( 4.00 );
-  optimizer->SetMinimumStepLength( 0.01 );
-  optimizer->SetRelaxationFactor(  0.90 );
-  optimizer->SetNumberOfIterations( 200 );
+  optimizer->SetMaximumStepLength(4.00);
+  optimizer->SetMinimumStepLength(0.01);
+  optimizer->SetRelaxationFactor(0.90);
+  optimizer->SetNumberOfIterations(200);
   optimizer->MaximizeOn();
 
-  optimizer->AddObserver( itk::IterationEvent(), observer );
+  optimizer->AddObserver(itk::IterationEvent(), observer);
 
 
-  observer->SetInitialHistogramFile( argv[5] );
+  observer->SetInitialHistogramFile(argv[5]);
 
-  if( atoi(argv[4]) )
-    {
-    observer->SetWriteHistogramsAfterEveryIteration( true );
-    }
+  if (std::stoi(argv[4]))
+  {
+    observer->SetWriteHistogramsAfterEveryIteration(true);
+  }
 
 
   try
-    {
+  {
     registration->Update();
     std::cout << "Optimizer stop condition: "
               << registration->GetOptimizer()->GetStopConditionDescription()
               << std::endl;
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   ParametersType finalParameters = registration->GetLastTransformParameters();
 
@@ -667,102 +663,97 @@ int main( int argc, char *argv[] )
 
 
   std::cout << "Result = " << std::endl;
-  std::cout << " Translation X = " << TranslationAlongX  << std::endl;
-  std::cout << " Translation Y = " << TranslationAlongY  << std::endl;
+  std::cout << " Translation X = " << TranslationAlongX << std::endl;
+  std::cout << " Translation Y = " << TranslationAlongY << std::endl;
   std::cout << " Iterations    = " << numberOfIterations << std::endl;
-  std::cout << " Metric value  = " << bestValue          << std::endl;
+  std::cout << " Metric value  = " << bestValue << std::endl;
 
-  //Write Joint Entropy Histogram after registration.
+  // Write Joint Entropy Histogram after registration.
   std::string histogramAfter(argv[6]);
   try
-    {
-    observer->m_JointHistogramWriter.WriteHistogramFile( histogramAfter );
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  {
+    observer->m_JointHistogramWriter.WriteHistogramFile(histogramAfter);
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cerr << "ERROR: ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  typedef itk::ResampleImageFilter<
-                            MovingImageType,
-                            FixedImageType >    ResampleFilterType;
+  using ResampleFilterType =
+    itk::ResampleImageFilter<MovingImageType, FixedImageType>;
 
   TransformType::Pointer finalTransform = TransformType::New();
 
-  finalTransform->SetParameters( finalParameters );
-  finalTransform->SetFixedParameters( transform->GetFixedParameters() );
+  finalTransform->SetParameters(finalParameters);
+  finalTransform->SetFixedParameters(transform->GetFixedParameters());
 
   ResampleFilterType::Pointer resample = ResampleFilterType::New();
 
-  resample->SetTransform( finalTransform );
-  resample->SetInput( movingImageReader->GetOutput() );
+  resample->SetTransform(finalTransform);
+  resample->SetInput(movingImageReader->GetOutput());
 
   FixedImageType::Pointer fixedImage = fixedImageReader->GetOutput();
 
-  resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
-  resample->SetOutputOrigin(  fixedImage->GetOrigin() );
-  resample->SetOutputSpacing( fixedImage->GetSpacing() );
-  resample->SetOutputDirection( fixedImage->GetDirection() );
-  resample->SetDefaultPixelValue( 100 );
+  resample->SetSize(fixedImage->GetLargestPossibleRegion().GetSize());
+  resample->SetOutputOrigin(fixedImage->GetOrigin());
+  resample->SetOutputSpacing(fixedImage->GetSpacing());
+  resample->SetOutputDirection(fixedImage->GetDirection());
+  resample->SetDefaultPixelValue(100);
 
 
-  typedef  unsigned char  OutputPixelType;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  typedef itk::CastImageFilter<
-                        FixedImageType,
-                        OutputImageType > CastFilterType;
+  using CastFilterType =
+    itk::CastImageFilter<FixedImageType, OutputImageType>;
 
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
-
-
-  WriterType::Pointer      writer =  WriterType::New();
-  CastFilterType::Pointer  caster =  CastFilterType::New();
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
 
-  writer->SetFileName( argv[3] );
+  WriterType::Pointer     writer = WriterType::New();
+  CastFilterType::Pointer caster = CastFilterType::New();
 
 
-  caster->SetInput( resample->GetOutput() );
-  writer->SetInput( caster->GetOutput()   );
+  writer->SetFileName(argv[3]);
+
+
+  caster->SetInput(resample->GetOutput());
+  writer->SetInput(caster->GetOutput());
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cerr << "ERROR: ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
-    }
+  }
 
   return EXIT_SUCCESS;
-
 }
 
 // Software Guide : BeginLatex
 //
 // Mutual information attempts to re-group the joint entropy histograms into a
-// more ``meaningful'' formation. An optimizer that minimizes the joint entropy
-// seeks a transform that produces a small number of high value bins and a
-// large majority of almost zero bins. Multi-modality registration seeks such a
-// transform while also attempting to maximize the information contribution by
-// the fixed and the moving images in the overall region of the metric.
+// more ``meaningful'' formation. An optimizer that minimizes the joint
+// entropy seeks a transform that produces a small number of high value bins
+// and a large majority of almost zero bins. Multi-modality registration seeks
+// such a transform while also attempting to maximize the information
+// contribution by the fixed and the moving images in the overall region of
+// the metric.
 //
-// A T1 MRI (fixed image) and a proton density MRI (moving image) as shown in Figure
-// \ref{fig:FixedMovingImageRegistration2}
-// are provided as input to this example.
+// A T1 MRI (fixed image) and a proton density MRI (moving image) as shown in
+// Figure \ref{fig:FixedMovingImageRegistration2} are provided as input to
+// this example.
 //
-// Figure \ref{fig:JointEntropyHistograms} shows the joint histograms before and
-// after registration.
-// \begin{figure}
-// \center
+// Figure \ref{fig:JointEntropyHistograms} shows the joint histograms before
+// and after registration. \begin{figure} \center
 // \includegraphics[width=0.44\textwidth]{JointEntropyHistogramPriorToRegistration}
 // \includegraphics[width=0.44\textwidth]{JointEntropyHistogramAfterRegistration}
-// \itkcaption[Multi-modality joint histograms]{Joint entropy histograms before and
-// after registration. The final transform was within half a pixel of true misalignment.}
-// \label{fig:JointEntropyHistograms}
-// \end{figure}
+// \itkcaption[Multi-modality joint histograms]{Joint entropy histograms
+// before and after registration. The final transform was within half a pixel
+// of true misalignment.} \label{fig:JointEntropyHistograms} \end{figure}
 //  Software Guide : EndLatex

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,19 +19,15 @@
 
 namespace itk
 {
-MemoryProbe
-::MemoryProbe():
-  ResourceProbe< MemoryProbe::MemoryLoadType, double >("Memory", "kB")
+MemoryProbe ::MemoryProbe()
+  : ResourceProbe<MemoryProbe::MemoryLoadType, double>("Memory", "kB")
 {}
 
-MemoryProbe
-::~MemoryProbe()
-{}
+MemoryProbe ::~MemoryProbe() = default;
 
 MemoryProbe::MemoryLoadType
-MemoryProbe
-::GetInstantValue(void) const
+MemoryProbe ::GetInstantValue() const
 {
-  return static_cast< MemoryProbe::MemoryLoadType >( m_MemoryObserver.GetMemoryUsage() );
+  return static_cast<MemoryProbe::MemoryLoadType>(m_MemoryObserver.GetMemoryUsage());
 }
 } // end namespace itk

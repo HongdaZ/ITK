@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_nonlinear_minimizer.h
 #ifndef vnl_nonlinear_minimizer_h_
 #define vnl_nonlinear_minimizer_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief  Base class for nonlinear optimization
@@ -17,8 +14,10 @@
 // \endverbatim
 
 #include <string>
-#include <vcl_compiler.h>
-#include <vnl/vnl_matrix.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include "vnl_matrix.h"
 #include "vnl/vnl_export.h"
 
 //: vnl_nonlinear_minimizer is a base class for nonlinear optimization.
@@ -135,34 +134,35 @@ class VNL_EXPORT vnl_nonlinear_minimizer
  protected:
   // Data Members--------------------------------------------------------------
   // Input variables
-  double xtol;    //!< Termination tolerance on X (solution vector)
-  long   maxfev;  //!< Termination maximum number of iterations
-  double ftol;    //!< Termination tolerance on F (sum of squared residuals)
-  double gtol;    //!< Termination tolerance on Grad(F)' * F = 0
-  double epsfcn;  //!< Step length for FD Jacobian
+   double xtol{1e-8}; //!< Termination tolerance on X (solution vector)
+   long maxfev{2000}; //!< Termination maximum number of iterations
+   double ftol;       //!< Termination tolerance on F (sum of squared residuals)
+   double gtol{1e-5}; //!< Termination tolerance on Grad(F)' * F = 0
+   double epsfcn;     //!< Step length for FD Jacobian
 
-  // Output variables
-  unsigned num_iterations_;
-  long    num_evaluations_;
-  double start_error_;
-  double end_error_;
+   // Output variables
+   unsigned num_iterations_{0};
+   long num_evaluations_{0};
+   double start_error_{0};
+   double end_error_{0};
 
-  bool trace;
+   bool trace{false};
 
-  // Verbose flag.
-  bool verbose_;
-  int check_derivatives_;
-  ReturnCodes failure_code_;
+   // Verbose flag.
+   bool verbose_{false};
+   int check_derivatives_{0};
+   ReturnCodes failure_code_{ERROR_FAILURE};
 
-  void reset();
+   void reset();
 
-  //: Called by derived classes after each function evaluation.
-  void report_eval(double f);
+   //: Called by derived classes after each function evaluation.
+   void report_eval(double f);
 
-  //: Called by derived classes after each iteration.
-  //  When true is returned, minimizer should stop with code FAILED_USER_REQUEST.
-  //  Derived classes can redefine this function to make the optimizer stop when a condition is satisfied.
-  virtual bool report_iter();
+   //: Called by derived classes after each iteration.
+   //  When true is returned, minimizer should stop with code
+   //  FAILED_USER_REQUEST. Derived classes can redefine this function to make
+   //  the optimizer stop when a condition is satisfied.
+   virtual bool report_iter();
 };
 
 #endif // vnl_nonlinear_minimizer_h_

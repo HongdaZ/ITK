@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,6 +32,29 @@
 
 namespace itk
 {
+/**\class TransformBaseTemplateEnums
+ * \brief Contains all enum classes used by TransformBaseTemplate class.
+ * \ingroup ITKTransform
+ */
+class TransformBaseTemplateEnums
+{
+public:
+  /**\class TransformCategory
+   * \ingroup ITKTransform
+   * */
+  enum class TransformCategory : uint8_t
+  {
+    UnknownTransformCategory = 0,
+    Linear = 1,
+    BSpline = 2,
+    Spline = 3,
+    DisplacementField = 4,
+    VelocityField = 5
+  };
+};
+// Define how to print enumeration
+extern ITKTransform_EXPORT std::ostream &
+                           operator<<(std::ostream & out, const TransformBaseTemplateEnums::TransformCategory value);
 /** \class itkTransformBaseTemplate
  *
  * This class is an abstract class to represent a spatial transform.
@@ -41,57 +64,51 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template<typename TParametersValueType>
-class TransformBaseTemplate:public Object
+template <typename TParametersValueType>
+class TransformBaseTemplate : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef TransformBaseTemplate    Self;
-  typedef Object                   Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(TransformBaseTemplate);
+
+  /** Standard class type aliases. */
+  using Self = TransformBaseTemplate;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Type of the input parameters. */
 
-  typedef  TParametersValueType                          ParametersValueType;
-  typedef  OptimizerParameters<ParametersValueType>      ParametersType;
-  typedef  double                                        FixedParametersValueType;
-  typedef  OptimizerParameters<FixedParametersValueType> FixedParametersType;
-
-// The ITK_FIXED_PARAMETERS_ARE_DOUBLE is intended
-// to facilitate transition of ITK for those very
-// rare cases where multiple versions of ITK
-// may need to be supported simultaneously.
-#if defined( ITK_LEGACY_REMOVE )
-  #undef  ITK_FIXED_PARAMETERS_ARE_DOUBLE
-#else
-  #define ITK_FIXED_PARAMETERS_ARE_DOUBLE
-  // #if !defined(ITK_FIXED_PARAMETERS_ARE_DOUBLE)
-  // typedef ParametersValueType FixedParametersValueType;
-  // #endif
-#endif
+  using ParametersValueType = TParametersValueType;
+  using ParametersType = OptimizerParameters<ParametersValueType>;
+  using FixedParametersValueType = double;
+  using FixedParametersType = OptimizerParameters<FixedParametersValueType>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(TransformBaseTemplate, Object);
 
   /** The number of parameters can potentially be very large,
    *  therefore we use here a large capacity integer. */
-  typedef IdentifierType      NumberOfParametersType;
+  using NumberOfParametersType = IdentifierType;
 
   /** Return the number of parameters that completely define the Transfom  */
-  virtual NumberOfParametersType GetNumberOfParameters(void) const = 0;
+  virtual NumberOfParametersType
+  GetNumberOfParameters() const = 0;
 
   /** Get the Transformation Parameters. */
-  virtual const ParametersType & GetParameters(void) const = 0;
+  virtual const ParametersType &
+  GetParameters() const = 0;
 
   /** Get the size of the input space */
-  virtual unsigned int GetInputSpaceDimension(void) const = 0;
+  virtual unsigned int
+  GetInputSpaceDimension() const = 0;
 
   /** Get the size of the output space */
-  virtual unsigned int GetOutputSpaceDimension(void) const = 0;
+  virtual unsigned int
+  GetOutputSpaceDimension() const = 0;
 
   /** Set the transformation parameters and update internal transformation. */
-  virtual void SetParameters(const ParametersType &) = 0;
+  virtual void
+  SetParameters(const ParametersType &) = 0;
 
   /** Set the transformation by copying parameters and update internal transformation.
    * This method forces the transform to copy the parameters.  The
@@ -100,54 +117,68 @@ public:
    * by keeping a reference to the parameters.
    * \sa SetParameters
    */
-  virtual void SetParametersByValue(const ParametersType & p) = 0;
+  virtual void
+  SetParametersByValue(const ParametersType & p) = 0;
 
   /** Set the fixed parameters. */
-  virtual void SetFixedParameters(const FixedParametersType &) = 0;
+  virtual void
+  SetFixedParameters(const FixedParametersType &) = 0;
 
   /** This function allow copying a range of values into the Parameters
-    * The range of values must conform to std::copy(begin, end, m_Parameters)
-    * requirements.
-    */
-  virtual void CopyInParameters(const ParametersValueType * const begin,
-                                const ParametersValueType * const end) = 0;
+   * The range of values must conform to std::copy(begin, end, m_Parameters)
+   * requirements.
+   */
+  virtual void
+  CopyInParameters(const ParametersValueType * const begin, const ParametersValueType * const end) = 0;
 
   /** This function allow copying a range of values into the FixedParameters
-    * The range of values must conform to std::copy(begin, end, m_FixedParameters)
-    * requirements.
-    */
-  virtual void CopyInFixedParameters(const FixedParametersValueType * const begin,
-                                     const FixedParametersValueType * const end) = 0;
+   * The range of values must conform to std::copy(begin, end, m_FixedParameters)
+   * requirements.
+   */
+  virtual void
+  CopyInFixedParameters(const FixedParametersValueType * const begin, const FixedParametersValueType * const end) = 0;
 
   /** Get the fixed parameters. */
-  virtual const FixedParametersType & GetFixedParameters() const = 0;
+  virtual const FixedParametersType &
+  GetFixedParameters() const = 0;
 
   /** Generate a platform independent name */
-  virtual std::string GetTransformTypeAsString() const = 0;
+  virtual std::string
+  GetTransformTypeAsString() const = 0;
 
-  typedef enum {
-    UnknownTransformCategory=0,
-    Linear=1,
-    BSpline=2,
-    Spline=3,
-    DisplacementField=4,
-    VelocityField=5
-  } TransformCategoryType;
+  using TransformCategoryEnum = TransformBaseTemplateEnums::TransformCategory;
+#if !defined(ITK_LEGACY_REMOVE)
+  // We need to expose the enum values at the class level
+  // for backwards compatibility
+  static constexpr TransformCategoryEnum UnknownTransformCategory = TransformCategoryEnum::UnknownTransformCategory;
+  static constexpr TransformCategoryEnum Linear = TransformCategoryEnum::Linear;
+  static constexpr TransformCategoryEnum BSpline = TransformCategoryEnum::BSpline;
+  static constexpr TransformCategoryEnum Spline = TransformCategoryEnum::Spline;
+  static constexpr TransformCategoryEnum DisplacementField = TransformCategoryEnum::DisplacementField;
+  static constexpr TransformCategoryEnum VelocityField = TransformCategoryEnum::VelocityField;
+
+  // Preserve old type name for backwards compatibility
+  using TransformCategoryType = TransformCategoryEnum;
+#endif
 
   /** Get transform category */
-  virtual TransformCategoryType GetTransformCategory() const = 0;
+  virtual TransformCategoryEnum
+  GetTransformCategory() const = 0;
 
 protected:
-  TransformBaseTemplate(){}
-  virtual ~TransformBaseTemplate() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformBaseTemplate);
+#if defined(__GNUC__) && __GNUC__ < 6 && !defined(__clang__)
+  // A bug in some versions of the gcc 5.4.0 compiler
+  // result in a linker error when = default is requested
+  TransformBaseTemplate(){};
+  ~TransformBaseTemplate() override{};
+#else
+  TransformBaseTemplate() = default;
+  ~TransformBaseTemplate() override = default;
+#endif
 };
 
 /** This helps to meet backward compatibility */
-typedef TransformBaseTemplate< double > TransformBase;
-
+using TransformBase = TransformBaseTemplate<double>;
 } // end namespace itk
 
 #endif
@@ -162,26 +193,20 @@ typedef TransformBaseTemplate< double > TransformBase;
 //            need to be considered. This code *MUST* be *OUTSIDE* the header
 //            guards.
 //
-#  if defined( ITKTransform_EXPORTS )
+#if defined(ITKTransform_EXPORTS)
 //   We are building this library
-#    define ITKTransform_EXPORT_EXPLICIT ITK_TEMPLATE_EXPORT
-#  else
+#  define ITKTransform_EXPORT_EXPLICIT ITK_TEMPLATE_EXPORT
+#else
 //   We are using this library
-#    define ITKTransform_EXPORT_EXPLICIT ITKTransform_EXPORT
-#  endif
+#  define ITKTransform_EXPORT_EXPLICIT ITKTransform_EXPORT
+#endif
 namespace itk
 {
-#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
-  ITK_GCC_PRAGMA_DIAG_PUSH()
-#endif
+ITK_GCC_PRAGMA_DIAG_PUSH()
 ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
-extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate< double >;
-extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate< float >;
-#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
-  ITK_GCC_PRAGMA_DIAG_POP()
-#else
-  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
-#endif
+extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate<double>;
+extern template class ITKTransform_EXPORT_EXPLICIT TransformBaseTemplate<float>;
+ITK_GCC_PRAGMA_DIAG_POP()
 } // end namespace itk
-#  undef ITKTransform_EXPORT_EXPLICIT
+#undef ITKTransform_EXPORT_EXPLICIT
 #endif

@@ -6,7 +6,9 @@
 
 #include <iostream>
 #include "vnl_sym_matrix.h"
-#include <vcl_compiler.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 #include <vnl/vnl_config.h> // for VNL_CONFIG_CHECK_BOUNDS
 
 // ==========================================================================
@@ -31,7 +33,7 @@ vnl_sym_matrix<T>& vnl_sym_matrix<T>::update (vnl_sym_matrix<T> const& m,
 // ==========================================================================
 //: Swap contents of m with THIS
 template <class T>
-void vnl_sym_matrix<T>::swap(vnl_sym_matrix<T> &m)
+void vnl_sym_matrix<T>::swap(vnl_sym_matrix<T> &m) noexcept
 {
   unsigned nn = nn_;
   T **index   = index_;

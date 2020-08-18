@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@
 
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{GradientVectorFlowImageFilter} smooths multi-components images
-//  such as vector fields and color images by applying a computation of the
-//  diffusion equation.  A typical use of this filter is to smooth the vector
-//  field resulting from computing the gradient of an image, with the purpose
-//  of using the smoothed field in order to guide a deformable model.
+//  The \doxygen{GradientVectorFlowImageFilter} smooths multi-components
+//  images such as vector fields and color images by applying a computation of
+//  the diffusion equation.  A typical use of this filter is to smooth the
+//  vector field resulting from computing the gradient of an image, with the
+//  purpose of using the smoothed field in order to guide a deformable model.
 //
 //  The input image must be a multi-components images.
 //
@@ -54,15 +54,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 5 )
-    {
+  if (argc < 5)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile";
     std::cerr << " numberOfIterations  noiseLevel" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -73,11 +74,11 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int                                Dimension = 3;
-  typedef float                                     InputValueType;
-  typedef float                                     OutputValueType;
-  typedef itk::Vector< InputValueType,  Dimension > InputPixelType;
-  typedef itk::Vector< OutputValueType, Dimension > OutputPixelType;
+  constexpr unsigned int Dimension = 3;
+  using InputValueType = float;
+  using OutputValueType = float;
+  using InputPixelType = itk::Vector<InputValueType, Dimension>;
+  using OutputPixelType = itk::Vector<OutputValueType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -88,12 +89,12 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
 
 
   //  Software Guide : BeginLatex
@@ -106,13 +107,13 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::GradientVectorFlowImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::GradientVectorFlowImageFilter<InputImageType, OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
 
   //  Software Guide : BeginLatex
@@ -138,21 +139,21 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
+  filter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int numberOfIterations = atoi( argv[3] );
-  const double       noiseLevel = atof( argv[4] );
+  const unsigned int numberOfIterations = std::stoi(argv[3]);
+  const double       noiseLevel = std::stod(argv[4]);
 
 
   //  Software Guide : BeginLatex
   //
   //  The GradientVectorFlow filter requires two parameters, the number of
   //  iterations to be performed and the noise level of the input image. The
-  //  noise level will be used to estimate the time step that should be used in
-  //  the computation of the diffusion. These two parameters are set using the
-  //  methods \code{SetNumberOfIterations()} and \code{SetNoiseLevel()}
+  //  noise level will be used to estimate the time step that should be used
+  //  in the computation of the diffusion. These two parameters are set using
+  //  the methods \code{SetNumberOfIterations()} and \code{SetNoiseLevel()}
   //  respectively.  Then the filter can be executed by invoking
   //  \code{Update()}.
   //
@@ -165,8 +166,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetIterationNum( numberOfIterations );
-  filter->SetNoiseLevel( noiseLevel );
+  filter->SetIterationNum(numberOfIterations);
+  filter->SetNoiseLevel(noiseLevel);
   filter->Update();
   // Software Guide : EndCodeSnippet
 
@@ -187,18 +188,18 @@ int main( int argc, char * argv[] )
   //  have been used after the curvature flow filter.
   //
   //  Software Guide : EndLatex
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
 
   // Software Guide : BeginCodeSnippet
-  writer->SetInput( filter->GetOutput() );
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
 
-  // In order to visualize the resulting vector field you could use ParaView or
-  // VV (the 4D Slicer).
+  // In order to visualize the resulting vector field you could use ParaView
+  // or VV (the 4D Slicer).
 
   return EXIT_SUCCESS;
 }

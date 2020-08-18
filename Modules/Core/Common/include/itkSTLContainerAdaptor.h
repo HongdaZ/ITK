@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,48 +29,43 @@ namespace itk
  *
  * Here's a usage example of STLContainerAdaptor:
  *
- * \code
- *     itk::STLContainerAdaptor<itk::VectorContainer<size_t, ElementType>> vecAdaptor(aContainer);
- *     std::vector<ElementType> & vec = vecAdaptor.GetSTLContainerRef();
- *     // do things with vec ...
- *     // upon return from function, vecAdaptor is destroyed and aContainer is Modified()
- * \endcode
+   \code
+       itk::STLContainerAdaptor<itk::VectorContainer<size_t, ElementType>> vecAdaptor(aContainer);
+       std::vector<ElementType> & vec = vecAdaptor.GetSTLContainerRef();
+       // do things with vec ...
+       // upon return from function, vecAdaptor is destroyed and aContainer is Modified()
+   \endcode
  *
  * \ingroup ITKCommon
  */
 
-template< typename TContainer >
+template <typename TContainer>
 class STLContainerAdaptor
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(STLContainerAdaptor);
 
-  typedef TContainer AdapteeType;
+  using AdapteeType = TContainer;
 
-  typedef typename AdapteeType::Element          ElementType;
-  typedef typename AdapteeType::STLContainerType TargetType;
+  using ElementType = typename AdapteeType::Element;
+  using TargetType = typename AdapteeType::STLContainerType;
 
 private:
-
   AdapteeType & m_AdapteeRef;
 
-  /** hide the copy constructor to allow only direct construction of the adapter
-    */
-  STLContainerAdaptor(const STLContainerAdaptor & r);
-
-  /* hide and avoid operator= */
-  const STLContainerAdaptor & operator=(const STLContainerAdaptor & r);
-
 public:
-  STLContainerAdaptor(AdapteeType & adaptee):m_AdapteeRef(adaptee) {}
+  STLContainerAdaptor(AdapteeType & adaptee)
+    : m_AdapteeRef(adaptee)
+  {}
 
-  STLContainerAdaptor(AdapteeType *adaptee):m_AdapteeRef(*adaptee) {}
+  STLContainerAdaptor(AdapteeType * adaptee)
+    : m_AdapteeRef(*adaptee)
+  {}
 
-  ~STLContainerAdaptor()
-  {
-    m_AdapteeRef.Modified();
-  }
+  ~STLContainerAdaptor() { m_AdapteeRef.Modified(); }
 
-  TargetType & GetSTLContainerRef()
+  TargetType &
+  GetSTLContainerRef()
   {
     return m_AdapteeRef.CastToSTLContainer();
   }

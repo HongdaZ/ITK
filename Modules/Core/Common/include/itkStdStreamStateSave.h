@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,23 +47,20 @@ namespace itk
 class StdStreamStateSave
 {
 public:
-  explicit StdStreamStateSave(std::ios& stream) :
-    m_Ios(stream),
-    m_State(ITK_NULLPTR)
+  ITK_DISALLOW_COPY_AND_ASSIGN(StdStreamStateSave);
+
+  explicit StdStreamStateSave(std::ios & stream)
+    : m_Ios(stream)
+    , m_State(nullptr)
   {
     m_State.copyfmt(stream);
   }
-  ~StdStreamStateSave()
-  {
-    m_Ios.copyfmt(m_State);
-  }
+  ~StdStreamStateSave() { m_Ios.copyfmt(m_State); }
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StdStreamStateSave);
-
-  std::ios& m_Ios;
-  std::ios  m_State;
+  std::ios & m_Ios;
+  std::ios   m_State;
 };
-}
+} // namespace itk
 
 #endif

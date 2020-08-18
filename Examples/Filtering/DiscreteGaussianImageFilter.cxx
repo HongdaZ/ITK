@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,18 +37,18 @@
 //  Gaussian function is discretized on a convolution kernel.  The size of the
 //  kernel is extended until there are enough discrete points in the Gaussian
 //  to ensure that a user-provided maximum error is not exceeded.  Since the
-//  size of the kernel is unknown a priori, it is necessary to impose a limit to
-//  its growth. The user can thus provide a value to be the maximum admissible
-//  size of the kernel. Discretization error is defined as the difference
-//  between the area under the discrete Gaussian curve (which has finite
-//  support) and the area under the continuous Gaussian.
+//  size of the kernel is unknown a priori, it is necessary to impose a limit
+//  to its growth. The user can thus provide a value to be the maximum
+//  admissible size of the kernel. Discretization error is defined as the
+//  difference between the area under the discrete Gaussian curve (which has
+//  finite support) and the area under the continuous Gaussian.
 //
 //  Gaussian kernels in ITK are constructed according to the theory of Tony
 //  Lindeberg \cite{Lindeberg1994} so that smoothing and derivative operations
-//  commute before and after discretization.  In other words, finite difference
-//  derivatives on an image $I$ that has been smoothed by convolution with the
-//  Gaussian are equivalent to finite differences computed on $I$ by convolving
-//  with a derivative of the Gaussian.
+//  commute before and after discretization.  In other words, finite
+//  difference derivatives on an image $I$ that has been smoothed by
+//  convolution with the Gaussian are equivalent to finite differences
+//  computed on $I$ by convolving with a derivative of the Gaussian.
 //
 //  \index{itk::DiscreteGaussianImageFilter}
 //
@@ -74,14 +74,18 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 5 )
-    {
+  if (argc < 5)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile  outputImageFile  variance  maxKernelWidth " << std::endl;
+    std::cerr
+      << argv[0]
+      << "  inputImageFile  outputImageFile  variance  maxKernelWidth "
+      << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -92,15 +96,15 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef    float    InputPixelType;
-  typedef    float    OutputPixelType;
+  using InputPixelType = float;
+  using OutputPixelType = float;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
 
 
   //  Software Guide : BeginLatex
@@ -115,15 +119,15 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::DiscreteGaussianImageFilter<
-                 InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::DiscreteGaussianImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
 
   //  Software Guide : BeginLatex
@@ -134,12 +138,12 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
+  filter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  const double gaussianVariance = atof( argv[3] );
-  const unsigned int maxKernelWidth = atoi( argv[4] );
+  const double       gaussianVariance = std::stod(argv[3]);
+  const unsigned int maxKernelWidth = std::stoi(argv[4]);
 
 
   //  Software Guide : BeginLatex
@@ -147,9 +151,9 @@ int main( int argc, char * argv[] )
   //  The filter requires the user to provide a value for the variance
   //  associated with the Gaussian kernel. The method \code{SetVariance()} is
   //  used for this purpose. The discrete Gaussian is constructed as a
-  //  convolution kernel.  The maximum kernel size can be set by the user. Note
-  //  that the combination of variance and kernel-size values may result in a
-  //  truncated Gaussian kernel.
+  //  convolution kernel.  The maximum kernel size can be set by the user.
+  //  Note that the combination of variance and kernel-size values may result
+  //  in a truncated Gaussian kernel.
   //
   //  \index{itk::DiscreteGaussianImageFilter!SetVariance()}
   //  \index{itk::DiscreteGaussianImageFilter!SetMaximumKernelWidth()}
@@ -158,8 +162,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetVariance( gaussianVariance );
-  filter->SetMaximumKernelWidth( maxKernelWidth );
+  filter->SetVariance(gaussianVariance);
+  filter->SetMaximumKernelWidth(maxKernelWidth);
   // Software Guide : EndCodeSnippet
 
 
@@ -186,22 +190,22 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  typedef unsigned char                          WritePixelType;
-  typedef itk::Image< WritePixelType, 2 >        WriteImageType;
-  typedef itk::RescaleIntensityImageFilter<
-               OutputImageType, WriteImageType > RescaleFilterType;
+  using WritePixelType = unsigned char;
+  using WriteImageType = itk::Image<WritePixelType, 2>;
+  using RescaleFilterType =
+    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  rescaler->SetOutputMinimum(   0 );
-  rescaler->SetOutputMaximum( 255 );
+  rescaler->SetOutputMinimum(0);
+  rescaler->SetOutputMaximum(255);
 
-  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<WriteImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
 
   // Software Guide : BeginCodeSnippet
-  rescaler->SetInput( filter->GetOutput() );
-  writer->SetInput( rescaler->GetOutput() );
+  rescaler->SetInput(filter->GetOutput());
+  writer->SetInput(rescaler->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -221,10 +225,11 @@ int main( int argc, char * argv[] )
   //  Figure~\ref{fig:DiscreteGaussianImageFilterInputOutput} illustrates the
   //  effect of this filter on a MRI proton density image of the brain.
   //
-  //  Note that large Gaussian variances will produce large convolution kernels
-  //  and correspondingly longer computation times.  Unless a high degree of
-  //  accuracy is required, it may be more desirable to use the approximating
-  //  \doxygen{RecursiveGaussianImageFilter} with large variances.
+  //  Note that large Gaussian variances will produce large convolution
+  //  kernels and correspondingly longer computation times.  Unless a high
+  //  degree of accuracy is required, it may be more desirable to use the
+  //  approximating \doxygen{RecursiveGaussianImageFilter} with large
+  //  variances.
   //
   //  Software Guide : EndLatex
 

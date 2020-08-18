@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 
 namespace itk
 {
-/** \class HalfHermitianToRealInverseFFTImageFilter
+/**
+ *\class HalfHermitianToRealInverseFFTImageFilter
  *
  * \brief Base class for specialized complex-to-real inverse Fast Fourier Transform.
  *
@@ -50,72 +51,68 @@ namespace itk
  * \sa ForwardFFTImageFilter, HalfHermitianToRealInverseFFTImageFilter
  * \ingroup ITKFFT
  */
-template< typename TInputImage, typename TOutputImage=Image< typename TInputImage::PixelType::value_type, TInputImage::ImageDimension> >
-class ITK_TEMPLATE_EXPORT HalfHermitianToRealInverseFFTImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage,
+          typename TOutputImage = Image<typename TInputImage::PixelType::value_type, TInputImage::ImageDimension>>
+class ITK_TEMPLATE_EXPORT HalfHermitianToRealInverseFFTImageFilter
+  : public ImageToImageFilter<TInputImage, TOutputImage>
 
 {
 public:
-  /** Standard class typedefs. */
-  typedef TInputImage                          InputImageType;
-  typedef typename InputImageType::PixelType   InputPixelType;
-  typedef TOutputImage                         OutputImageType;
-  typedef typename OutputImageType::PixelType  OutputPixelType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(HalfHermitianToRealInverseFFTImageFilter);
 
-  typedef HalfHermitianToRealInverseFFTImageFilter              Self;
-  typedef ImageToImageFilter< InputImageType, OutputImageType > Superclass;
-  typedef SmartPointer< Self >                                  Pointer;
-  typedef SmartPointer< const Self >                            ConstPointer;
+  /** Standard class type aliases. */
+  using InputImageType = TInputImage;
+  using InputPixelType = typename InputImageType::PixelType;
+  using OutputImageType = TOutputImage;
+  using OutputPixelType = typename OutputImageType::PixelType;
 
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      InputImageType::ImageDimension);
+  using Self = HalfHermitianToRealInverseFFTImageFilter;
+  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+
+  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
   /** Customized object creation methods that support configuration-based
-  * selection of FFT implementation.
-  *
-  * Default implementation is VnlFFT. */
-  static Pointer New();
+   * selection of FFT implementation.
+   *
+   * Default implementation is VnlFFT. */
+  static Pointer
+  New();
 
   /** Was the original truncated dimension size odd? */
   itkSetGetDecoratedInputMacro(ActualXDimensionIsOdd, bool);
   itkBooleanMacro(ActualXDimensionIsOdd);
 
-  /* Return the prefered greatest prime factor supported for the input image
+  /* Return the preferred greatest prime factor supported for the input image
    * size. Defaults to 2 as many implementations work only for sizes that are
    * power of 2.
    */
-  virtual SizeValueType GetSizeGreatestPrimeFactor() const;
+  virtual SizeValueType
+  GetSizeGreatestPrimeFactor() const;
 
 protected:
   HalfHermitianToRealInverseFFTImageFilter();
-  virtual ~HalfHermitianToRealInverseFFTImageFilter(){}
+  ~HalfHermitianToRealInverseFFTImageFilter() override = default;
 
   /** The output may be a different size from the input if complex conjugate
    * symmetry is implicit. */
-  virtual void GenerateOutputInformation();
+  void
+  GenerateOutputInformation() override;
 
   /** This class requires the entire input. */
-  virtual void GenerateInputRequestedRegion();
+  void
+  GenerateInputRequestedRegion() override;
 
   /** Sets the output requested region to the largest possible output
    * region. */
-  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) );
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HalfHermitianToRealInverseFFTImageFilter);
+  void
+  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#ifndef itkVnlHalfHermitianToRealInverseFFTImageFilter_h
-#ifndef itkVnlHalfHermitianToRealInverseFFTImageFilter_hxx
-#ifndef itkFFTWHalfHermitianToRealInverseFFTImageFilter_h
-#ifndef itkFFTWHalfHermitianToRealInverseFFTImageFilter_hxx
-#include "itkHalfHermitianToRealInverseFFTImageFilter.hxx"
-#endif
-#endif
-#endif
-#endif
+#  include "itkHalfHermitianToRealInverseFFTImageFilter.hxx"
 #endif
 
 #endif

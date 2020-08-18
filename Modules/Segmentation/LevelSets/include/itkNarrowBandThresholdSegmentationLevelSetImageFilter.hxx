@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 
 namespace itk
 {
-template< typename TInputImage, typename TFeatureImage, typename TOutputType >
-NarrowBandThresholdSegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputType >
-::NarrowBandThresholdSegmentationLevelSetImageFilter()
+template <typename TInputImage, typename TFeatureImage, typename TOutputType>
+NarrowBandThresholdSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputType>::
+  NarrowBandThresholdSegmentationLevelSetImageFilter()
 {
   m_ThresholdFunction = ThresholdFunctionType::New();
   m_ThresholdFunction->SetUpperThreshold(0);
@@ -33,10 +33,11 @@ NarrowBandThresholdSegmentationLevelSetImageFilter< TInputImage, TFeatureImage, 
   this->SetSegmentationFunction(m_ThresholdFunction);
 }
 
-template< typename TInputImage, typename TFeatureImage, typename TOutputType >
+template <typename TInputImage, typename TFeatureImage, typename TOutputType>
 void
-NarrowBandThresholdSegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputType >
-::PrintSelf(std::ostream & os, Indent indent) const
+NarrowBandThresholdSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputType>::PrintSelf(
+  std::ostream & os,
+  Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << "ThresholdFunction: " << m_ThresholdFunction;

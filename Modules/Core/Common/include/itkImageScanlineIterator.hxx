@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,36 +22,26 @@
 
 namespace itk
 {
-template< typename TImage >
-ImageScanlineIterator< TImage >
-::ImageScanlineIterator():
-  ImageScanlineConstIterator< TImage >()
+template <typename TImage>
+ImageScanlineIterator<TImage>::ImageScanlineIterator(ImageType * ptr, const RegionType & region)
+  : ImageScanlineConstIterator<TImage>(ptr, region)
 {}
 
-template< typename TImage >
-ImageScanlineIterator< TImage >
-::ImageScanlineIterator(ImageType *ptr, const RegionType & region):
-  ImageScanlineConstIterator< TImage >(ptr, region)
+template <typename TImage>
+ImageScanlineIterator<TImage>::ImageScanlineIterator(const ImageIterator<TImage> & it)
+  : ImageScanlineConstIterator<TImage>(it)
 {}
 
-template< typename TImage >
-ImageScanlineIterator< TImage >
-::ImageScanlineIterator(const ImageIterator< TImage > & it):
-  ImageScanlineConstIterator< TImage >(it)
+template <typename TImage>
+ImageScanlineIterator<TImage>::ImageScanlineIterator(const ImageScanlineConstIterator<TImage> & it)
+  : ImageScanlineConstIterator<TImage>(it)
 {}
 
-template< typename TImage >
-ImageScanlineIterator< TImage >
-::ImageScanlineIterator(const ImageScanlineConstIterator< TImage > & it):
-  ImageScanlineConstIterator< TImage >(it)
-{}
-
-template< typename TImage >
-ImageScanlineIterator< TImage > &
-ImageScanlineIterator< TImage >
-::operator=(const ImageScanlineConstIterator< TImage > & it)
+template <typename TImage>
+ImageScanlineIterator<TImage> &
+ImageScanlineIterator<TImage>::operator=(const ImageScanlineConstIterator<TImage> & it)
 {
-  this->ImageScanlineConstIterator< TImage >::operator=(it);
+  this->ImageScanlineConstIterator<TImage>::operator=(it);
   return *this;
 }
 

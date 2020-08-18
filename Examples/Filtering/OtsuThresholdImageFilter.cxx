@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,27 +36,28 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 5 )
-    {
+  if (argc < 5)
+  {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputImageFile ";
-    std::cerr << " insideValue    outsideValue   "  << std::endl;
+    std::cerr << " insideValue    outsideValue   " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
-  //  The next step is to decide which pixel types to use for the input and output
-  //  images, and to define the image dimension.
+  //  The next step is to decide which pixel types to use for the input and
+  //  output images, and to define the image dimension.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef  unsigned char  InputPixelType;
-  typedef  unsigned char  OutputPixelType;
-  const unsigned int      Dimension = 2;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
+  constexpr unsigned int Dimension = 2;
   // Software Guide : EndCodeSnippet
 
 
@@ -68,8 +69,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -81,8 +82,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::OtsuThresholdImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::OtsuThresholdImageFilter<InputImageType, OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -96,7 +97,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -109,14 +110,15 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  Both the filter and the reader are created by invoking their \code{New()}
-  //  methods and assigning the result to \doxygen{SmartPointer}s.
+  //  Both the filter and the reader are created by invoking their
+  //  \code{New()} methods and assigning the result to
+  //  \doxygen{SmartPointer}s.
   //
   //  Software Guide : EndLatex
 
@@ -126,8 +128,8 @@ int main( int argc, char * argv[] )
   // Software Guide : EndCodeSnippet
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput( filter->GetOutput() );
-  reader->SetFileName( argv[1] );
+  writer->SetInput(filter->GetOutput());
+  reader->SetFileName(argv[1]);
 
 
   //  Software Guide : BeginLatex
@@ -141,7 +143,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
+  filter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -160,12 +162,12 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  const OutputPixelType outsideValue = atoi( argv[3] );
-  const OutputPixelType insideValue  = atoi( argv[4] );
+  const OutputPixelType outsideValue = std::stoi(argv[3]);
+  const OutputPixelType insideValue = std::stoi(argv[4]);
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOutsideValue( outsideValue );
-  filter->SetInsideValue(  insideValue  );
+  filter->SetOutsideValue(outsideValue);
+  filter->SetInsideValue(insideValue);
   // Software Guide : EndCodeSnippet
 
 
@@ -173,21 +175,21 @@ int main( int argc, char * argv[] )
   //
   //  Execution of the filter is triggered by invoking the \code{Update()}
   //  method, which we wrap in a \code{try/catch} block.  If the filter's
-  //  output has been passed as input to subsequent filters, the \code{Update()}
-  //  call on any downstream filters in the pipeline will indirectly trigger
-  //  the update of this filter.
+  //  output has been passed as input to subsequent filters, the
+  //  \code{Update()} call on any downstream filters in the pipeline will
+  //  indirectly trigger the update of this filter.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     filter->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Exception thrown " << excp << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -230,15 +232,15 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Exception thrown " << excp << std::endl;
-    }
+  }
 
   return EXIT_SUCCESS;
 }

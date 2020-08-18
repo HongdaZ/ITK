@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@
 namespace itk
 {
 
-/** \class ParametricImageSource
+/**
+ *\class ParametricImageSource
  * \brief Base class for all parametric image sources.
  *
  * This abstract class specifies an interface than enables parameters
@@ -34,38 +35,37 @@ namespace itk
  * parameterized image sources within ITK's
  * optimization/registration framework.
  *
- * Concrete subclasses must impelement the methods SetParameters(),
+ * Concrete subclasses must implement the methods SetParameters(),
  * GetParameters() and GetNumberOfParameters().
  *
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
 template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ParametricImageSource
-  : public GenerateImageSource< TOutputImage >
+class ITK_TEMPLATE_EXPORT ParametricImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ParametricImageSource             Self;
-  typedef GenerateImageSource<TOutputImage> Superclass;
-  typedef SmartPointer<Self>                Pointer;
-  typedef SmartPointer<const Self>          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricImageSource);
+
+  /** Standard class type aliases. */
+  using Self = ParametricImageSource;
+  using Superclass = GenerateImageSource<TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Smart Pointer type to a DataObject. */
-  typedef DataObject::Pointer DataObjectPointer;
+  using DataObjectPointer = DataObject::Pointer;
 
-  /** Some convenient typedefs. */
-  typedef TOutputImage                        OutputImageType;
-  typedef typename OutputImageType::Pointer   OutputImagePointer;
-  typedef typename OutputImageType::PixelType OutputImagePixelType;
+  /** Some convenient type alias. */
+  using OutputImageType = TOutputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using OutputImagePixelType = typename OutputImageType::PixelType;
 
-  typedef double                              ParametersValueType;
-  typedef Array< ParametersValueType >        ParametersType;
+  using ParametersValueType = double;
+  using ParametersType = Array<ParametersValueType>;
 
-   /** ImageDimension constant */
-  itkStaticConstMacro(OutputImageDimension,
-                      unsigned int,
-                      TOutputImage::ImageDimension);
+  /** ImageDimension constant */
+  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ParametricImageSource, GenerateImageSource);
@@ -74,28 +74,28 @@ public:
    * not mark the image source as modified; subclasses should override
    * this method to forward parameters through setters that call
    * Modified(). */
-  virtual void SetParameters( const ParametersType & parameters ) = 0;
+  virtual void
+  SetParameters(const ParametersType & parameters) = 0;
 
   /** Get the parameters for this source. */
-  virtual ParametersType GetParameters() const = 0;
+  virtual ParametersType
+  GetParameters() const = 0;
 
   /** Get the number of parameters. */
-  virtual unsigned int GetNumberOfParameters() const = 0;
+  virtual unsigned int
+  GetNumberOfParameters() const = 0;
 
 protected:
-  ParametricImageSource() {};
-  virtual ~ParametricImageSource() ITK_OVERRIDE {}
-  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricImageSource);
-
+  ParametricImageSource() = default;
+  ~ParametricImageSource() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 };
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkParametricImageSource.hxx"
+#  include "itkParametricImageSource.hxx"
 #endif
 
 #endif

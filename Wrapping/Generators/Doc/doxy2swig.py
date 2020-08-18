@@ -21,8 +21,6 @@ output will be written (the file will be clobbered).
 # Author: Prabhu Ramachandran
 # License: BSD style
 
-from __future__ import print_function
-
 from xml.dom import minidom
 import re
 import textwrap
@@ -99,6 +97,9 @@ class Doxy2SWIG:
 
     def parse_Text(self, node):
         txt = node.data
+        txt = txt.replace('\\sphinx', r' ')
+        txt = txt.replace('\\endsphinx', r' ')
+
         txt = txt.replace('\\', r'\\\\')
         txt = txt.replace('"', r'\"')
         # ignore pure whitespace
@@ -129,10 +130,7 @@ class Doxy2SWIG:
 
     def add_text(self, value):
         """Adds text corresponding to `value` into `self.pieces`."""
-        if sys.version_info >= (3,0):
-          listTypes = (list, tuple)
-        else:
-          listTypes = (types.ListType, types.TupleType)
+        listTypes = (list, tuple)
         if type(value) in listTypes:
             self.pieces.extend(value)
         else:
@@ -211,8 +209,9 @@ class Doxy2SWIG:
                 self.parse(n)
 
     def do_includes(self, node):
-        self.add_text('C++ includes: ')
-        self.generic_parse(node, pad=1)
+#        self.add_text('C++ includes: ')
+#        self.generic_parse(node, pad=1)
+        pass
 
     def do_parameterlist(self, node):
         self.add_text(['\n', '\n', 'Parameters:', '\n'])

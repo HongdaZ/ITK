@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,30 +16,31 @@
  *
  *=========================================================================*/
 
-#include <stdio.h>
+#include <cstdio>
 
 // Spatial function stuff
 #include "itkSphereSpatialFunction.h"
 
-int itkSpatialFunctionTest(int, char* [] )
+int
+itkSpatialFunctionTest(int, char *[])
 {
   // Change this parameter (and the positions, below) to work in higher or lower dimensions
-  const unsigned int dim = 3;
+  constexpr unsigned int dim = 3;
 
   //---------Create and initialize a spatial function-----------
 
-  typedef itk::SphereSpatialFunction<dim> TFunctionType;
-  typedef TFunctionType::InputType        TFunctionPositionType;
+  using TFunctionType = itk::SphereSpatialFunction<dim>;
+  using TFunctionPositionType = TFunctionType::InputType;
 
   // Create and initialize a new sphere function
 
   TFunctionType::Pointer spatialFunc = TFunctionType::New();
-  spatialFunc->SetRadius( 5 );
+  spatialFunc->SetRadius(5);
 
   TFunctionPositionType center;
-  center[0]=10;
-  center[1]=10;
-  center[2]=10;
+  center[0] = 10;
+  center[1] = 10;
+  center[2] = 10;
   spatialFunc->SetCenter(center);
 
   // Test the Get macros as well
@@ -48,7 +49,7 @@ int itkSpatialFunctionTest(int, char* [] )
 
   std::cout << "Sphere spatial function created\n";
 
-  //----------------Test evaluation of funtion------------------
+  //----------------Test evaluation of function------------------
 
   // We're going to evaluate it at the center of the sphere (10,10,10)
   bool funcVal = spatialFunc->Evaluate(center);
@@ -56,7 +57,7 @@ int itkSpatialFunctionTest(int, char* [] )
 
   // The function should have returned a value of 1, since the center is inside
   // the sphere
-  if(funcVal == 1)
+  if (funcVal == 1)
     return EXIT_SUCCESS;
   else
     return EXIT_FAILURE;

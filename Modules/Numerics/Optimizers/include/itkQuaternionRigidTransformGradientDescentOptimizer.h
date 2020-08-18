@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace itk
  * \brief Implement a gradient descent optimizer
  *
  * QuaternionRigidTransformGradientDescentOptimizer is an extension to the
- * simple gradient descent optimizer implmented in GradientDescentOptimizer.
+ * simple gradient descent optimizer implemented in GradientDescentOptimizer.
  * At each iteration the current position is updated according to
  *
  * p(n+1) = p(n) + learningRate * d f(p(n)) / d p(n)
@@ -49,36 +49,34 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT QuaternionRigidTransformGradientDescentOptimizer:
-  public GradientDescentOptimizer
+class ITKOptimizers_EXPORT QuaternionRigidTransformGradientDescentOptimizer : public GradientDescentOptimizer
 {
 public:
-  /** Standard class typedefs. */
-  typedef QuaternionRigidTransformGradientDescentOptimizer Self;
-  typedef GradientDescentOptimizer                         Superclass;
-  typedef SmartPointer< Self >                             Pointer;
-  typedef SmartPointer< const Self >                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuaternionRigidTransformGradientDescentOptimizer);
+
+  /** Standard class type aliases. */
+  using Self = QuaternionRigidTransformGradientDescentOptimizer;
+  using Superclass = GradientDescentOptimizer;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(QuaternionRigidTransformGradientDescentOptimizer,
-               GradientDescentOptimizer);
+  itkTypeMacro(QuaternionRigidTransformGradientDescentOptimizer, GradientDescentOptimizer);
 
   /**  Parameters type.
    *  It defines a position in the optimization search space. */
-  typedef Superclass::ParametersType ParametersType;
+  using ParametersType = Superclass::ParametersType;
 
   /** Advance one step following the gradient direction. */
-  virtual void AdvanceOneStep(void) ITK_OVERRIDE;
+  void
+  AdvanceOneStep() override;
 
 protected:
-  QuaternionRigidTransformGradientDescentOptimizer() {}
-  virtual ~QuaternionRigidTransformGradientDescentOptimizer() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuaternionRigidTransformGradientDescentOptimizer);
+  QuaternionRigidTransformGradientDescentOptimizer() = default;
+  ~QuaternionRigidTransformGradientDescentOptimizer() override = default;
 };
 } // end namespace itk
 

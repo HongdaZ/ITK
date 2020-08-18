@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@
 // \index{itk::Statistics::Scalar\-Image\-To\-List\-Adaptor|}
 // \index{itk::Statistics::Joint\-Domain\-Image\-To\-List\-Adaptor}
 //
-// In this example, we use the ImageToListSampleAdaptor class that requires the
-// input type of Image as the template argument. To users of the
+// In this example, we use the ImageToListSampleAdaptor class that requires
+// the input type of Image as the template argument. To users of the
 // ImageToListSampleAdaptor, the pixels of the input image are treated as
-// measurement vectors. The ImageToListSampleAdaptor is one of two adaptor classes
-// among the subclasses of the \subdoxygen{Statistics}{Sample}. That means an
-// ImageToListSampleAdaptor object does not store any real data. The data comes
-// from other ITK data container classes. In this case, an instance of the
-// Image class is the source of the data.
+// measurement vectors. The ImageToListSampleAdaptor is one of two adaptor
+// classes among the subclasses of the \subdoxygen{Statistics}{Sample}. That
+// means an ImageToListSampleAdaptor object does not store any real data. The
+// data comes from other ITK data container classes. In this case, an instance
+// of the Image class is the source of the data.
 //
 // To use an ImageToListSampleAdaptor object, include the header file for the
 // class.  Since we are using an adaptor, we also should include the header
@@ -47,9 +47,10 @@
 // cannot plug in an image of scalar pixels. However, if we
 // want to use an image of scalar pixels without the help from the
 // ComposeImageFilter, we can use the
-// \subdoxygen{Statistics}{ScalarImageToListSampleAdaptor} class that is derived
-// from the \subdoxygen{Statistics}{ImageToListSampleAdaptor}. The usage of the
-// ScalarImageToListSampleAdaptor is identical to that of the ImageToListSampleAdaptor.
+// \subdoxygen{Statistics}{ScalarImageToListSampleAdaptor} class that is
+// derived from the \subdoxygen{Statistics}{ImageToListSampleAdaptor}. The
+// usage of the ScalarImageToListSampleAdaptor is identical to that of the
+// ImageToListSampleAdaptor.
 //
 // Software Guide : EndLatex
 
@@ -61,7 +62,8 @@
 #include "itkComposeImageFilter.h"
 // Software Guide : EndCodeSnippet
 
-int main()
+int
+main()
 {
   // Software Guide : BeginLatex
   //
@@ -72,26 +74,26 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image<float,2> FloatImage2DType;
+  using FloatImage2DType = itk::Image<float, 2>;
 
   itk::RandomImageSource<FloatImage2DType>::Pointer random;
   random = itk::RandomImageSource<FloatImage2DType>::New();
 
-  random->SetMin(    0.0 );
-  random->SetMax( 1000.0 );
+  random->SetMin(0.0);
+  random->SetMax(1000.0);
 
-  typedef FloatImage2DType::SpacingValueType  SpacingValueType;
-  typedef FloatImage2DType::SizeValueType     SizeValueType;
-  typedef FloatImage2DType::PointValueType    PointValueType;
+  using SpacingValueType = FloatImage2DType::SpacingValueType;
+  using SizeValueType = FloatImage2DType::SizeValueType;
+  using PointValueType = FloatImage2DType::PointValueType;
 
-  SizeValueType size[2] = {20, 20};
-  random->SetSize( size );
+  SizeValueType size[2] = { 20, 20 };
+  random->SetSize(size);
 
-  SpacingValueType spacing[2] = {0.7, 2.1};
-  random->SetSpacing( spacing );
+  SpacingValueType spacing[2] = { 0.7, 2.1 };
+  random->SetSpacing(spacing);
 
-  PointValueType origin[2] = {15, 400};
-  random->SetOrigin( origin );
+  PointValueType origin[2] = { 15, 400 };
+  random->SetOrigin(origin);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -110,13 +112,13 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::FixedArray< float, 1 >            MeasurementVectorType;
-  typedef itk::Image< MeasurementVectorType, 2 > ArrayImageType;
-  typedef itk::ComposeImageFilter< FloatImage2DType, ArrayImageType >
-                                                 CasterType;
+  using MeasurementVectorType = itk::FixedArray<float, 1>;
+  using ArrayImageType = itk::Image<MeasurementVectorType, 2>;
+  using CasterType =
+    itk::ComposeImageFilter<FloatImage2DType, ArrayImageType>;
 
   CasterType::Pointer caster = CasterType::New();
-  caster->SetInput( random->GetOutput() );
+  caster->SetInput(random->GetOutput());
   caster->Update();
   // Software Guide : EndCodeSnippet
 
@@ -130,8 +132,8 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::ImageToListSampleAdaptor<
-                                                  ArrayImageType > SampleType;
+  using SampleType =
+    itk::Statistics::ImageToListSampleAdaptor<ArrayImageType>;
   SampleType::Pointer sample = SampleType::New();
   // Software Guide : EndCodeSnippet
 
@@ -144,7 +146,7 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  sample->SetImage( caster->GetOutput() );
+  sample->SetImage(caster->GetOutput());
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

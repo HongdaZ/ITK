@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@
 //
 // LaplacianSegmentationLevelSetImageFilter expects two inputs.  The
 // first is an initial level set in the form of an \doxygen{Image}. The second
-// input is the feature image $g$ from which the propagation term is calculated
-// (see Equation~\ref{eqn:LevelSetEquation}).  Because the filter performs a
-// second derivative calculation, it is generally a good idea to do some
-// preprocessing of the feature image to remove noise.
+// input is the feature image $g$ from which the propagation term is
+// calculated (see Equation~\ref{eqn:LevelSetEquation}).  Because the filter
+// performs a second derivative calculation, it is generally a good idea to do
+// some preprocessing of the feature image to remove noise.
 //
 // Figure~\ref{fig:LaplacianSegmentationLevelSetImageFilterDiagram} shows how
 // the image processing pipeline is constructed.  We read two images: the
@@ -83,10 +83,11 @@
 #include "itkImageFileWriter.h"
 #include "itkZeroCrossingImageFilter.h"
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 9 )
-    {
+  if (argc < 9)
+  {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " InputImage  InitialModel OutputImage";
@@ -96,7 +97,7 @@ int main( int argc, char *argv[] )
     std::cerr << " InitialModelIsovalue";
     std::cerr << " MaximumIterations" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -106,35 +107,34 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   float           InternalPixelType;
-  const     unsigned int    Dimension = 2;
-  typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
+  using InternalPixelType = float;
+  constexpr unsigned int Dimension = 2;
+  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
-  typedef unsigned char                            OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::BinaryThresholdImageFilter<
-                        InternalImageType,
-                        OutputImageType    >       ThresholdingFilterType;
+  using OutputPixelType = unsigned char;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using ThresholdingFilterType =
+    itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
 
   ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
 
-  thresholder->SetUpperThreshold( 10.0 );
-  thresholder->SetLowerThreshold( 0.0 );
+  thresholder->SetUpperThreshold(10.0);
+  thresholder->SetLowerThreshold(0.0);
 
-  thresholder->SetOutsideValue(  0  );
-  thresholder->SetInsideValue(  255 );
+  thresholder->SetOutsideValue(0);
+  thresholder->SetInsideValue(255);
 
-  typedef  itk::ImageFileReader< InternalImageType > ReaderType;
-  typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
+  using ReaderType = itk::ImageFileReader<InternalImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader1 = ReaderType::New();
   ReaderType::Pointer reader2 = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader1->SetFileName( argv[1] );
-  reader2->SetFileName( argv[2] );
-  writer->SetFileName(  argv[3] );
+  reader1->SetFileName(argv[1]);
+  reader2->SetFileName(argv[2]);
+  writer->SetFileName(argv[3]);
 
   //  Software Guide : BeginLatex
   //
@@ -146,12 +146,13 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::GradientAnisotropicDiffusionImageFilter< InternalImageType,
-    InternalImageType> DiffusionFilterType;
+  using DiffusionFilterType =
+    itk::GradientAnisotropicDiffusionImageFilter<InternalImageType,
+                                                 InternalImageType>;
   DiffusionFilterType::Pointer diffusion = DiffusionFilterType::New();
-  diffusion->SetNumberOfIterations( atoi(argv[4]) );
+  diffusion->SetNumberOfIterations(std::stoi(argv[4]));
   diffusion->SetTimeStep(0.125);
-  diffusion->SetConductanceParameter( atof(argv[5]) );
+  diffusion->SetConductanceParameter(std::stod(argv[5]));
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -162,10 +163,12 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::LaplacianSegmentationLevelSetImageFilter< InternalImageType,
-            InternalImageType > LaplacianSegmentationLevelSetImageFilterType;
-  LaplacianSegmentationLevelSetImageFilterType::Pointer laplacianSegmentation
-            = LaplacianSegmentationLevelSetImageFilterType::New();
+  using LaplacianSegmentationLevelSetImageFilterType =
+    itk::LaplacianSegmentationLevelSetImageFilter<InternalImageType,
+                                                  InternalImageType>;
+  LaplacianSegmentationLevelSetImageFilterType::Pointer
+    laplacianSegmentation =
+      LaplacianSegmentationLevelSetImageFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -183,8 +186,8 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  laplacianSegmentation->SetCurvatureScaling( 1.0 );
-  laplacianSegmentation->SetPropagationScaling( ::atof(argv[6]) );
+  laplacianSegmentation->SetCurvatureScaling(1.0);
+  laplacianSegmentation->SetPropagationScaling(::std::stod(argv[6]));
   //  Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -196,8 +199,8 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  laplacianSegmentation->SetMaximumRMSError( 0.002 );
-  laplacianSegmentation->SetNumberOfIterations( ::atoi(argv[8]) );
+  laplacianSegmentation->SetMaximumRMSError(0.002);
+  laplacianSegmentation->SetNumberOfIterations(::std::stoi(argv[8]));
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -209,7 +212,7 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  laplacianSegmentation->SetIsoSurfaceValue( ::atof(argv[7]) );
+  laplacianSegmentation->SetIsoSurfaceValue(::std::stod(argv[7]));
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -220,11 +223,11 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  diffusion->SetInput( reader1->GetOutput() );
-  laplacianSegmentation->SetInput( reader2->GetOutput() );
-  laplacianSegmentation->SetFeatureImage( diffusion->GetOutput() );
-  thresholder->SetInput( laplacianSegmentation->GetOutput() );
-  writer->SetInput( thresholder->GetOutput() );
+  diffusion->SetInput(reader1->GetOutput());
+  laplacianSegmentation->SetInput(reader2->GetOutput());
+  laplacianSegmentation->SetFeatureImage(diffusion->GetOutput());
+  thresholder->SetInput(laplacianSegmentation->GetOutput());
+  writer->SetInput(thresholder->GetOutput());
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -237,30 +240,34 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & excep )
-    {
+  }
+  catch (const itk::ExceptionObject & excep)
+  {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Print out some useful information
   std::cout << std::endl;
-  std::cout << "Max. no. iterations: " << laplacianSegmentation->GetNumberOfIterations() << std::endl;
-  std::cout << "Max. RMS error: " << laplacianSegmentation->GetMaximumRMSError() << std::endl;
+  std::cout << "Max. no. iterations: "
+            << laplacianSegmentation->GetNumberOfIterations() << std::endl;
+  std::cout << "Max. RMS error: "
+            << laplacianSegmentation->GetMaximumRMSError() << std::endl;
   std::cout << std::endl;
-  std::cout << "No. elpased iterations: " << laplacianSegmentation->GetElapsedIterations() << std::endl;
-  std::cout << "RMS change: " << laplacianSegmentation->GetRMSChange() << std::endl;
+  std::cout << "No. elpased iterations: "
+            << laplacianSegmentation->GetElapsedIterations() << std::endl;
+  std::cout << "RMS change: " << laplacianSegmentation->GetRMSChange()
+            << std::endl;
 
   // Write out the speed (propagation) image for parameter tuning purposes.
-  itk::ImageFileWriter< InternalImageType >::Pointer speedWriter
-    = itk::ImageFileWriter< InternalImageType >::New();
-  speedWriter->SetInput( laplacianSegmentation->GetSpeedImage() );
-  speedWriter->SetFileName( "speedImage.mha" );
+  itk::ImageFileWriter<InternalImageType>::Pointer speedWriter =
+    itk::ImageFileWriter<InternalImageType>::New();
+  speedWriter->SetInput(laplacianSegmentation->GetSpeedImage());
+  speedWriter->SetFileName("speedImage.mha");
   speedWriter->Update();
 
   //  Software Guide : BeginLatex
@@ -283,12 +290,13 @@ int main( int argc, char *argv[] )
   //  \includegraphics[width=0.32\textwidth]{BrainProtonDensitySlice}
   //  \includegraphics[width=0.32\textwidth]{ThresholdSegmentationLevelSetImageFilterVentricle}
   //  \includegraphics[width=0.32\textwidth]{LaplacianSegmentationLevelSetImageFilterVentricle}
-  //  \itkcaption[Segmentation results of LaplacianLevelSetImageFilter]{Results of
-  //  applying LaplacianSegmentationLevelSetImageFilter to a prior ventricle
+  //  \itkcaption[Segmentation results of
+  //  LaplacianLevelSetImageFilter]{Results of applying
+  //  LaplacianSegmentationLevelSetImageFilter to a prior ventricle
   //  segmentation.  Shown from left to right are the original image, the
   //  prior segmentation of the ventricle from
-  //  Figure~\ref{fig:ThresholdSegmentationLevelSetImageFilter}, and the refinement of the
-  //  prior using LaplacianSegmentationLevelSetImageFilter.}
+  //  Figure~\ref{fig:ThresholdSegmentationLevelSetImageFilter}, and the
+  //  refinement of the prior using LaplacianSegmentationLevelSetImageFilter.}
   //  \label{fig:LaplacianSegmentationLevelSetImageFilter}
   //  \end{figure}
   //

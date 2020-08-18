@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@
 
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{VotingBinaryHoleFillingImageFilter} applies a voting operation
-//  in order to fill in cavities. This can be used for smoothing contours and
-//  for filling holes in binary images.
+//  The \doxygen{VotingBinaryHoleFillingImageFilter} applies a voting
+//  operation in order to fill in cavities. This can be used for smoothing
+//  contours and for filling holes in binary images.
 //
 //  \index{itk::Voting\-Binary\-Hole\-Filling\-Image\-Filter}
 //
@@ -65,14 +65,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile outputImageFile radiusX radiusY" << std::endl;
+    std::cerr << argv[0] << "  inputImageFile outputImageFile radiusX radiusY"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -82,22 +84,22 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   unsigned char  InputPixelType;
-  typedef   unsigned char  OutputPixelType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -111,8 +113,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::VotingBinaryHoleFillingImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::VotingBinaryHoleFillingImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -131,8 +133,8 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  const unsigned int radiusX = atoi( argv[3] );
-  const unsigned int radiusY = atoi( argv[4] );
+  const unsigned int radiusX = std::stoi(argv[3]);
+  const unsigned int radiusY = std::stoi(argv[4]);
 
   // Software Guide : BeginCodeSnippet
   InputImageType::SizeType indexRadius;
@@ -140,15 +142,15 @@ int main( int argc, char * argv[] )
   indexRadius[0] = radiusX; // radius along x
   indexRadius[1] = radiusY; // radius along y
 
-  filter->SetRadius( indexRadius );
+  filter->SetRadius(indexRadius);
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
   //  Since the filter is expecting a binary image as input, we must specify
-  //  the levels that are going to be considered background and foreground. This
-  //  is done with the \code{SetForegroundValue()} and
+  //  the levels that are going to be considered background and foreground.
+  //  This is done with the \code{SetForegroundValue()} and
   //  \code{SetBackgroundValue()} methods.
   //
   //  \index{itk::Voting\-Binary\-Hole\-Filling\-Image\-Filter!SetForegroundValue()}
@@ -157,8 +159,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetBackgroundValue(   0 );
-  filter->SetForegroundValue( 255 );
+  filter->SetBackgroundValue(0);
+  filter->SetForegroundValue(255);
   // Software Guide : EndCodeSnippet
 
 
@@ -170,9 +172,9 @@ int main( int argc, char * argv[] )
   //  be converted into a foreground pixel if the number of foreground
   //  neighbors surpass the number of background neighbors by the majority
   //  value. For example, in a 2D image, with neighborhood of radius 1, the
-  //  neighborhood will have size $3 \times 3$. If we set the majority value to
-  //  2, then we are requiring that the number of foreground neighbors should
-  //  be at least (3x3 -1 )/2 + majority. This is done with the
+  //  neighborhood will have size $3 \times 3$. If we set the majority value
+  //  to 2, then we are requiring that the number of foreground neighbors
+  //  should be at least (3x3 -1 )/2 + majority. This is done with the
   //  \code{SetMajorityThreshold()} method.
   //
   //  \index{itk::Voting\-Binary\-Hole\-Filling\-Image\-Filter!SetMajorityThreshold()}
@@ -180,7 +182,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetMajorityThreshold( 2 );
+  filter->SetMajorityThreshold(2);
   // Software Guide : EndCodeSnippet
 
 
@@ -198,8 +200,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -213,19 +215,20 @@ int main( int argc, char * argv[] )
   // \includegraphics[width=0.44\textwidth]{VotingBinaryHoleFillingImageFilterOutput2}
   // \includegraphics[width=0.44\textwidth]{VotingBinaryHoleFillingImageFilterOutput3}
   // \itkcaption[Effect of the VotingBinaryHoleFilling filter.]{Effect of the
-  // VotingBinaryHoleFillingImageFilter on a slice from a MRI proton density brain image
-  // that has been thresholded in order to produce a binary image. The output
-  // images have used radius 1,2 and 3 respectively.}
+  // VotingBinaryHoleFillingImageFilter on a slice from a MRI proton density
+  // brain image that has been thresholded in order to produce a binary image.
+  // The output images have used radius 1,2 and 3 respectively.}
   // \label{fig:VotingBinaryHoleFillingImageFilterOutput}
   // \end{figure}
   //
-  //  Figure \ref{fig:VotingBinaryHoleFillingImageFilterOutput} illustrates the effect of
-  //  the VotingBinaryHoleFillingImageFilter filter on a thresholded slice of MRI brain
-  //  image using neighborhood radii of \(1,1\), \(2,2\) and \(3,3\) that
-  //  correspond respectively to neighborhoods of size $ 3 \times 3 $,  $ 5
-  //  \times 5 $, $ 7 \times 7 $.  The filtered image demonstrates the
-  //  capability of this filter for reducing noise both in the background and
-  //  foreground of the image, as well as smoothing the contours of the regions.
+  //  Figure \ref{fig:VotingBinaryHoleFillingImageFilterOutput} illustrates
+  //  the effect of the VotingBinaryHoleFillingImageFilter filter on a
+  //  thresholded slice of MRI brain image using neighborhood radii of
+  //  \(1,1\), \(2,2\) and \(3,3\) that correspond respectively to
+  //  neighborhoods of size $ 3 \times 3 $,  $ 5 \times 5 $, $ 7 \times 7 $.
+  //  The filtered image demonstrates the capability of this filter for
+  //  reducing noise both in the background and foreground of the image, as
+  //  well as smoothing the contours of the regions.
   //
   //  Software Guide : EndLatex
 

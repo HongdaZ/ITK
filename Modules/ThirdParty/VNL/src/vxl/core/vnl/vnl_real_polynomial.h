@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_real_polynomial.h
 #ifndef vnl_real_polynomial_h_
 #define vnl_real_polynomial_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Evaluation of real polynomials
@@ -21,9 +18,11 @@
 
 #include <complex>
 #include <iosfwd>
-#include <vnl/vnl_vector.h>
-#include <vcl_compiler.h>
-#include <vcl_cassert.h>
+#include "vnl_vector.h"
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include <cassert>
 #include "vnl/vnl_export.h"
 
 //:Evaluation of real polynomials at real and complex points.

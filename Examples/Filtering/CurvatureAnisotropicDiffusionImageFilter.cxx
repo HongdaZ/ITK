@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@
 //
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{CurvatureAnisotropicDiffusionImageFilter} performs anisotropic
-//  diffusion on an image using a modified curvature diffusion equation (MCDE).
+//  The \doxygen{CurvatureAnisotropicDiffusionImageFilter} performs
+//  anisotropic diffusion on an image using a modified curvature diffusion
+//  equation (MCDE).
 //
 //  MCDE does not exhibit the edge enhancing properties of classic anisotropic
 //  diffusion, which can under certain conditions undergo a ``negative''
@@ -66,7 +67,8 @@
 
 //  Software Guide : BeginLatex
 //
-//  The first step required for using this filter is to include its header file.
+//  The first step required for using this filter is to include its header
+//  file.
 //
 //  \index{itk::Curvature\-Anisotropic\-Diffusion\-Image\-Filter!header}
 //
@@ -77,15 +79,18 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 6 )
-    {
+  if (argc < 6)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile ";
-    std::cerr << "numberOfIterations  timeStep  conductance useImageSpacingon/off" << std::endl;
+    std::cerr
+      << "numberOfIterations  timeStep  conductance useImageSpacingon/off"
+      << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -96,15 +101,15 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef    float    InputPixelType;
-  typedef    float    OutputPixelType;
+  using InputPixelType = float;
+  using OutputPixelType = float;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
 
 
   //  Software Guide : BeginLatex
@@ -120,15 +125,16 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::CurvatureAnisotropicDiffusionImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::CurvatureAnisotropicDiffusionImageFilter<InputImageType,
+                                                  OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
   //  Software Guide : BeginLatex
   //
@@ -138,13 +144,13 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
+  filter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int numberOfIterations = atoi( argv[3] );
-  const double       timeStep = atof( argv[4] );
-  const double       conductance = atof( argv[5] );
+  const unsigned int numberOfIterations = std::stoi(argv[3]);
+  const double       timeStep = std::stod(argv[4]);
+  const double       conductance = std::stod(argv[5]);
   const bool         useImageSpacing = (argc != 6);
 
   //  Software Guide : BeginLatex
@@ -167,13 +173,13 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetNumberOfIterations( numberOfIterations );
-  filter->SetTimeStep( timeStep );
-  filter->SetConductanceParameter( conductance );
+  filter->SetNumberOfIterations(numberOfIterations);
+  filter->SetTimeStep(timeStep);
+  filter->SetConductanceParameter(conductance);
   if (useImageSpacing)
-    {
+  {
     filter->UseImageSpacingOn();
-    }
+  }
   filter->Update();
   // Software Guide : EndCodeSnippet
 
@@ -183,33 +189,34 @@ int main( int argc, char * argv[] )
   //  Typical values for the time step are 0.125 in $2D$ images and 0.0625 in
   //  $3D$ images. The number of iterations can be usually around $5$, more
   //  iterations will result in further smoothing and will increase the
-  //  computing time linearly. The conductance parameter is usually around $3.0$.
+  //  computing time linearly. The conductance parameter is usually around
+  //  $3.0$.
   //
   //  Software Guide : EndLatex
 
 
   //
-  //  If the output of this filter has been connected to other filters down the
-  //  pipeline, updating any of the downstream filters would have triggered the
-  //  execution of this one. For example, a writer filter could have been used
-  //  after the curvature flow filter.
+  //  If the output of this filter has been connected to other filters down
+  //  the pipeline, updating any of the downstream filters would have
+  //  triggered the execution of this one. For example, a writer filter could
+  //  have been used after the curvature flow filter.
   //
 
-  typedef unsigned char                          WritePixelType;
-  typedef itk::Image< WritePixelType, 2 >        WriteImageType;
-  typedef itk::RescaleIntensityImageFilter<
-               OutputImageType, WriteImageType > RescaleFilterType;
+  using WritePixelType = unsigned char;
+  using WriteImageType = itk::Image<WritePixelType, 2>;
+  using RescaleFilterType =
+    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
-  rescaler->SetOutputMinimum(   0 );
-  rescaler->SetOutputMaximum( 255 );
+  rescaler->SetOutputMinimum(0);
+  rescaler->SetOutputMaximum(255);
 
-  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<WriteImageType>;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( argv[2] );
-  rescaler->SetInput( filter->GetOutput() );
-  writer->SetInput( rescaler->GetOutput() );
+  writer->SetFileName(argv[2]);
+  rescaler->SetInput(filter->GetOutput());
+  writer->SetInput(rescaler->GetOutput());
   writer->Update();
 
 
@@ -218,8 +225,8 @@ int main( int argc, char * argv[] )
   // \begin{figure} \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{CurvatureAnisotropicDiffusionImageFilterOutput}
-  // \itkcaption[CurvatureAnisotropicDiffusionImageFilter output]{Effect of the
-  // CurvatureAnisotropicDiffusionImageFilter on a slice from a MRI Proton
+  // \itkcaption[CurvatureAnisotropicDiffusionImageFilter output]{Effect of
+  // the CurvatureAnisotropicDiffusionImageFilter on a slice from a MRI Proton
   // Density image  of the brain.}
   // \label{fig:CurvatureAnisotropicDiffusionImageFilterInputOutput}
   // \end{figure}

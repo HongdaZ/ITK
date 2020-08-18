@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@
 //  Software Guide : BeginLatex
 //
 //  The \doxygen{DerivativeImageFilter} is used for computing the partial
-//  derivative of an image, the derivative of an image along a particular axial
-//  direction.
+//  derivative of an image, the derivative of an image along a particular
+//  axial direction.
 //
 //  \index{itk::DerivativeImageFilter}
 //
@@ -53,45 +53,48 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 6 )
-    {
+  if (argc < 6)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile   outputImageFile  normalizedOutputImageFile ";
+    std::cerr
+      << argv[0]
+      << "  inputImageFile   outputImageFile  normalizedOutputImageFile ";
     std::cerr << " derivativeOrder direction" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
   //
-  //  Next, the pixel types for the input and output images must be defined and, with
-  //  them, the image types can be instantiated. Note that it is important to
-  //  select a signed type for the image, since the values of the derivatives
-  //  will be positive as well as negative.
+  //  Next, the pixel types for the input and output images must be defined
+  //  and, with them, the image types can be instantiated. Note that it is
+  //  important to select a signed type for the image, since the values of the
+  //  derivatives will be positive as well as negative.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   float  InputPixelType;
-  typedef   float  OutputPixelType;
+  using InputPixelType = float;
+  using OutputPixelType = float;
 
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -105,8 +108,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::DerivativeImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::DerivativeImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -124,8 +127,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOrder(     atoi( argv[4] ) );
-  filter->SetDirection( atoi( argv[5] ) );
+  filter->SetOrder(std::stoi(argv[4]));
+  filter->SetDirection(std::stoi(argv[5]));
   // Software Guide : EndCodeSnippet
 
 
@@ -133,8 +136,8 @@ int main( int argc, char * argv[] )
   //
   //  The input to the filter can be taken from any other filter, for example
   //  a reader. The output can be passed down the pipeline to other filters,
-  //  for example, a writer. An \code{Update()} call on any downstream filter will
-  //  trigger the execution of the derivative filter.
+  //  for example, a writer. An \code{Update()} call on any downstream filter
+  //  will trigger the execution of the derivative filter.
   //
   //  \index{itk::DerivativeImageFilter!SetInput()}
   //  \index{itk::DerivativeImageFilter!GetOutput()}
@@ -143,8 +146,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -155,8 +158,8 @@ int main( int argc, char * argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{DerivativeImageFilterOutput}
-  // \itkcaption[Effect of the Derivative filter.]{Effect of the Derivative filter
-  // on a slice from a MRI proton density brain image.}
+  // \itkcaption[Effect of the Derivative filter.]{Effect of the Derivative
+  // filter on a slice from a MRI proton density brain image.}
   // \label{fig:DerivativeImageFilterOutput}
   // \end{figure}
   //
@@ -168,24 +171,24 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
 
-  typedef itk::Image< unsigned char, Dimension >  WriteImageType;
+  using WriteImageType = itk::Image<unsigned char, Dimension>;
 
-  typedef itk::RescaleIntensityImageFilter<
-                                  OutputImageType,
-                                  WriteImageType >    NormalizeFilterType;
+  using NormalizeFilterType =
+    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
 
-  typedef itk::ImageFileWriter< WriteImageType >       NormalizedWriterType;
+  using NormalizedWriterType = itk::ImageFileWriter<WriteImageType>;
 
-  NormalizeFilterType::Pointer normalizer = NormalizeFilterType::New();
-  NormalizedWriterType::Pointer normalizedWriter = NormalizedWriterType::New();
+  NormalizeFilterType::Pointer  normalizer = NormalizeFilterType::New();
+  NormalizedWriterType::Pointer normalizedWriter =
+    NormalizedWriterType::New();
 
-  normalizer->SetInput( filter->GetOutput() );
-  normalizedWriter->SetInput( normalizer->GetOutput() );
+  normalizer->SetInput(filter->GetOutput());
+  normalizedWriter->SetInput(normalizer->GetOutput());
 
-  normalizer->SetOutputMinimum(   0 );
-  normalizer->SetOutputMaximum( 255 );
+  normalizer->SetOutputMinimum(0);
+  normalizer->SetOutputMaximum(255);
 
-  normalizedWriter->SetFileName( argv[3] );
+  normalizedWriter->SetFileName(argv[3]);
   normalizedWriter->Update();
 
   return EXIT_SUCCESS;

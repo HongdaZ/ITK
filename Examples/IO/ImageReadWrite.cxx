@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,15 +50,16 @@
 #include "itkImage.h"
 
 
-int main( int argc, char ** argv )
+int
+main(int argc, char ** argv)
 {
   // Verify the number of parameters in the command line
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile  outputImageFile " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -85,9 +86,9 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef short         PixelType;
-  const   unsigned int  Dimension = 2;
-  typedef itk::Image< PixelType, Dimension >    ImageType;
+  using PixelType = short;
+  constexpr unsigned int Dimension = 2;
+  using ImageType = itk::Image<PixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -95,8 +96,8 @@ int main( int argc, char ** argv )
   //
   //  Note that the dimension of the image in memory should match that of
   //  the image in the file. There are a couple of special cases in which this
-  //  condition may be relaxed, but in general it is better to ensure that both
-  //  dimensions match.
+  //  condition may be relaxed, but in general it is better to ensure that
+  //  both dimensions match.
   //
   //  We can now instantiate the types of the reader and writer. These two
   //  classes are parameterized over the image type.
@@ -107,8 +108,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< ImageType >  ReaderType;
-  typedef itk::ImageFileWriter< ImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
+  using WriterType = itk::ImageFileWriter<ImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -132,7 +133,7 @@ int main( int argc, char ** argv )
 
   // Here we recover the file names from the command line arguments
   //
-  const char * inputFilename  = argv[1];
+  const char * inputFilename = argv[1];
   const char * outputFilename = argv[2];
 
 
@@ -149,8 +150,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName( inputFilename  );
-  writer->SetFileName( outputFilename );
+  reader->SetFileName(inputFilename);
+  writer->SetFileName(outputFilename);
   // Software Guide : EndCodeSnippet
 
 
@@ -163,7 +164,7 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  writer->SetInput( reader->GetOutput() );
+  writer->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -172,25 +173,26 @@ int main( int argc, char ** argv )
   //  At first glance this may look like a quite useless program, but it is
   //  actually implementing a powerful file format conversion tool! The
   //  execution of the pipeline is triggered by the invocation of the
-  //  \code{Update()} methods in one of the final objects. In this case, the final
-  //  data pipeline object is the writer. It is a wise practice of defensive
-  //  programming to insert any \code{Update()} call inside a \code{try/catch} block
-  //  in case exceptions are thrown during the execution of the pipeline.
+  //  \code{Update()} methods in one of the final objects. In this case, the
+  //  final data pipeline object is the writer. It is a wise practice of
+  //  defensive programming to insert any \code{Update()} call inside a
+  //  \code{try/catch} block in case exceptions are thrown during the
+  //  execution of the pipeline.
   //
   //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 

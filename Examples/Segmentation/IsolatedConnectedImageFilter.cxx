@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@
 //
 // The following example illustrates the use of the
 // \doxygen{IsolatedConnectedImageFilter}.  This filter is a close variant of
-// the \doxygen{ConnectedThresholdImageFilter}.  In this filter two seeds and a
-// lower threshold are provided by the user. The filter will grow a region
-// connected to the first seed and \textbf{not connected} to the second one. In
-// order to do this, the filter finds an intensity value that could be used as
-// upper threshold for the first seed. A binary search is used to find the
+// the \doxygen{ConnectedThresholdImageFilter}.  In this filter two seeds and
+// a lower threshold are provided by the user. The filter will grow a region
+// connected to the first seed and \textbf{not connected} to the second one.
+// In order to do this, the filter finds an intensity value that could be used
+// as upper threshold for the first seed. A binary search is used to find the
 // value that separates both seeds.
 //
 // This example closely follows the previous ones. Only the relevant pieces
@@ -58,16 +58,17 @@
 #include "itkImageFileWriter.h"
 
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 7 )
-    {
+  if (argc < 7)
+  {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImage  outputImage seedX1 seedY1";
     std::cerr << " lowerThreshold seedX2 seedY2" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -78,47 +79,48 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   float           InternalPixelType;
-  const     unsigned int    Dimension = 2;
-  typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
+  using InternalPixelType = float;
+  constexpr unsigned int Dimension = 2;
+  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef unsigned char                            OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CastImageFilter< InternalImageType, OutputImageType >
-                                                   CastingFilterType;
+  using OutputPixelType = unsigned char;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using CastingFilterType =
+    itk::CastImageFilter<InternalImageType, OutputImageType>;
 
   CastingFilterType::Pointer caster = CastingFilterType::New();
 
 
   // We instantiate reader and writer types
   //
-  typedef  itk::ImageFileReader< InternalImageType > ReaderType;
-  typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
+  using ReaderType = itk::ImageFileReader<InternalImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
 
-  typedef itk::CurvatureFlowImageFilter< InternalImageType, InternalImageType >
-    CurvatureFlowImageFilterType;
+  using CurvatureFlowImageFilterType =
+    itk::CurvatureFlowImageFilter<InternalImageType, InternalImageType>;
   CurvatureFlowImageFilterType::Pointer smoothing =
-                         CurvatureFlowImageFilterType::New();
+    CurvatureFlowImageFilterType::New();
 
 
   //  Software Guide : BeginLatex
   //
-  //  The \code{IsolatedConnectedImageFilter} is instantiated in the lines below.
+  //  The \code{IsolatedConnectedImageFilter} is instantiated in the lines
+  //  below.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::IsolatedConnectedImageFilter<InternalImageType,
-                                       InternalImageType> ConnectedFilterType;
+  using ConnectedFilterType =
+    itk::IsolatedConnectedImageFilter<InternalImageType, InternalImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -140,15 +142,15 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  smoothing->SetInput( reader->GetOutput() );
-  isolatedConnected->SetInput( smoothing->GetOutput() );
-  caster->SetInput( isolatedConnected->GetOutput() );
-  writer->SetInput( caster->GetOutput() );
+  smoothing->SetInput(reader->GetOutput());
+  isolatedConnected->SetInput(smoothing->GetOutput());
+  caster->SetInput(isolatedConnected->GetOutput());
+  writer->SetInput(caster->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  smoothing->SetNumberOfIterations( 5 );
-  smoothing->SetTimeStep( 0.125 );
+  smoothing->SetNumberOfIterations(5);
+  smoothing->SetTimeStep(0.125);
 
 
   //  Software Guide : BeginLatex
@@ -164,23 +166,23 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
 
-  InternalImageType::IndexType  indexSeed1;
+  InternalImageType::IndexType indexSeed1;
 
-  indexSeed1[0] = atoi( argv[3] );
-  indexSeed1[1] = atoi( argv[4] );
+  indexSeed1[0] = std::stoi(argv[3]);
+  indexSeed1[1] = std::stoi(argv[4]);
 
-  const InternalPixelType lowerThreshold = atof( argv[5] );
+  const InternalPixelType lowerThreshold = std::stod(argv[5]);
 
-  InternalImageType::IndexType  indexSeed2;
+  InternalImageType::IndexType indexSeed2;
 
-  indexSeed2[0] = atoi( argv[6] );
-  indexSeed2[1] = atoi( argv[7] );
+  indexSeed2[0] = std::stoi(argv[6]);
+  indexSeed2[1] = std::stoi(argv[7]);
 
 
   // Software Guide : BeginCodeSnippet
-  isolatedConnected->SetLower(  lowerThreshold  );
-  isolatedConnected->AddSeed1( indexSeed1 );
-  isolatedConnected->AddSeed2( indexSeed2 );
+  isolatedConnected->SetLower(lowerThreshold);
+  isolatedConnected->AddSeed1(indexSeed1);
+  isolatedConnected->AddSeed2(indexSeed2);
   // Software Guide : EndCodeSnippet
 
 
@@ -196,7 +198,7 @@ int main( int argc, char *argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  isolatedConnected->SetReplaceValue( 255 );
+  isolatedConnected->SetReplaceValue(255);
   // Software Guide : EndCodeSnippet
 
 
@@ -209,14 +211,14 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & excep )
-    {
+  }
+  catch (const itk::ExceptionObject & excep)
+  {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -231,7 +233,7 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   std::cout << "Isolated Value Found = ";
-  std::cout << isolatedConnected->GetIsolatedValue()  << std::endl;
+  std::cout << isolatedConnected->GetIsolatedValue() << std::endl;
   // Software Guide : EndCodeSnippet
 
 
@@ -252,21 +254,20 @@ int main( int argc, char *argv[] )
   //  \doxygen{CurvatureFlowImageFilter} followed by segmentation results.
   //
   //  This filter is intended to be used in cases where adjacent anatomical
-  //  structures are difficult to separate. Selecting one seed in one structure
-  //  and the other seed in the adjacent structure creates the appropriate
-  //  setup for computing the threshold that will separate both structures.
-  //  Table~\ref{tab:IsolatedConnectedImageFilterOutput} presents the
-  //  parameters used to obtain the images shown in
+  //  structures are difficult to separate. Selecting one seed in one
+  //  structure and the other seed in the adjacent structure creates the
+  //  appropriate setup for computing the threshold that will separate both
+  //  structures. Table~\ref{tab:IsolatedConnectedImageFilterOutput} presents
+  //  the parameters used to obtain the images shown in
   //  Figure~\ref{fig:IsolatedConnectedImageFilterOutput}.
   //
   //  \begin{table}
   //  \begin{center}
   //  \begin{tabular}{|l|c|c|c|c|}
   //  \hline
-  //  Adjacent Structures & Seed1 & Seed2 & Lower & Isolated value found       \\ \hline
-  //  Gray matter vs White matter & $(61,140)$ & $(63,43)$ & $150$ & $183.31$  \\ \hline
-  //  \end{tabular}
-  //  \end{center}
+  //  Adjacent Structures & Seed1 & Seed2 & Lower & Isolated value found \\
+  //  \hline Gray matter vs White matter & $(61,140)$ & $(63,43)$ & $150$ &
+  //  $183.31$  \\ \hline \end{tabular} \end{center}
   //  \itkcaption[IsolatedConnectedImageFilter example parameters]{Parameters
   //  used for separating white matter from gray matter in
   //  Figure~\ref{fig:IsolatedConnectedImageFilterOutput} using the
@@ -277,8 +278,8 @@ int main( int argc, char *argv[] )
   // \includegraphics[width=0.32\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput0}
   // \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput1}
-  // \itkcaption[IsolatedConnected segmentation results]{Segmentation results of
-  // the IsolatedConnectedImageFilter.}
+  // \itkcaption[IsolatedConnected segmentation results]{Segmentation results
+  // of the IsolatedConnectedImageFilter.}
   // \label{fig:IsolatedConnectedImageFilterOutput}
   // \end{figure}
   //

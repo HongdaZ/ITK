@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
 
 namespace itk
 {
-/** \class HistogramToProbabilityImageFilter
+/**
+ *\class HistogramToProbabilityImageFilter
  * \brief The class takes a histogram as an input and gives the probability
  * image as the output. A pixel, at position I,  in the output image is given by
  *
@@ -46,60 +47,64 @@ namespace itk
 
 namespace Function
 {
-template< typename TInput, typename TOutput = float >
+template <typename TInput, typename TOutput = float>
 class HistogramProbabilityFunction
 {
 public:
-
-  //Probability function = Number of occurrences in each bin /
+  // Probability function = Number of occurrences in each bin /
   //   Total Number of occurrences.
   //
   // Returns pixels of float..
-  typedef  TOutput OutputPixelType;
+  using OutputPixelType = TOutput;
 
-  HistogramProbabilityFunction():
-    m_TotalFrequency(1) {}
+  HistogramProbabilityFunction() = default;
 
-  ~HistogramProbabilityFunction() {}
+  ~HistogramProbabilityFunction() = default;
 
-  inline OutputPixelType operator()(const TInput & A) const
+  inline OutputPixelType
+  operator()(const TInput & A) const
   {
-    return static_cast< OutputPixelType >( static_cast< OutputPixelType >( A )
-                                           / static_cast< OutputPixelType >( m_TotalFrequency ) );
+    return static_cast<OutputPixelType>(static_cast<OutputPixelType>(A) /
+                                        static_cast<OutputPixelType>(m_TotalFrequency));
   }
 
-  void SetTotalFrequency(SizeValueType n)
+  void
+  SetTotalFrequency(SizeValueType n)
   {
     m_TotalFrequency = n;
   }
 
-  SizeValueType GetTotalFrequency() const
+  SizeValueType
+  GetTotalFrequency() const
   {
     return m_TotalFrequency;
   }
 
 private:
-  SizeValueType m_TotalFrequency;
+  SizeValueType m_TotalFrequency{ 1 };
 };
-}
+} // namespace Function
 
-template< typename THistogram, typename TImage=Image< float, 3> >
-class HistogramToProbabilityImageFilter:
-  public HistogramToImageFilter< THistogram, TImage,
-                                 Function::HistogramProbabilityFunction< SizeValueType, typename TImage::PixelType > >
+template <typename THistogram, typename TImage = Image<float, 3>>
+class HistogramToProbabilityImageFilter
+  : public HistogramToImageFilter<THistogram,
+                                  TImage,
+                                  Function::HistogramProbabilityFunction<SizeValueType, typename TImage::PixelType>>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToProbabilityImageFilter);
 
-  /** Standard class typedefs. */
-  typedef HistogramToProbabilityImageFilter Self;
+  /** Standard class type aliases. */
+  using Self = HistogramToProbabilityImageFilter;
 
-  /** Standard "Superclass" typedef. */
-  typedef HistogramToImageFilter< THistogram, TImage,
-                                 Function::HistogramProbabilityFunction< SizeValueType, typename TImage::PixelType > >
-  Superclass;
+  /** Standard "Superclass" type alias. */
+  using Superclass =
+    HistogramToImageFilter<THistogram,
+                           TImage,
+                           Function::HistogramProbabilityFunction<SizeValueType, typename TImage::PixelType>>;
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(HistogramToProbabilityImageFilter, HistogramToImageFilter);
@@ -108,11 +113,8 @@ public:
   itkNewMacro(Self);
 
 protected:
-  HistogramToProbabilityImageFilter() {}
-  virtual ~HistogramToProbabilityImageFilter() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToProbabilityImageFilter);
+  HistogramToProbabilityImageFilter() = default;
+  ~HistogramToProbabilityImageFilter() override = default;
 };
 } // end namespace itk
 

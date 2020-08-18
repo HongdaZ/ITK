@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_crs_index.h
 #ifndef vnl_crs_index_h_
 #define vnl_crs_index_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Compressed Row Storage (CRS) indexing
@@ -16,7 +13,9 @@
 //
 #include <vector>
 #include <utility>
-#include <vcl_compiler.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 #include "vnl/vnl_export.h"
 
 //: Represents the configuration of a sparse matrix but not the data
@@ -31,13 +30,13 @@ class VNL_EXPORT vnl_crs_index
   typedef std::vector<idx_pair> sparse_vector;
 
   //: Constructor - default
-  vnl_crs_index() : num_cols_(0), col_idx_(), row_ptr_() {}
+  vnl_crs_index() : col_idx_(), row_ptr_() {}
 
   //: Constructor - from a binary mask
   vnl_crs_index(const std::vector<std::vector<bool> >& mask);
 
   //: Destructor
-  ~vnl_crs_index(){}
+  ~vnl_crs_index()= default;
 
   //: number of rows in the sparse matrix
   int num_rows() const { return int(row_ptr_.size())-1; }
@@ -61,11 +60,11 @@ class VNL_EXPORT vnl_crs_index
 
  private:
   //: The number of columns in the matrix
-  unsigned int num_cols_;
-  //: The column for each non-zero element
-  std::vector<int> col_idx_;
-  //: The index of the first non-zero element in each row
-  std::vector<int> row_ptr_;
+   unsigned int num_cols_{0};
+   //: The column for each non-zero element
+   std::vector<int> col_idx_;
+   //: The index of the first non-zero element in each row
+   std::vector<int> row_ptr_;
 };
 
 #endif // vnl_crs_index_h_

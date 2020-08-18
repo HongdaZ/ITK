@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@
 // \doxygen{VectorGradientMagnitudeImageFilter} is used to generate the
 // height function.  We begin by including all preprocessing filter header
 // files and the header file for the WatershedImageFilter.  We
-// use the vector versions of these filters because the input dataset is a color
-// image.
+// use the vector versions of these filters because the input dataset is a
+// color image.
 //
 //
 // Software Guide : EndLatex
@@ -60,18 +60,22 @@
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkVectorCastImageFilter.h"
+#include "itkCastImageFilter.h"
 #include "itkScalarToRGBPixelFunctor.h"
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if (argc < 8 )
-    {
+  if (argc < 8)
+  {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
-    std::cerr << " inputImage outputImage conductanceTerm diffusionIterations lowerThreshold outputScaleLevel gradientMode " << std::endl;
+    std::cerr
+      << " inputImage outputImage conductanceTerm diffusionIterations "
+         "lowerThreshold outputScaleLevel gradientMode "
+      << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   // Software Guide : BeginLatex
   //
@@ -80,17 +84,17 @@ int main( int argc, char *argv[] )
   // work properly.  The preprocessing stages are applied directly to the
   // vector-valued data and the segmentation uses floating point
   // scalar data.  Images are converted from RGB pixel type to
-  // numerical vector type using \doxygen{VectorCastImageFilter}.
+  // numerical vector type using \doxygen{CastImageFilter}.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::RGBPixel< unsigned char >       RGBPixelType;
-  typedef itk::Image< RGBPixelType, 2 >        RGBImageType;
-  typedef itk::Vector< float, 3 >              VectorPixelType;
-  typedef itk::Image< VectorPixelType, 2 >     VectorImageType;
-  typedef itk::Image< itk::IdentifierType, 2 > LabeledImageType;
-  typedef itk::Image< float, 2 >               ScalarImageType;
+  using RGBPixelType = itk::RGBPixel<unsigned char>;
+  using RGBImageType = itk::Image<RGBPixelType, 2>;
+  using VectorPixelType = itk::Vector<float, 3>;
+  using VectorImageType = itk::Image<VectorPixelType, 2>;
+  using LabeledImageType = itk::Image<itk::IdentifierType, 2>;
+  using ScalarImageType = itk::Image<float, 2>;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -101,19 +105,17 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< RGBImageType >   FileReaderType;
-  typedef itk::VectorCastImageFilter< RGBImageType, VectorImageType >
-                                                 CastFilterType;
-  typedef itk::VectorGradientAnisotropicDiffusionImageFilter<
-                        VectorImageType, VectorImageType >
-                                                 DiffusionFilterType;
-  typedef itk::VectorGradientMagnitudeImageFilter< VectorImageType >
-                                                 GradientMagnitudeFilterType;
-  typedef itk::WatershedImageFilter< ScalarImageType >
-                                                 WatershedFilterType;
+  using FileReaderType = itk::ImageFileReader<RGBImageType>;
+  using CastFilterType = itk::CastImageFilter<RGBImageType, VectorImageType>;
+  using DiffusionFilterType =
+    itk::VectorGradientAnisotropicDiffusionImageFilter<VectorImageType,
+                                                       VectorImageType>;
+  using GradientMagnitudeFilterType =
+    itk::VectorGradientMagnitudeImageFilter<VectorImageType>;
+  using WatershedFilterType = itk::WatershedImageFilter<ScalarImageType>;
   // Software Guide : EndCodeSnippet
 
-  typedef itk::ImageFileWriter<RGBImageType> FileWriterType;
+  using FileWriterType = itk::ImageFileWriter<RGBImageType>;
 
   FileReaderType::Pointer reader = FileReaderType::New();
   reader->SetFileName(argv[1]);
@@ -136,8 +138,8 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   DiffusionFilterType::Pointer diffusion = DiffusionFilterType::New();
-  diffusion->SetNumberOfIterations( atoi(argv[4]) );
-  diffusion->SetConductanceParameter( atof(argv[3]) );
+  diffusion->SetNumberOfIterations(std::stoi(argv[4]));
+  diffusion->SetConductanceParameter(std::stod(argv[3]));
   diffusion->SetTimeStep(0.125);
   // Software Guide : EndCodeSnippet
 
@@ -150,9 +152,9 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  GradientMagnitudeFilterType::Pointer
-    gradient = GradientMagnitudeFilterType::New();
-  gradient->SetUsePrincipleComponents(atoi(argv[7]));
+  GradientMagnitudeFilterType::Pointer gradient =
+    GradientMagnitudeFilterType::New();
+  gradient->SetUsePrincipleComponents(std::stoi(argv[7]));
   // Software Guide : EndCodeSnippet
 
 
@@ -167,8 +169,8 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   WatershedFilterType::Pointer watershed = WatershedFilterType::New();
-  watershed->SetLevel( atof(argv[6]) );
-  watershed->SetThreshold( atof(argv[5]) );
+  watershed->SetLevel(std::stod(argv[6]));
+  watershed->SetThreshold(std::stod(argv[5]));
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -188,11 +190,13 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Functor::ScalarToRGBPixelFunctor<unsigned long>
-    ColorMapFunctorType;
-  typedef itk::UnaryFunctorImageFilter<LabeledImageType,
-    RGBImageType, ColorMapFunctorType> ColorMapFilterType;
-  ColorMapFilterType::Pointer colormapper = ColorMapFilterType::New();
+  using ColormapFunctorType =
+    itk::Functor::ScalarToRGBPixelFunctor<unsigned long>;
+  using ColormapFilterType =
+    itk::UnaryFunctorImageFilter<LabeledImageType,
+                                 RGBImageType,
+                                 ColormapFunctorType>;
+  ColormapFilterType::Pointer colormapper = ColormapFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -216,14 +220,14 @@ int main( int argc, char *argv[] )
   // Software Guide : EndCodeSnippet
 
   try
-    {
+  {
     writer->Update();
-    }
-  catch (itk::ExceptionObject &e)
-    {
+  }
+  catch (const itk::ExceptionObject & e)
+  {
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
 }
@@ -235,13 +239,13 @@ int main( int argc, char *argv[] )
 // \includegraphics[width=0.32\textwidth]{VisibleWomanEyeSlice}
 // \includegraphics[width=0.32\textwidth]{WatershedSegmentation1Output1}
 // \includegraphics[width=0.32\textwidth]{WatershedSegmentation1Output2}
-// \itkcaption[Watershed segmentation output]{Segmented section of Visible Human
-// female head and neck cryosection data.  At left is the original image.  The
-// image in the middle was generated with parameters: conductance = 2.0,
-// iterations = 10, threshold = 0.0, level = 0.05, principal components = on.
-// The image on the right was generated with parameters: conductance = 2.0,
-// iterations = 10, threshold = 0.001, level = 0.15, principal components =
-// off. } \label{fig:outputWatersheds} \end{figure}
+// \itkcaption[Watershed segmentation output]{Segmented section of Visible
+// Human female head and neck cryosection data.  At left is the original
+// image.  The image in the middle was generated with parameters: conductance
+// = 2.0, iterations = 10, threshold = 0.0, level = 0.05, principal components
+// = on. The image on the right was generated with parameters: conductance
+// = 2.0, iterations = 10, threshold = 0.001, level = 0.15, principal
+// components = off. } \label{fig:outputWatersheds} \end{figure}
 //
 //
 // Tuning the filter parameters for any particular application is a process

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,36 +22,26 @@
 
 namespace itk
 {
-template< typename TImage >
-ImageRegionIteratorWithIndex< TImage >
-::ImageRegionIteratorWithIndex():
-  ImageRegionConstIteratorWithIndex< TImage >()
+template <typename TImage>
+ImageRegionIteratorWithIndex<TImage>::ImageRegionIteratorWithIndex(TImage * ptr, const RegionType & region)
+  : ImageRegionConstIteratorWithIndex<TImage>(ptr, region)
 {}
 
-template< typename TImage >
-ImageRegionIteratorWithIndex< TImage >
-::ImageRegionIteratorWithIndex(TImage *ptr, const RegionType & region):
-  ImageRegionConstIteratorWithIndex< TImage >(ptr, region)
+template <typename TImage>
+ImageRegionIteratorWithIndex<TImage>::ImageRegionIteratorWithIndex(const ImageIteratorWithIndex<TImage> & it)
+  : ImageRegionConstIteratorWithIndex<TImage>(it)
 {}
 
-template< typename TImage >
-ImageRegionIteratorWithIndex< TImage >
-::ImageRegionIteratorWithIndex(const ImageIteratorWithIndex< TImage > & it):
-  ImageRegionConstIteratorWithIndex< TImage >(it)
+template <typename TImage>
+ImageRegionIteratorWithIndex<TImage>::ImageRegionIteratorWithIndex(const ImageRegionConstIteratorWithIndex<TImage> & it)
+  : ImageRegionConstIteratorWithIndex<TImage>(it)
 {}
 
-template< typename TImage >
-ImageRegionIteratorWithIndex< TImage >
-::ImageRegionIteratorWithIndex(const ImageRegionConstIteratorWithIndex< TImage > & it):
-  ImageRegionConstIteratorWithIndex< TImage >(it)
-{}
-
-template< typename TImage >
-ImageRegionIteratorWithIndex< TImage > &
-ImageRegionIteratorWithIndex< TImage >
-::operator=(const ImageRegionConstIteratorWithIndex< TImage > & it)
+template <typename TImage>
+ImageRegionIteratorWithIndex<TImage> &
+ImageRegionIteratorWithIndex<TImage>::operator=(const ImageRegionConstIteratorWithIndex<TImage> & it)
 {
-  this->ImageRegionConstIteratorWithIndex< TImage >::operator=(it);
+  this->ImageRegionConstIteratorWithIndex<TImage>::operator=(it);
   return *this;
 }
 } // end namespace itk

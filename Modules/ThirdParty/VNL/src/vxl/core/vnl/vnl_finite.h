@@ -32,10 +32,14 @@
 // \endverbatim
 
 #include <iostream>
+#include <utility>
+
 #include <vector>
 #include <cstddef>
-#include <vcl_cassert.h>
-#include <vcl_compiler.h>
+#include <cassert>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
 #include "vnl/vnl_export.h"
 
 //: finite modulo-N arithmetic
@@ -47,7 +51,7 @@
 // but all other operations remain valid.
 //
 template <int N>
-class VNL_TEMPLATE_EXPORT vnl_finite_int
+class vnl_finite_int
 {
  private:
   int val_; //!< value of this number (smallest nonnegative representation)
@@ -60,11 +64,13 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int
   //: Creates a finite int element.
   //  Default constructor gives 0.
   //  Also serves as automatic cast from int to vnl_finite_int.
-  inline vnl_finite_int(int x = 0) : val_((x%=N)<0?N+x:x), mo_(0), lp1_(0) {assert(N>1);}
+  inline vnl_finite_int(int x = 0) : val_((x %= N) < 0 ? N + x : x) {
+    assert(N > 1);
+  }
   //  Copy constructor
   inline vnl_finite_int(Base const& x) : val_(int(x)), mo_(x.mo_), lp1_(x.lp1_) {}
   //  Destructor
-  inline ~vnl_finite_int() {}
+  inline ~vnl_finite_int() = default;
   // Implicit conversions
   inline operator int() const { return val_; }
   inline operator int() { return val_; }
@@ -122,11 +128,11 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int
     if (t_ != 0) return t_;
     std::vector<unsigned int> d = decompose();
     t_ = 1; unsigned int p = 1;
-    for (unsigned int i=0; i<d.size(); ++i)
+    for (unsigned int i : d)
     {
-      if (p != d[i]) t_ *= d[i]-1;
-      else           t_ *= d[i];
-      p = d[i];
+      if (p != i) t_ *= i-1;
+      else           t_ *= i;
+      p = i;
     }
     return t_;
   }
@@ -163,7 +169,8 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int
   //: Write N as the unique product of prime factors.
   static std::vector<unsigned int> decompose() {
     static std::vector<unsigned int> decomposition_ = std::vector<unsigned int>(); // cached value
-    if (decomposition_.size() > 0) return decomposition_;
+    if (!decomposition_.empty())
+      return decomposition_;
     unsigned int r = N;
     for (unsigned int d=2; d*d<=r; ++d)
       while (r%d == 0) { decomposition_.push_back(d); r /= d; }
@@ -180,7 +187,7 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int
   //: Return true only when x is a unit in this ring.
   //  In a field, all numbers except 0 are units.
   //  The total number of units is given by the Euler totient function.
-  inline bool is_unit() const { return gcd(val_) == 1; }
+  bool is_unit() const { return gcd(val_) == 1; }
 
   //: Return true only when x is a zero divisor, i.e., is not a unit.
   inline bool is_zero_divisor() const { return gcd(val_) != 1; }
@@ -260,8 +267,8 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int
   //: private function to set cached value of lp1_ when available
   void set_log(unsigned int r) const { r %= Base::totient(); lp1_ = r+1; }
 
-  mutable unsigned int mo_; //!< cached value for multiplicative order
-  mutable unsigned int lp1_; //!< cached value for 1+log()
+  mutable unsigned int mo_{0};  //!< cached value for multiplicative order
+  mutable unsigned int lp1_{0}; //!< cached value for 1+log()
 };
 
 //: formatted output
@@ -407,7 +414,7 @@ namespace vnl_math
   //:
   // \relatesalso vnl_finite_int
   template <int N>
-  inline bool isfinite(vnl_finite_int<N> const& x) {return true;}
+  inline bool isfinite(vnl_finite_int<N> const& ) {return true;}
 
  } // end namespace vnl_math
 
@@ -426,7 +433,7 @@ namespace vnl_math
 // anything more than that.
 //
 template <int N, int M>
-class VNL_TEMPLATE_EXPORT vnl_finite_int_poly
+class vnl_finite_int_poly
 {
   typedef vnl_finite_int_poly<N,M> Base;
   typedef vnl_finite_int<N> Scalar;
@@ -440,7 +447,11 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int_poly
   static unsigned int cardinality() { return Ntothe(M); }
 
   //: Creates a general finite_int_poly.
-  inline vnl_finite_int_poly(std::vector<Scalar> const& p) : val_(p) { assert(N>1); assert(M>0); assert(p.size()<=M); }
+  inline vnl_finite_int_poly(std::vector<Scalar> p) : val_(std::move(p)) {
+    assert(N > 1);
+    assert(M > 0);
+    assert(p.size() <= M);
+  }
   //: Creates a degree 0 finite_int_poly.
   inline vnl_finite_int_poly(Scalar const& n) : val_(std::vector<Scalar>(1)) { assert(N>1); assert(M>0); val_[0]=n; }
   //: Default constructor. Creates a degree 0 finite_int_poly equal to 0.
@@ -448,7 +459,7 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int_poly
   //  Copy constructor
   inline vnl_finite_int_poly(Base const& x) : val_(x.val_) {}
   //  Destructor
-  inline ~vnl_finite_int_poly() {}
+  inline ~vnl_finite_int_poly() = default;
 
   //: Formal degree of this polynomial
   inline std::size_t deg() const { return val_.size() - 1; }
@@ -518,11 +529,9 @@ class VNL_TEMPLATE_EXPORT vnl_finite_int_poly
   static std::vector<Scalar>& modulo_polynomial(std::vector<Scalar> p = std::vector<Scalar>())
   {
     static std::vector<Scalar> poly_(M+1, Scalar(0));
-    if (p.size() == 0) { // retrieval
+    if (p.empty()) {         // retrieval
       assert(poly_[M] != 0); // cannot retrieve before having set
-    }
-    else
-    {
+    } else {
       assert(p.size() == M+1 && p[M].is_unit());// must be of effective degree M
       // Now set poly_, thereby making the coefficient poly_[M] equal to -1.
       Scalar f = -1/p[M];

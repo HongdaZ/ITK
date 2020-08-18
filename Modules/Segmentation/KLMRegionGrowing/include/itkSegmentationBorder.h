@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@
 
 namespace itk
 {
-/** \class SegmentationBorder
+/**
+ *\class SegmentationBorder
  * \brief Base class for SegmentationBorder object
  *
  * itkSegmentationBorder is the base class for the SegmentationBorder
- * objects. It provides the basic function definitons that are inherent to a
+ * objects. It provides the basic function definitions that are inherent to a
  * SegmentationBorder objects.  This object stores information relevant to
  * the borders that are used in the region growing class. This class allows
  * access to the parameter that defines the length of the border associated
@@ -43,14 +44,16 @@ namespace itk
  * \ingroup RegionGrowingSegmentation
  * \ingroup ITKKLMRegionGrowing
  */
-class ITKKLMRegionGrowing_EXPORT SegmentationBorder:public Object
+class ITKKLMRegionGrowing_EXPORT SegmentationBorder : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef SegmentationBorder         Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SegmentationBorder);
+
+  /** Standard class type aliases. */
+  using Self = SegmentationBorder;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -66,17 +69,18 @@ public:
    * access to specific instantiations of other border representations. This
    * is the function should be overloaded in any derived classes for the user
    * to access the various methods supported by the method. */
-  virtual void ApplySegmentationBorder(){}
+  virtual void
+  ApplySegmentationBorder()
+  {}
 
 protected:
   SegmentationBorder();
-  ~SegmentationBorder() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~SegmentationBorder() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SegmentationBorder);
-
-  double m_BorderLength;
+  double m_BorderLength{ 0 };
 };
 } // end namespace itk
 

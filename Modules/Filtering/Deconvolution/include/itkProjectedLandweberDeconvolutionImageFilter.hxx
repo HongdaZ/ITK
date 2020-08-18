@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,17 +23,13 @@
 namespace itk
 {
 
-template< typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision >
-ProjectedLandweberDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
-::ProjectedLandweberDeconvolutionImageFilter()
-{
-}
+template <typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision>
+ProjectedLandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::
+  ProjectedLandweberDeconvolutionImageFilter() = default;
 
-template< typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision >
-ProjectedLandweberDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
-::~ProjectedLandweberDeconvolutionImageFilter()
-{
-}
+template <typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision>
+ProjectedLandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::
+  ~ProjectedLandweberDeconvolutionImageFilter() = default;
 
 } // end namespace itk
 

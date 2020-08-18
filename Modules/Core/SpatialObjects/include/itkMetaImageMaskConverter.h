@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,21 +28,24 @@
 namespace itk
 {
 
-/** \class MetaImageMaskConverter
+/**
+ *\class MetaImageMaskConverter
  *  \brief converts between MetaObject<->SpatialObject
  *  \sa MetaConverterBase
  *  \ingroup ITKSpatialObjects
  */
-template< unsigned int NDimensions = 3 >
-class MetaImageMaskConverter :
-    public MetaImageConverter< NDimensions, unsigned char, ImageMaskSpatialObject< NDimensions > >
+template <unsigned int NDimensions = 3>
+class MetaImageMaskConverter
+  : public MetaImageConverter<NDimensions, unsigned char, ImageMaskSpatialObject<NDimensions>>
 {
 public:
-  /** Standard class typedefs */
-  typedef MetaImageMaskConverter                           Self;
-  typedef MetaImageConverter< NDimensions, unsigned char > Superclass;
-  typedef SmartPointer< Self >                             Pointer;
-  typedef SmartPointer< const Self >                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaImageMaskConverter);
+
+  /** Standard class type aliases */
+  using Self = MetaImageMaskConverter;
+  using Superclass = MetaImageConverter<NDimensions, unsigned char>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,15 +54,13 @@ public:
   itkTypeMacro(MetaImageMaskConverter, MetaImageConverter);
 
 protected:
-  virtual const char *GetMetaObjectSubType() ITK_OVERRIDE
+  const char *
+  GetMetaObjectSubType() override
   {
     return "Mask";
   }
-  MetaImageMaskConverter() {}
-  ~MetaImageMaskConverter() ITK_OVERRIDE {}
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaImageMaskConverter);
+  MetaImageMaskConverter() = default;
+  ~MetaImageMaskConverter() override = default;
 };
 
 } // end namespace itk

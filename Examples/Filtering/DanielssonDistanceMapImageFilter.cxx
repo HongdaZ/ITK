@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,36 +53,38 @@
 #include "itkRescaleIntensityImageFilter.h"
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 5 )
-    {
+  if (argc < 5)
+  {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputDistanceMapImageFile ";
     std::cerr << " outputVoronoiMapImageFile ";
     std::cerr << " outputVectorMapImageFile ";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
   //  Then we must decide what pixel types to use for the input and output
   //  images. Since the output will contain distances measured in pixels, the
   //  pixel type should be able to represent at least the width of the image,
-  //  or said in $N$-dimensional terms, the maximum extension along all the dimensions.
-  //  The input, output (distance map), and voronoi partition image types are
-  //  now defined using their respective pixel type and dimension.
+  //  or said in $N$-dimensional terms, the maximum extension along all the
+  //  dimensions. The input, output (distance map), and voronoi partition
+  //  image types are now defined using their respective pixel type and
+  //  dimension.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef  unsigned char                    InputPixelType;
-  typedef  unsigned short                   OutputPixelType;
-  typedef  unsigned char                    VoronoiPixelType;
-  typedef itk::Image< InputPixelType,  2 >  InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >  OutputImageType;
-  typedef itk::Image< VoronoiPixelType, 2 > VoronoiImageType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned short;
+  using VoronoiPixelType = unsigned char;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  using VoronoiImageType = itk::Image<VoronoiPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
@@ -98,38 +100,39 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  typedef itk::ConnectedComponentImageFilter<
-               InputImageType, InputImageType > LabelerType;
+  using LabelerType =
+    itk::ConnectedComponentImageFilter<InputImageType, InputImageType>;
   LabelerType::Pointer labeler = LabelerType::New();
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::DanielssonDistanceMapImageFilter<
-               InputImageType, OutputImageType, VoronoiImageType >  FilterType;
+  using FilterType = itk::DanielssonDistanceMapImageFilter<InputImageType,
+                                                           OutputImageType,
+                                                           VoronoiImageType>;
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
-  typedef itk::RescaleIntensityImageFilter<
-                   OutputImageType, OutputImageType > RescalerType;
+  using RescalerType =
+    itk::RescaleIntensityImageFilter<OutputImageType, OutputImageType>;
   RescalerType::Pointer scaler = RescalerType::New();
 
-  typedef itk::RescaleIntensityImageFilter<
-                   VoronoiImageType, VoronoiImageType > VoronoiRescalerType;
+  using VoronoiRescalerType =
+    itk::RescaleIntensityImageFilter<VoronoiImageType, VoronoiImageType>;
   VoronoiRescalerType::Pointer voronoiScaler = VoronoiRescalerType::New();
 
   //
   // Reader and Writer types are instantiated.
   //
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
-  typedef itk::ImageFileWriter< VoronoiImageType > VoronoiWriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  using VoronoiWriterType = itk::ImageFileWriter<VoronoiImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  ReaderType::Pointer        reader = ReaderType::New();
+  WriterType::Pointer        writer = WriterType::New();
   VoronoiWriterType::Pointer voronoiWriter = VoronoiWriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
-  voronoiWriter->SetFileName( argv[3] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
+  voronoiWriter->SetFileName(argv[3]);
 
 
   //  Software Guide : BeginLatex
@@ -146,10 +149,10 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  labeler->SetInput(reader->GetOutput() );
-  filter->SetInput( labeler->GetOutput() );
-  scaler->SetInput( filter->GetOutput() );
-  writer->SetInput( scaler->GetOutput() );
+  labeler->SetInput(reader->GetOutput());
+  filter->SetInput(labeler->GetOutput());
+  scaler->SetInput(filter->GetOutput());
+  writer->SetInput(scaler->GetOutput());
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -162,15 +165,15 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  voronoiScaler->SetInput( filter->GetVoronoiMap() );
-  voronoiWriter->SetInput( voronoiScaler->GetOutput() );
+  voronoiScaler->SetInput(filter->GetVoronoiMap());
+  voronoiWriter->SetInput(voronoiScaler->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  scaler->SetOutputMaximum( 65535L );
-  scaler->SetOutputMinimum(     0L );
-  voronoiScaler->SetOutputMaximum( 255 );
-  voronoiScaler->SetOutputMinimum( 0 );
+  scaler->SetOutputMaximum(65535L);
+  scaler->SetOutputMinimum(0L);
+  voronoiScaler->SetOutputMaximum(255);
+  voronoiScaler->SetOutputMinimum(0);
 
   //  Software Guide : BeginLatex
   //
@@ -188,9 +191,9 @@ int main( int argc, char * argv[] )
   //  Figure \ref{fig:DanielssonDistanceMapImageFilterInputOutput} illustrates
   //  the effect of this filter on a binary image with a set of points. The
   //  input image is shown at the left, and the distance map at the center and
-  //  the Voronoi partition at the right. This filter computes distance maps in
-  //  N-dimensions and is therefore capable of producing $N$-dimensional Voronoi
-  //  partitions.
+  //  the Voronoi partition at the right. This filter computes distance maps
+  //  in N-dimensions and is therefore capable of producing $N$-dimensional
+  //  Voronoi partitions.
   //
   //  \index{Voronoi partitions}
   //  \index{Voronoi partitions!itk::Danielsson\-Distance\-Map\-Image\-Filter}
@@ -210,7 +213,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef FilterType::VectorImageType   OffsetImageType;
+  using OffsetImageType = FilterType::VectorImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -222,7 +225,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileWriter< OffsetImageType >  WriterOffsetType;
+  using WriterOffsetType = itk::ImageFileWriter<OffsetImageType>;
   WriterOffsetType::Pointer offsetWriter = WriterOffsetType::New();
   // Software Guide : EndCodeSnippet
 
@@ -235,11 +238,11 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  offsetWriter->SetInput(  filter->GetVectorDistanceMap()  );
+  offsetWriter->SetInput(filter->GetVectorDistanceMap());
   // Software Guide : EndCodeSnippet
 
 
-  offsetWriter->SetFileName( argv[4]  );
+  offsetWriter->SetFileName(argv[4]);
 
 
   //  Software Guide : BeginLatex
@@ -252,14 +255,14 @@ int main( int argc, char * argv[] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     offsetWriter->Update();
-    }
-  catch( itk::ExceptionObject & exp )
-    {
+  }
+  catch (const itk::ExceptionObject & exp)
+  {
     std::cerr << "Exception caught !" << std::endl;
-    std::cerr <<     exp    << std::endl;
-    }
+    std::cerr << exp << std::endl;
+  }
   // Software Guide : EndCodeSnippet
 
 

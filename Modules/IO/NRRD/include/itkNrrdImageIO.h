@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,24 +23,33 @@
 #include "itkImageIOBase.h"
 #include <fstream>
 
+struct NrrdEncoding_t;
+
 namespace itk
 {
-/** \class NrrdImageIO
+/**
+ *\class NrrdImageIO
  *
  * \brief Read and write the "Nearly Raw Raster Data" (Nrrd) image format.
  * The Nrrd format was developed as part of the Teem package
  * (teem.sourceforge.net).
  *
+ * The compressor supported may include "gzip" (default) and
+ * "bzip2".  Only the "gzip" compressor support the compression level
+ * in the range 0-9.
+ *
  *  \ingroup IOFilters
  * \ingroup ITKIONRRD
  */
-class ITKIONRRD_EXPORT NrrdImageIO:public ImageIOBase
+class ITKIONRRD_EXPORT NrrdImageIO : public ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef NrrdImageIO          Self;
-  typedef ImageIOBase          Superclass;
-  typedef SmartPointer< Self > Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(NrrdImageIO);
+
+  /** Standard class type aliases. */
+  using Self = NrrdImageIO;
+  using Superclass = ImageIOBase;
+  using Pointer = SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,42 +62,54 @@ public:
    * while others can support 2D, 3D, or even n-D. This method returns
    * true/false as to whether the ImageIO can support the dimension
    * indicated. */
-  virtual bool SupportsDimension(unsigned long) ITK_OVERRIDE;
+  bool
+  SupportsDimension(unsigned long) override;
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
+  bool
+  CanReadFile(const char *) override;
 
   /** Set the spacing and dimension information for the set filename. */
-  virtual void ReadImageInformation() ITK_OVERRIDE;
+  void
+  ReadImageInformation() override;
 
   /** Reads the data from disk into the memory buffer provided. */
-  virtual void Read(void *buffer) ITK_OVERRIDE;
+  void
+  Read(void * buffer) override;
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
+  bool
+  CanWriteFile(const char *) override;
 
   /** Set the spacing and dimension information for the set filename. */
-  virtual void WriteImageInformation() ITK_OVERRIDE;
+  void
+  WriteImageInformation() override;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegions has been set properly. */
-  virtual void Write(const void *buffer) ITK_OVERRIDE;
+  void
+  Write(const void * buffer) override;
 
 protected:
   NrrdImageIO();
-  ~NrrdImageIO() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~NrrdImageIO() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
+
+  void
+  InternalSetCompressor(const std::string & _compressor) override;
 
   /** Utility functions for converting between enumerated data type
       representations */
-  int ITKToNrrdComponentType(const ImageIOBase::IOComponentType) const;
+  int
+  ITKToNrrdComponentType(const IOComponentEnum) const;
 
-  ImageIOBase::IOComponentType NrrdToITKComponentType(const int) const;
+  IOComponentEnum
+  NrrdToITKComponentType(const int) const;
 
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NrrdImageIO);
+  const NrrdEncoding_t * m_NrrdCompressionEncoding{ nullptr };
 };
 } // end namespace itk
 

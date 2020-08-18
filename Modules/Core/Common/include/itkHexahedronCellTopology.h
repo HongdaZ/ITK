@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ public:
   virtual ~HexahedronCellTopology();
 
 protected:
-
   /** Hexahedron topology data. */
   static const int m_Edges[12][2];
   static const int m_Faces[6][4];

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 
 namespace itk
 {
-/** \class LBFGSOptimizerv4
+/**
+ *\class LBFGSOptimizerv4
  * \brief Wrap of the vnl_lbfgs algorithm for use in ITKv4 registration framework.
  * The vnl_lbfgs is a wrapper for the NETLIB fortran code by Nocedal [1].
  *
@@ -58,7 +59,7 @@ namespace itk
  * (default 1e-5) and the maximum number of function evaluations is set
  * through SetMaximumNumberOfFunctionEvaluations() (default 2000).
  *
- * Note: The scaling of the optimization paramaters, set through SetScales(),
+ * Note: The scaling of the optimization parameters, set through SetScales(),
  * should be set or left at one. Otherwise the Hessian approximation as well as
  * the line search will be disturbed and the optimizer is unlikely to find a minima.
  *
@@ -69,7 +70,7 @@ namespace itk
  *
  * [2] Jorge Nocedal.
  * Updating Quasi-Newton Matrices with Limited Storage.
- * Mathematics of Computation, Vol. 35, No. 151, pp. 773–782, 1980.
+ * Mathematics of Computation, Vol. 35, No. 151, pp. 773-782, 1980.
  *
  * [3] Dong C. Liu and Jorge Nocedal.
  * On the limited memory BFGS method for large scale optimization.
@@ -77,24 +78,25 @@ namespace itk
  *
  * [4] More, J. J. and D. J. Thuente.
  * Line Search Algorithms with Guaranteed Sufficient Decrease.
- * ACM Transactions on Mathematical Software 20, no. 3 (1994): 286–307.
+ * ACM Transactions on Mathematical Software 20, no. 3 (1994): 286-307.
  *
  * \ingroup ITKOptimizersv4
  */
 
-class ITKOptimizersv4_EXPORT LBFGSOptimizerv4:
-    public LBFGSOptimizerBasev4< vnl_lbfgs >
+class ITKOptimizersv4_EXPORT LBFGSOptimizerv4 : public LBFGSOptimizerBasev4<vnl_lbfgs>
 {
 public:
-  /** Standard "Self" typedef. */
-  typedef LBFGSOptimizerv4                  Self;
-  typedef LBFGSOptimizerBasev4<vnl_lbfgs>   Superclass;
-  typedef SmartPointer< Self >              Pointer;
-  typedef SmartPointer< const Self >        ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizerv4);
 
-  typedef Superclass::MetricType     MetricType;
-  typedef Superclass::ParametersType ParametersType;
-  typedef Superclass::ScalesType     ScalesType;
+  /** Standard "Self" type alias. */
+  using Self = LBFGSOptimizerv4;
+  using Superclass = LBFGSOptimizerBasev4<vnl_lbfgs>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+
+  using MetricType = Superclass::MetricType;
+  using ParametersType = Superclass::ParametersType;
+  using ScalesType = Superclass::ScalesType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -103,21 +105,26 @@ public:
   itkTypeMacro(LBFGSOptimizerv4, Superclass);
 
   /** Start optimization with an initial value. */
-  virtual void StartOptimization(bool doOnlyInitialization = false) ITK_OVERRIDE;
+  void
+  StartOptimization(bool doOnlyInitialization = false) override;
 
   /** Plug in a Cost Function into the optimizer  */
-  virtual void SetMetric(MetricType *metric) ITK_OVERRIDE;
+  void
+  SetMetric(MetricType * metric) override;
 
-  void VerboseOn();
-  void VerboseOff();
+  void
+  VerboseOn();
+  void
+  VerboseOff();
 
   /** Set/Get the line search accuracy. This is a positive real number
    * with a default value of 0.9, which controls the accuracy of the line
-   * search. If the function and gradient evalutions are inexpensive with
+   * search. If the function and gradient evaluations are inexpensive with
    * respect to the cost of the iterations it may be advantageous to set
    * the value to a small value (say 0.1).
    */
-  void SetLineSearchAccuracy(double tol);
+  void
+  SetLineSearchAccuracy(double tol);
 
   itkGetConstMacro(LineSearchAccuracy, double);
 
@@ -125,27 +132,27 @@ public:
    * with a default value of 1.0 which determines the step size in the line
    * search.
    */
-  void SetDefaultStepLength(double stp);
+  void
+  SetDefaultStepLength(double stp);
 
   itkGetConstMacro(DefaultStepLength, double);
 
 protected:
   LBFGSOptimizerv4();
-  virtual ~LBFGSOptimizerv4() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~LBFGSOptimizerv4() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  /** InternalParameters typedef. */
-  typedef vnl_vector< double >  InternalParametersType;
+  /** InternalParameters type alias. */
+  using InternalParametersType = vnl_vector<double>;
 
   /** Internal optimizer type. */
-  typedef   vnl_lbfgs           InternalOptimizerType;
+  using InternalOptimizerType = vnl_lbfgs;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizerv4);
-
-  bool         m_Verbose;
-  double       m_LineSearchAccuracy;
-  double       m_DefaultStepLength;
+  bool   m_Verbose{ false };
+  double m_LineSearchAccuracy{ 0.9 };
+  double m_DefaultStepLength{ 1.0 };
 };
 } // end namespace itk
 #endif

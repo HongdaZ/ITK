@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,24 +21,25 @@ namespace itk
 {
 namespace Statistics
 {
-void ProbabilityDistribution::SetParameters(const ParametersType & params)
+void
+ProbabilityDistribution::SetParameters(const ParametersType & params)
 {
-    if ( ( params.GetSize() != m_Parameters.GetSize() )
-        || ( params != m_Parameters ) )
-    {
-        m_Parameters = params;
-        this->Modified();
-    }
+  if ((params.GetSize() != m_Parameters.GetSize()) || (params != m_Parameters))
+  {
+    m_Parameters = params;
+    this->Modified();
+  }
 }
 
-ProbabilityDistribution::ProbabilityDistribution(void) {}
+ProbabilityDistribution::ProbabilityDistribution() = default;
 
-ProbabilityDistribution::~ProbabilityDistribution(void) {}
+ProbabilityDistribution::~ProbabilityDistribution() = default;
 
-void ProbabilityDistribution::PrintSelf(std::ostream & os, Indent indent) const
+void
+ProbabilityDistribution::PrintSelf(std::ostream & os, Indent indent) const
 {
-    Superclass::PrintSelf(os, indent);
-    os << indent << "Parameters: " << m_Parameters << std::endl;
+  Superclass::PrintSelf(os, indent);
+  os << indent << "Parameters: " << m_Parameters << std::endl;
 }
-}
-}
+} // namespace Statistics
+} // namespace itk

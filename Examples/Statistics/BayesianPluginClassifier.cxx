@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,13 +29,15 @@
 // differs with the previous k-means clustering algorithms in several
 // ways. The biggest difference is that this classifier uses the
 // \subdoxygen{Statistics}{GaussianDensityFunction}s as membership functions
-// instead of the \subdoxygen{Statistics}{DistanceToCentroidMembershipFunction}.
-// Since the membership function is different, the membership function requires
-// a different set of parameters, mean vectors and covariance matrices. We
-// choose the \subdoxygen{Statistics}{CovarianceSampleFilter} (sample covariance)
-// for the estimation algorithms of the two parameters. If we want a more robust
-// estimation algorithm, we can replace this estimation algorithm with more
-// alternatives without changing other components in the classifier system.
+// instead of the
+// \subdoxygen{Statistics}{DistanceToCentroidMembershipFunction}. Since the
+// membership function is different, the membership function requires a
+// different set of parameters, mean vectors and covariance matrices. We
+// choose the \subdoxygen{Statistics}{CovarianceSampleFilter} (sample
+// covariance) for the estimation algorithms of the two parameters. If we want
+// a more robust estimation algorithm, we can replace this estimation
+// algorithm with more alternatives without changing other components in the
+// classifier system.
 //
 // It is a bad idea to use the same sample for test and training
 // (parameter estimation) of the parameters. However, for simplicity, in
@@ -44,8 +46,8 @@
 // \begin{figure}
 //   \centering
 //   \includegraphics[width=0.9\textwidth]{BayesianPluginClassifier}
-//   \itkcaption[Bayesian plug-in classifier for two Gaussian classes]{Bayesian
-//   plug-in classifier for two Gaussian classes.}
+//   \itkcaption[Bayesian plug-in classifier for two Gaussian
+//   classes]{Bayesian plug-in classifier for two Gaussian classes.}
 //  \protect\label{fig:BayesianPluginClassifier}
 // \end{figure}
 //
@@ -97,7 +99,8 @@
 #include "itkNormalVariateGenerator.h"
 // Software Guide : EndCodeSnippet
 
-int main( int,  char *[])
+int
+main(int, char *[])
 {
   // Software Guide : BeginLatex
   //
@@ -114,20 +117,20 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int measurementVectorLength = 1;
-  typedef itk::Vector< double, measurementVectorLength > MeasurementVectorType;
-  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
+  constexpr unsigned int measurementVectorLength = 1;
+  using MeasurementVectorType = itk::Vector<double, measurementVectorLength>;
+  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
   SampleType::Pointer sample = SampleType::New();
   // length of measurement vectors in the sample.
-  sample->SetMeasurementVectorSize( measurementVectorLength );
+  sample->SetMeasurementVectorSize(measurementVectorLength);
 
-  typedef itk::Statistics::Subsample< SampleType > ClassSampleType;
-  std::vector< ClassSampleType::Pointer > classSamples;
-  for ( unsigned int i = 0; i < 2; ++i )
-    {
-    classSamples.push_back( ClassSampleType::New() );
-    classSamples[i]->SetSample( sample );
-    }
+  using ClassSampleType = itk::Statistics::Subsample<SampleType>;
+  std::vector<ClassSampleType::Pointer> classSamples;
+  for (unsigned int i = 0; i < 2; ++i)
+  {
+    classSamples.push_back(ClassSampleType::New());
+    classSamples[i]->SetSample(sample);
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -150,33 +153,33 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::NormalVariateGenerator NormalGeneratorType;
+  using NormalGeneratorType = itk::Statistics::NormalVariateGenerator;
   NormalGeneratorType::Pointer normalGenerator = NormalGeneratorType::New();
 
-  normalGenerator->Initialize( 101 );
+  normalGenerator->Initialize(101);
 
-  MeasurementVectorType mv;
-  double mean = 100;
-  double standardDeviation = 30;
+  MeasurementVectorType          mv;
+  double                         mean = 100;
+  double                         standardDeviation = 30;
   SampleType::InstanceIdentifier id = 0UL;
-  for ( unsigned int i = 0; i < 100; ++i )
-    {
-    mv.Fill( (normalGenerator->GetVariate() * standardDeviation ) + mean);
-    sample->PushBack( mv );
-    classSamples[0]->AddInstance( id );
+  for (unsigned int i = 0; i < 100; ++i)
+  {
+    mv.Fill((normalGenerator->GetVariate() * standardDeviation) + mean);
+    sample->PushBack(mv);
+    classSamples[0]->AddInstance(id);
     ++id;
-    }
+  }
 
-  normalGenerator->Initialize( 3024 );
+  normalGenerator->Initialize(3024);
   mean = 200;
   standardDeviation = 30;
-  for ( unsigned int i = 0; i < 100; ++i )
-    {
-    mv.Fill( (normalGenerator->GetVariate() * standardDeviation ) + mean);
-    sample->PushBack( mv );
-    classSamples[1]->AddInstance( id );
+  for (unsigned int i = 0; i < 100; ++i)
+  {
+    mv.Fill((normalGenerator->GetVariate() * standardDeviation) + mean);
+    sample->PushBack(mv);
+    classSamples[1]->AddInstance(id);
     ++id;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -189,17 +192,17 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::CovarianceSampleFilter< ClassSampleType >
-    CovarianceEstimatorType;
+  using CovarianceEstimatorType =
+    itk::Statistics::CovarianceSampleFilter<ClassSampleType>;
 
-  std::vector< CovarianceEstimatorType::Pointer > covarianceEstimators;
+  std::vector<CovarianceEstimatorType::Pointer> covarianceEstimators;
 
-  for ( unsigned int i = 0; i < 2; ++i )
-    {
-    covarianceEstimators.push_back( CovarianceEstimatorType::New() );
-    covarianceEstimators[i]->SetInput( classSamples[i] );
+  for (unsigned int i = 0; i < 2; ++i)
+  {
+    covarianceEstimators.push_back(CovarianceEstimatorType::New());
+    covarianceEstimators[i]->SetInput(classSamples[i]);
     covarianceEstimators[i]->Update();
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -209,14 +212,13 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  for ( unsigned int i = 0; i < 2; ++i )
-    {
+  for (unsigned int i = 0; i < 2; ++i)
+  {
     std::cout << "class[" << i << "] " << std::endl;
-    std::cout << "    estimated mean : "
-              << covarianceEstimators[i]->GetMean()
+    std::cout << "    estimated mean : " << covarianceEstimators[i]->GetMean()
               << "    covariance matrix : "
               << covarianceEstimators[i]->GetCovarianceMatrix() << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -248,40 +250,40 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::GaussianMembershipFunction< MeasurementVectorType >
-                                                    MembershipFunctionType;
-  typedef itk::Statistics::MaximumRatioDecisionRule DecisionRuleType;
+  using MembershipFunctionType =
+    itk::Statistics::GaussianMembershipFunction<MeasurementVectorType>;
+  using DecisionRuleType = itk::Statistics::MaximumRatioDecisionRule;
   DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
 
   DecisionRuleType::PriorProbabilityVectorType aPrioris;
-  aPrioris.push_back( (double)classSamples[0]->GetTotalFrequency()
-                      / (double)sample->GetTotalFrequency() );
-  aPrioris.push_back( (double)classSamples[1]->GetTotalFrequency()
-                      / (double)sample->GetTotalFrequency() );
-  decisionRule->SetPriorProbabilities( aPrioris );
+  aPrioris.push_back((double)classSamples[0]->GetTotalFrequency() /
+                     (double)sample->GetTotalFrequency());
+  aPrioris.push_back((double)classSamples[1]->GetTotalFrequency() /
+                     (double)sample->GetTotalFrequency());
+  decisionRule->SetPriorProbabilities(aPrioris);
 
-  typedef itk::Statistics::SampleClassifierFilter< SampleType > ClassifierType;
+  using ClassifierType = itk::Statistics::SampleClassifierFilter<SampleType>;
   ClassifierType::Pointer classifier = ClassifierType::New();
 
-  classifier->SetDecisionRule( decisionRule);
-  classifier->SetInput( sample );
-  classifier->SetNumberOfClasses( 2 );
+  classifier->SetDecisionRule(decisionRule);
+  classifier->SetInput(sample);
+  classifier->SetNumberOfClasses(2);
 
-  typedef ClassifierType::ClassLabelVectorObjectType
-                                               ClassLabelVectorObjectType;
-  typedef ClassifierType::ClassLabelVectorType ClassLabelVectorType;
+  using ClassLabelVectorObjectType =
+    ClassifierType::ClassLabelVectorObjectType;
+  using ClassLabelVectorType = ClassifierType::ClassLabelVectorType;
 
   ClassLabelVectorObjectType::Pointer classLabelVectorObject =
     ClassLabelVectorObjectType::New();
   ClassLabelVectorType classLabelVector = classLabelVectorObject->Get();
 
   ClassifierType::ClassLabelType class1 = 100;
-  classLabelVector.push_back( class1 );
+  classLabelVector.push_back(class1);
   ClassifierType::ClassLabelType class2 = 200;
-  classLabelVector.push_back( class2 );
+  classLabelVector.push_back(class2);
 
-  classLabelVectorObject->Set( classLabelVector );
-  classifier->SetClassLabels( classLabelVectorObject );
+  classLabelVectorObject->Set(classLabelVector);
+  classifier->SetClassLabels(classLabelVectorObject);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -295,9 +297,9 @@ int main( int,  char *[])
   // parameters, the mean, set by the \code{SetMean()} method, and the
   // covariance, set by the \code{SetCovariance()} method. To plug-in two
   // distribution functions, we create a new instance of
-  // \code{MembershipFunctionVectorObjectType} and populate its internal vector
-  // with new instances of \code{MembershipFunction}
-  // (i.e. GaussianMembershipFunction). This is done by calling the \code{Get()}
+  // \code{MembershipFunctionVectorObjectType} and populate its internal
+  // vector with new instances of \code{MembershipFunction} (i.e.
+  // GaussianMembershipFunction). This is done by calling the \code{Get()}
   // method of \code{membershipFunctionVectorObject} to get the internal
   // vector, populating this vector with two new membership functions and then
   // calling
@@ -308,10 +310,10 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef ClassifierType::MembershipFunctionVectorObjectType
-    MembershipFunctionVectorObjectType;
-  typedef ClassifierType::MembershipFunctionVectorType
-    MembershipFunctionVectorType;
+  using MembershipFunctionVectorObjectType =
+    ClassifierType::MembershipFunctionVectorObjectType;
+  using MembershipFunctionVectorType =
+    ClassifierType::MembershipFunctionVectorType;
 
   MembershipFunctionVectorObjectType::Pointer membershipFunctionVectorObject =
     MembershipFunctionVectorObjectType::New();
@@ -319,16 +321,16 @@ int main( int,  char *[])
     membershipFunctionVectorObject->Get();
 
   for (unsigned int i = 0; i < 2; ++i)
-    {
+  {
     MembershipFunctionType::Pointer membershipFunction =
       MembershipFunctionType::New();
-    membershipFunction->SetMean( covarianceEstimators[i]->GetMean() );
+    membershipFunction->SetMean(covarianceEstimators[i]->GetMean());
     membershipFunction->SetCovariance(
-      covarianceEstimators[i]->GetCovarianceMatrix() );
-    membershipFunctionVector.push_back( membershipFunction.GetPointer() );
-    }
-  membershipFunctionVectorObject->Set( membershipFunctionVector );
-  classifier->SetMembershipFunctions( membershipFunctionVectorObject );
+      covarianceEstimators[i]->GetCovarianceMatrix());
+    membershipFunctionVector.push_back(membershipFunction);
+  }
+  membershipFunctionVectorObject->Set(membershipFunctionVector);
+  classifier->SetMembershipFunctions(membershipFunctionVectorObject);
 
   classifier->Update();
   // Software Guide : EndCodeSnippet
@@ -341,19 +343,18 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const ClassifierType::MembershipSampleType* membershipSample
-    = classifier->GetOutput();
-  ClassifierType::MembershipSampleType::ConstIterator iter
-    = membershipSample->Begin();
+  const ClassifierType::MembershipSampleType * membershipSample =
+    classifier->GetOutput();
+  ClassifierType::MembershipSampleType::ConstIterator iter =
+    membershipSample->Begin();
 
-  while ( iter != membershipSample->End() )
-    {
+  while (iter != membershipSample->End())
+  {
     std::cout << "measurement vector = " << iter.GetMeasurementVector()
               << " class label = " << iter.GetClassLabel() << std::endl;
     ++iter;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;
-
 }

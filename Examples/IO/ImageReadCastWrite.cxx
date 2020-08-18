@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,15 +46,16 @@
 #include "itkImage.h"
 
 
-int main( int argc, char ** argv )
+int
+main(int argc, char ** argv)
 {
   // Verify the number of parameters in the command line
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile  outputImageFile " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -68,12 +69,12 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef float               InputPixelType;
-  typedef unsigned char       OutputPixelType;
-  const   unsigned int        Dimension = 2;
+  using InputPixelType = float;
+  using OutputPixelType = unsigned char;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InputPixelType,  Dimension >    InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension >    OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -81,8 +82,8 @@ int main( int argc, char ** argv )
   //
   //  Note that the dimension of the image in memory should match the one of
   //  the image in the file. There are a couple of special cases in which this
-  //  condition may be relaxed, but in general it is better to ensure that both
-  //  dimensions match.
+  //  condition may be relaxed, but in general it is better to ensure that
+  //  both dimensions match.
   //
   //  We can now instantiate the types of the reader and writer. These two
   //  classes are parameterized over the image type.
@@ -93,8 +94,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -106,9 +107,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::RescaleIntensityImageFilter<
-                                  InputImageType,
-                                  OutputImageType >    FilterType;
+  using FilterType =
+    itk::RescaleIntensityImageFilter<InputImageType, OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -125,8 +125,8 @@ int main( int argc, char ** argv )
 
   // Software Guide : BeginCodeSnippet
   FilterType::Pointer filter = FilterType::New();
-  filter->SetOutputMinimum(   0 );
-  filter->SetOutputMaximum( 255 );
+  filter->SetOutputMinimum(0);
+  filter->SetOutputMaximum(255);
   // Software Guide : EndCodeSnippet
 
 
@@ -145,15 +145,15 @@ int main( int argc, char ** argv )
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
   //
   // Here we recover the file names from the command line arguments
   //
-  const char * inputFilename  = argv[1];
+  const char * inputFilename = argv[1];
   const char * outputFilename = argv[2];
 
 
@@ -170,31 +170,31 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName( inputFilename  );
-  writer->SetFileName( outputFilename );
+  reader->SetFileName(inputFilename);
+  writer->SetFileName(outputFilename);
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  Finally we trigger the execution of the pipeline with the \code{Update()}
-  //  method on the writer. The output image will then be the scaled and cast
-  //  version of the input image.
+  //  Finally we trigger the execution of the pipeline with the
+  //  \code{Update()} method on the writer. The output image will then be the
+  //  scaled and cast version of the input image.
   //
   //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 

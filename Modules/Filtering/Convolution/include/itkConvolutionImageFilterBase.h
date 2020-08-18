@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,55 +20,77 @@
 
 #include "itkImageToImageFilter.h"
 #include "itkZeroFluxNeumannBoundaryCondition.h"
+#include "ITKConvolutionExport.h"
 
 namespace itk
 {
-/** \class ConvolutionImageFilterBase
+/**\class ConvolutionImageFilterBaseEnums
+ * \brief Contains all enum classes used by ConvolutionImageFilterBase class.
+ * \ingroup ITKConvolution
+ */
+class ConvolutionImageFilterBaseEnums
+{
+public:
+  /**
+   *\class ConvolutionImageFilterOutputRegion
+   * \ingroup ITKConvolution
+   * Output region mode type enumeration
+   */
+  enum class ConvolutionImageFilterOutputRegion : uint8_t
+  {
+    SAME = 0,
+    VALID
+  };
+};
+/** Define how to print enumerations */
+extern ITKConvolution_EXPORT std::ostream &
+                             operator<<(std::ostream & out, const ConvolutionImageFilterBaseEnums::ConvolutionImageFilterOutputRegion value);
+
+/**
+ *\class ConvolutionImageFilterBase
  * \brief Abstract base class for the convolution image filters.
  *
  * \ingroup ITKConvolution
  * \sa ConvolutionImageFilter FFTConvolutionImageFilter
  */
-template< typename TInputImage,
-          typename TKernelImage = TInputImage,
-          typename TOutputImage = TInputImage >
-class ITK_TEMPLATE_EXPORT ConvolutionImageFilterBase :
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TKernelImage = TInputImage, typename TOutputImage = TInputImage>
+class ITK_TEMPLATE_EXPORT ConvolutionImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  typedef ConvolutionImageFilterBase                      Self;
-  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
-  typedef SmartPointer< Self >                            Pointer;
-  typedef SmartPointer< const Self >                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConvolutionImageFilterBase);
+
+  using Self = ConvolutionImageFilterBase;
+  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information ( and related methods ) */
   itkTypeMacro(ConvolutionImageFilterBase, ImageToImageFilter);
 
   /** Dimensionality of input and output data is assumed to be the same. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
-  typedef TInputImage                           InputImageType;
-  typedef TOutputImage                          OutputImageType;
-  typedef TKernelImage                          KernelImageType;
-  typedef typename InputImageType::PixelType    InputPixelType;
-  typedef typename OutputImageType::PixelType   OutputPixelType;
-  typedef typename KernelImageType::PixelType   KernelPixelType;
-  typedef typename InputImageType::IndexType    InputIndexType;
-  typedef typename OutputImageType::IndexType   OutputIndexType;
-  typedef typename KernelImageType::IndexType   KernelIndexType;
-  typedef typename InputImageType::SizeType     InputSizeType;
-  typedef typename OutputImageType::SizeType    OutputSizeType;
-  typedef typename KernelImageType::SizeType    KernelSizeType;
-  typedef typename InputSizeType::SizeValueType SizeValueType;
-  typedef typename InputImageType::RegionType   InputRegionType;
-  typedef typename OutputImageType::RegionType  OutputRegionType;
-  typedef typename KernelImageType::RegionType  KernelRegionType;
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using KernelImageType = TKernelImage;
+  using InputPixelType = typename InputImageType::PixelType;
+  using OutputPixelType = typename OutputImageType::PixelType;
+  using KernelPixelType = typename KernelImageType::PixelType;
+  using InputIndexType = typename InputImageType::IndexType;
+  using OutputIndexType = typename OutputImageType::IndexType;
+  using KernelIndexType = typename KernelImageType::IndexType;
+  using InputSizeType = typename InputImageType::SizeType;
+  using OutputSizeType = typename OutputImageType::SizeType;
+  using KernelSizeType = typename KernelImageType::SizeType;
+  using SizeValueType = typename InputSizeType::SizeValueType;
+  using InputRegionType = typename InputImageType::RegionType;
+  using OutputRegionType = typename OutputImageType::RegionType;
+  using KernelRegionType = typename KernelImageType::RegionType;
 
   /** Typedef to describe the boundary condition. */
-  typedef ImageBoundaryCondition< TInputImage >           BoundaryConditionType;
-  typedef BoundaryConditionType *                         BoundaryConditionPointerType;
-  typedef ZeroFluxNeumannBoundaryCondition< TInputImage > DefaultBoundaryConditionType;
+  using BoundaryConditionType = ImageBoundaryCondition<TInputImage>;
+  using BoundaryConditionPointerType = BoundaryConditionType *;
+  using DefaultBoundaryConditionType = ZeroFluxNeumannBoundaryCondition<TInputImage>;
 
   /** Set/get the boundary condition. */
   itkSetMacro(BoundaryCondition, BoundaryConditionPointerType);
@@ -84,11 +106,15 @@ public:
   itkGetConstMacro(Normalize, bool);
   itkBooleanMacro(Normalize);
 
-  typedef enum
-  {
-    SAME = 0,
-    VALID
-  } OutputRegionModeType;
+  /** Reverse compatibility for enumerations */
+  using OutputRegionModeEnum = ConvolutionImageFilterBaseEnums::ConvolutionImageFilterOutputRegion;
+#if !defined(ITK_LEGACY_REMOVE)
+  using OutputRegionModeType = ConvolutionImageFilterBaseEnums::ConvolutionImageFilterOutputRegion;
+  // We need to expose the enum values at the class level
+  // for backwards compatibility
+  static constexpr OutputRegionModeEnum SAME = OutputRegionModeEnum::SAME;
+  static constexpr OutputRegionModeEnum VALID = OutputRegionModeEnum::VALID;
+#endif
 
   /** Sets the output region mode. If set to SAME, the output region
    * will be the same as the input region, and regions of the image
@@ -99,42 +125,46 @@ public:
    * (no extrapolated contributions from the boundary condition are
    * needed). The output is therefore smaller than the input
    * region. Default output region mode is SAME. */
-  itkSetEnumMacro(OutputRegionMode, OutputRegionModeType);
-  itkGetEnumMacro(OutputRegionMode, OutputRegionModeType);
-  virtual void SetOutputRegionModeToSame();
-  virtual void SetOutputRegionModeToValid();
+  itkSetEnumMacro(OutputRegionMode, OutputRegionModeEnum);
+  itkGetEnumMacro(OutputRegionMode, OutputRegionModeEnum);
+  virtual void
+  SetOutputRegionModeToSame();
+  virtual void
+  SetOutputRegionModeToValid();
 
 protected:
   ConvolutionImageFilterBase();
-  ~ConvolutionImageFilterBase() ITK_OVERRIDE {}
+  ~ConvolutionImageFilterBase() override = default;
 
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** The largest possible output region may differ from the largest
    * possible input region. */
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void
+  GenerateOutputInformation() override;
 
   /** Get the valid region of the convolution. */
-  OutputRegionType GetValidRegion() const;
+  OutputRegionType
+  GetValidRegion() const;
 
   /** Default superclass implementation ensures that input images
    * occupy same physical space. This is not needed for this filter. */
-  virtual void VerifyInputInformation() ITK_OVERRIDE {};
+  void
+  VerifyInputInformation() ITKv5_CONST override{};
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConvolutionImageFilterBase);
-
-  bool m_Normalize;
+  bool m_Normalize{ false };
 
   DefaultBoundaryConditionType m_DefaultBoundaryCondition;
   BoundaryConditionPointerType m_BoundaryCondition;
 
-  OutputRegionModeType m_OutputRegionMode;
+  OutputRegionModeEnum m_OutputRegionMode{ ConvolutionImageFilterBaseEnums::ConvolutionImageFilterOutputRegion::SAME };
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkConvolutionImageFilterBase.hxx"
+#  include "itkConvolutionImageFilterBase.hxx"
 #endif
 
 #endif

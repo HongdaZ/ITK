@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,30 +23,27 @@
 
 namespace itk
 {
-template< typename TNode, unsigned int VImageDimension >
-SparseImage< TNode, VImageDimension >
-::SparseImage()
+template <typename TNode, unsigned int VImageDimension>
+SparseImage<TNode, VImageDimension>::SparseImage()
 {
-  m_NodeList     = NodeListType::New();
-  m_NodeStore    = NodeStoreType::New();
+  m_NodeList = NodeListType::New();
+  m_NodeStore = NodeStoreType::New();
 }
 
-template< typename TNode, unsigned int VImageDimension >
+template <typename TNode, unsigned int VImageDimension>
 void
-SparseImage< TNode, VImageDimension >
-::PrintSelf(std::ostream & os, Indent indent) const
+SparseImage<TNode, VImageDimension>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }
 
-template< typename TNode, unsigned int VImageDimension >
+template <typename TNode, unsigned int VImageDimension>
 void
-SparseImage< TNode, VImageDimension >
-::Initialize()
+SparseImage<TNode, VImageDimension>::Initialize()
 {
   Superclass::Initialize();
-  m_NodeList     = NodeListType::New();
-  m_NodeStore    = NodeStoreType::New();
+  m_NodeList = NodeListType::New();
+  m_NodeStore = NodeStoreType::New();
 }
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@
 //  This example illustrates how a point set can be parameterized to manage a
 //  particular pixel type. It is quite common to associate vector values with
 //  points for producing geometric representations.  The following code shows
-//  how vector values can be used as the pixel type on the PointSet class.  The
+//  how vector values can be used as the pixel type on the PointSet class. The
 //  \doxygen{Vector} class is used here as the pixel type. This class is
 //  appropriate for representing the relative position between two points. It
 //  could then be used to manage displacements, for example.
 //
 //  \index{itk::PointSet!Vector pixels}
 //
-//  In order to use the vector class it is necessary to include its header file
-//  along with the header of the point set.
+//  In order to use the vector class it is necessary to include its header
+//  file along with the header of the point set.
 //
 //  Software Guide : EndLatex
 
@@ -39,14 +39,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
   //  Software Guide : BeginLatex
   //
   //  \begin{floatingfigure}[rlp]{6cm}
   //    \centering
   //    \includegraphics[width=4cm]{PointSetWithVectors}
-  //    \caption[PointSet with Vectors as PixelType]{Vectors as PixelType.\label{fig:PointSetWithVectors}}
+  //    \caption[PointSet with Vectors as PixelType]{Vectors as
+  //    PixelType.\label{fig:PointSetWithVectors}}
   //  \end{floatingfigure}
   //
   //  The \code{Vector} class is templated over the type used to represent
@@ -63,21 +65,21 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int Dimension = 3;
-  typedef itk::Vector< float, Dimension >    PixelType;
+  constexpr unsigned int Dimension = 3;
+  using PixelType = itk::Vector<float, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  Then we use the PixelType (which are actually Vectors) to instantiate the
-  //  PointSet type and subsequently create a PointSet object.
+  //  Then we use the PixelType (which are actually Vectors) to instantiate
+  //  the PointSet type and subsequently create a PointSet object.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::PointSet< PixelType, Dimension > PointSetType;
-  PointSetType::Pointer  pointSet = PointSetType::New();
+  using PointSetType = itk::PointSet<PixelType, Dimension>;
+  PointSetType::Pointer pointSet = PointSetType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -94,33 +96,33 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointSetType::PixelType   tangent;
-  PointSetType::PointType   point;
+  PointSetType::PixelType tangent;
+  PointSetType::PointType point;
 
-  unsigned int pointId =  0;
-  const double radius = 300.0;
+  unsigned int     pointId = 0;
+  constexpr double radius = 300.0;
 
-  for(unsigned int i=0; i<360; i++)
-    {
+  for (unsigned int i = 0; i < 360; i++)
+  {
     const double angle = i * itk::Math::pi / 180.0;
-    point[0] = radius * std::sin( angle );
-    point[1] = radius * std::cos( angle );
-    point[2] = 1.0;   // flat on the Z plane
-    tangent[0] =  std::cos(angle);
+    point[0] = radius * std::sin(angle);
+    point[1] = radius * std::cos(angle);
+    point[2] = 1.0; // flat on the Z plane
+    tangent[0] = std::cos(angle);
     tangent[1] = -std::sin(angle);
-    tangent[2] = 0.0;  // flat on the Z plane
-    pointSet->SetPoint( pointId, point );
-    pointSet->SetPointData( pointId, tangent );
+    tangent[2] = 0.0; // flat on the Z plane
+    pointSet->SetPoint(pointId, point);
+    pointSet->SetPointData(pointId, tangent);
     pointId++;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  We can now visit all the points and use the vector on the pixel values to
-  //  apply a displacement on the points. This is along the spirit of what a
-  //  deformable model could do at each one of its iterations.
+  //  We can now visit all the points and use the vector on the pixel values
+  //  to apply a displacement on the points. This is along the spirit of what
+  //  a deformable model could do at each one of its iterations.
   //
   //  \index{itk::PointSet!PointIterator}
   //  \index{itk::PointSet!GetPoints()}
@@ -130,20 +132,20 @@ int main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  typedef  PointSetType::PointDataContainer::ConstIterator PointDataIterator;
+  using PointDataIterator = PointSetType::PointDataContainer::ConstIterator;
   PointDataIterator pixelIterator = pointSet->GetPointData()->Begin();
-  PointDataIterator pixelEnd      = pointSet->GetPointData()->End();
+  PointDataIterator pixelEnd = pointSet->GetPointData()->End();
 
-  typedef  PointSetType::PointsContainer::Iterator     PointIterator;
+  using PointIterator = PointSetType::PointsContainer::Iterator;
   PointIterator pointIterator = pointSet->GetPoints()->Begin();
-  PointIterator pointEnd      = pointSet->GetPoints()->End();
+  PointIterator pointEnd = pointSet->GetPoints()->End();
 
-  while( pixelIterator != pixelEnd  && pointIterator != pointEnd )
-    {
+  while (pixelIterator != pixelEnd && pointIterator != pointEnd)
+  {
     pointIterator.Value() = pointIterator.Value() + pixelIterator.Value();
     ++pixelIterator;
     ++pointIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -175,12 +177,12 @@ int main(int, char *[])
 
   // Software Guide : BeginCodeSnippet
   pointIterator = pointSet->GetPoints()->Begin();
-  pointEnd      = pointSet->GetPoints()->End();
-  while( pointIterator != pointEnd )
-    {
+  pointEnd = pointSet->GetPoints()->End();
+  while (pointIterator != pointEnd)
+  {
     std::cout << pointIterator.Value() << std::endl;
     ++pointIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 

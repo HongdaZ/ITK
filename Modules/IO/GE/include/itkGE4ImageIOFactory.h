@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,23 +25,28 @@
 
 namespace itk
 {
-/** \class GE4ImageIOFactory
-   * \brief Create instances of GE4ImageIO objects using an object factory.
-   * \ingroup ITKIOGE
-   */
-class ITKIOGE_EXPORT GE4ImageIOFactory:public ObjectFactoryBase
+/**
+ *\class GE4ImageIOFactory
+ * \brief Create instances of GE4ImageIO objects using an object factory.
+ * \ingroup ITKIOGE
+ */
+class ITKIOGE_EXPORT GE4ImageIOFactory : public ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef GE4ImageIOFactory          Self;
-  typedef ObjectFactoryBase          Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GE4ImageIOFactory);
+
+  /** Standard class type aliases. */
+  using Self = GE4ImageIOFactory;
+  using Superclass = ObjectFactoryBase;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
+  const char *
+  GetITKSourceVersion() const override;
 
-  virtual const char * GetDescription(void) const ITK_OVERRIDE;
+  const char *
+  GetDescription() const override;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -50,7 +55,8 @@ public:
   itkTypeMacro(GE4ImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void)
+  static void
+  RegisterOneFactory()
   {
     GE4ImageIOFactory::Pointer metaFactory = GE4ImageIOFactory::New();
 
@@ -59,11 +65,9 @@ public:
 
 protected:
   GE4ImageIOFactory();
-  ~GE4ImageIOFactory() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GE4ImageIOFactory);
+  ~GE4ImageIOFactory() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 };
 } // end namespace itk
 

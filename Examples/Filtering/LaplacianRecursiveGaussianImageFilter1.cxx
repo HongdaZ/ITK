@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,14 +58,18 @@
 #include "itkRescaleIntensityImageFilter.h"
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile  outputImageFile  sigma [RescaledOutputImageFile] " << std::endl;
+    std::cerr
+      << argv[0]
+      << "  inputImageFile  outputImageFile  sigma [RescaledOutputImageFile] "
+      << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -75,8 +79,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef    float    InputPixelType;
-  typedef    float    OutputPixelType;
+  using InputPixelType = float;
+  using OutputPixelType = float;
   // Software Guide : EndCodeSnippet
 
 
@@ -87,12 +91,12 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
 
 
   //  Software Guide : BeginLatex
@@ -105,23 +109,23 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::RecursiveGaussianImageFilter<
-                        InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::RecursiveGaussianImageFilter<InputImageType, OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
 
   //  Software Guide : BeginLatex
   //
   //  This filter applies the approximation of the convolution along a single
-  //  dimension. It is therefore necessary to concatenate several of these filters
-  //  to produce smoothing in all directions.  In this example, we create a pair
-  //  of filters since we are processing a $2D$ image.  The filters are
-  //  created by invoking the \code{New()} method and assigning the result to
-  //  a \doxygen{SmartPointer}.
+  //  dimension. It is therefore necessary to concatenate several of these
+  //  filters to produce smoothing in all directions.  In this example, we
+  //  create a pair of filters since we are processing a $2D$ image.  The
+  //  filters are created by invoking the \code{New()} method and assigning
+  //  the result to a \doxygen{SmartPointer}.
   //
   //  We need two filters for computing the X component of the Laplacian and
   //  two other filters for computing the Y component.
@@ -143,18 +147,19 @@ int main( int argc, char * argv[] )
   //
   //  Since each one of the newly created filters has the potential to perform
   //  filtering along any dimension, we have to restrict each one to a
-  //  particular direction. This is done with the \code{SetDirection()} method.
+  //  particular direction. This is done with the \code{SetDirection()}
+  //  method.
   //
   //  \index{RecursiveGaussianImageFilter!SetDirection()}
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filterX1->SetDirection( 0 );   // 0 --> X direction
-  filterY1->SetDirection( 1 );   // 1 --> Y direction
+  filterX1->SetDirection(0); // 0 --> X direction
+  filterY1->SetDirection(1); // 1 --> Y direction
 
-  filterX2->SetDirection( 0 );   // 0 --> X direction
-  filterY2->SetDirection( 1 );   // 1 --> Y direction
+  filterX2->SetDirection(0); // 0 --> X direction
+  filterY2->SetDirection(1); // 1 --> Y direction
   // Software Guide : EndCodeSnippet
 
 
@@ -165,9 +170,9 @@ int main( int argc, char * argv[] )
   //  derivatives. We select one of these options by using the
   //  \code{SetOrder()} method. Note that the argument is an \code{enum} whose
   //  values can be \code{ZeroOrder}, \code{FirstOrder} and
-  //  \code{SecondOrder}. For example, to compute the $x$ partial derivative we
-  //  should select \code{FirstOrder} for $x$ and \code{ZeroOrder} for
-  //  $y$. Here we want only to smooth in $x$ and $y$, so we select
+  //  \code{SecondOrder}. For example, to compute the $x$ partial derivative
+  //  we should select \code{FirstOrder} for $x$ and \code{ZeroOrder} for $y$.
+  //  Here we want only to smooth in $x$ and $y$, so we select
   //  \code{ZeroOrder} in both directions.
   //
   //  \index{RecursiveGaussianImageFilter!SetOrder()}
@@ -175,11 +180,11 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filterX1->SetOrder( FilterType::ZeroOrder );
-  filterY1->SetOrder( FilterType::SecondOrder );
+  filterX1->SetOrder(itk::GaussianOrderEnum::ZeroOrder);
+  filterY1->SetOrder(itk::GaussianOrderEnum::SecondOrder);
 
-  filterX2->SetOrder( FilterType::SecondOrder );
-  filterY2->SetOrder( FilterType::ZeroOrder );
+  filterX2->SetOrder(itk::GaussianOrderEnum::SecondOrder);
+  filterY2->SetOrder(itk::GaussianOrderEnum::ZeroOrder);
   // Software Guide : EndCodeSnippet
 
 
@@ -203,12 +208,13 @@ int main( int argc, char * argv[] )
   //          \frac{ 1 }{ \sigma^2  \sqrt{ 2 \pi } }
   //  \end{equation}
   //
-  //  The \doxygen{RecursiveGaussianImageFilter} has a boolean flag that allows
-  //  users to select between these two normalization options. Selection is
-  //  done with the method \code{SetNormalizeAcrossScale()}. Enable this flag
-  //  when analyzing an image across scale-space.  In the current example, this
-  //  setting has no impact because we are actually renormalizing the output to
-  //  the dynamic range of the reader, so we simply disable the flag.
+  //  The \doxygen{RecursiveGaussianImageFilter} has a boolean flag that
+  //  allows users to select between these two normalization options.
+  //  Selection is done with the method \code{SetNormalizeAcrossScale()}.
+  //  Enable this flag when analyzing an image across scale-space.  In the
+  //  current example, this setting has no impact because we are actually
+  //  renormalizing the output to the dynamic range of the reader, so we
+  //  simply disable the flag.
   //
   //  \index{RecursiveGaussianImageFilter!SetNormalizeAcrossScale()}
   //
@@ -216,33 +222,33 @@ int main( int argc, char * argv[] )
 
   // Software Guide : BeginCodeSnippet
   const bool normalizeAcrossScale = false;
-  filterX1->SetNormalizeAcrossScale( normalizeAcrossScale );
-  filterY1->SetNormalizeAcrossScale( normalizeAcrossScale );
-  filterX2->SetNormalizeAcrossScale( normalizeAcrossScale );
-  filterY2->SetNormalizeAcrossScale( normalizeAcrossScale );
+  filterX1->SetNormalizeAcrossScale(normalizeAcrossScale);
+  filterY1->SetNormalizeAcrossScale(normalizeAcrossScale);
+  filterX2->SetNormalizeAcrossScale(normalizeAcrossScale);
+  filterY2->SetNormalizeAcrossScale(normalizeAcrossScale);
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
   //  The input image can be obtained from the output of another
-  //  filter. Here, an image reader is used as the source. The image is passed to
-  //  the $x$ filter and then to the $y$ filter. The reason for keeping these
-  //  two filters separate is that it is usual in scale-space applications to
-  //  compute not only the smoothing but also combinations of derivatives at
-  //  different orders and smoothing. Some factorization is possible when
-  //  separate filters are used to generate the intermediate results. Here
-  //  this capability is less interesting, though, since we only want to smooth
-  //  the image in all directions.
+  //  filter. Here, an image reader is used as the source. The image is passed
+  //  to the $x$ filter and then to the $y$ filter. The reason for keeping
+  //  these two filters separate is that it is usual in scale-space
+  //  applications to compute not only the smoothing but also combinations of
+  //  derivatives at different orders and smoothing. Some factorization is
+  //  possible when separate filters are used to generate the intermediate
+  //  results. Here this capability is less interesting, though, since we only
+  //  want to smooth the image in all directions.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filterX1->SetInput( reader->GetOutput() );
-  filterY1->SetInput( filterX1->GetOutput() );
+  filterX1->SetInput(reader->GetOutput());
+  filterY1->SetInput(filterX1->GetOutput());
 
-  filterY2->SetInput( reader->GetOutput() );
-  filterX2->SetInput( filterY2->GetOutput() );
+  filterY2->SetInput(reader->GetOutput());
+  filterX2->SetInput(filterY2->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -259,35 +265,33 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  const double sigma = atof( argv[3] );
+  const double sigma = std::stod(argv[3]);
 
   // Software Guide : BeginCodeSnippet
-  filterX1->SetSigma( sigma );
-  filterY1->SetSigma( sigma );
-  filterX2->SetSigma( sigma );
-  filterY2->SetSigma( sigma );
+  filterX1->SetSigma(sigma);
+  filterY1->SetSigma(sigma);
+  filterX2->SetSigma(sigma);
+  filterY2->SetSigma(sigma);
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  Finally the two components of the Laplacian should be added together. The
-  //  \doxygen{AddImageFilter} is used for this purpose.
+  //  Finally the two components of the Laplacian should be added together.
+  //  The \doxygen{AddImageFilter} is used for this purpose.
   //
   //  \index{itk::AddImageFilter!Instantiation}
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::AddImageFilter<
-                OutputImageType,
-                OutputImageType,
-                OutputImageType > AddFilterType;
+  using AddFilterType =
+    itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>;
 
   AddFilterType::Pointer addFilter = AddFilterType::New();
 
-  addFilter->SetInput1( filterY1->GetOutput() );
-  addFilter->SetInput2( filterX2->GetOutput() );
+  addFilter->SetInput1(filterY1->GetOutput());
+  addFilter->SetInput2(filterX2->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -300,15 +304,15 @@ int main( int argc, char * argv[] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     addFilter->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -320,17 +324,17 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef  float WritePixelType;
+  using WritePixelType = float;
 
-  typedef itk::Image< WritePixelType, 2 >    WriteImageType;
+  using WriteImageType = itk::Image<WritePixelType, 2>;
 
-  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<WriteImageType>;
 
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetInput( addFilter->GetOutput() );
+  writer->SetInput(addFilter->GetOutput());
 
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
 
   writer->Update();
   // Software Guide : EndCodeSnippet
@@ -342,9 +346,9 @@ int main( int argc, char * argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{LaplacianRecursiveGaussianImageFilterOutput3}
   // \includegraphics[width=0.44\textwidth]{LaplacianRecursiveGaussianImageFilterOutput5}
-  // \itkcaption[Output of the LaplacianRecursiveGaussianImageFilter.]{Effect of the
-  // LaplacianRecursiveGaussianImageFilter on a slice from a MRI proton density image
-  // of the brain.}
+  // \itkcaption[Output of the LaplacianRecursiveGaussianImageFilter.]{Effect
+  // of the LaplacianRecursiveGaussianImageFilter on a slice from a MRI proton
+  // density image of the brain.}
   // \label{fig:LaplacianRecursiveGaussianImageFilterInputOutput}
   // \end{figure}
   //
@@ -354,23 +358,23 @@ int main( int argc, char * argv[] )
   // Rescale float outputs to png for inclusion in the Software guide
   //
   if (argc > 4)
-    {
-    typedef unsigned char                CharPixelType;
-    typedef itk::Image<CharPixelType, 2> CharImageType;
+  {
+    using CharPixelType = unsigned char;
+    using CharImageType = itk::Image<CharPixelType, 2>;
 
-    typedef itk::RescaleIntensityImageFilter< OutputImageType, CharImageType>
-                                                            RescaleFilterType;
+    using RescaleFilterType =
+      itk::RescaleIntensityImageFilter<OutputImageType, CharImageType>;
 
     RescaleFilterType::Pointer rescale = RescaleFilterType::New();
-    rescale->SetInput( addFilter->GetOutput() );
-    rescale->SetOutputMinimum(   0 );
-    rescale->SetOutputMaximum( 255 );
-    typedef itk::ImageFileWriter< CharImageType >  CharWriterType;
+    rescale->SetInput(addFilter->GetOutput());
+    rescale->SetOutputMinimum(0);
+    rescale->SetOutputMaximum(255);
+    using CharWriterType = itk::ImageFileWriter<CharImageType>;
     CharWriterType::Pointer charWriter = CharWriterType::New();
-    charWriter->SetFileName( argv[4] );
-    charWriter->SetInput( rescale->GetOutput() );
+    charWriter->SetFileName(argv[4]);
+    charWriter->SetInput(rescale->GetOutput());
     charWriter->Update();
-    }
+  }
 
 
   return EXIT_SUCCESS;

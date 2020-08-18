@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 
 namespace itk
 {
-/** \class LineSpatialObjectPoint
+/**
+ *\class LineSpatialObjectPoint
  * \brief Point used for a line definition
  *
  * This class contains all the functions necessary to define a point
@@ -33,49 +34,50 @@ namespace itk
  * A LineSpatialObjectPoint has NDimension-1 normals.
  * \ingroup ITKSpatialObjects
  *
- * \wiki
- * \wikiexample{SpatialObjects/LineSpatialObject,Line spatial object}
- * \endwiki
+ * \sphinx
+ * \sphinxexample{Core/SpatialObjects/LineSpacialObject,Line Spatial Object}
+ * \endsphinx
  */
 
-template< unsigned int TPointDimension = 3 >
-class ITK_TEMPLATE_EXPORT LineSpatialObjectPoint:
-  public SpatialObjectPoint< TPointDimension >
+template <unsigned int TPointDimension = 3>
+class ITK_TEMPLATE_EXPORT LineSpatialObjectPoint : public SpatialObjectPoint<TPointDimension>
 {
 public:
-
-  typedef LineSpatialObjectPoint                        Self;
-  typedef SpatialObjectPoint< TPointDimension >         Superclass;
-  typedef Point< double, TPointDimension >              PointType;
-  typedef CovariantVector< double, TPointDimension >    VectorType;
-  typedef FixedArray< VectorType, TPointDimension - 1 > NormalArrayType;
+  using Self = LineSpatialObjectPoint;
+  using Superclass = SpatialObjectPoint<TPointDimension>;
+  using PointType = Point<double, TPointDimension>;
+  using CovariantVectorType = CovariantVector<double, TPointDimension>;
+  using NormalArrayType = FixedArray<CovariantVectorType, TPointDimension - 1>;
 
   /** Constructor */
   LineSpatialObjectPoint();
 
   /** Destructor */
-  virtual ~LineSpatialObjectPoint() ITK_OVERRIDE;
+  ~LineSpatialObjectPoint() override = default;
 
   /** Get Normal */
-  const VectorType & GetNormal(unsigned int index) const;
+  const CovariantVectorType &
+  GetNormalInObjectSpace(unsigned int index) const;
 
   /** Set Normal */
-  void SetNormal(VectorType & normal, unsigned int index);
+  void
+  SetNormalInObjectSpace(CovariantVectorType & normal, unsigned int index);
 
   /** Copy one LineSpatialObjectPoint to another */
-  Self & operator=(const LineSpatialObjectPoint & rhs);
+  Self &
+  operator=(const LineSpatialObjectPoint & rhs);
 
 protected:
-
-  NormalArrayType m_NormalArray;
+  NormalArrayType m_NormalArrayInObjectSpace;
 
   /** Method to print the object. */
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 };
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkLineSpatialObjectPoint.hxx"
+#  include "itkLineSpatialObjectPoint.hxx"
 #endif
 
 #endif // itkLineSpatialObjectPoint_h

@@ -18,7 +18,7 @@ endif()
 # the superclass
 itk_wrap_class(std::numeric_limits EXPLICIT_SPECIALIZATION)
   # the basic types
-  foreach(t UC US UI UL SC SS SI SL F D LD B)
+  foreach(t UC US UI UL ULL SC SS SI SL F D LD B)
     itk_wrap_template("${ITKM_${t}}" "${ITKT_${t}}")
   endforeach()
 itk_end_wrap_class()
@@ -26,13 +26,14 @@ itk_end_wrap_class()
 
 itk_wrap_class("itk::NumericTraits" EXPLICIT_SPECIALIZATION)
   # the basic types
-  foreach(t UC US UI UL SC SS SI SL F D LD B)
+  foreach(t UC US UI UL ULL SC SS SI SL F D LD B)
     itk_wrap_template("${ITKM_${t}}" "${ITKT_${t}}")
   endforeach()
 
-#  foreach(t ${WRAP_ITK_COMPLEX_REAL})
-#    itk_wrap_template("${ITKM_${t}}" "${ITKT_${t}}")
-#  endforeach()
+  # complex
+  foreach(t ${WRAP_ITK_COMPLEX_REAL})
+    itk_wrap_template("${ITKM_${t}}" "${ITKT_${t}}")
+  endforeach()
 
   # the ITK types
 
@@ -90,6 +91,6 @@ itk_wrap_class("itk::NumericTraits" EXPLICIT_SPECIALIZATION)
   UNIQUE(wrap_image_types "${WRAP_ITK_SCALAR};UC")
   foreach(type ${wrap_image_types})
     ADD_TEMPLATE("${ITKM_VLV${type}}"  "${ITKT_VLV${type}}")
-  endforeach(type)
+  endforeach()
 
 itk_end_wrap_class()

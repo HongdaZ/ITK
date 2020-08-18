@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 namespace itk
 {
 
-/** \class ShanbhagThresholdCalculator
+/**
+ *\class ShanbhagThresholdCalculator
  * \brief Computes the Shanbhag threshold for an image. Aka intermeans
  *
  * Shanhbag A.G. (1994) "Utilization of Information Measure as a Means of
@@ -44,15 +45,17 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKThresholding
  */
-template <typename THistogram, typename TOutput=double>
+template <typename THistogram, typename TOutput = double>
 class ITK_TEMPLATE_EXPORT ShanbhagThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ShanbhagThresholdCalculator                       Self;
-  typedef HistogramThresholdCalculator<THistogram, TOutput> Superclass;
-  typedef SmartPointer<Self>                                Pointer;
-  typedef SmartPointer<const Self>                          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShanbhagThresholdCalculator);
+
+  /** Standard class type aliases. */
+  using Self = ShanbhagThresholdCalculator;
+  using Superclass = HistogramThresholdCalculator<THistogram, TOutput>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,24 +64,21 @@ public:
   itkTypeMacro(ShanbhagThresholdCalculator, HistogramThresholdCalculator);
 
   /** Type definition for the input image. */
-  typedef THistogram  HistogramType;
-  typedef TOutput     OutputType;
+  using HistogramType = THistogram;
+  using OutputType = TOutput;
 
 protected:
-  ShanbhagThresholdCalculator() {};
-  virtual ~ShanbhagThresholdCalculator() ITK_OVERRIDE {};
-  void GenerateData(void) ITK_OVERRIDE;
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShanbhagThresholdCalculator);
-
+  ShanbhagThresholdCalculator() = default;
+  ~ShanbhagThresholdCalculator() override = default;
+  void
+  GenerateData() override;
 };
 
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkShanbhagThresholdCalculator.hxx"
+#  include "itkShanbhagThresholdCalculator.hxx"
 #endif
 
 #endif

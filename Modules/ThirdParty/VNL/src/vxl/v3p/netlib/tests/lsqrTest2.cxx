@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ int main( int , char * [] )
   solver.SetStandardErrorEstimates( se );
 
   //  -3  5
-  typedef double * RowType;
+  using RowType = double *;
   RowType A[mm];
   double AA[6];
   A[0] = &(AA[0]);

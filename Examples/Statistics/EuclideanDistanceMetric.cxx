@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,14 +20,15 @@
 //
 // \index{itk::Statistics::EuclideanDistanceMetric}
 //
-// The Euclidean distance function (\subdoxygen{Statistics}{EuclideanDistanceMetric}
-// requires as template parameter the type of the measurement vector. We can
-// use this function for any subclass of the \doxygen{FixedArray}. As a
-// subclass of the \subdoxygen{Statistics}{DistanceMetric}, it has two basic
-// methods, the \code{SetOrigin(measurement vector)} and the
-// \code{Evaluate(measurement vector)}. The \code{Evaluate()} method returns
-// the distance between its argument (a measurement vector) and the measurement
-// vector set by the \code{SetOrigin()} method.
+// The Euclidean distance function
+// (\subdoxygen{Statistics}{EuclideanDistanceMetric} requires as template
+// parameter the type of the measurement vector. We can use this function for
+// any subclass of the \doxygen{FixedArray}. As a subclass of the
+// \subdoxygen{Statistics}{DistanceMetric}, it has two basic methods, the
+// \code{SetOrigin(measurement vector)} and the \code{Evaluate(measurement
+// vector)}. The \code{Evaluate()} method returns the distance between its
+// argument (a measurement vector) and the measurement vector set by the
+// \code{SetOrigin()} method.
 //
 // In addition to the two methods, EuclideanDistanceMetric has two more
 // methods that return the distance of two measurements ---
@@ -54,10 +55,11 @@
 //
 // Software Guide : EndLatex
 
-int main(int, char*[])
+int
+main(int, char *[])
 {
   // Software Guide : BeginCodeSnippet
-  typedef itk::Array< float > MeasurementVectorType;
+  using MeasurementVectorType = itk::Array<float>;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -68,8 +70,8 @@ int main(int, char*[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::EuclideanDistanceMetric< MeasurementVectorType >
-    DistanceMetricType;
+  using DistanceMetricType =
+    itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
   DistanceMetricType::Pointer distanceMetric = DistanceMetricType::New();
   // Software Guide : EndCodeSnippet
 
@@ -91,12 +93,12 @@ int main(int, char*[])
   // \code{SetMeasurementVectorSize()} method.
   //
   // Software Guide : EndLatex
-  distanceMetric->SetMeasurementVectorSize( 2 );
+  distanceMetric->SetMeasurementVectorSize(2);
 
   // Software Guide : BeginCodeSnippet
-  DistanceMetricType::OriginType originPoint( 2 );
-  MeasurementVectorType queryPointA( 2 );
-  MeasurementVectorType queryPointB( 2 );
+  DistanceMetricType::OriginType originPoint(2);
+  MeasurementVectorType          queryPointA(2);
+  MeasurementVectorType          queryPointB(2);
 
   originPoint[0] = 0;
   originPoint[1] = 0;
@@ -117,18 +119,18 @@ int main(int, char*[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  distanceMetric->SetOrigin( originPoint );
-  std::cout << "Euclidean distance between the origin and the query point A = "
-            << distanceMetric->Evaluate( queryPointA )
-            << std::endl;
+  distanceMetric->SetOrigin(originPoint);
+  std::cout
+    << "Euclidean distance between the origin and the query point A = "
+    << distanceMetric->Evaluate(queryPointA) << std::endl;
 
   std::cout << "Euclidean distance between the two query points (A and B) = "
-            << distanceMetric->Evaluate( queryPointA, queryPointB )
+            << distanceMetric->Evaluate(queryPointA, queryPointB)
             << std::endl;
 
   std::cout << "Coordinate distance between "
             << "the first components of the two query points = "
-            << distanceMetric->Evaluate( queryPointA[0], queryPointB[0] )
+            << distanceMetric->Evaluate(queryPointA[0], queryPointB[0])
             << std::endl;
   // Software Guide : EndCodeSnippet
 

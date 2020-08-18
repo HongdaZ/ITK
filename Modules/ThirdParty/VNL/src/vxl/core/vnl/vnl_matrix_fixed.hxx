@@ -8,12 +8,53 @@
 #include <cstdlib>
 #include "vnl_matrix_fixed.h"
 
-#include <vcl_compiler.h>
-#include <vcl_cassert.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include <cassert>
 
-#include <vnl/vnl_error.h>
-#include <vnl/vnl_math.h>
-#include <vnl/vnl_vector_fixed.h>
+#include "vnl_error.h"
+#include "vnl_math.h"
+#include "vnl_complex.h"  //vnl_math functions for complex variables
+#include "vnl_vector_fixed.h"
+
+template<class T, unsigned num_rows, unsigned num_cols>
+vnl_matrix_fixed<T, num_rows, num_cols>&
+vnl_matrix_fixed<T, num_rows, num_cols>::operator= (T const&v)
+{
+	fill(v); return *this;
+}
+
+template<class T, unsigned num_rows, unsigned num_cols>
+vnl_matrix_fixed<T, num_rows, num_cols> &
+vnl_matrix_fixed<T, num_rows, num_cols>::operator=(const vnl_matrix<T>& rhs)
+{
+	assert(rhs.rows() == num_rows && rhs.columns() == num_cols);
+	std::memcpy(data_[0], rhs.data_block(), num_rows*num_cols * sizeof(T));
+	return *this;
+}
+
+template<class T, unsigned nrows, unsigned ncols>
+T       &
+vnl_matrix_fixed<T, nrows, ncols>::operator() (unsigned r, unsigned c)
+{
+#if VNL_CONFIG_CHECK_BOUNDS  && (!defined NDEBUG)
+	assert(r < rows());   // Check the row index is valid
+	assert(c < cols());   // Check the column index is valid
+#endif
+	return this->data_[r][c];
+}
+
+template<class T, unsigned nrows, unsigned ncols>
+T const &
+vnl_matrix_fixed<T, nrows, ncols>::operator() (unsigned r, unsigned c) const
+{
+#if VNL_CONFIG_CHECK_BOUNDS  && (!defined NDEBUG)
+	assert(r < rows());   // Check the row index is valid
+	assert(c < cols());   // Check the column index is valid
+#endif
+	return this->data_[r][c];
+}
 
 template<class T, unsigned nrows, unsigned ncols>
 void
@@ -246,6 +287,24 @@ vnl_matrix_fixed<T,nrows,ncols>::update (vnl_matrix<T> const& m,
   return *this;
 }
 
+template<class T, unsigned nrows, unsigned ncols>
+vnl_matrix_fixed<T,nrows,ncols>&
+vnl_matrix_fixed<T,nrows,ncols>::update (vnl_matrix_fixed<T,nrows,ncols> const& m,
+    unsigned top, unsigned left)
+{
+  const unsigned int bottom = top + m.rows();
+  const unsigned int right = left + m.cols();
+#ifndef NDEBUG
+  if (nrows < bottom || ncols < right)
+    vnl_error_matrix_dimension ("update",
+                                bottom, right, m.rows(), m.cols());
+#endif
+  for (unsigned int i = top; i < bottom; ++i)
+    for (unsigned int j = left; j < right; ++j)
+      this->data_[i][j] = m(i-top,j-left);
+  return *this;
+}
+
 
 template<class T, unsigned nrows, unsigned ncols>
 vnl_matrix<T>
@@ -463,11 +522,11 @@ vnl_vector_fixed<T,nrows> vnl_matrix_fixed<T,nrows,ncols>::get_column(unsigned c
 template <class T, unsigned int nrows, unsigned int ncols>
 vnl_matrix<T>
 vnl_matrix_fixed<T,nrows,ncols>
-::get_rows(vnl_vector<unsigned int> i) const
+::get_rows(const vnl_vector<unsigned int> &i) const
 {
   vnl_matrix<T> m(i.size(), this->cols());
   for (unsigned int j = 0; j < i.size(); ++j)
-    m.set_row(j, this->get_row(i.get(j)));
+    m.set_row(j, this->get_row(i.get(j)).as_ref());
   return m;
 }
 
@@ -475,11 +534,11 @@ vnl_matrix_fixed<T,nrows,ncols>
 template <class T, unsigned int nrows, unsigned int ncols>
 vnl_matrix<T>
 vnl_matrix_fixed<T,nrows,ncols>
-::get_columns(vnl_vector<unsigned int> i) const
+::get_columns(const vnl_vector<unsigned int> & i) const
 {
   vnl_matrix<T> m(this->rows(), i.size());
   for (unsigned int j = 0; j < i.size(); ++j)
-    m.set_column(j, this->get_column(i.get(j)));
+    m.set_column(j, this->get_column(i.get(j)).as_ref());
   return m;
 }
 
@@ -841,6 +900,20 @@ vnl_matrix_fixed<T,nrows,ncols>::inplace_transpose()
     this->data_[j][i] = t;
   }
   return *this;
+}
+
+template <class T, unsigned m, unsigned n>
+T const*
+vnl_matrix_fixed<T, m, n>::data_block() const
+{
+	return data_[0];
+}
+
+template <class T, unsigned m, unsigned n>
+T      *
+vnl_matrix_fixed<T, m, n>::data_block()
+{
+	return data_[0];
 }
 
 template <class T, unsigned m, unsigned n>

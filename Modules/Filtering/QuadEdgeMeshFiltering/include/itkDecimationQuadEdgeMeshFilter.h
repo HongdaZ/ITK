@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,30 +28,31 @@ namespace itk
  * \brief
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template< typename TInput, typename TOutput, typename TCriterion >
-class DecimationQuadEdgeMeshFilter:
-  public QuadEdgeMeshToQuadEdgeMeshFilter< TInput, TOutput >
+template <typename TInput, typename TOutput, typename TCriterion>
+class DecimationQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInput, TOutput>
 {
 public:
-  typedef DecimationQuadEdgeMeshFilter                        Self;
-  typedef SmartPointer< Self >                                Pointer;
-  typedef SmartPointer< const Self >                          ConstPointer;
-  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInput, TOutput > Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DecimationQuadEdgeMeshFilter);
+
+  using Self = DecimationQuadEdgeMeshFilter;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInput, TOutput>;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(DecimationQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
 
-  typedef TInput                          InputMeshType;
-  typedef typename InputMeshType::Pointer InputMeshPointer;
+  using InputMeshType = TInput;
+  using InputMeshPointer = typename InputMeshType::Pointer;
 
-  typedef TOutput                          OutputMeshType;
-  typedef typename OutputMeshType::Pointer OutputMeshPointer;
+  using OutputMeshType = TOutput;
+  using OutputMeshPointer = typename OutputMeshType::Pointer;
 
-  typedef TCriterion                                       CriterionType;
-  typedef typename CriterionType::Pointer                  CriterionPointer;
-  typedef typename CriterionType::MeasureType              MeasureType;
-  typedef typename CriterionType::PriorityType             PriorityType;
-  typedef typename CriterionType::PriorityQueueWrapperType PriorityQueueItemType;
+  using CriterionType = TCriterion;
+  using CriterionPointer = typename CriterionType::Pointer;
+  using MeasureType = typename CriterionType::MeasureType;
+  using PriorityType = typename CriterionType::PriorityType;
+  using PriorityQueueItemType = typename CriterionType::PriorityQueueWrapperType;
 
   itkSetObjectMacro(Criterion, CriterionType);
 
@@ -59,15 +60,16 @@ protected:
   DecimationQuadEdgeMeshFilter()
   {
     this->m_Iteration = 0;
-    this->m_OutputMesh = ITK_NULLPTR;
+    this->m_OutputMesh = nullptr;
   }
 
-  ~DecimationQuadEdgeMeshFilter() ITK_OVERRIDE {}
+  ~DecimationQuadEdgeMeshFilter() override = default;
 
   CriterionPointer m_Criterion;
   SizeValueType    m_Iteration;
 
-  void GenerateData() ITK_OVERRIDE
+  void
+  GenerateData() override
   {
     this->CopyInputMeshToOutputMesh();
 
@@ -76,45 +78,49 @@ protected:
     m_Iteration = 0;
     this->m_OutputMesh = this->GetOutput();
     do
-      {
+    {
       this->Extract();
 
-      if ( ProcessWithTopologicalGuarantee() )
-        {
+      if (ProcessWithTopologicalGuarantee())
+      {
         return;
-        }
+      }
 
       ++m_Iteration;
-      }
-    while ( !IsCriterionSatisfied() );
+    } while (!IsCriterionSatisfied());
 
     this->GetOutput()->SqueezePointsIds();
+    this->GetOutput()->DeleteUnusedCellData();
   }
 
-  virtual void Initialize() {}
-  virtual void FillPriorityQueue() = 0;
+  virtual void
+  Initialize()
+  {}
+  virtual void
+  FillPriorityQueue() = 0;
 
-  virtual void Extract() = 0;
+  virtual void
+  Extract() = 0;
 
-  virtual bool ProcessWithoutAnyTopologicalGuarantee() = 0;
+  virtual bool
+  ProcessWithoutAnyTopologicalGuarantee() = 0;
 
-  virtual bool ProcessWithTopologicalGuarantee() = 0;
+  virtual bool
+  ProcessWithTopologicalGuarantee() = 0;
 
-  virtual bool IsCriterionSatisfied() = 0;
+  virtual bool
+  IsCriterionSatisfied() = 0;
 
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override
   {
     this->Superclass::PrintSelf(os, indent);
     os << indent << "Criterion: " << m_Criterion << std::endl;
   }
 
   /** Cache pointer to output to use in inner loops */
-  OutputMeshType *m_OutputMesh;
-
-private:
-  DecimationQuadEdgeMeshFilter(const Self &);
-  void operator=(const Self &);
+  OutputMeshType * m_OutputMesh;
 };
-}
+} // namespace itk
 
 #endif

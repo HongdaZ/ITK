@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,16 +22,16 @@
 //  a 3D image using the \doxygen{RecursiveGaussianImageFilter}.
 //
 //  It's good to be able to compute the raw derivative without any smoothing,
-//  but this can be problematic in a medical imaging scenario, when images will
-//  often have a certain amount of noise. It's almost always more desirable to
-//  include a smoothing step first, where an image is convolved with a Gaussian
-//  kernel in whichever directions the user desires a derivative. The nature of
-//  the Gaussian kernel makes it easy to combine these two steps into one,
-//  using an infinite impulse response (IIR) filter. In this example, all the
-//  second derivatives are computed independently in the same way, as if they
-//  were intended to be used for building the Hessian matrix of the image (a
-//  square matrix of second-order derivatives of an image, which is useful in
-//  many image processing techniques).
+//  but this can be problematic in a medical imaging scenario, when images
+//  will often have a certain amount of noise. It's almost always more
+//  desirable to include a smoothing step first, where an image is convolved
+//  with a Gaussian kernel in whichever directions the user desires a
+//  derivative. The nature of the Gaussian kernel makes it easy to combine
+//  these two steps into one, using an infinite impulse response (IIR) filter.
+//  In this example, all the second derivatives are computed independently in
+//  the same way, as if they were intended to be used for building the Hessian
+//  matrix of the image (a square matrix of second-order derivatives of an
+//  image, which is useful in many image processing techniques).
 //
 //  Software Guide : EndLatex
 
@@ -51,15 +51,16 @@
 #include <string>
 //  Software Guide : EndCodeSnippet
 
-int main(int argc, char * argv [] )
+int
+main(int argc, char * argv[])
 {
 
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImage outputPrefix  [sigma] " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
@@ -69,64 +70,62 @@ int main(int argc, char * argv [] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef float            PixelType;
-  typedef float            OutputPixelType;
+  using PixelType = float;
+  using OutputPixelType = float;
 
-  const unsigned int  Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   //  Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
   //
-  //  Using these definitions, define the image types, reader and writer types,
-  //  and duplicator types, which are templated over the pixel types and
-  //  dimension.  Then, instantiate the reader, writer, and duplicator with
-  //  the \code{New()} method.
+  //  Using these definitions, define the image types, reader and writer
+  //  types, and duplicator types, which are templated over the pixel types
+  //  and dimension.  Then, instantiate the reader, writer, and duplicator
+  //  with the \code{New()} method.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< PixelType,       Dimension >  ImageType;
-  typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
+  using ImageType = itk::Image<PixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  typedef itk::ImageFileReader< ImageType       >   ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >   WriterType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  typedef itk::ImageDuplicator< OutputImageType >   DuplicatorType;
+  using DuplicatorType = itk::ImageDuplicator<OutputImageType>;
 
-  typedef itk::RecursiveGaussianImageFilter<
-                                      ImageType,
-                                      ImageType >  FilterType;
+  using FilterType = itk::RecursiveGaussianImageFilter<ImageType, ImageType>;
 
-  ReaderType::Pointer  reader  = ReaderType::New();
-  WriterType::Pointer  writer  = WriterType::New();
+  ReaderType::Pointer reader = ReaderType::New();
+  WriterType::Pointer writer = WriterType::New();
 
-  DuplicatorType::Pointer duplicator  = DuplicatorType::New();
+  DuplicatorType::Pointer duplicator = DuplicatorType::New();
   // Software Guide : EndCodeSnippet
 
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
   std::string outputPrefix = argv[2];
   std::string outputFileName;
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Problem reading the input file" << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginLatex
   //
   //  Here we create three new filters. For each derivative we take, we will
-  //  want to smooth in that direction first. So after the filters are created,
-  //  each is given a dimension, and set to (in this example) the same sigma.
-  //  Note that here, $\sigma$ represents the standard deviation, whereas the
-  //  \doxygen{DiscreteGaussianImageFilter} exposes the \code{SetVariance}
-  //  method.
+  //  want to smooth in that direction first. So after the filters are
+  //  created, each is given a dimension, and set to (in this example) the
+  //  same sigma. Note that here, $\sigma$ represents the standard deviation,
+  //  whereas the \doxygen{DiscreteGaussianImageFilter} exposes the
+  //  \code{SetVariance} method.
   //
   //  Software Guide : EndLatex
 
@@ -135,17 +134,17 @@ int main(int argc, char * argv [] )
   FilterType::Pointer gb = FilterType::New();
   FilterType::Pointer gc = FilterType::New();
 
-  ga->SetDirection( 0 );
-  gb->SetDirection( 1 );
-  gc->SetDirection( 2 );
+  ga->SetDirection(0);
+  gb->SetDirection(1);
+  gc->SetDirection(2);
 
-  if( argc > 3 )
-    {
-    const float sigma = atof( argv[3] );
-    ga->SetSigma( sigma );
-    gb->SetSigma( sigma );
-    gc->SetSigma( sigma );
-    }
+  if (argc > 3)
+  {
+    const float sigma = std::stod(argv[3]);
+    ga->SetSigma(sigma);
+    gb->SetSigma(sigma);
+    gc->SetSigma(sigma);
+  }
   //  Software Guide: EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -165,21 +164,21 @@ int main(int argc, char * argv [] )
 
   ImageType::Pointer inputImage = reader->GetOutput();
 
-  ga->SetInput( inputImage );
-  gb->SetInput( ga->GetOutput() );
-  gc->SetInput( gb->GetOutput() );
+  ga->SetInput(inputImage);
+  gb->SetInput(ga->GetOutput());
+  gc->SetInput(gb->GetOutput());
 
-  duplicator->SetInputImage( gc->GetOutput() );
+  duplicator->SetInputImage(gc->GetOutput());
 
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Izz = duplicator->GetModifiableOutput();
+  ImageType::Pointer Izz = duplicator->GetOutput();
   //  Software Guide: EndCodeSnippet
 
-  writer->SetInput( Izz );
+  writer->SetInput(Izz);
   outputFileName = outputPrefix + "-Izz.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
 
   //  Software Guide : BeginLatex
@@ -188,47 +187,48 @@ int main(int argc, char * argv [] )
   //  derivative. We can now take advantage of the pipeline architecture and,
   //  without much hassle, switch the direction of \code{gc} and \code{gb},
   //  so that \code{gc} now takes the derivatives in the $y$-direction. Now we
-  //  only need to call \code{Update()} on \code{gc} to re-run the entire pipeline
-  //  from \code{ga} to \code{gc}, obtaining the second-order derivative in the
-  //  $y$-direction, which is commonly notated $I_{yy}$.
+  //  only need to call \code{Update()} on \code{gc} to re-run the entire
+  //  pipeline from \code{ga} to \code{gc}, obtaining the second-order
+  //  derivative in the $y$-direction, which is commonly notated $I_{yy}$.
   //
   // Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  gc->SetDirection( 1 );  // gc now works along Y
-  gb->SetDirection( 2 );  // gb now works along Z
+  gc->SetDirection(1); // gc now works along Y
+  gb->SetDirection(2); // gb now works along Z
 
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Iyy = duplicator->GetModifiableOutput();
+  ImageType::Pointer Iyy = duplicator->GetOutput();
   //  Software Guide : EndCodeSnippet
 
-  writer->SetInput( Iyy );
+  writer->SetInput(Iyy);
   outputFileName = outputPrefix + "-Iyy.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
 
   //  Software Guide : BeginLatex
   //
-  //  Now we switch the directions of \code{gc} with that of \code{ga} in order
-  //  to take the derivatives in the $x$-direction. This will give us $I_{xx}$.
+  //  Now we switch the directions of \code{gc} with that of \code{ga} in
+  //  order to take the derivatives in the $x$-direction. This will give us
+  //  $I_{xx}$.
   //
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  gc->SetDirection( 0 );  // gc now works along X
-  ga->SetDirection( 1 );  // ga now works along Y
+  gc->SetDirection(0); // gc now works along X
+  ga->SetDirection(1); // ga now works along Y
 
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Ixx = duplicator->GetModifiableOutput();
+  ImageType::Pointer Ixx = duplicator->GetOutput();
   //  Software Guide : EndCodeSnippet
 
-  writer->SetInput( Ixx );
+  writer->SetInput(Ixx);
   outputFileName = outputPrefix + "-Ixx.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
 
   //  Software Guide : BeginLatex
@@ -241,9 +241,9 @@ int main(int argc, char * argv [] )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  ga->SetDirection( 0 );
-  gb->SetDirection( 1 );
-  gc->SetDirection( 2 );
+  ga->SetDirection(0);
+  gb->SetDirection(1);
+  gc->SetDirection(2);
 
   ga->SetZeroOrder();
   gb->SetFirstOrder();
@@ -252,12 +252,12 @@ int main(int argc, char * argv [] )
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Iyz = duplicator->GetModifiableOutput();
+  ImageType::Pointer Iyz = duplicator->GetOutput();
   //  Software Guide : EndCodeSnippet
 
-  writer->SetInput( Iyz );
+  writer->SetInput(Iyz);
   outputFileName = outputPrefix + "-Iyz.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
 
   //  Software Guide : BeginLatex
@@ -267,9 +267,9 @@ int main(int argc, char * argv [] )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  ga->SetDirection( 1 );
-  gb->SetDirection( 0 );
-  gc->SetDirection( 2 );
+  ga->SetDirection(1);
+  gb->SetDirection(0);
+  gc->SetDirection(2);
 
   ga->SetZeroOrder();
   gb->SetFirstOrder();
@@ -278,7 +278,7 @@ int main(int argc, char * argv [] )
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Ixz = duplicator->GetModifiableOutput();
+  ImageType::Pointer Ixz = duplicator->GetOutput();
   //  Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -289,14 +289,14 @@ int main(int argc, char * argv [] )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  writer->SetInput( Ixz );
+  writer->SetInput(Ixz);
   outputFileName = outputPrefix + "-Ixz.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
 
-  ga->SetDirection( 2 );
-  gb->SetDirection( 0 );
-  gc->SetDirection( 1 );
+  ga->SetDirection(2);
+  gb->SetDirection(0);
+  gc->SetDirection(1);
 
   ga->SetZeroOrder();
   gb->SetFirstOrder();
@@ -305,13 +305,13 @@ int main(int argc, char * argv [] )
   gc->Update();
   duplicator->Update();
 
-  ImageType::Pointer Ixy = duplicator->GetModifiableOutput();
+  ImageType::Pointer Ixy = duplicator->GetOutput();
 
-  writer->SetInput( Ixy );
+  writer->SetInput(Ixy);
   outputFileName = outputPrefix + "-Ixy.mhd";
-  writer->SetFileName( outputFileName.c_str() );
+  writer->SetFileName(outputFileName.c_str());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
-return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }

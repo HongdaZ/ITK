@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace itk
  * GenerateData() and ThreadedGenerateData().
  *
  * This class is intended to be used in iterative filter for which
- * a progress cannot be stablished. These filters run until an stopping
+ * a progress cannot be established. These filters run until an stopping
  * criterion is reached and it is not possible to anticipate how long
  * it will take to get to the stopping point.
  *
@@ -56,31 +56,31 @@ class ITKCommon_EXPORT IterationReporter
 {
 public:
   /** Constructor sets progress to 0 because the filter is starting.  */
-  IterationReporter(ProcessObject *filter, ThreadIdType threadId,
-                    unsigned long stepsPerUpdate = 100);
+  IterationReporter(ProcessObject * filter, ThreadIdType threadId, unsigned long stepsPerUpdate = 100);
 
   /** Destructor */
-  ~IterationReporter() {}
+  ~IterationReporter() = default;
 
   /** Called by a filter once per iteration.  */
-  void CompletedStep()
+  void
+  CompletedStep()
   {
     // Inline implementation for efficiency.
     // We don't need to test for thread id 0 here because the
     // constructor sets m_StepsBeforeUpdate to a value larger than
     // the number of pixels for threads other than 0.
-    if ( --m_StepsBeforeUpdate == 0 )
-      {
+    if (--m_StepsBeforeUpdate == 0)
+    {
       m_StepsBeforeUpdate = m_StepsPerUpdate;
-      m_Filter->InvokeEvent( IterationEvent() );
-      }
+      m_Filter->InvokeEvent(IterationEvent());
+    }
   }
 
 protected:
-  ProcessObject *m_Filter;
-  ThreadIdType   m_ThreadId;
-  unsigned long  m_StepsPerUpdate;
-  unsigned long  m_StepsBeforeUpdate;
+  ProcessObject * m_Filter;
+  ThreadIdType    m_ThreadId;
+  unsigned long   m_StepsPerUpdate;
+  unsigned long   m_StepsBeforeUpdate;
 };
 } // end namespace itk
 

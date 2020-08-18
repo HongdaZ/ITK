@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@
 
 namespace itk
 {
-/** \class GE4ImageIO
+/**
+ *\class GE4ImageIO
  *
  * \author Hans J. Johnson
  * \brief Class that defines how to read GE4 file format.
@@ -55,13 +56,15 @@ namespace itk
  * \ingroup IOFilters
  * \ingroup ITKIOGE
  */
-class ITKIOGE_EXPORT GE4ImageIO:public IPLCommonImageIO
+class ITKIOGE_EXPORT GE4ImageIO : public IPLCommonImageIO
 {
 public:
-  /** Standard class typedefs. */
-  typedef GE4ImageIO           Self;
-  typedef IPLCommonImageIO     Superclass;
-  typedef SmartPointer< Self > Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GE4ImageIO);
+
+  /** Standard class type aliases. */
+  using Self = GE4ImageIO;
+  using Superclass = IPLCommonImageIO;
+  using Pointer = SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -77,7 +80,8 @@ public:
    * \post Sets classes ImageIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this ImageIO can read the file specified.
    */
-  virtual bool CanReadFile(const char *FileNameToRead) ITK_OVERRIDE;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
   /** Set the spacing and dimension information for the set filename. */
   // Implemented in superclass
@@ -104,7 +108,7 @@ public:
    * \author Hans J. Johnson
    * \post Sets classes ImageIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this ImageIO can write the file specified.
-  */
+   */
   // Implemented in superclass
   // virtual bool CanWriteFile(const char * FileNameToWrite);
 
@@ -119,16 +123,15 @@ public:
 
 protected:
   GE4ImageIO();
-  ~GE4ImageIO() ITK_OVERRIDE;
+  ~GE4ImageIO() override;
   // Implemented in Superclass
   // void PrintSelf(std::ostream& os, Indent indent) const;
-  virtual GEImageHeader * ReadHeader(const char *FileNameToRead) ITK_OVERRIDE;
+  GEImageHeader *
+  ReadHeader(const char * FileNameToRead) override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GE4ImageIO);
-
-  float MvtSunf(int numb);
-
+  float
+  MvtSunf(int numb);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@
 
 namespace itk
 {
-/** \class BinaryPruningImageFilter
+/**
+ *\class BinaryPruningImageFilter
  *
  * \brief This filter removes "spurs" of less than a certain
  * length in the input image.
  *
- * This class is parametrized over the type of the input image
+ * This class is parameterized over the type of the input image
  * and the type of the output image.
  *
  * The input is assumed to be a binary image.
@@ -48,18 +49,23 @@ namespace itk
  * \sa BinaryThinningImageFilter
  * \ingroup ImageEnhancement MathematicalMorphologyImageFilters
  * \ingroup ITKBinaryMathematicalMorphology
+ *
+ * \sphinx
+ * \sphinxexample{Filtering/BinaryMathematicalMorphology/PruneBinaryImage,Prune Binary Image}
+ * \endsphinx
  */
 
-template< typename TInputImage, typename TOutputImage >
-class ITK_TEMPLATE_EXPORT BinaryPruningImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TOutputImage>
+class ITK_TEMPLATE_EXPORT BinaryPruningImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef BinaryPruningImageFilter                        Self;
-  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
-  typedef SmartPointer< Self >                            Pointer;
-  typedef SmartPointer< const Self >                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryPruningImageFilter);
+
+  /** Standard class type aliases. */
+  using Self = BinaryPruningImageFilter;
+  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);
@@ -68,83 +74,79 @@ public:
   itkTypeMacro(BinaryPruningImageFilter, ImageToImageFilter);
 
   /** Type for input image. */
-  typedef   TInputImage InputImageType;
+  using InputImageType = TInputImage;
 
   /** Type for output image: Skelenton of the object.  */
-  typedef   TOutputImage OutputImageType;
+  using OutputImageType = TOutputImage;
 
   /** Type for the region of the input image. */
-  typedef typename InputImageType::RegionType RegionType;
+  using RegionType = typename InputImageType::RegionType;
 
   /** Type for the index of the input image. */
-  typedef typename RegionType::IndexType IndexType;
+  using IndexType = typename RegionType::IndexType;
 
   /** Type for the index of the input image. */
-  typedef typename InputImageType::PixelType PixelType;
+  using PixelType = typename InputImageType::PixelType;
 
   /** Type for the size of the input image. */
-  typedef typename RegionType::SizeType SizeType;
+  using SizeType = typename RegionType::SizeType;
 
   /** Pointer Type for input image. */
-  typedef typename InputImageType::ConstPointer InputImagePointer;
+  using InputImagePointer = typename InputImageType::ConstPointer;
 
   /** Pointer Type for the output image. */
-  typedef typename OutputImageType::Pointer OutputImagePointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Neighborhood iterator type */
-  typedef NeighborhoodIterator< TInputImage > NeighborhoodIteratorType;
+  using NeighborhoodIteratorType = NeighborhoodIterator<TInputImage>;
 
   /** Get Skelenton by thinning image. */
-  OutputImageType * GetPruning();
+  OutputImageType *
+  GetPruning();
 
   /** Set/Get the iteration value */
   itkSetMacro(Iteration, unsigned int);
   itkGetConstMacro(Iteration, unsigned int);
 
   /** ImageDimension enumeration   */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( SameDimensionCheck,
-                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
-  itkConceptMacro( SameTypeCheck,
-                   ( Concept::SameType< PixelType, typename TOutputImage::PixelType > ) );
-  itkConceptMacro( AdditiveOperatorsCheck,
-                   ( Concept::AdditiveOperators< PixelType > ) );
-  itkConceptMacro( IntConvertibleToPixelTypeCheck,
-                   ( Concept::Convertible< int, PixelType > ) );
-  itkConceptMacro( PixelLessThanIntCheck,
-                   ( Concept::LessThanComparable< PixelType, int > ) );
+  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
+  itkConceptMacro(SameTypeCheck, (Concept::SameType<PixelType, typename TOutputImage::PixelType>));
+  itkConceptMacro(AdditiveOperatorsCheck, (Concept::AdditiveOperators<PixelType>));
+  itkConceptMacro(IntConvertibleToPixelTypeCheck, (Concept::Convertible<int, PixelType>));
+  itkConceptMacro(PixelLessThanIntCheck, (Concept::LessThanComparable<PixelType, int>));
   // End concept checking
 #endif
 
 protected:
   BinaryPruningImageFilter();
-  virtual ~BinaryPruningImageFilter() {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~BinaryPruningImageFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Compute thinning Image. */
-  void GenerateData() ITK_OVERRIDE;
+  void
+  GenerateData() override;
 
   /** Prepare data. */
-  void PrepareData();
+  void
+  PrepareData();
 
   /**  Compute thinning Image. */
-  void ComputePruneImage();
+  void
+  ComputePruneImage();
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryPruningImageFilter);
-
   unsigned int m_Iteration;
 }; // end of BinaryThinningImageFilter class
-} //end namespace itk
+} // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkBinaryPruningImageFilter.hxx"
+#  include "itkBinaryPruningImageFilter.hxx"
 #endif
 
 #endif

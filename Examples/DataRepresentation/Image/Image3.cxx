@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,24 +33,29 @@
 
 #include "itkImage.h"
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
   // First the image type should be declared
-  typedef itk::Image< unsigned short, 3 > ImageType;
+  using ImageType = itk::Image<unsigned short, 3>;
 
   // Then the image object can be created
   ImageType::Pointer image = ImageType::New();
 
   // The image region should be initialized
-  const ImageType::SizeType  size  = {{ 200, 200, 200}}; //Size along {X,Y,Z}
-  const ImageType::IndexType start = {{ 0, 0, 0 }}; // First index on {X,Y,Z}
+  const ImageType::SizeType size = {
+    { 200, 200, 200 }
+  }; // Size along {X,Y,Z}
+  const ImageType::IndexType start = {
+    { 0, 0, 0 }
+  }; // First index on {X,Y,Z}
 
   ImageType::RegionType region;
-  region.SetSize( size );
-  region.SetIndex( start );
+  region.SetSize(size);
+  region.SetIndex(start);
 
   // Pixel data is allocated
-  image->SetRegions( region );
+  image->SetRegions(region);
   image->Allocate(true); // initialize buffer to zero
 
 
@@ -65,10 +70,10 @@ int main(int, char *[])
   //
   // The following code illustrates the declaration of an index variable and
   // the assignment of values to each of its components. Please note that
-  // no \code{SmartPointer} is used to access the \code{Index}. This is because
-  // \code{Index} is a lightweight object that is not intended to be shared
-  // between objects. It is more efficient to produce multiple copies of
-  // these small objects than to share them using the SmartPointer
+  // no \code{SmartPointer} is used to access the \code{Index}. This is
+  // because \code{Index} is a lightweight object that is not intended to be
+  // shared between objects. It is more efficient to produce multiple copies
+  // of these small objects than to share them using the SmartPointer
   // mechanism.
   //
   // The following lines declare an instance of the index type and initialize
@@ -77,7 +82,9 @@ int main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const ImageType::IndexType pixelIndex = {{27,29,37}}; // Position of {X,Y,Z}
+  const ImageType::IndexType pixelIndex = {
+    { 27, 29, 37 }
+  }; // Position of {X,Y,Z}
   // Software Guide : EndCodeSnippet
 
 
@@ -92,7 +99,7 @@ int main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ImageType::PixelType   pixelValue = image->GetPixel( pixelIndex );
+  ImageType::PixelType pixelValue = image->GetPixel(pixelIndex);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -104,7 +111,7 @@ int main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  image->SetPixel(   pixelIndex,   pixelValue+1  );
+  image->SetPixel(pixelIndex, pixelValue + 1);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -113,9 +120,9 @@ int main(int, char *[])
   // and not reference semantics. Hence, the method cannot be used to
   // modify image data values.
   //
-  // Remember that both \code{SetPixel()} and \code{GetPixel()} are inefficient
-  // and should only be used for debugging or for supporting interactions like
-  // querying pixel values by clicking with the mouse.
+  // Remember that both \code{SetPixel()} and \code{GetPixel()} are
+  // inefficient and should only be used for debugging or for supporting
+  // interactions like querying pixel values by clicking with the mouse.
   //
   // Software Guide : EndLatex
 

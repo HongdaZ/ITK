@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ namespace itk
 {
 namespace Statistics
 {
-/** \class GaussianMembershipFunction
+/**
+ *\class GaussianMembershipFunction
  * \brief GaussianMembershipFunction models class membership through a
  * multivariate Gaussian function.
  *
@@ -45,47 +46,49 @@ namespace Statistics
  * behaves somewhat like an impulse located at the mean. In this case,
  * we specify the covariance to be a diagonal matrix with large values
  * along the diagonal. This membership function, therefore,
- * will return small but differentiable values everywher and increase
+ * will return small but differentiable values everywhere and increase
  * sharply near the mean.
  *
  * \ingroup ITKStatistics
  */
 
-template< typename TMeasurementVector >
-class ITK_TEMPLATE_EXPORT GaussianMembershipFunction:
-  public MembershipFunctionBase< TMeasurementVector >
+template <typename TMeasurementVector>
+class ITK_TEMPLATE_EXPORT GaussianMembershipFunction : public MembershipFunctionBase<TMeasurementVector>
 {
 public:
-  /** Standard class typedefs */
-  typedef GaussianMembershipFunction                   Self;
-  typedef MembershipFunctionBase< TMeasurementVector > Superclass;
-  typedef SmartPointer< Self >                         Pointer;
-  typedef SmartPointer< const Self >                   ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianMembershipFunction);
+
+  /** Standard class type aliases */
+  using Self = GaussianMembershipFunction;
+  using Superclass = MembershipFunctionBase<TMeasurementVector>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Standard macros */
   itkTypeMacro(GaussianMembershipFunction, MembershipFunction);
   itkNewMacro(Self);
 
   /** SmartPointer class for superclass */
-  typedef typename Superclass::Pointer MembershipFunctionPointer;
+  using MembershipFunctionPointer = typename Superclass::Pointer;
 
   /** Typedef alias for the measurement vectors */
-  typedef TMeasurementVector MeasurementVectorType;
+  using MeasurementVectorType = TMeasurementVector;
 
   /** Length of each measurement vector */
-  typedef typename Superclass::MeasurementVectorSizeType MeasurementVectorSizeType;
+  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
 
   /** Type of the mean vector. RealType on a vector-type is the same
    * vector-type but with a real element type.  */
-  typedef typename itk::NumericTraits< MeasurementVectorType >::RealType MeasurementVectorRealType;
-  typedef MeasurementVectorRealType MeanVectorType;
+  using MeasurementVectorRealType = typename itk::NumericTraits<MeasurementVectorType>::RealType;
+  using MeanVectorType = MeasurementVectorRealType;
 
   /** Type of the covariance matrix */
-  typedef VariableSizeMatrix< double > CovarianceMatrixType;
+  using CovarianceMatrixType = VariableSizeMatrix<double>;
 
   /** Set the mean of the Gaussian distribution. Mean is a vector type
    * similar to the measurement type but with a real element type. */
-  void SetMean(const MeanVectorType & mean);
+  void
+  SetMean(const MeanVectorType & mean);
 
   /** Get the mean of the Gaussian distribution. Mean is a vector type
    * similar to the measurement type but with a real element type. */
@@ -93,9 +96,10 @@ public:
 
   /** Set the covariance matrix. Covariance matrix is a
    * VariableSizeMatrix of doubles. The inverse of the covariance
-   * matrix and the normlization term for the multivariate Gaussian
-   * are calculate whenever the covaraince matrix is changed. */
-  void SetCovariance(const CovarianceMatrixType & cov);
+   * matrix and the normalization term for the multivariate Gaussian
+   * are calculated whenever the covaraince matrix is changed. */
+  void
+  SetCovariance(const CovarianceMatrixType & cov);
 
   /* Get the covariance matrix. Covariance matrix is a
   VariableSizeMatrix of doubles. */
@@ -106,40 +110,41 @@ public:
   itkGetConstReferenceMacro(InverseCovariance, CovarianceMatrixType);
 
   /** Evaluate the probability density of a measurement vector. */
-  double Evaluate(const MeasurementVectorType & measurement) const ITK_OVERRIDE;
+  double
+  Evaluate(const MeasurementVectorType & measurement) const override;
 
   /** Method to clone a membership function, i.e. create a new instance of
    * the same type of membership function and configure its ivars to
    * match. */
-  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  typename LightObject::Pointer
+  InternalClone() const override;
 
 protected:
   GaussianMembershipFunction();
-  virtual ~GaussianMembershipFunction() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~GaussianMembershipFunction() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianMembershipFunction);
-
-  MeanVectorType       m_Mean;            // mean
-  CovarianceMatrixType m_Covariance;      // covariance matrix
+  MeanVectorType       m_Mean;       // mean
+  CovarianceMatrixType m_Covariance; // covariance matrix
 
   // inverse covariance matrix. automatically calculated
-  // when covariace matirx is set.
+  // when covariance matirx is set.
   CovarianceMatrixType m_InverseCovariance;
 
   // pre_factor (normalization term). automatically calculated
-  // when covariace matirx is set.
+  // when covariance matirx is set.
   double m_PreFactor;
 
-  /** Boolean to cache whether the covarinace is singular or nearly singular */
+  /** Boolean to cache whether the covariance is singular or nearly singular */
   bool m_CovarianceNonsingular;
 };
 } // end of namespace Statistics
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkGaussianMembershipFunction.hxx"
+#  include "itkGaussianMembershipFunction.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@
 //  Software Guide : BeginLatex
 //
 //  RGB images are commonly used for representing data acquired from cryogenic
-//  sections, optical microscopy and endoscopy. This example illustrates how to
-//  read RGB color images from a set of files containing individual 2D slices
-//  in order to compose a 3D color dataset. Then we will save it into a single
-//  3D file, and finally save it again as a set of 2D slices with other names.
+//  sections, optical microscopy and endoscopy. This example illustrates how
+//  to read RGB color images from a set of files containing individual 2D
+//  slices in order to compose a 3D color dataset. Then we will save it into a
+//  single 3D file, and finally save it again as a set of 2D slices with other
+//  names.
 //
 //  This requires the following headers as shown.
 //
@@ -42,15 +43,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char ** argv )
+int
+main(int argc, char ** argv)
 {
   // Verify the number of parameters in the command line
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "first last  outputRGBImageFile " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   // Software Guide : BeginLatex
@@ -64,10 +66,10 @@ int main( int argc, char ** argv )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::RGBPixel< unsigned char >        PixelType;
-  const unsigned int Dimension = 3;
+  using PixelType = itk::RGBPixel<unsigned char>;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< PixelType, Dimension >    ImageType;
+  using ImageType = itk::Image<PixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -81,37 +83,37 @@ int main( int argc, char ** argv )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageSeriesReader< ImageType >  SeriesReaderType;
-  typedef itk::ImageFileWriter<   ImageType >  WriterType;
+  using SeriesReaderType = itk::ImageSeriesReader<ImageType>;
+  using WriterType = itk::ImageFileWriter<ImageType>;
 
   SeriesReaderType::Pointer seriesReader = SeriesReaderType::New();
-  WriterType::Pointer       writer       = WriterType::New();
+  WriterType::Pointer       writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int first = atoi( argv[1] );
-  const unsigned int last  = atoi( argv[2] );
+  const unsigned int first = std::stoi(argv[1]);
+  const unsigned int last = std::stoi(argv[2]);
 
   const char * outputFilename = argv[3];
 
   // Software Guide : BeginLatex
   //
-  // We use a NumericSeriesFileNames class in order to generate the filenames of
-  // the slices to be read. Later on in this example we will reuse this object in
-  // order to generate the filenames of the slices to be written.
+  // We use a NumericSeriesFileNames class in order to generate the filenames
+  // of the slices to be read. Later on in this example we will reuse this
+  // object in order to generate the filenames of the slices to be written.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::NumericSeriesFileNames    NameGeneratorType;
+  using NameGeneratorType = itk::NumericSeriesFileNames;
 
   NameGeneratorType::Pointer nameGenerator = NameGeneratorType::New();
 
-  nameGenerator->SetStartIndex( first );
-  nameGenerator->SetEndIndex( last );
-  nameGenerator->SetIncrementIndex( 1 );
+  nameGenerator->SetStartIndex(first);
+  nameGenerator->SetEndIndex(last);
+  nameGenerator->SetIncrementIndex(1);
 
-  nameGenerator->SetSeriesFormat( "vwe%03d.png" );
+  nameGenerator->SetSeriesFormat("vwe%03d.png");
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -122,7 +124,7 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  seriesReader->SetImageIO( itk::PNGImageIO::New() );
+  seriesReader->SetImageIO(itk::PNGImageIO::New());
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -133,62 +135,62 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  seriesReader->SetFileNames( nameGenerator->GetFileNames()  );
+  seriesReader->SetFileNames(nameGenerator->GetFileNames());
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // The name of the volumetric output image is passed to the image writer, and
-  // we connect the output of the series reader to the input of the volumetric
-  // writer.
+  // The name of the volumetric output image is passed to the image writer,
+  // and we connect the output of the series reader to the input of the
+  // volumetric writer.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  writer->SetFileName( outputFilename );
+  writer->SetFileName(outputFilename);
 
-  writer->SetInput( seriesReader->GetOutput() );
+  writer->SetInput(seriesReader->GetOutput());
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
   //
   //  Finally, execution of the pipeline can be triggered by invoking the
-  //  \code{Update()} method in the volumetric writer. This, of course, is done
-  //  from inside a try/catch block.
+  //  \code{Update()} method in the volumetric writer. This, of course, is
+  //  done from inside a try/catch block.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Error reading the series " << std::endl;
     std::cerr << excp << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // We now proceed to save the same volumetric dataset as a set of slices. This
-  // is done only to illustrate the process for saving a volume as a series of 2D
-  // individual datasets. The type of the series writer must be instantiated
-  // taking into account that the input file is a 3D volume and the output files
-  // are 2D images.  Additionally, the output of the series reader is connected
-  // as input to the series writer.
+  // We now proceed to save the same volumetric dataset as a set of slices.
+  // This is done only to illustrate the process for saving a volume as a
+  // series of 2D individual datasets. The type of the series writer must be
+  // instantiated taking into account that the input file is a 3D volume and
+  // the output files are 2D images.  Additionally, the output of the series
+  // reader is connected as input to the series writer.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< PixelType, 2 >     Image2DType;
+  using Image2DType = itk::Image<PixelType, 2>;
 
-  typedef itk::ImageSeriesWriter< ImageType, Image2DType > SeriesWriterType;
+  using SeriesWriterType = itk::ImageSeriesWriter<ImageType, Image2DType>;
 
   SeriesWriterType::Pointer seriesWriter = SeriesWriterType::New();
 
-  seriesWriter->SetInput( seriesReader->GetOutput() );
+  seriesWriter->SetInput(seriesReader->GetOutput());
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -201,9 +203,9 @@ int main( int argc, char ** argv )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  nameGenerator->SetSeriesFormat( "output%03d.png" );
+  nameGenerator->SetSeriesFormat("output%03d.png");
 
-  seriesWriter->SetFileNames( nameGenerator->GetFileNames() );
+  seriesWriter->SetFileNames(nameGenerator->GetFileNames());
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -215,14 +217,14 @@ int main( int argc, char ** argv )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     seriesWriter->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Error reading the series " << std::endl;
     std::cerr << excp << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex

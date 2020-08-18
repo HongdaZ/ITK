@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,29 +19,18 @@
 
 namespace itk
 {
-TimeProbe
-::TimeProbe():ResourceProbe< TimeStampType, TimeStampType >("Time", "s")
+TimeProbe ::TimeProbe()
+  : ResourceProbe<TimeStampType, TimeStampType>("Time", "s")
 {
-  m_RealTimeClock   = RealTimeClock::New();
+  m_RealTimeClock = RealTimeClock::New();
 }
 
-TimeProbe
-::~TimeProbe()
-{}
+TimeProbe ::~TimeProbe() = default;
 
 TimeProbe::TimeStampType
-TimeProbe
-::GetInstantValue(void) const
+TimeProbe ::GetInstantValue() const
 {
   return m_RealTimeClock->GetTimeInSeconds();
 }
 
-#if !defined(ITK_LEGACY_REMOVE)
-TimeProbe::TimeStampType
-TimeProbe
-::GetMeanTime(void) const
-{
-  return this->GetMean();
-}
-#endif
 } // end namespace itk

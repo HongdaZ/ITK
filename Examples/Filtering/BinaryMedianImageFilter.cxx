@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,22 +22,22 @@
 //    ARGUMENTS:    2 2
 //  Software Guide : EndCommandLineArgs
 //
-//    BinaryThresholdImageFilterOutput.png was obtained from the BinaryThreshold
-//    ImageFilter example.
+//    BinaryThresholdImageFilterOutput.png was obtained from the
+//    BinaryThreshold ImageFilter example.
 //
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{BinaryMedianImageFilter} is commonly used as a robust approach
-//  for noise reduction. BinaryMedianImageFilter computes the value of each
-//  output pixel as the statistical median of the neighborhood of values around
-//  the corresponding input pixel. When the input images are binary, the
-//  implementation can be optimized by simply counting the number of pixels
-//  ON/OFF around the current pixel.
+//  The \doxygen{BinaryMedianImageFilter} is commonly used as a robust
+//  approach for noise reduction. BinaryMedianImageFilter computes the value
+//  of each output pixel as the statistical median of the neighborhood of
+//  values around the corresponding input pixel. When the input images are
+//  binary, the implementation can be optimized by simply counting the number
+//  of pixels ON/OFF around the current pixel.
 //
-//  This filter will work on images of any dimension thanks to the internal use
-//  of \doxygen{NeighborhoodIterator} and \doxygen{NeighborhoodOperator}. The
-//  size of the neighborhood over which the median is computed can be set by
-//  the user.
+//  This filter will work on images of any dimension thanks to the internal
+//  use of \doxygen{NeighborhoodIterator} and \doxygen{NeighborhoodOperator}.
+//  The size of the neighborhood over which the median is computed can be set
+//  by the user.
 //
 //  \index{itk::BinaryMedianImageFilter}
 //
@@ -63,14 +63,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile outputImageFile radiusX radiusY" << std::endl;
+    std::cerr << argv[0] << "  inputImageFile outputImageFile radiusX radiusY"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -80,22 +82,22 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   unsigned char  InputPixelType;
-  typedef   unsigned char  OutputPixelType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -109,8 +111,8 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::BinaryMedianImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::BinaryMedianImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -129,8 +131,8 @@ int main( int argc, char * argv[] )
   //
   //  Software Guide : EndLatex
 
-  const unsigned int radiusX = atoi( argv[3] );
-  const unsigned int radiusY = atoi( argv[4] );
+  const unsigned int radiusX = std::stoi(argv[3]);
+  const unsigned int radiusY = std::stoi(argv[4]);
 
   // Software Guide : BeginCodeSnippet
   InputImageType::SizeType indexRadius;
@@ -138,7 +140,7 @@ int main( int argc, char * argv[] )
   indexRadius[0] = radiusX; // radius along x
   indexRadius[1] = radiusY; // radius along y
 
-  filter->SetRadius( indexRadius );
+  filter->SetRadius(indexRadius);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -155,8 +157,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -177,8 +179,8 @@ int main( int argc, char * argv[] )
   //  the BinaryMedianImageFilter filter on a slice of MRI brain image using a
   //  neighborhood radius of \(2,2\), which corresponds to a $ 5 \times 5 $
   //  classical neighborhood.  The filtered image demonstrates the capability
-  //  of this filter for reducing noise both in the background and foreground of
-  //  the image, as well as smoothing the contours of the regions.
+  //  of this filter for reducing noise both in the background and foreground
+  //  of the image, as well as smoothing the contours of the regions.
   //
   //  Software Guide : EndLatex
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
 //  Software Guide : EndCommandLineArgs
 //  Software Guide : BeginLatex
 //
-//  The \doxygen{BinaryMinMaxCurvatureFlowImageFilter} applies a variant of the
-//  CurvatureFlow algorithm. Which means that the speed of propagation is
+//  The \doxygen{BinaryMinMaxCurvatureFlowImageFilter} applies a variant of
+//  the CurvatureFlow algorithm. Which means that the speed of propagation is
 //  proportional to the curvature $\kappa$ of iso-contours. This filter adds
 //  however, the restriction that negative curvatures are only accepted in
 //  regions of the image having low intensities. The user should provide an
@@ -36,8 +36,8 @@
 //  curvature is null this is returned as value.  Otherwise, an average of
 //  neighbor pixel intensities is computed and it is compared against a
 //  user-provided threshold. If this average is less than the threshold then
-//  the algorithm returns $\min(\kappa,0)$. If the average intensity is greater
-//  or equal than user-provided threshold, then the returned value is
+//  the algorithm returns $\min(\kappa,0)$. If the average intensity is
+//  greater or equal than user-provided threshold, then the returned value is
 //  $\max(\kappa,0)$.
 //
 //  \begin{equation}
@@ -64,7 +64,8 @@
 
 //  Software Guide : BeginLatex
 //
-//  The first step required for using this filter is to include its header file
+//  The first step required for using this filter is to include its header
+//  file
 //
 //  \index{itk::BinaryMinMaxCurvatureFlowImageFilter!header}
 //
@@ -74,17 +75,19 @@
 #include "itkBinaryMinMaxCurvatureFlowImageFilter.h"
 // Software Guide : EndCodeSnippet
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
 
 
-  if( argc < 7 )
-    {
+  if (argc < 7)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile  ";
-    std::cerr << "numberOfIterations  timeStep  stencilRadius  threshold" << std::endl;
+    std::cerr << "numberOfIterations  timeStep  stencilRadius  threshold"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -95,21 +98,21 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef    float    InputPixelType;
-  typedef    float    OutputPixelType;
+  using InputPixelType = float;
+  using OutputPixelType = float;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
-  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
 
 
   //  Software Guide : BeginLatex
   //
-  //  The BinaryMinMaxCurvatureFlowFilter type is now instantiated using both the
-  //  input image and the output image types. The filter is then created using
-  //  the \code{New()} method.
+  //  The BinaryMinMaxCurvatureFlowFilter type is now instantiated using both
+  //  the input image and the output image types. The filter is then created
+  //  using the \code{New()} method.
   //
   //  \index{itk::BinaryMinMaxCurvatureFlowImageFilter!instantiation}
   //  \index{itk::BinaryMinMaxCurvatureFlowImageFilter!New()}
@@ -118,15 +121,16 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::BinaryMinMaxCurvatureFlowImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType =
+    itk::BinaryMinMaxCurvatureFlowImageFilter<InputImageType,
+                                              OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
 
 
   //  Software Guide : BeginLatex
@@ -137,19 +141,19 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
+  filter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int numberOfIterations = atoi( argv[3] );
+  const unsigned int numberOfIterations = std::stoi(argv[3]);
 
-  const double       timeStep = atof( argv[4] );
+  const double timeStep = std::stod(argv[4]);
 
-  typedef FilterType::RadiusValueType RadiusType;
+  using RadiusType = FilterType::RadiusValueType;
 
-  const RadiusType radius = atol( argv[5] );
+  const RadiusType radius = atol(argv[5]);
 
-  const double threshold = atof( argv[6] );
+  const double threshold = std::stod(argv[6]);
 
 
   //  Software Guide : BeginLatex
@@ -173,11 +177,11 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetTimeStep( timeStep );
-  filter->SetNumberOfIterations( numberOfIterations );
+  filter->SetTimeStep(timeStep);
+  filter->SetNumberOfIterations(numberOfIterations);
 
-  filter->SetStencilRadius( radius );
-  filter->SetThreshold( threshold );
+  filter->SetStencilRadius(radius);
+  filter->SetThreshold(threshold);
 
   filter->Update();
   // Software Guide : EndCodeSnippet
@@ -185,37 +189,37 @@ int main( int argc, char * argv[] )
 
   //  Software Guide : BeginLatex
   //
-  //  Typical values for the time step are $0.125$ in $2D$ images and $0.0625$ in
-  //  $3D$ images. The number of iterations can be usually around $10$, more
-  //  iterations will result in further smoothing and will increase linearly
-  //  the computing time. The radius of the stencil can be typically $1$. The
-  //  value of the threshold should be selected according to the gray levels of
-  //  the object of interest and the gray level of its background.
+  //  Typical values for the time step are $0.125$ in $2D$ images and $0.0625$
+  //  in $3D$ images. The number of iterations can be usually around $10$,
+  //  more iterations will result in further smoothing and will increase
+  //  linearly the computing time. The radius of the stencil can be typically
+  //  $1$. The value of the threshold should be selected according to the gray
+  //  levels of the object of interest and the gray level of its background.
   //
   //  Software Guide : EndLatex
 
-  typedef unsigned char WritePixelType;
+  using WritePixelType = unsigned char;
 
-  typedef itk::Image< WritePixelType, 2 > WriteImageType;
+  using WriteImageType = itk::Image<WritePixelType, 2>;
 
-  typedef itk::RescaleIntensityImageFilter<
-               OutputImageType, WriteImageType > RescaleFilterType;
+  using RescaleFilterType =
+    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  rescaler->SetOutputMinimum(   0 );
-  rescaler->SetOutputMaximum( 255 );
+  rescaler->SetOutputMinimum(0);
+  rescaler->SetOutputMaximum(255);
 
 
-  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  using WriterType = itk::ImageFileWriter<WriteImageType>;
 
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
 
 
-  rescaler->SetInput( filter->GetOutput() );
-  writer->SetInput( rescaler->GetOutput() );
+  rescaler->SetInput(filter->GetOutput());
+  writer->SetInput(rescaler->GetOutput());
   writer->Update();
 
 
@@ -231,14 +235,14 @@ int main( int argc, char * argv[] )
   // \label{fig:BinaryMinMaxCurvatureFlowImageFilterInputOutput}
   // \end{figure}
   //
-  //  Figure \ref{fig:BinaryMinMaxCurvatureFlowImageFilterInputOutput} illustrates
-  //  the effect of this filter on a MRI proton density image of the brain. In
-  //  this example the filter was run with a time step of $0.125$, $10$ iterations,
-  //  a stencil radius of $1$ and a threshold of $128$.
+  //  Figure \ref{fig:BinaryMinMaxCurvatureFlowImageFilterInputOutput}
+  //  illustrates the effect of this filter on a MRI proton density image of
+  //  the brain. In this example the filter was run with a time step of
+  //  $0.125$, $10$ iterations, a stencil radius of $1$ and a threshold of
+  //  $128$.
   //
   //  Software Guide : EndLatex
 
 
   return EXIT_SUCCESS;
-
 }

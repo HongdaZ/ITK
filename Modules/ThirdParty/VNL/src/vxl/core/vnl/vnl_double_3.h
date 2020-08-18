@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_double_3.h
 #ifndef vnl_double_3_h_
 #define vnl_double_3_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief Contains class vnl_double_3 and function vnl_cross_3d()
@@ -17,7 +14,7 @@
 //   Peter Vanroose, 24 Mar. 2007: removed deprecated cross_3d() alias
 // \endverbatim
 
-#include <vnl/vnl_T_n.h>
+#include "vnl_T_n.h"
 
 //: class vnl_double_3 : a vnl_vector of 3 doubles.
 vnl_T_n_impl(double,3);

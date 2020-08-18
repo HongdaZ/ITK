@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@
 #include "itkImage.h"
 // Software Guide : EndCodeSnippet
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
   // Software Guide : BeginLatex
   //
@@ -45,7 +46,7 @@ int main(int, char *[])
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< unsigned short, 3 > ImageType;
+  using ImageType = itk::Image<unsigned short, 3>;
   // Software Guide : EndCodeSnippet
 
 
@@ -79,15 +80,15 @@ int main(int, char *[])
   // the image.
   //
   // In ITK, manually creating an image requires that the image is
-  // instantiated as previously shown, and that regions describing the image are
-  // then associated with it.
+  // instantiated as previously shown, and that regions describing the image
+  // are then associated with it.
   //
   // A region is defined by two classes: the \doxygen{Index} and
   // \doxygen{Size} classes. The origin of the region within the
   // image is defined by the \code{Index}. The extent, or size, of the region
-  // is defined by the \code{Size}. When an image is created manually, the user
-  // is responsible for defining the image size and the index at which the
-  // image grid starts. These two parameters make it possible to process
+  // is defined by the \code{Size}. When an image is created manually, the
+  // user is responsible for defining the image size and the index at which
+  // the image grid starts. These two parameters make it possible to process
   // selected regions.
   //
   // The \code{Index} is represented by a n-dimensional array where each
@@ -103,9 +104,9 @@ int main(int, char *[])
   // Software Guide : BeginCodeSnippet
   ImageType::IndexType start;
 
-  start[0] =   0;  // first index on X
-  start[1] =   0;  // first index on Y
-  start[2] =   0;  // first index on Z
+  start[0] = 0; // first index on X
+  start[1] = 0; // first index on Y
+  start[2] = 0; // first index on Z
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -121,11 +122,11 @@ int main(int, char *[])
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  ImageType::SizeType  size;
+  ImageType::SizeType size;
 
-  size[0]  = 200;  // size along X
-  size[1]  = 200;  // size along Y
-  size[2]  = 200;  // size along Z
+  size[0] = 200; // size along X
+  size[1] = 200; // size along Y
+  size[2] = 200; // size along Z
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -144,20 +145,20 @@ int main(int, char *[])
   // Software Guide : BeginCodeSnippet
   ImageType::RegionType region;
 
-  region.SetSize( size );
-  region.SetIndex( start );
+  region.SetSize(size);
+  region.SetIndex(start);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // Finally, the region is passed to the \code{Image} object in order to define its
-  // extent and origin. The \code{SetRegions} method sets the
-  // \emph{LargestPossibleRegion}, \emph{BufferedRegion}, and \emph{RequestedRegion}
-  // simultaneously. Note that none of the operations performed to this point
-  // have allocated memory for the image pixel data. It is necessary to
-  // invoke the \code{Allocate()} method to do this. Allocate does not
-  // require any arguments since all the information needed for memory
-  // allocation has already been provided by the region.
+  // Finally, the region is passed to the \code{Image} object in order to
+  // define its extent and origin. The \code{SetRegions} method sets the
+  // \emph{LargestPossibleRegion}, \emph{BufferedRegion}, and
+  // \emph{RequestedRegion} simultaneously. Note that none of the operations
+  // performed to this point have allocated memory for the image pixel data.
+  // It is necessary to invoke the \code{Allocate()} method to do this.
+  // Allocate does not require any arguments since all the information needed
+  // for memory allocation has already been provided by the region.
   //
   // \index{itk::Image!Allocate()}
   // \index{itk::Image!SetRegions()}
@@ -165,7 +166,7 @@ int main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  image->SetRegions( region );
+  image->SetRegions(region);
   image->Allocate();
   // Software Guide : EndCodeSnippet
 

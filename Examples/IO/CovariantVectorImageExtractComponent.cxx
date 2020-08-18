@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,17 +45,18 @@
 #include "itkImage.h"
 
 
-int main( int argc, char ** argv )
+int
+main(int argc, char ** argv)
 {
   // Verify the number of parameters in the command line
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputVectorImageFile  outputScalarImageFile";
     std::cerr << " outupNormalizedScalarImageFile";
     std::cerr << " componentToExtract" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -68,17 +69,16 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef float                 ComponentType;
-  const   unsigned int          Dimension = 2;
+  using ComponentType = float;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::CovariantVector< ComponentType,
-                                    Dimension  >      InputPixelType;
+  using InputPixelType = itk::CovariantVector<ComponentType, Dimension>;
 
-  typedef unsigned short                              OutputPixelType;
+  using OutputPixelType = unsigned short;
 
-  typedef itk::Image< InputPixelType,      Dimension >    InputImageType;
-  typedef itk::Image< ComponentType,       Dimension >    ComponentImageType;
-  typedef itk::Image< OutputPixelType,     Dimension >    OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using ComponentImageType = itk::Image<ComponentType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -90,8 +90,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -108,9 +108,9 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::VectorIndexSelectionCastImageFilter<
-                                          InputImageType,
-                                          ComponentImageType    > FilterType;
+  using FilterType =
+    itk::VectorIndexSelectionCastImageFilter<InputImageType,
+                                             ComponentImageType>;
 
   FilterType::Pointer componentExtractor = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -120,25 +120,28 @@ int main( int argc, char ** argv )
   //
   //  The VectorIndexSelectionCastImageFilter class requires us to specify
   //  which of the vector components is to be extracted from the vector image.
-  //  This is done with the \code{SetIndex()} method. In this example we obtain
-  //  this value from the command line arguments.
+  //  This is done with the \code{SetIndex()} method. In this example we
+  //  obtain this value from the command line arguments.
   //
   //  \index{itk::Vector\-Index\-Selection\-Cast\-Image\-Filter!SetIndex()}
   //
   //  Software Guide : EndLatex
 
-  const unsigned int indexOfComponentToExtract = atoi( argv[4] );
+  const unsigned int indexOfComponentToExtract = std::stoi(argv[4]);
 
-  if( indexOfComponentToExtract >= Dimension )
-    {
-    std::cerr << "You are requesting an index out of the range for the Vector dimension" << std::endl;
+  if (indexOfComponentToExtract >= Dimension)
+  {
+    std::cerr << "You are requesting an index out of the range for the "
+                 "Vector dimension"
+              << std::endl;
     std::cerr << "Vector dimension is = " << Dimension << std::endl;
-    std::cerr << "but your requested index = " << indexOfComponentToExtract << std::endl;
+    std::cerr << "but your requested index = " << indexOfComponentToExtract
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   //  Software Guide : BeginCodeSnippet
-  componentExtractor->SetIndex( indexOfComponentToExtract );
+  componentExtractor->SetIndex(indexOfComponentToExtract);
   //  Software Guide : EndCodeSnippet
 
 
@@ -153,11 +156,10 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  typedef itk::RescaleIntensityImageFilter<
-                                  ComponentImageType,
-                                  OutputImageType >      RescaleFilterType;
+  using RescaleFilterType =
+    itk::RescaleIntensityImageFilter<ComponentImageType, OutputImageType>;
 
-  RescaleFilterType::Pointer  rescaler = RescaleFilterType::New();
+  RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
   //  Software Guide : EndCodeSnippet
 
 
@@ -175,8 +177,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  rescaler->SetOutputMinimum( itk::NumericTraits< OutputPixelType >::min() );
-  rescaler->SetOutputMaximum( itk::NumericTraits< OutputPixelType >::max() );
+  rescaler->SetOutputMinimum(itk::NumericTraits<OutputPixelType>::min());
+  rescaler->SetOutputMaximum(itk::NumericTraits<OutputPixelType>::max());
   //  Software Guide : EndCodeSnippet
 
 
@@ -200,7 +202,7 @@ int main( int argc, char ** argv )
 
   // Here we recover the file names from the command line arguments
   //
-  const char * inputFilename  = argv[1];
+  const char * inputFilename = argv[1];
   const char * outputFilename = argv[3];
 
 
@@ -217,8 +219,8 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName( inputFilename  );
-  writer->SetFileName( outputFilename );
+  reader->SetFileName(inputFilename);
+  writer->SetFileName(outputFilename);
   // Software Guide : EndCodeSnippet
 
 
@@ -230,41 +232,41 @@ int main( int argc, char ** argv )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  componentExtractor->SetInput( reader->GetOutput() );
-  rescaler->SetInput( componentExtractor->GetOutput() );
-  writer->SetInput( rescaler->GetOutput() );
+  componentExtractor->SetInput(reader->GetOutput());
+  rescaler->SetInput(componentExtractor->GetOutput());
+  writer->SetInput(rescaler->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
   //  Finally we execute the pipeline by invoking \code{Update()} on the
-  //  writer. The call is placed in a \code{try/catch} block in case exceptions
-  //  are thrown.
+  //  writer. The call is placed in a \code{try/catch} block in case
+  //  exceptions are thrown.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
   // Here We add another writer that will produce the non-normalized output
   // file
   //
-  typedef itk::ImageFileWriter< ComponentImageType >  ComponentWriterType;
+  using ComponentWriterType = itk::ImageFileWriter<ComponentImageType>;
   ComponentWriterType::Pointer componentWriter = ComponentWriterType::New();
-  componentWriter->SetInput( componentExtractor->GetOutput() );
-  componentWriter->SetFileName( argv[2] );
+  componentWriter->SetInput(componentExtractor->GetOutput());
+  componentWriter->SetFileName(argv[2]);
   componentWriter->Update();
 
   return EXIT_SUCCESS;

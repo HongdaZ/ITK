@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,21 +22,21 @@
 
 namespace itk
 {
-template< typename TMesh, typename TQEType >
-typename QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::OutputType
-QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::Evaluate(QEType *e)
+template <typename TMesh, typename TQEType>
+typename QuadEdgeMeshZipMeshFunction<TMesh, TQEType>::OutputType
+QuadEdgeMeshZipMeshFunction<TMesh, TQEType>::Evaluate(QEType * e)
 {
-  if ( !this->m_Mesh )
-    {
+  if (!this->m_Mesh)
+  {
     itkDebugMacro("No mesh present.");
-    return ( QEType::m_NoPoint );
-    }
+    return (QEType::m_NoPoint);
+  }
 
-  if ( e->IsLeftSet() )
-    {
+  if (e->IsLeftSet())
+  {
     itkDebugMacro("Incoming edge must be adjacent to NOFACE.");
-    return ( QEType::m_NoPoint );
-    }
+    return (QEType::m_NoPoint);
+  }
 
   //     Initial state                          Final state        //
   //                                                               //
@@ -81,6 +81,7 @@ QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::Evaluate(QEType *e)
   OutputType VLeft = e->GetDestination();
   OutputType VRite = b->GetOrigin();
   bool       wasFacePresent = e->IsRightSet();
+  const auto rightFaceID = e->GetRight();
   OutputType resultingPointId = QEType::m_NoPoint;
 
   // We should be cautious and consider the case when the very
@@ -101,21 +102,21 @@ QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::Evaluate(QEType *e)
   //                 / | \                                 //
   //                /  |  \                                //
   //               /   |   \                               //
-  if ( VRite == VLeft )
+  if (VRite == VLeft)
+  {
+    if (e->IsWire() && b->IsWire())
     {
-    if ( e->IsWire() && b->IsWire() )
-      {
       this->m_Mesh->LightWeightDeleteEdge(e);
       this->m_Mesh->LightWeightDeleteEdge(b);
-      return ( resultingPointId );
-      }
+      return (resultingPointId);
     }
+  }
 
   // Delete the Edge e and it's right face:
-  if ( wasFacePresent )
-    {
-    this->m_Mesh->DeleteFace( e->GetRight() );
-    }
+  if (wasFacePresent)
+  {
+    this->m_Mesh->DeleteFace(e->GetRight());
+  }
   this->m_Mesh->LightWeightDeleteEdge(e);
 
   // We should be cautious and consider the case when the very
@@ -159,8 +160,8 @@ QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::Evaluate(QEType *e)
   // and hence the connectivity part of "Zip" job is already done.
   // Check for that case:
   //
-  if ( VLeft != VRite )
-    {
+  if (VLeft != VRite)
+  {
     // We are now left with the following situation
     //
     //         \                        /                  //
@@ -197,19 +198,24 @@ QuadEdgeMeshZipMeshFunction< TMesh, TQEType >::Evaluate(QEType *e)
     //                  /  |  \                            //
     //
     resultingPointId = this->m_Mesh->Splice(a, b);
-    }
+  }
 
   // We restore the deleted face (when it was present):
-  if ( wasFacePresent )
-    {
+  if (wasFacePresent)
+  {
     this->m_Mesh->AddFace(b);
+    if (nullptr != this->m_Mesh->GetCellData())
+    {
+      if (this->m_Mesh->GetCellData()->IndexExists(rightFaceID))
+      {
+        this->m_Mesh->SetCellData(b->GetLeft(), this->m_Mesh->GetCellData()->ElementAt(rightFaceID));
+      }
     }
+  }
 
   this->m_Mesh->Modified();
-  return ( resultingPointId );
+  return (resultingPointId);
 }
-} // namespace itk
+} // end namespace itk
 
 #endif
-
-// eof - itkQuadEdgeMeshZipMeshFunction.hxx

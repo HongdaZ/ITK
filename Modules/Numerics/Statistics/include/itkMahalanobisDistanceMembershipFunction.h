@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,41 +58,41 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template< typename TVector >
-class ITK_TEMPLATE_EXPORT MahalanobisDistanceMembershipFunction:
-  public MembershipFunctionBase< TVector >
+template <typename TVector>
+class ITK_TEMPLATE_EXPORT MahalanobisDistanceMembershipFunction : public MembershipFunctionBase<TVector>
 {
 public:
-  /** Standard class typedefs */
-  typedef MahalanobisDistanceMembershipFunction Self;
-  typedef MembershipFunctionBase< TVector >     Superclass;
-  typedef SmartPointer< Self >                  Pointer;
-  typedef SmartPointer< const Self >            ConstPointer;
+  /** Standard class type aliases */
+  using Self = MahalanobisDistanceMembershipFunction;
+  using Superclass = MembershipFunctionBase<TVector>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Strandard macros */
   itkTypeMacro(MahalanobisDistanceMembershipFunction, MembershipFunctionBase);
   itkNewMacro(Self);
 
   /** SmartPointer class for superclass */
-  typedef typename Superclass::Pointer MembershipFunctionPointer;
+  using MembershipFunctionPointer = typename Superclass::Pointer;
 
   /** Typedef alias for the measurement vectors */
-  typedef TVector MeasurementVectorType;
+  using MeasurementVectorType = TVector;
 
   /** Typedef to represent the length of measurement vectors */
-  typedef typename Superclass::MeasurementVectorSizeType MeasurementVectorSizeType;
+  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
 
   /** Type of the mean vector. RealType on a vector-type is the same
    * vector-type but with a real element type.  */
-  typedef typename itk::NumericTraits< MeasurementVectorType >::RealType MeasurementVectorRealType;
-  typedef MeasurementVectorRealType  MeanVectorType;
+  using MeasurementVectorRealType = typename itk::NumericTraits<MeasurementVectorType>::RealType;
+  using MeanVectorType = MeasurementVectorRealType;
 
   /** Type of the covariance matrix */
-  typedef VariableSizeMatrix< double > CovarianceMatrixType;
+  using CovarianceMatrixType = VariableSizeMatrix<double>;
 
   /** Set the mean used in the Mahalanobis distance. Mean is a vector type
    * similar to the measurement type but with a real element type.  */
-  void SetMean(const MeanVectorType & mean);
+  void
+  SetMean(const MeanVectorType & mean);
 
   /** Get the mean of the Mahalanobis distance. Mean is a vector type
    * similar to the measurement type but with a real element type. */
@@ -100,8 +100,9 @@ public:
 
   /** Set the covariance matrix. Covariance matrix is a
    * VariableSizeMatrix of doubles. The inverse of the covariance
-   * matrix is calculated whenever the covaraince matrix is changed. */
-  void SetCovariance(const CovarianceMatrixType & cov);
+   * matrix is calculated whenever the covariance matrix is changed. */
+  void
+  SetCovariance(const CovarianceMatrixType & cov);
 
   /** Get the covariance matrix. Covariance matrix is a
    * VariableSizeMatrix of doubles. */
@@ -112,34 +113,37 @@ public:
    * prescribed mean and covariance. Note that the Mahalanobis
    * distance is not a probability density. The square of the
    * distance is returned. */
-  double Evaluate(const MeasurementVectorType & measurement) const ITK_OVERRIDE;
+  double
+  Evaluate(const MeasurementVectorType & measurement) const override;
 
   /** Method to clone a membership function, i.e. create a new instance of
    * the same type of membership function and configure its ivars to
    * match. */
-  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  typename LightObject::Pointer
+  InternalClone() const override;
 
 protected:
   MahalanobisDistanceMembershipFunction();
-  virtual ~MahalanobisDistanceMembershipFunction() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~MahalanobisDistanceMembershipFunction() override = default;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  MeanVectorType       m_Mean;               // mean
-  CovarianceMatrixType m_Covariance;         // covariance matrix
+  MeanVectorType       m_Mean;       // mean
+  CovarianceMatrixType m_Covariance; // covariance matrix
 
   // inverse covariance matrix. automatically calculated
-  // when covariace matirx is set.
+  // when covariance matirx is set.
   CovarianceMatrixType m_InverseCovariance;
 
-  /** Boolean to cache whether the covarinace is singular or nearly singular */
+  /** Boolean to cache whether the covariance is singular or nearly singular */
   bool m_CovarianceNonsingular;
 };
 } // end of namespace Statistics
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkMahalanobisDistanceMembershipFunction.hxx"
+#  include "itkMahalanobisDistanceMembershipFunction.hxx"
 #endif
 
 #endif

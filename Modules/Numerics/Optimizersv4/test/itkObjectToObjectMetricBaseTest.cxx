@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,93 +24,140 @@
  * TODO Finish exercising all methods.
  */
 
-template< typename TFixedObject,  typename TMovingObject >
-class ObjectToObjectMetricTestMetric:
-  public itk::ObjectToObjectMetricBase
+template <typename TFixedObject, typename TMovingObject>
+class ObjectToObjectMetricTestMetric : public itk::ObjectToObjectMetricBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef ObjectToObjectMetricTestMetric                          Self;
-  typedef itk::ObjectToObjectMetricBase                           Superclass;
-  typedef itk::SmartPointer< Self >                               Pointer;
-  typedef itk::SmartPointer< const Self >                         ConstPointer;
+  /** Standard class type aliases. */
+  using Self = ObjectToObjectMetricTestMetric;
+  using Superclass = itk::ObjectToObjectMetricBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename Superclass::MeasureType          MeasureType;
-  typedef typename Superclass::DerivativeType       DerivativeType;
-  typedef typename Superclass::ParametersType       ParametersType;
-  typedef typename Superclass::ParametersValueType  ParametersValueType;
+  using MeasureType = typename Superclass::MeasureType;
+  using DerivativeType = typename Superclass::DerivativeType;
+  using ParametersType = typename Superclass::ParametersType;
+  using ParametersValueType = typename Superclass::ParametersValueType;
 
   itkTypeMacro(ObjectToObjectMetricTestMetric, ObjectToObjectMetricBase);
 
   itkNewMacro(Self);
 
   // Pure virtual functions that all Metrics must provide
-  virtual unsigned int GetNumberOfParameters() const ITK_OVERRIDE { return 5; }
+  unsigned int
+  GetNumberOfParameters() const override
+  {
+    return 5;
+  }
 
-  virtual MeasureType GetValue() const ITK_OVERRIDE
+  MeasureType
+  GetValue() const override
   {
     this->m_Value = 1.0;
     return this->m_Value;
   }
 
-  virtual void GetDerivative( DerivativeType & derivative ) const ITK_OVERRIDE
+  void
+  GetDerivative(DerivativeType & derivative) const override
   {
     derivative.Fill(0.0);
   }
 
-  virtual void GetValueAndDerivative( MeasureType & value, DerivativeType & derivative ) const ITK_OVERRIDE
+  void
+  GetValueAndDerivative(MeasureType & value, DerivativeType & derivative) const override
   {
-    value = 1.0; derivative.Fill(0.0);
+    value = 1.0;
+    derivative.Fill(0.0);
   }
 
-  virtual unsigned int GetNumberOfLocalParameters() const ITK_OVERRIDE
-  { return 0; }
-
-  virtual void UpdateTransformParameters( const DerivativeType &, ParametersValueType ) ITK_OVERRIDE {}
-
-  virtual const ParametersType & GetParameters() const ITK_OVERRIDE
-  { return m_Parameters; }
-
-  virtual bool HasLocalSupport() const ITK_OVERRIDE
-    { return false; }
-
-  virtual void SetParameters( ParametersType & ) ITK_OVERRIDE
+  unsigned int
+  GetNumberOfLocalParameters() const override
   {
+    return 0;
   }
 
-  virtual void Initialize(void) throw ( itk::ExceptionObject ) ITK_OVERRIDE {}
+  void
+  UpdateTransformParameters(const DerivativeType &, ParametersValueType) override
+  {}
 
-  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE
-  { Superclass::PrintSelf( os, indent ); }
+  const ParametersType &
+  GetParameters() const override
+  {
+    return m_Parameters;
+  }
 
-  ParametersType  m_Parameters;
+  bool
+  HasLocalSupport() const override
+  {
+    return false;
+  }
+
+  void
+  SetParameters(ParametersType &) override
+  {}
+
+  void
+  Initialize() throw(itk::ExceptionObject) override
+  {}
+
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override
+  {
+    Superclass::PrintSelf(os, indent);
+  }
+
+  ParametersType m_Parameters;
 
 private:
-  ObjectToObjectMetricTestMetric() {}
-  ~ObjectToObjectMetricTestMetric() ITK_OVERRIDE {}
+  ObjectToObjectMetricTestMetric() = default;
+  ~ObjectToObjectMetricTestMetric() override = default;
 };
 
-int itkObjectToObjectMetricBaseTest(int ,char * [])
+int
+itkObjectToObjectMetricBaseTest(int, char *[])
 {
-  typedef itk::Image< unsigned char, 3 >                       ImageType;
-  typedef ObjectToObjectMetricTestMetric<ImageType, ImageType> ObjectMetricType;
+  using ImageType = itk::Image<unsigned char, 3>;
+  using ObjectMetricType = ObjectToObjectMetricTestMetric<ImageType, ImageType>;
 
   ObjectMetricType::Pointer objectMetric = ObjectMetricType::New();
 
-  objectMetric->Print( std::cout );
+  objectMetric->Print(std::cout);
 
   std::cout << objectMetric << std::endl;
 
   std::cout << objectMetric->GetNameOfClass() << std::endl;
 
-  typedef ObjectMetricType::ParametersType ParametersType;
+  using ParametersType = ObjectMetricType::ParametersType;
 
   ParametersType parameters(13);
-  parameters.Fill( 19.5);
+  parameters.Fill(19.5);
 
-  TEST_EXPECT_EQUAL( objectMetric->GetValue( ), 1.0 );
+  ITK_TEST_EXPECT_EQUAL(objectMetric->GetValue(), 1.0);
 
-  TEST_EXPECT_EQUAL( objectMetric->GetCurrentValue( ), 1.0 );
+  ITK_TEST_EXPECT_EQUAL(objectMetric->GetCurrentValue(), 1.0);
 
+  // Test streaming enumeration for ObjectToObjectMetricBaseTemplateEnums::GradientSource elements
+  const std::set<itk::ObjectToObjectMetricBaseTemplateEnums::GradientSource> allGradientSource{
+    itk::ObjectToObjectMetricBaseTemplateEnums::GradientSource::GRADIENT_SOURCE_FIXED,
+    itk::ObjectToObjectMetricBaseTemplateEnums::GradientSource::GRADIENT_SOURCE_MOVING,
+    itk::ObjectToObjectMetricBaseTemplateEnums::GradientSource::GRADIENT_SOURCE_BOTH
+  };
+  for (const auto & ee : allGradientSource)
+  {
+    std::cout << "STREAMED ENUM VALUE ObjectToObjectMetricBaseTemplateEnums::GradientSource: " << ee << std::endl;
+  }
+
+  // Test streaming enumeration for ObjectToObjectMetricBaseTemplateEnums::MetricCategory elements
+  const std::set<itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory> allMetricCategory{
+    itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory::UNKNOWN_METRIC,
+    itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory::OBJECT_METRIC,
+    itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory::IMAGE_METRIC,
+    itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory::POINT_SET_METRIC,
+    itk::ObjectToObjectMetricBaseTemplateEnums::MetricCategory::MULTI_METRIC
+  };
+  for (const auto & ee : allMetricCategory)
+  {
+    std::cout << "STREAMED ENUM VALUE ObjectToObjectMetricBaseTemplateEnums::MetricCategory: " << ee << std::endl;
+  }
   return EXIT_SUCCESS;
 }

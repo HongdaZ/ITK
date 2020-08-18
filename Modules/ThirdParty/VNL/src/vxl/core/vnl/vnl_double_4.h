@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_double_4.h
 #ifndef vnl_double_4_h_
 #define vnl_double_4_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief  alias for vnl_vector_fixed<double,4>
@@ -15,7 +12,7 @@
 //   Peter Vanroose, 25 June 1999: vnl_vector_fixed<double,4> already instantiated
 // \endverbatim
 
-#include <vnl/vnl_T_n.h>
+#include "vnl_T_n.h"
 
 //: class vnl_double_4 : a vnl_vector of 4 doubles.
 vnl_T_n_impl(double,4);

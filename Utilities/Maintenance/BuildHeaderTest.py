@@ -2,7 +2,7 @@
 
 #==========================================================================
 #
-#   Copyright Insight Software Consortium
+#   Copyright NumFOCUS
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -44,11 +44,14 @@ BANNED_HEADERS = set(('itkDynamicLoader.h', # This cannot be included when ITK_D
     'itkVanHerkGilWermanErodeDilateImageFilter.h', # circular include's
     'itkBSplineDeformableTransform.h',   # deprecated
     'vtkCaptureScreen.h',  # these includes require VTK
+    'itkMultiThreader.h', # Compatibility file, it should not be used
+    'itkViewImage.h', # Depends on VTK_RENDERING_BACKEND
+    'QuickView.h', # Depends on VTK_RENDERING_BACKEND
     'itkBSplineDeformableTransformInitializer.h'))
 
 HEADER = """/*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.

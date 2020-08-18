@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,17 +23,15 @@
 
 namespace itk
 {
-template< typename TSparseImageType >
-NormalVectorFunctionBase< TSparseImageType >
-::NormalVectorFunctionBase()
+template <typename TSparseImageType>
+NormalVectorFunctionBase<TSparseImageType>::NormalVectorFunctionBase()
 {
-  m_TimeStep = NumericTraits< TimeStepType >::OneValue();
+  m_TimeStep = NumericTraits<TimeStepType>::OneValue();
 }
 
-template< typename TSparseImageType >
+template <typename TSparseImageType>
 void
-NormalVectorFunctionBase< TSparseImageType >
-::PrintSelf(std::ostream & os, Indent indent) const
+NormalVectorFunctionBase<TSparseImageType>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "TimeStep: " << m_TimeStep << std::endl;

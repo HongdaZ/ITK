@@ -3,10 +3,12 @@
 # settings on Windows
 set(gtest_force_shared_crt ON CACHE INTERNAL "")
 
-# google test does not properly use pthreads on mingw
-if (MINGW)
-  set(gtest_disable_pthreads  ON CACHE INTERNAL "")
-endif()
+# - google test does not properly use pthreads on mingw
+# - google test uses CMake modern "Threads::Threads" alias which is
+#   not properly exported easily while ITK uses the old library
+#   variable style
+set(gtest_disable_pthreads  ON CACHE INTERNAL "")
+
 
 set(BUILD_GTEST                 ON  CACHE INTERNAL "")
 set(BUILD_GMOCK                 OFF CACHE INTERNAL "")
@@ -44,3 +46,4 @@ mark_as_advanced(gtest_build_samples)
 mark_as_advanced(gtest_build_tests)
 mark_as_advanced(gtest_disable_pthreads)
 mark_as_advanced(gtest_hide_internal_symbols)
+mark_as_advanced(INSTALL_GTEST)

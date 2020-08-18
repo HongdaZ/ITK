@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,43 +23,38 @@
 
 namespace itk
 {
-template< typename TImage >
-ShapeOpeningLabelMapFilter< TImage >
-::ShapeOpeningLabelMapFilter()
+template <typename TImage>
+ShapeOpeningLabelMapFilter<TImage>::ShapeOpeningLabelMapFilter()
 {
-  m_Lambda = NumericTraits< double >::ZeroValue();
+  m_Lambda = NumericTraits<double>::ZeroValue();
   m_ReverseOrdering = false;
   m_Attribute = LabelObjectType::NUMBER_OF_PIXELS;
 
   // create the output image for the removed objects
   this->SetNumberOfRequiredOutputs(2);
-  this->SetNthOutput( 1, static_cast< TImage * >( this->MakeOutput(1).GetPointer() ) );
+  this->SetNthOutput(1, static_cast<TImage *>(this->MakeOutput(1).GetPointer()));
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ShapeOpeningLabelMapFilter< TImage >
-::GenerateData()
+ShapeOpeningLabelMapFilter<TImage>::GenerateData()
 {
-  switch ( m_Attribute )
-    {
-    itkShapeLabelMapFilterDispatchMacro()
-    default:
-      itkExceptionMacro(<< "Unknown attribute type");
-      break;
-    }
+  switch (m_Attribute)
+  {
+    itkShapeLabelMapFilterDispatchMacro() default : itkExceptionMacro(<< "Unknown attribute type");
+    break;
+  }
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ShapeOpeningLabelMapFilter< TImage >
-::PrintSelf(std::ostream & os, Indent indent) const
+ShapeOpeningLabelMapFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "ReverseOrdering: "  << m_ReverseOrdering << std::endl;
-  os << indent << "Lambda: "  << m_Lambda << std::endl;
-  os << indent << "Attribute: "  << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")"
+  os << indent << "ReverseOrdering: " << m_ReverseOrdering << std::endl;
+  os << indent << "Lambda: " << m_Lambda << std::endl;
+  os << indent << "Attribute: " << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")"
      << std::endl;
 }
 } // end namespace itk

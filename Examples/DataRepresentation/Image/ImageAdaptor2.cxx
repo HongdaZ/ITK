@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@
 //  As with the previous example, the bulk of the effort in creating the image
 //  adaptor is associated with the definition of the pixel accessor class. In
 //  this case, the accessor converts a RGB vector to a scalar containing the
-//  red channel component. Note that in the following, we do not need to define
-//  the \code{Set()} method since we only expect the adaptor to be used for
-//  reading data from the image.
+//  red channel component. Note that in the following, we do not need to
+//  define the \code{Set()} method since we only expect the adaptor to be used
+//  for reading data from the image.
 //
 //  Software Guide : EndLatex
 
@@ -52,13 +52,14 @@
 class RedChannelPixelAccessor
 {
 public:
-  typedef itk::RGBPixel<float>   InternalType;
-  typedef               float    ExternalType;
+  using InternalType = itk::RGBPixel<float>;
+  using ExternalType = float;
 
-  static ExternalType Get( const InternalType & input )
-    {
-    return static_cast<ExternalType>( input.GetRed() );
-    }
+  static ExternalType
+  Get(const InternalType & input)
+  {
+    return static_cast<ExternalType>(input.GetRed());
+  }
 };
 // Software Guide : EndCodeSnippet
 
@@ -77,14 +78,16 @@ public:
 //
 //-------------------------
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << "ImageAdaptor2   inputRGBFileName outputRedChannelFileName" << std::endl;
+    std::cerr << "ImageAdaptor2   inputRGBFileName outputRedChannelFileName"
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -100,12 +103,12 @@ int main( int argc, char *argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  typedef RedChannelPixelAccessor::InternalType  InputPixelType;
-  const   unsigned int   Dimension = 2;
-  typedef itk::Image< InputPixelType, Dimension >   ImageType;
+  using InputPixelType = RedChannelPixelAccessor::InternalType;
+  constexpr unsigned int Dimension = 2;
+  using ImageType = itk::Image<InputPixelType, Dimension>;
 
-  typedef itk::ImageAdaptor<  ImageType,
-                              RedChannelPixelAccessor > ImageAdaptorType;
+  using ImageAdaptorType =
+    itk::ImageAdaptor<ImageType, RedChannelPixelAccessor>;
 
   ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
   // Software Guide : EndCodeSnippet
@@ -120,42 +123,42 @@ int main( int argc, char *argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< ImageType >   ReaderType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   // Software Guide : EndCodeSnippet
 
-  reader->SetFileName( argv[1] );
+  reader->SetFileName(argv[1]);
   reader->Update();
 
   // Software Guide : BeginCodeSnippet
-  adaptor->SetImage( reader->GetOutput() );
+  adaptor->SetImage(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
   //  We create an \doxygen{RescaleIntensityImageFilter} and an
-  //  \doxygen{ImageFileWriter} to rescale the dynamic range of the pixel values
-  //  and send the extracted channel to an image file. Note that the image type
-  //  used for the rescaling filter is the \code{ImageAdaptorType} itself. That
-  //  is, the adaptor type is used in the same context as an image type.
+  //  \doxygen{ImageFileWriter} to rescale the dynamic range of the pixel
+  //  values and send the extracted channel to an image file. Note that the
+  //  image type used for the rescaling filter is the \code{ImageAdaptorType}
+  //  itself. That is, the adaptor type is used in the same context as an
+  //  image type.
   //
   //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< unsigned char, Dimension >   OutputImageType;
-  typedef itk::RescaleIntensityImageFilter< ImageAdaptorType,
-                                            OutputImageType
-                                               >   RescalerType;
+  using OutputImageType = itk::Image<unsigned char, Dimension>;
+  using RescalerType =
+    itk::RescaleIntensityImageFilter<ImageAdaptorType, OutputImageType>;
 
   RescalerType::Pointer rescaler = RescalerType::New();
-  typedef itk::ImageFileWriter< OutputImageType >   WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
 
-  writer->SetFileName( argv[2] );
+  writer->SetFileName(argv[2]);
 
 
   //  Software Guide : BeginLatex
@@ -166,11 +169,11 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  rescaler->SetOutputMinimum(  0  );
-  rescaler->SetOutputMaximum( 255 );
+  rescaler->SetOutputMinimum(0);
+  rescaler->SetOutputMaximum(255);
 
-  rescaler->SetInput( adaptor );
-  writer->SetInput( rescaler->GetOutput() );
+  rescaler->SetInput(adaptor);
+  writer->SetInput(rescaler->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -184,21 +187,21 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     writer->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << "Exception caught " << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
-  //  ImageAdaptors for the green and blue channels can easily be implemented by
-  //  modifying the pixel accessor of the red channel and then using the
+  //  ImageAdaptors for the green and blue channels can easily be implemented
+  //  by modifying the pixel accessor of the red channel and then using the
   //  new pixel accessor for instantiating the type of an image adaptor.
   //  The following define a green channel pixel accessor.
   //
@@ -213,14 +216,15 @@ int main( int argc, char *argv[] )
   class GreenChannelPixelAccessor
   {
   public:
-    typedef itk::RGBPixel<float>   InternalType;
-    typedef               float    ExternalType;
+    using InternalType = itk::RGBPixel<float>;
+    using ExternalType = float;
 
-    static ExternalType Get( const InternalType & input )
-      {
-      return static_cast<ExternalType>( input.GetGreen() );
-      }
-    };
+    static ExternalType
+    Get(const InternalType & input)
+    {
+      return static_cast<ExternalType>(input.GetGreen());
+    }
+  };
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -235,16 +239,17 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   class BlueChannelPixelAccessor
-    {
+  {
   public:
-    typedef itk::RGBPixel<float>   InternalType;
-    typedef               float    ExternalType;
+    using InternalType = itk::RGBPixel<float>;
+    using ExternalType = float;
 
-    static ExternalType Get( const InternalType & input )
-      {
-      return static_cast<ExternalType>( input.GetBlue() );
-      }
-    };
+    static ExternalType
+    Get(const InternalType & input)
+    {
+      return static_cast<ExternalType>(input.GetBlue());
+    }
+  };
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex

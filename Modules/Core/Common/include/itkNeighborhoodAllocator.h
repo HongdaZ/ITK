@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
  *=========================================================================*/
 #ifndef itkNeighborhoodAllocator_h
 #define itkNeighborhoodAllocator_h
+#include <algorithm>
 #include <iostream>
+#include <memory>
 #include "itkMacro.h"
 
 namespace itk
@@ -37,119 +39,172 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKCommon
  */
-template< typename TPixel >
+template <typename TPixel>
 class NeighborhoodAllocator
 {
 public:
-  /** Standard class typedefs. */
-  typedef NeighborhoodAllocator Self;
+  /** Standard class type aliases. */
+  using Self = NeighborhoodAllocator;
 
-  /** Iterator support. Note that the naming of the typedefs is on purpose.
-  * itk::Neighborhood makes reference to the allocator, which because it may
-  * be vnl or other type, uses the lower case/underscore forms iterator and
-  * const_iterator. */
-  typedef TPixel *       iterator;
-  typedef const TPixel * const_iterator;
+  /** Iterator support. Note that the naming of the type alias is on purpose.
+   * itk::Neighborhood makes reference to the allocator, which because it may
+   * be vnl or other type, uses the lower case/underscore forms iterator and
+   * const_iterator. */
+  using iterator = TPixel *;
+  using const_iterator = const TPixel *;
 
   /** Default constructor */
-  NeighborhoodAllocator():m_ElementCount(0), m_Data(ITK_NULLPTR)  {}
+  NeighborhoodAllocator() = default;
 
-  /** Default destructor */
-  ~NeighborhoodAllocator()
-  { this->Deallocate(); }
+  /** Defaulted destructor */
+  ~NeighborhoodAllocator() = default;
 
   /** Allocates memory using new() */
-  void Allocate(unsigned int n)
+  void
+  Allocate(unsigned int n)
   {
-    m_Data = new TPixel[n];
+    m_Data.reset(new TPixel[n]);
     m_ElementCount = n;
   }
 
   /** Deallocates memory using delete[](). */
-  void Deallocate()
+  void
+  Deallocate()
   {
-    delete[] m_Data;
+    m_Data.reset();
     m_ElementCount = 0;
   }
 
   /** Copy constructor. */
-  NeighborhoodAllocator(const Self & other):m_ElementCount(0), m_Data(0)
+  NeighborhoodAllocator(const Self & other)
+    : m_ElementCount(other.m_ElementCount)
+    , m_Data(new TPixel[other.m_ElementCount])
   {
-    this->set_size(other.m_ElementCount);
-    for ( unsigned int i = 0; i < other.m_ElementCount; ++i )
-      {
-      this->operator[](i) = other[i];
-      }
-    m_ElementCount = other.m_ElementCount;
+    std::copy_n(other.m_Data.get(), m_ElementCount, m_Data.get());
   }
 
-  /** Assignment operator. */
-  const Self & operator=(const Self & other)
+
+  /** Move-constructor. */
+  NeighborhoodAllocator(Self && other) ITK_NOEXCEPT
+    : m_ElementCount{ other.m_ElementCount }
+    , m_Data{ std::move(other.m_Data) }
   {
-    if(this != &other)
-      {
+    other.m_ElementCount = 0;
+  }
+
+
+  /** Assignment operator. */
+  Self &
+  operator=(const Self & other)
+  {
+    if (this != &other)
+    {
       this->set_size(other.m_ElementCount);
-      for ( unsigned int i = 0; i < other.m_ElementCount; ++i )
-        {
-        this->operator[](i) = other[i];
-        }
-      m_ElementCount = other.m_ElementCount;
-      }
+      std::copy_n(other.m_Data.get(), m_ElementCount, m_Data.get());
+    }
     return *this;
   }
 
-  /** Comparison operator. */
-  bool operator==(const Self & other) const
+
+  /** Move-assignment. */
+  Self &
+  operator=(Self && other) ITK_NOEXCEPT
   {
-    return ( m_Data == other.m_Data );
+    if (this != &other)
+    {
+      m_ElementCount = other.m_ElementCount;
+      m_Data = std::move(other.m_Data);
+      other.m_ElementCount = 0;
+    }
+    return *this;
   }
 
-  /** Not Equal operator. */
-  bool operator!=(const Self & other) const
-  {
-    return ( m_Data != other.m_Data );
-  }
 
   /** STL-style iterator support for the memory buffer. */
-  iterator begin()
-  { return m_Data; }
-  const_iterator begin() const
-  { return m_Data; }
-  iterator end()
-  { return ( m_Data + m_ElementCount ); }
-  const_iterator end() const
-  { return ( m_Data + m_ElementCount ); }
-  unsigned int size() const
-  { return m_ElementCount; }
-
-  /** Data access methods */
-  const TPixel & operator[](unsigned int i) const
-  { return m_Data[i]; }
-  TPixel & operator[](unsigned int i)
-  { return m_Data[i]; }
-
-  /** Allocates or Reallocates a buffer of size n */
-  void set_size(unsigned int n)
+  iterator
+  begin()
   {
-    if ( m_Data ) { Deallocate(); }
-    this->Allocate(n);
+    return m_Data.get();
+  }
+  const_iterator
+  begin() const
+  {
+    return m_Data.get();
+  }
+  iterator
+  end()
+  {
+    return (m_Data.get() + m_ElementCount);
+  }
+  const_iterator
+  end() const
+  {
+    return (m_Data.get() + m_ElementCount);
+  }
+  unsigned int
+  size() const
+  {
+    return m_ElementCount;
   }
 
-protected:
-  unsigned int m_ElementCount;
-  TPixel *     m_Data;
+  /** Data access methods */
+  const TPixel & operator[](unsigned int i) const { return m_Data[i]; }
+  TPixel &       operator[](unsigned int i) { return m_Data[i]; }
+
+  /** Allocates a buffer of size n */
+  void
+  set_size(unsigned int n)
+  {
+    if (n != m_ElementCount)
+    {
+      *this = NeighborhoodAllocator();
+      m_Data.reset(new TPixel[n]);
+      m_ElementCount = n;
+    }
+  }
+
+  TPixel *
+  data() ITK_NOEXCEPT
+  {
+    return m_Data.get();
+  }
+
+  const TPixel *
+  data() const ITK_NOEXCEPT
+  {
+    return m_Data.get();
+  }
+
+private:
+  unsigned int              m_ElementCount{ 0 };
+  std::unique_ptr<TPixel[]> m_Data;
 };
 
-template< typename TPixel >
-inline std::ostream & operator<<(
-  std::ostream & o, const NeighborhoodAllocator< TPixel >
-  & a)
+template <typename TPixel>
+inline std::ostream &
+operator<<(std::ostream & o, const NeighborhoodAllocator<TPixel> & a)
 {
-  o << "NeighborhoodAllocator { this = " << &a << ", begin = "
-  << static_cast< const void * >( a.begin() )
-  << ", size=" << a.size()
-  << " }";
+  o << "NeighborhoodAllocator { this = " << &a << ", begin = " << static_cast<const void *>(a.begin())
+    << ", size=" << a.size() << " }";
   return o;
+}
+
+
+// Equality operator.
+template <typename TPixel>
+inline bool
+operator==(const NeighborhoodAllocator<TPixel> & lhs, const NeighborhoodAllocator<TPixel> & rhs)
+{
+  const unsigned int size = lhs.size();
+  return (size == rhs.size()) && ((size == 0) || std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+// Inequality operator.
+template <typename TPixel>
+inline bool
+operator!=(const NeighborhoodAllocator<TPixel> & lhs, const NeighborhoodAllocator<TPixel> & rhs)
+{
+  return !(lhs == rhs);
 }
 } // end namespace itk
 #endif

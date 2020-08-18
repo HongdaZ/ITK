@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,9 @@
 //  filter computes the value of each output pixel by finding the statistical
 //  mean of the neighborhood of the corresponding input pixel.  The following
 //  figure illustrates the local effect of the MeanImageFilter in a $2D$
-//  case. The statistical mean of the neighborhood on the left is passed as the
-//  output value associated with the pixel at the center of the neighborhood.
+//  case. The statistical mean of the neighborhood on the left is passed as
+//  the output value associated with the pixel at the center of the
+//  neighborhood.
 //
 //  \begin{center}
 //  \begin{picture}(200,46)
@@ -77,40 +78,41 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile   outputImageFile" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
   //
-  //  Then the pixel types for input and output image must be defined and, with
-  //  them, the image types can be instantiated.
+  //  Then the pixel types for input and output image must be defined and,
+  //  with them, the image types can be instantiated.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   unsigned char  InputPixelType;
-  typedef   unsigned char  OutputPixelType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -124,8 +126,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::MeanImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType = itk::MeanImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -151,7 +152,7 @@ int main( int argc, char * argv[] )
   indexRadius[0] = 1; // radius along x
   indexRadius[1] = 1; // radius along y
 
-  filter->SetRadius( indexRadius );
+  filter->SetRadius(indexRadius);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -168,8 +169,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -180,10 +181,9 @@ int main( int argc, char * argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{MeanImageFilterOutput}
-  // \itkcaption[Effect of the MedianImageFilter]{Effect of the MeanImageFilter on a slice
-  // from a MRI proton density brain image.}
-  // \label{fig:MeanImageFilterOutput}
-  // \end{figure}
+  // \itkcaption[Effect of the MedianImageFilter]{Effect of the
+  // MeanImageFilter on a slice from a MRI proton density brain image.}
+  // \label{fig:MeanImageFilterOutput} \end{figure}
   //
   //  Figure \ref{fig:MeanImageFilterOutput} illustrates the effect of this
   //  filter on a slice of MRI brain image using neighborhood radii of

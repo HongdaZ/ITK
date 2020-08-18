@@ -336,7 +336,7 @@ sockbuf::sockbuf (const sockbuf::sockdesc& thesd)
 }
 
 sockbuf::sockbuf (int domain, sockbuf::type st, int proto)
-  : rep (0)
+  : rep (nullptr)
 {
 #if defined(WIN32) && !defined(__CYGWIN__)
   WORD version = MAKEWORD(1,1);
@@ -465,7 +465,7 @@ std::streamsize sockbuf::showmanyc ()
 
 sockbuf::int_type sockbuf::underflow ()
 {
-  if (gptr () == 0)
+  if (gptr () == nullptr)
     return eof; // input stream has been disabled
 
   if (gptr () < egptr ())
@@ -521,7 +521,7 @@ sockbuf::int_type sockbuf::overflow (sockbuf::int_type c)
 //                         insert c into buffer, and return c.
 // In all cases, if error happens, throw exception.
 {
-  if (pbase () == 0)
+  if (pbase () == nullptr)
     return eof;
 
   if (c == eof)
@@ -577,15 +577,15 @@ sockbuf::sockdesc sockbuf::accept (sockAddr& sa)
   if ((int)(soc = ::accept (rep->sock, sa.addr (),
                        &len)) == -1)
     throw sockerr (errno, "sockbuf::sockdesc", sockname.text.c_str());
-  return sockdesc (soc);
+  return {soc};
 }
 
 sockbuf::sockdesc sockbuf::accept ()
 {
   int soc = -1;
-  if ((int)(soc = ::accept (rep->sock, 0, 0)) == -1)
+  if ((int)(soc = ::accept (rep->sock, nullptr, nullptr)) == -1)
     throw sockerr (errno, "sockbuf::sockdesc", sockname.text.c_str());
-  return sockdesc (soc);
+  return {soc};
 }
 
 int sockbuf::read (void* buf, int len)
@@ -645,7 +645,7 @@ int sockbuf::write(const void* buf, int len)
   int wlen=0;
   while(len>0) {
     //int wval = ::write (rep->sock, (char*) buf, len);
-    int wval = ::send (rep->sock, (char*) buf, len, 0);
+    int wval = ::send (rep->sock, (const char*) buf, len, 0);
     //assert( wval > 0 );
     if (wval == -1) throw wlen;
     len -= wval;
@@ -663,7 +663,7 @@ int sockbuf::send (const void* buf, int len, int msgf)
 
   int wlen=0;
   while(len>0) {
-    int wval = ::send (rep->sock, (char*) buf, len, msgf);
+    int wval = ::send (rep->sock, (const char*) buf, len, msgf);
     if (wval == -1) throw wlen;
     len -= wval;
     wlen += wval;
@@ -680,7 +680,7 @@ int sockbuf::sendto (sockAddr& sa, const void* buf, int len, int msgf)
 
   int wlen=0;
   while(len>0) {
-    int wval = ::sendto (rep->sock, (char*) buf, len, msgf,
+    int wval = ::sendto (rep->sock, (const char*) buf, len, msgf,
                          sa.addr (), sa.size());
     if (wval == -1) throw wlen;
     len -= wval;
@@ -742,7 +742,7 @@ int sockbuf::is_readready (int wp_sec, int wp_usec) const
   tv.tv_sec  = wp_sec;
   tv.tv_usec = wp_usec;
 
-  int ret = select ((int)(rep->sock)+1, &fds, 0, 0, (wp_sec == -1) ? 0: &tv);
+  int ret = select ((int)(rep->sock)+1, &fds, nullptr, nullptr, (wp_sec == -1) ? nullptr: &tv);
   if (ret == -1) throw sockerr (errno, "sockbuf::is_readready", sockname.text.c_str());
   return ret;
 }
@@ -757,7 +757,7 @@ int sockbuf::is_writeready (int wp_sec, int wp_usec) const
   tv.tv_sec  = wp_sec;
   tv.tv_usec = wp_usec;
 
-  int ret = select ((int)(rep->sock)+1, 0, &fds, 0, (wp_sec == -1) ? 0: &tv);
+  int ret = select ((int)(rep->sock)+1, nullptr, &fds, nullptr, (wp_sec == -1) ? nullptr: &tv);
   if (ret == -1) throw sockerr (errno, "sockbuf::is_writeready", sockname.text.c_str());
   return ret;
 }
@@ -772,7 +772,7 @@ int sockbuf::is_exceptionpending (int wp_sec, int wp_usec) const
   tv.tv_sec = wp_sec;
   tv.tv_usec = wp_usec;
 
-  int ret = select ((int)(rep->sock)+1, 0, 0, &fds, (wp_sec == -1) ? 0: &tv);
+  int ret = select ((int)(rep->sock)+1, nullptr, nullptr, &fds, (wp_sec == -1) ? nullptr: &tv);
   if (ret == -1) throw sockerr (errno, "sockbuf::is_exceptionpending", sockname.text.c_str());
   return ret;
 }
@@ -782,11 +782,11 @@ void sockbuf::shutdown (shuthow sh)
   switch (sh) {
   case shut_read:
     delete [] eback ();
-    setg (0, 0, 0);
+    setg (nullptr, nullptr, nullptr);
     break;
   case shut_write:
     delete [] pbase ();
-    setp (0, 0);
+    setp (nullptr, nullptr);
     break;
   case shut_readwrite:
     shutdown (shut_read);

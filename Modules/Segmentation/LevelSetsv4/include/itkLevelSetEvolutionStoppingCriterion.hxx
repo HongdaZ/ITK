@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,19 +23,12 @@
 
 namespace itk
 {
-template< typename TLevelSetContainer >
-LevelSetEvolutionStoppingCriterion< TLevelSetContainer >
-::LevelSetEvolutionStoppingCriterion()
+template <typename TLevelSetContainer>
+LevelSetEvolutionStoppingCriterion<TLevelSetContainer>::LevelSetEvolutionStoppingCriterion()
 {
-  this->m_RMSChangeAccumulator = NumericTraits< OutputRealType >::ZeroValue();
-  this->m_NumberOfIterations = NumericTraits< IterationIdType >::ZeroValue();
-  this->m_CurrentIteration = NumericTraits< IterationIdType >::ZeroValue();
+  this->m_RMSChangeAccumulator = NumericTraits<OutputRealType>::ZeroValue();
+  this->m_NumberOfIterations = NumericTraits<IterationIdType>::ZeroValue();
+  this->m_CurrentIteration = NumericTraits<IterationIdType>::ZeroValue();
 }
-
-template< typename TLevelSetContainer >
-LevelSetEvolutionStoppingCriterion< TLevelSetContainer >
-::~LevelSetEvolutionStoppingCriterion()
-{}
-
-}
+} // namespace itk
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,70 +29,77 @@ namespace Functor
  * \brief A Function object which maps a scalar value into an RGB pixel value.
  *
  *  This class is useful for visualizing labeled images which cannot be mapped
- *  succefully into grayscale images.  Images of unsigned long integers, for
+ *  successfully into grayscale images.  Images of unsigned long integers, for
  *  example, may have too many graylevels to visualize effectively.
  *
  *  The hashing scheme used is designed to spread close scalar values of very
  *  different colors by using the least significant bits (fastest changing) of
  *  the scalar type to determine the color.  Because labeled images may
  *  typically use sequential values, it is desirable that those values result
- *  in easily discernable colors.
+ *  in easily discernible colors.
  *
  * \ingroup ITKImageFusion
  */
-template< typename TScalar >
+template <typename TScalar>
 class ITK_TEMPLATE_EXPORT ScalarToRGBPixelFunctor
 {
 public:
   ScalarToRGBPixelFunctor();
-  ~ScalarToRGBPixelFunctor() {}
+  ~ScalarToRGBPixelFunctor() = default;
 
-  typedef unsigned char                RGBComponentType;
-  typedef RGBPixel< RGBComponentType > RGBPixelType;
-  typedef TScalar                      ScalarType;
+  using RGBComponentType = unsigned char;
+  using RGBPixelType = RGBPixel<RGBComponentType>;
+  using ScalarType = TScalar;
 
-  RGBPixelType operator()(const TScalar &) const;
+  RGBPixelType
+  operator()(const TScalar &) const;
 
-  void SetLittleEndian()
+  void
+  SetLittleEndian()
   {
     m_UseMSBForHashing = false;
   }
 
-  void SetBigEndian()
+  void
+  SetBigEndian()
   {
     m_UseMSBForHashing = true;
   }
 
-  void SetUseMSBForHashing(bool value)
+  void
+  SetUseMSBForHashing(bool value)
   {
     m_UseMSBForHashing = value;
   }
 
-  bool GetUseMSBForHashing() const
+  bool
+  GetUseMSBForHashing() const
   {
     return m_UseMSBForHashing;
   }
 
-  void UseMSBForHashingOn()
+  void
+  UseMSBForHashingOn()
   {
     m_UseMSBForHashing = true;
   }
 
-  void UseMSBForHashingOff()
+  void
+  UseMSBForHashingOff()
   {
     m_UseMSBForHashing = false;
   }
 
 
 private:
-  bool          m_UseMSBForHashing;
-  unsigned int  m_ColorIndex[3];
+  bool         m_UseMSBForHashing;
+  unsigned int m_ColorIndex[3];
 };
-} // end namespace functor
+} // end namespace Functor
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkScalarToRGBPixelFunctor.hxx"
+#  include "itkScalarToRGBPixelFunctor.hxx"
 #endif
 
 #endif

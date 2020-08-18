@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkSqrtImageFilter_h
 #define itkSqrtImageFilter_h
 
-#include "itkUnaryFunctorImageFilter.h"
+#include "itkUnaryGeneratorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,29 +30,34 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template< typename TInput, typename TOutput >
+template <typename TInput, typename TOutput>
 class Sqrt
 {
 public:
-  Sqrt() {}
-  ~Sqrt() {}
-  bool operator!=(const Sqrt &) const
+  Sqrt() = default;
+  ~Sqrt() = default;
+  bool
+  operator!=(const Sqrt &) const
   {
     return false;
   }
 
-  bool operator==(const Sqrt & other) const
+  bool
+  operator==(const Sqrt & other) const
   {
-    return !( *this != other );
+    return !(*this != other);
   }
 
-  inline TOutput operator()(const TInput & A) const
+  inline TOutput
+  operator()(const TInput & A) const
   {
-    return static_cast<TOutput>( std::sqrt( static_cast<double>(A) ) );
+    return static_cast<TOutput>(std::sqrt(static_cast<double>(A)));
   }
 };
-}
-/** \class SqrtImageFilter
+} // namespace Functor
+
+/**
+ *\class SqrtImageFilter
  * \brief Computes the square root of each pixel.
  *
  * The computations are performed using std::sqrt(x).
@@ -61,46 +66,41 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template< typename TInputImage, typename TOutputImage >
-class SqrtImageFilter:
-  public
-  UnaryFunctorImageFilter< TInputImage, TOutputImage,
-                           Functor::Sqrt< typename TInputImage::PixelType,
-                                           typename TOutputImage::PixelType >   >
+template <typename TInputImage, typename TOutputImage>
+class SqrtImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SqrtImageFilter Self;
-  typedef UnaryFunctorImageFilter<
-    TInputImage, TOutputImage,
-    Functor::Sqrt< typename TInputImage::PixelType,
-                   typename TOutputImage::PixelType > >  Superclass;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SqrtImageFilter);
 
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases. */
+  using Self = SqrtImageFilter;
+  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+  using FunctorType = Functor::Sqrt<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SqrtImageFilter,
-               UnaryFunctorImageFilter);
+  itkTypeMacro(SqrtImageFilter, UnaryGeneratorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputConvertibleToDoubleCheck,
-                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
-  itkConceptMacro( DoubleConvertibleToOutputCheck,
-                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
+  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
+  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
   // End concept checking
 #endif
 
 protected:
-  SqrtImageFilter() {}
-  virtual ~SqrtImageFilter() ITK_OVERRIDE {}
+  SqrtImageFilter()
+  {
+#if !defined(ITK_WRAPPING_PARSER)
+    Superclass::SetFunctor(FunctorType());
+#endif
+  }
 
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SqrtImageFilter);
+  ~SqrtImageFilter() override = default;
 };
 } // end namespace itk
 

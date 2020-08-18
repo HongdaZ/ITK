@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,34 +25,30 @@ namespace
 {
 double globalDefaultCoordinateTolerance = 1.0e-6;
 double globalDefaultDirectionTolerance = 1.0e-6;
-}
+} // namespace
 
 void
-ImageToImageFilterCommon
-::SetGlobalDefaultCoordinateTolerance( double tolerance )
+ImageToImageFilterCommon ::SetGlobalDefaultCoordinateTolerance(double tolerance)
 {
   globalDefaultCoordinateTolerance = tolerance;
 }
 
 double
-ImageToImageFilterCommon
-::GetGlobalDefaultCoordinateTolerance( )
+ImageToImageFilterCommon ::GetGlobalDefaultCoordinateTolerance()
 {
   return globalDefaultCoordinateTolerance;
 }
 
 void
-ImageToImageFilterCommon
-::SetGlobalDefaultDirectionTolerance( double tolerance )
+ImageToImageFilterCommon ::SetGlobalDefaultDirectionTolerance(double tolerance)
 {
   globalDefaultDirectionTolerance = tolerance;
 }
 
 double
-ImageToImageFilterCommon
-::GetGlobalDefaultDirectionTolerance( )
+ImageToImageFilterCommon ::GetGlobalDefaultDirectionTolerance()
 {
   return globalDefaultDirectionTolerance;
 }
 
-}
+} // namespace itk

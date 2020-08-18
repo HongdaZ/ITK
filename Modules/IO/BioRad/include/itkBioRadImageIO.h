@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,10 +34,11 @@
 
 namespace itk
 {
-/** \class BioRadImageIO
+/**
+ *\class BioRadImageIO
  *
  *  \brief ImageIO class for reading Bio-Rad images.
- *  Bio-Rad file format are used by confocal micropscopes like MRC 1024, MRC 600
+ *  Bio-Rad file format are used by confocal microscopes like MRC 1024, MRC 600
  *  http://www.bio-rad.com/
  *
  * The reader/writer was based on a scanned copy of the MRC-600 documentation
@@ -47,13 +48,15 @@ namespace itk
  *
  * \ingroup ITKIOBioRad
  */
-class ITKIOBioRad_EXPORT BioRadImageIO:public ImageIOBase
+class ITKIOBioRad_EXPORT BioRadImageIO : public ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef BioRadImageIO        Self;
-  typedef ImageIOBase          Superclass;
-  typedef SmartPointer< Self > Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BioRadImageIO);
+
+  /** Standard class type aliases. */
+  using Self = BioRadImageIO;
+  using Superclass = ImageIOBase;
+  using Pointer = SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,37 +68,43 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
+  bool
+  CanReadFile(const char *) override;
 
-  /** Set the spacing and dimesion information for the current filename. */
-  virtual void ReadImageInformation() ITK_OVERRIDE;
+  /** Set the spacing and dimension information for the current filename. */
+  void
+  ReadImageInformation() override;
 
   /** Reads the data from disk into the memory buffer provided. */
-  virtual void Read(void *buffer) ITK_OVERRIDE;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
+  bool
+  CanWriteFile(const char *) override;
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  virtual void WriteImageInformation() ITK_OVERRIDE {}
+  void
+  WriteImageInformation() override
+  {}
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  virtual void Write(const void *buffer) ITK_OVERRIDE;
+  void
+  Write(const void * buffer) override;
 
 protected:
   BioRadImageIO();
-  ~BioRadImageIO() ITK_OVERRIDE;
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~BioRadImageIO() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  void InternalReadImageInformation(std::ifstream & file);
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BioRadImageIO);
+  void
+  InternalReadImageInformation(std::ifstream & file);
 };
 } // end namespace itk
 

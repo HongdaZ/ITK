@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_matrix_ref.h
 #ifndef vnl_matrix_ref_h_
 #define vnl_matrix_ref_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 // \file
 // \brief vnl_matrix reference to user-supplied storage.
@@ -18,7 +15,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <vnl/vnl_matrix.h>
+#include "vnl_matrix.h"
 #include "vnl/vnl_export.h"
 
 //: vnl_matrix reference to user-supplied storage
@@ -36,37 +33,30 @@
 //    operator new, and are therefore unlikely to be the unwitting subject
 //    of an operator delete.
 template <class T>
-class VNL_TEMPLATE_EXPORT vnl_matrix_ref : public vnl_matrix<T>
+class VNL_EXPORT vnl_matrix_ref : public vnl_matrix<T>
 {
   typedef vnl_matrix<T> Base;
 
  public:
+
   // Constructors/Destructors--------------------------------------------------
-  vnl_matrix_ref(unsigned int m, unsigned int n, T *datablck) {
-    Base::data = vnl_c_vector<T>::allocate_Tptr(m);
-    for (unsigned int i = 0; i < m; ++i)
-      Base::data[i] = datablck + i * n;
-    Base::num_rows = m;
-    Base::num_cols = n;
-#if VCL_HAS_SLICED_DESTRUCTOR_BUG
-    this->vnl_matrix_own_data = 0;
-#endif
-  }
+  vnl_matrix_ref(unsigned int row, unsigned int col, const T *datablck)
+    : vnl_matrix<T>(row, col, const_cast<T *>(datablck), false)
+  { }
 
-  vnl_matrix_ref(vnl_matrix_ref<T> const & other) : vnl_matrix<T>() {
-    Base::data = vnl_c_vector<T>::allocate_Tptr(other.rows());
-    for (unsigned int i = 0; i < other.rows(); ++i)
-      Base::data[i] = const_cast<T*>(other.data_block()) + i * other.cols();
-    Base::num_rows = other.rows();
-    Base::num_cols = other.cols();
-#if VCL_HAS_SLICED_DESTRUCTOR_BUG
-    this->vnl_matrix_own_data = 0;
-#endif
-  }
+  vnl_matrix_ref(const vnl_matrix_ref<T> & other)
+  : vnl_matrix<T>(other.rows(), other.cols(),
+      const_cast<T *>(other.data_block()), false)
+  { }
 
-  ~vnl_matrix_ref() {
-    Base::data[0] = VXL_NULLPTR; // Prevent base dtor from releasing our memory
-  }
+  ~vnl_matrix_ref() override = default;
+
+  //: Copy and move constructor from vnl_matrix_ref<T> is disallowed by default
+  // due to other constructor definitions.
+  //: assignment and move-assignment is disallowed
+  //  because it does not define external memory to be managed.
+  vnl_matrix_ref & operator=( vnl_matrix_ref<T> const& ) = delete;
+  vnl_matrix_ref & operator=( vnl_matrix_ref<T> && ) = delete;
 
   //: Reference to self to make non-const temporaries.
   // This is intended for passing vnl_matrix_fixed objects to
@@ -92,9 +82,6 @@ class VNL_TEMPLATE_EXPORT vnl_matrix_ref : public vnl_matrix<T>
   //: Resizing is disallowed
   bool set_size (unsigned int, unsigned int) { return false; }
 
-  //: Copy constructor from vnl_matrix<T> is disallowed
-  // (because it would create a non-const alias to the matrix)
-  vnl_matrix_ref(vnl_matrix<T> const &) {}
 };
 
 #endif // vnl_matrix_ref_h_

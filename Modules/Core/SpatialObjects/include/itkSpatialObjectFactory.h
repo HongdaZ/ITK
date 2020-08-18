@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,26 +32,26 @@
 
 namespace itk
 {
-/** \class SpatialObjectFactory
+/**
+ *\class SpatialObjectFactory
  * \brief Create instances of SpatialObjects
  * \ingroup ITKSpatialObjects
  */
 
-template< typename T >
-class SpatialObjectFactory:public SpatialObjectFactoryBase
+template <typename T>
+class SpatialObjectFactory : public SpatialObjectFactoryBase
 {
 public:
-
-  static void RegisterSpatialObject()
+  static void
+  RegisterSpatialObject()
   {
-    typename T::Pointer t = T::New();
-    SpatialObjectFactoryBase::Pointer f =
-      SpatialObjectFactoryBase::GetFactory();
-    f->RegisterSpatialObject ( t->GetSpatialObjectTypeAsString().c_str(),
-                               t->GetSpatialObjectTypeAsString().c_str(),
-                               t->GetSpatialObjectTypeAsString().c_str(),
-                               1,
-                               CreateObjectFunction< T >::New() );
+    typename T::Pointer               t = T::New();
+    SpatialObjectFactoryBase::Pointer f = SpatialObjectFactoryBase::GetFactory();
+    f->RegisterSpatialObject(t->GetClassNameAndDimension().c_str(),
+                             t->GetClassNameAndDimension().c_str(),
+                             t->GetClassNameAndDimension().c_str(),
+                             1,
+                             CreateObjectFunction<T>::New());
   }
 };
 } // end namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 //  Software Guide : BeginLatex
 //
-//  It is common to represent geometric objects by using points on their surfaces
-//  and normals associated with those points.  This structure can be easily
-//  instantiated with the \doxygen{PointSet} class.
+//  It is common to represent geometric objects by using points on their
+//  surfaces and normals associated with those points.  This structure can be
+//  easily instantiated with the \doxygen{PointSet} class.
 //
 //  The natural class for representing normals to surfaces and
 //  gradients of functions is the \doxygen{CovariantVector}. A
@@ -51,15 +51,16 @@
 #include "itkPointSet.h"
 // Software Guide : EndCodeSnippet
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
   //  Software Guide : BeginLatex
   //
   //  The CovariantVector class is templated over the type used to
   //  represent the spatial coordinates and over the space dimension.  Since
   //  the PixelType is independent of the PointType, we are free to select any
-  //  dimension for the covariant vectors to be used as pixel type. However, we
-  //  want to illustrate here the spirit of a deformable model. It is then
+  //  dimension for the covariant vectors to be used as pixel type. However,
+  //  we want to illustrate here the spirit of a deformable model. It is then
   //  required for the vectors representing gradients to be of the same
   //  dimension as the points in space.
   //
@@ -68,8 +69,8 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int Dimension = 3;
-  typedef itk::CovariantVector< float, Dimension >    PixelType;
+  constexpr unsigned int Dimension = 3;
+  using PixelType = itk::CovariantVector<float, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -81,8 +82,8 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::PointSet< PixelType, Dimension > PointSetType;
-  PointSetType::Pointer  pointSet = PointSetType::New();
+  using PointSetType = itk::PointSet<PixelType, Dimension>;
+  PointSetType::Pointer pointSet = PointSetType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -98,25 +99,25 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointSetType::PixelType   gradient;
-  PointSetType::PointType   point;
+  PointSetType::PixelType gradient;
+  PointSetType::PointType point;
 
-  unsigned int pointId =  0;
-  const double radius = 300.0;
+  unsigned int     pointId = 0;
+  constexpr double radius = 300.0;
 
-  for(unsigned int i=0; i<360; i++)
-    {
+  for (unsigned int i = 0; i < 360; i++)
+  {
     const double angle = i * std::atan(1.0) / 45.0;
-    point[0] = radius * std::sin( angle );
-    point[1] = radius * std::cos( angle );
-    point[2] = 1.0;   // flat on the Z plane
-    gradient[0] =  std::sin(angle);
-    gradient[1] =  std::cos(angle);
-    gradient[2] = 0.0;  // flat on the Z plane
-    pointSet->SetPoint( pointId, point );
-    pointSet->SetPointData( pointId, gradient );
+    point[0] = radius * std::sin(angle);
+    point[1] = radius * std::cos(angle);
+    point[2] = 1.0; // flat on the Z plane
+    gradient[0] = std::sin(angle);
+    gradient[1] = std::cos(angle);
+    gradient[2] = 0.0; // flat on the Z plane
+    pointSet->SetPoint(pointId, point);
+    pointSet->SetPointData(pointId, gradient);
     pointId++;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -137,26 +138,26 @@ int main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  typedef  PointSetType::PointDataContainer::ConstIterator PointDataIterator;
+  using PointDataIterator = PointSetType::PointDataContainer::ConstIterator;
   PointDataIterator pixelIterator = pointSet->GetPointData()->Begin();
-  PointDataIterator pixelEnd      = pointSet->GetPointData()->End();
+  PointDataIterator pixelEnd = pointSet->GetPointData()->End();
 
-  typedef  PointSetType::PointsContainer::Iterator     PointIterator;
+  using PointIterator = PointSetType::PointsContainer::Iterator;
   PointIterator pointIterator = pointSet->GetPoints()->Begin();
-  PointIterator pointEnd      = pointSet->GetPoints()->End();
+  PointIterator pointEnd = pointSet->GetPoints()->End();
 
-  while( pixelIterator != pixelEnd  && pointIterator != pointEnd )
-    {
-    point    = pointIterator.Value();
+  while (pixelIterator != pixelEnd && pointIterator != pointEnd)
+  {
+    point = pointIterator.Value();
     gradient = pixelIterator.Value();
-    for(unsigned int i=0; i<Dimension; i++)
-      {
+    for (unsigned int i = 0; i < Dimension; i++)
+    {
       point[i] += gradient[i];
-      }
+    }
     pointIterator.Value() = point;
     ++pixelIterator;
     ++pointIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -169,9 +170,9 @@ int main(int, char *[])
   //  illegal addition manually between the components of the gradient and
   //  the coordinates of the points.
   //
-  //  Note that the absence of some basic operators on the ITK geometry classes
-  //  is completely intentional with the aim of preventing the  incorrect use
-  //  of the mathematical concepts they represent.
+  //  Note that the absence of some basic operators on the ITK geometry
+  //  classes is completely intentional with the aim of preventing the
+  //  incorrect use of the mathematical concepts they represent.
   //
   //  \index{itk::CovariantVector}
   //
@@ -182,12 +183,12 @@ int main(int, char *[])
   //  We can finally visit all the points and print out the new values.
   //
   pointIterator = pointSet->GetPoints()->Begin();
-  pointEnd      = pointSet->GetPoints()->End();
-  while( pointIterator != pointEnd )
-    {
+  pointEnd = pointSet->GetPoints()->End();
+  while (pointIterator != pointEnd)
+  {
     std::cout << pointIterator.Value() << std::endl;
     ++pointIterator;
-    }
+  }
 
 
   return EXIT_SUCCESS;

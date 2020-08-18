@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,20 +42,21 @@
 #include "itkRGBPixel.h"
 // Software Guide : EndCodeSnippet
 
-int main( int , char * argv[] )
+int
+main(int, char * argv[])
 {
   // Software Guide : BeginLatex
   //
   // The RGB pixel class is templated over a type used to represent each one
-  // of the red, green and blue pixel components. A typical instantiation of the
-  // templated class is as follows.
+  // of the red, green and blue pixel components. A typical instantiation of
+  // the templated class is as follows.
   //
   //  \index{itk::RGBPixel!Instantiation}
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::RGBPixel< unsigned char >    PixelType;
+  using PixelType = itk::RGBPixel<unsigned char>;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -65,7 +66,7 @@ int main( int , char * argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Image< PixelType, 3 >   ImageType;
+  using ImageType = itk::Image<PixelType, 3>;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -79,16 +80,16 @@ int main( int , char * argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< ImageType >  ReaderType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
   // Software Guide : EndCodeSnippet
 
   ReaderType::Pointer reader = ReaderType::New();
-  const char * const filename = argv[1];
-  reader->SetFileName( filename );
+  const char * const  filename = argv[1];
+  reader->SetFileName(filename);
   reader->Update();
 
-  ImageType::Pointer image = reader->GetOutput();
-  const ImageType::IndexType pixelIndex = {{25,35,0}};
+  ImageType::Pointer         image = reader->GetOutput();
+  const ImageType::IndexType pixelIndex = { { 25, 35, 0 } };
 
   // Software Guide : BeginLatex
   //
@@ -103,11 +104,11 @@ int main( int , char * argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PixelType onePixel = image->GetPixel( pixelIndex );
+  PixelType onePixel = image->GetPixel(pixelIndex);
 
-  PixelType::ValueType red   = onePixel.GetRed();
+  PixelType::ValueType red = onePixel.GetRed();
   PixelType::ValueType green = onePixel.GetGreen();
-  PixelType::ValueType blue  = onePixel.GetBlue();
+  PixelType::ValueType blue = onePixel.GetBlue();
   // Software Guide : EndCodeSnippet
 
   std::cout << "Pixel values from GetRed,GetGreen,GetBlue:" << std::endl;
@@ -129,9 +130,9 @@ int main( int , char * argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  red   = onePixel[0];  // extract Red   component
-  green = onePixel[1];  // extract Green component
-  blue  = onePixel[2];  // extract Blue  component
+  red = onePixel[0];   // extract Red   component
+  green = onePixel[1]; // extract Green component
+  blue = onePixel[2];  // extract Blue  component
 
   std::cout << "Pixel values:" << std::endl;
   std::cout << "Red = "

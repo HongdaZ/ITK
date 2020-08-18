@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,19 +24,11 @@
 namespace itk
 {
 
-template< typename TDomain >
-LevelSetDomainPartitionBase< TDomain >::
-LevelSetDomainPartitionBase()
+template <typename TDomain>
+LevelSetDomainPartitionBase<TDomain>::LevelSetDomainPartitionBase()
 {
-  this->m_NumberOfLevelSetFunctions = NumericTraits< IdentifierType >::OneValue();
+  this->m_NumberOfLevelSetFunctions = NumericTraits<IdentifierType>::OneValue();
 }
-
-template< typename TDomain >
-LevelSetDomainPartitionBase< TDomain >::
-~LevelSetDomainPartitionBase()
-{
-}
-
-} //end namespace itk
+} // end namespace itk
 
 #endif

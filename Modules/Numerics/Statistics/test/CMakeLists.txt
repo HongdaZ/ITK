@@ -91,6 +91,9 @@ itkStatisticsAlgorithmTest.cxx
 itkStatisticsAlgorithmTest2.cxx
 itkUniformRandomSpatialNeighborSubsamplerTest.cxx
 itkVectorContainerToListSampleAdaptorTest.cxx
+itkImageToHistogramFilterTest.cxx
+itkImageToHistogramFilterTest2.cxx
+itkImageToHistogramFilterTest3.cxx
 )
 
 CreateTestDriver(ITKStatistics  "${ITKStatistics-Test_LIBRARIES}" "${ITKStatisticsTests}")
@@ -199,7 +202,7 @@ set_tests_properties(itkKdTreeTest11 PROPERTIES ATTACHED_FILES_ON_FAIL ${TEMP}/i
 #  much for regression testing. They need the "dot" tool that is part of the
 #  Graphviz package. The dot executable is found as part of the process of
 #  configuring the Doxygen documentation. Therefore, to enable these tests
-#  below, you must enable BUILD_DOXYGEN and BUILD_DOCUMENTATION.
+#  below, you must enable BUILD_DOXYGEN and ITK_BUILD_DOCUMENTATION.
 #
 if(DOXYGEN_DOT_EXECUTABLE)
 itk_add_test(NAME itkKdTreeTest1Plot
@@ -406,5 +409,14 @@ itk_add_test(NAME itkUniformRandomSpatialNeighborSubsamplerTest
      ${ITK_TEST_OUTPUT_DIR}/itkUniformRandomSubsamplingTest.mha)
 itk_add_test(NAME itkVectorContainerToListSampleAdaptorTest
       COMMAND ITKStatisticsTestDriver itkVectorContainerToListSampleAdaptorTest)
-itk_python_expression_add_test(NAME itkNormalVariateGeneratorPythonTest
-EXPRESSION "itkNormalVariateGenerator = itk.NormalVariateGenerator.New()")
+itk_add_test(NAME itkImageToHistogramFilterTest
+        COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest)
+itk_add_test(NAME itkImageToHistogramFilterTest2
+        COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest2
+        DATA{${ITK_DATA_ROOT}/Input/VisibleWomanEyeSlice.png} ${ITK_TEST_OUTPUT_DIR}/itkImageToHistogramFilterTest2.txt)
+itk_add_test(NAME itkImageToHistogramFilterTest2_Auto
+        COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest2
+        DATA{${ITK_DATA_ROOT}/Input/VisibleWomanEyeSlice.png} ${ITK_TEST_OUTPUT_DIR}/itkImageToHistogramFilterTest2.txt 1)
+itk_add_test(NAME itkImageToHistogramFilterTest3
+        COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest3
+        DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/itkImageToHistogramFilterTest3.txt)

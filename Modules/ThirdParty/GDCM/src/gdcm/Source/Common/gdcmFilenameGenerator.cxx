@@ -15,8 +15,8 @@
 #include "gdcmTrace.h"
 
 #include <cstring> // strchr
-#include <stdio.h> // snprintf
-#ifdef _WIN32
+#include <cstdio> // snprintf
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #define snprintf _snprintf
 #endif
 
@@ -40,7 +40,7 @@ const char * FilenameGenerator::GetFilename(SizeType n) const
 {
   if( n < Filenames.size() )
     return Filenames[n].c_str();
-  return NULL;
+  return nullptr;
 }
 
 //-----------------------------------------------------------------------------

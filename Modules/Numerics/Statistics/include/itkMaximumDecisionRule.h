@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ namespace itk
 {
 namespace Statistics
 {
-/** \class MaximumDecisionRule
+/**
+ *\class MaximumDecisionRule
  *  \brief A decision rule that returns the class label with the
  *  largest discriminant score.
  *
@@ -37,14 +38,14 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-class ITKStatistics_EXPORT MaximumDecisionRule:public DecisionRule
+class ITKStatistics_EXPORT MaximumDecisionRule : public DecisionRule
 {
 public:
-  /** Standard class typedefs */
-  typedef MaximumDecisionRule        Self;
-  typedef DecisionRule               Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type aliases */
+  using Self = MaximumDecisionRule;
+  using Superclass = DecisionRule;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(MaximumDecisionRule, DecisionRule);
@@ -53,23 +54,24 @@ public:
   itkNewMacro(Self);
 
   /** Types for discriminant values and vectors. */
-  typedef Superclass::MembershipValueType  MembershipValueType;
-  typedef Superclass::MembershipVectorType MembershipVectorType;
+  using MembershipValueType = Superclass::MembershipValueType;
+  using MembershipVectorType = Superclass::MembershipVectorType;
 
   /** Types for class identifiers. */
-  typedef Superclass::ClassIdentifierType ClassIdentifierType;
+  using ClassIdentifierType = Superclass::ClassIdentifierType;
 
   /**
    * Evaluate the decision rule, returning the class label associated
    * with the largest discriminant score.
    */
-  virtual ClassIdentifierType Evaluate(const MembershipVectorType & discriminantScores) const ITK_OVERRIDE;
+  ClassIdentifierType
+  Evaluate(const MembershipVectorType & discriminantScores) const override;
 
 protected:
-  MaximumDecisionRule() {}
-  virtual ~MaximumDecisionRule() ITK_OVERRIDE {}
+  MaximumDecisionRule() = default;
+  ~MaximumDecisionRule() override = default;
 
-};  // end of class
+}; // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 

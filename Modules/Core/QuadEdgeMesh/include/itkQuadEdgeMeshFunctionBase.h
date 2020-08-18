@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ namespace itk
  * But for small modifications (think of the Euler operators) that an
  * algorithm needs to apply many times, this systematic duplication can
  * be daunting.
- * MeshFunctionBase thus offers a leightweight alternative to itk Filter.
+ * MeshFunctionBase thus offers a lightweight alternative to itk Filter.
  * Subclasses of MeshFunctionBase, which should override Evaluate(), are
  * function objects that apply reduced and localised modifications
  * (geometry, or connectivity) on the InputType mesh.
@@ -51,55 +51,51 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMesh
  */
-template< typename TMesh, typename TOutput >
-class QuadEdgeMeshFunctionBase:public Object
+template <typename TMesh, typename TOutput>
+class QuadEdgeMeshFunctionBase : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef QuadEdgeMeshFunctionBase   Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshFunctionBase);
+
+  /** Standard class type aliases. */
+  using Self = QuadEdgeMeshFunctionBase;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadEdgeMeshFunctionBase, Object);
 
   /** Mesh type that must be modified */
-  typedef TMesh                           MeshType;
-  typedef typename MeshType::EdgeCellType EdgeCellType;
+  using MeshType = TMesh;
+  using EdgeCellType = typename MeshType::EdgeCellType;
 
   /** Output type */
-  typedef TOutput OutputType;
+  using OutputType = TOutput;
 
   /** Set the mesh to be modified */
-  virtual void SetInput(MeshType *input)
+  virtual void
+  SetInput(MeshType * input)
   {
     this->m_Mesh = input;
   }
 
   /** Evaluate at the specified input position */
-  //virtual OutputType Evaluate( )
+  // virtual OutputType Evaluate( )
   //  {
   //  return( (OutputType) 0 );
   //  }
 
 protected:
-  QuadEdgeMeshFunctionBase()
-  {
-    m_Mesh = (MeshType *)ITK_NULLPTR;
-  }
+  QuadEdgeMeshFunctionBase() { m_Mesh = (MeshType *)nullptr; }
 
-  ~QuadEdgeMeshFunctionBase() ITK_OVERRIDE {}
+  ~QuadEdgeMeshFunctionBase() override = default;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshFunctionBase);
-
 protected:
   /** Mesh on which to apply the modification */
-  MeshType *m_Mesh;
+  MeshType * m_Mesh;
 };
-} // namespace itk
+} // end namespace itk
 
 #endif
-
-// eof - itkQuadEdgeMeshFunctionBase.h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 // Software Guide : BeginLatex
 //
 // This example illustrates how to compute the Mutual Information between two
-// images using classes from the Statistics framework. Note that you could also
-// use for this purpose the ImageMetrics designed for the image registration
-// framework.
+// images using classes from the Statistics framework. Note that you could
+// also use for this purpose the ImageMetrics designed for the image
+// registration framework.
 //
 // For example, you could use:
 //
@@ -37,8 +37,8 @@
 // Mutual Information as computed in this example, and as commonly used in the
 // context of image registration provides a measure of how much uncertainty on
 // the value of a pixel in one image is reduced by measuring the homologous
-// pixel in the other image. Note that Mutual Information as used here does not
-// measure the amount of information that one image provides on the other
+// pixel in the other image. Note that Mutual Information as used here does
+// not measure the amount of information that one image provides on the other
 // image; this would require us to take into account the spatial
 // structures in the images as well as the semantics of the image context in
 // terms of an observer.
@@ -85,15 +85,17 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv [] )
+int
+main(int argc, char * argv[])
 {
 
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Missing command line arguments" << std::endl;
-    std::cerr << "Usage :  ImageMutualInformation1  inputImage1 inputImage2 " << std::endl;
+    std::cerr << "Usage :  ImageMutualInformation1  inputImage1 inputImage2 "
+              << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   // Software Guide : BeginLatex
@@ -103,10 +105,10 @@ int main( int argc, char * argv [] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef unsigned char                                 PixelComponentType;
-  const unsigned int                                    Dimension = 2;
+  using PixelComponentType = unsigned char;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< PixelComponentType, Dimension >   ImageType;
+  using ImageType = itk::Image<PixelComponentType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -118,30 +120,30 @@ int main( int argc, char * argv [] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::ImageFileReader< ImageType >             ReaderType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
 
   ReaderType::Pointer reader1 = ReaderType::New();
   ReaderType::Pointer reader2 = ReaderType::New();
 
-  reader1->SetFileName( argv[1] );
-  reader2->SetFileName( argv[2] );
+  reader1->SetFileName(argv[1]);
+  reader2->SetFileName(argv[2]);
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginLatex
   //
-  // Using the \doxygen{JoinImageFilter} we use the two input images and put them
-  // together in an image of two components.
+  // Using the \doxygen{JoinImageFilter} we use the two input images and put
+  // them together in an image of two components.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::JoinImageFilter< ImageType, ImageType >  JoinFilterType;
+  using JoinFilterType = itk::JoinImageFilter<ImageType, ImageType>;
 
   JoinFilterType::Pointer joinFilter = JoinFilterType::New();
 
-  joinFilter->SetInput1( reader1->GetOutput() );
-  joinFilter->SetInput2( reader2->GetOutput() );
+  joinFilter->SetInput1(reader1->GetOutput());
+  joinFilter->SetInput2(reader2->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
@@ -156,14 +158,14 @@ int main( int argc, char * argv [] )
 
   // Software Guide : BeginCodeSnippet
   try
-    {
+  {
     joinFilter->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch (const itk::ExceptionObject & excp)
+  {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -178,10 +180,10 @@ int main( int argc, char * argv [] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef JoinFilterType::OutputImageType               VectorImageType;
+  using VectorImageType = JoinFilterType::OutputImageType;
 
-  typedef itk::Statistics::ImageToHistogramFilter<
-                                       VectorImageType >  HistogramFilterType;
+  using HistogramFilterType =
+    itk::Statistics::ImageToHistogramFilter<VectorImageType>;
 
   HistogramFilterType::Pointer histogramFilter = HistogramFilterType::New();
   // Software Guide : EndCodeSnippet
@@ -190,35 +192,35 @@ int main( int argc, char * argv [] )
   // Software Guide : BeginLatex
   //
   // We pass the multiple-component image as input to the histogram filter,
-  // and setup the marginal scale value that will define the precision to be used
-  // for classifying values into the histogram bins.
+  // and setup the marginal scale value that will define the precision to be
+  // used for classifying values into the histogram bins.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramFilter->SetInput(  joinFilter->GetOutput()  );
+  histogramFilter->SetInput(joinFilter->GetOutput());
 
-  histogramFilter->SetMarginalScale( 10.0 );
+  histogramFilter->SetMarginalScale(10.0);
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginLatex
   //
-  // We must now define the number of bins to use for each one of the components
-  // in the joint image. For this purpose we take the \code{HistogramSizeType} from the
-  // traits of the histogram filter type.
+  // We must now define the number of bins to use for each one of the
+  // components in the joint image. For this purpose we take the
+  // \code{HistogramSizeType} from the traits of the histogram filter type.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef HistogramFilterType::HistogramSizeType   HistogramSizeType;
+  using HistogramSizeType = HistogramFilterType::HistogramSizeType;
 
-  HistogramSizeType size( 2 );
+  HistogramSizeType size(2);
 
-  size[0] = 255;  // number of bins for the first  channel
-  size[1] = 255;  // number of bins for the second channel
+  size[0] = 255; // number of bins for the first  channel
+  size[1] = 255; // number of bins for the second channel
 
-  histogramFilter->SetHistogramSize( size );
+  histogramFilter->SetHistogramSize(size);
   // Software Guide : EndCodeSnippet
 
 
@@ -226,17 +228,17 @@ int main( int argc, char * argv [] )
   //
   // Finally, we must specify the upper and lower bounds for the histogram
   // using the \code{SetHistogramBinMinimum()} and
-  // \code{SetHistogramBinMaximum()} methods. The \code{Update()} method is then
-  // called in order to trigger the computation of the histogram.
+  // \code{SetHistogramBinMaximum()} methods. The \code{Update()} method is
+  // then called in order to trigger the computation of the histogram.
   //
   // Software Guide : EndLatexex
 
   // Software Guide : BeginCodeSnippet
-  typedef HistogramFilterType::HistogramMeasurementVectorType
-    HistogramMeasurementVectorType;
+  using HistogramMeasurementVectorType =
+    HistogramFilterType::HistogramMeasurementVectorType;
 
-  HistogramMeasurementVectorType binMinimum( 3 );
-  HistogramMeasurementVectorType binMaximum( 3 );
+  HistogramMeasurementVectorType binMinimum(3);
+  HistogramMeasurementVectorType binMaximum(3);
 
   binMinimum[0] = -0.5;
   binMinimum[1] = -0.5;
@@ -246,8 +248,8 @@ int main( int argc, char * argv [] )
   binMaximum[1] = 255.5;
   binMaximum[2] = 255.5;
 
-  histogramFilter->SetHistogramBinMinimum( binMinimum );
-  histogramFilter->SetHistogramBinMaximum( binMaximum );
+  histogramFilter->SetHistogramBinMinimum(binMinimum);
+  histogramFilter->SetHistogramBinMaximum(binMaximum);
 
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
@@ -261,7 +263,7 @@ int main( int argc, char * argv [] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef HistogramFilterType::HistogramType  HistogramType;
+  using HistogramType = HistogramFilterType::HistogramType;
 
   const HistogramType * histogram = histogramFilter->GetOutput();
   // Software Guide : EndCodeSnippet
@@ -271,10 +273,11 @@ int main( int argc, char * argv [] )
   //
   // We now walk over all the bins of the joint histogram and compute their
   // contribution to the value of the joint entropy. For this purpose we use
-  // histogram iterators, and the \code{Begin()} and \code{End()} methods.  Since
-  // the values returned from the histogram are measuring frequency we must
-  // convert them to an estimation of probability by dividing them over the total
-  // sum of frequencies returned by the \code{GetTotalFrequency()} method.
+  // histogram iterators, and the \code{Begin()} and \code{End()} methods.
+  // Since the values returned from the histogram are measuring frequency we
+  // must convert them to an estimation of probability by dividing them over
+  // the total sum of frequencies returned by the \code{GetTotalFrequency()}
+  // method.
   //
   // Software Guide : EndLatex
 
@@ -288,48 +291,49 @@ int main( int argc, char * argv [] )
 
   // Software Guide : BeginLatex
   //
-  // We initialize to zero the variable to use for accumulating the value of the
-  // joint entropy, and then use the iterator for visiting all the bins of the
-  // joint histogram. For every bin we compute their contribution to the reduction
-  // of uncertainty. Note that in order to avoid logarithmic operations on zero
-  // values, we skip over those bins that have less than one count. The entropy
-  // contribution must be computed using logarithms in base two in order to
-  // express entropy in \textbf{bits}.
+  // We initialize to zero the variable to use for accumulating the value of
+  // the joint entropy, and then use the iterator for visiting all the bins of
+  // the joint histogram. For every bin we compute their contribution to the
+  // reduction of uncertainty. Note that in order to avoid logarithmic
+  // operations on zero values, we skip over those bins that have less than
+  // one count. The entropy contribution must be computed using logarithms in
+  // base two in order to express entropy in \textbf{bits}.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   double JointEntropy = 0.0;
 
-  while( itr != end )
-    {
+  while (itr != end)
+  {
     const double count = itr.GetFrequency();
-    if( count > 0.0 )
-      {
+    if (count > 0.0)
+    {
       const double probability = count / Sum;
-      JointEntropy +=
-        - probability * std::log( probability ) / std::log( 2.0 );
-      }
-    ++itr;
+      JointEntropy += -probability * std::log(probability) / std::log(2.0);
     }
+    ++itr;
+  }
   // Software Guide : EndCodeSnippet
 
-  std::cout << "Joint Entropy      = " << JointEntropy << " bits " << std::endl;
+  std::cout << "Joint Entropy      = " << JointEntropy << " bits "
+            << std::endl;
 
 
   // Software Guide : BeginLatex
   //
-  // Now that we have the value of the joint entropy we can proceed to estimate
-  // the values of the entropies for each image independently. This can be done
-  // by simply changing the number of bins and then recomputing the histogram.
+  // Now that we have the value of the joint entropy we can proceed to
+  // estimate the values of the entropies for each image independently. This
+  // can be done by simply changing the number of bins and then recomputing
+  // the histogram.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 255;  // number of bins for the first  channel
-  size[1] =   1;  // number of bins for the second channel
+  size[0] = 255; // number of bins for the first  channel
+  size[1] = 1;   // number of bins for the second channel
 
-  histogramFilter->SetHistogramSize( size );
+  histogramFilter->SetHistogramSize(size);
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
 
@@ -347,16 +351,16 @@ int main( int argc, char * argv [] )
 
   double Entropy1 = 0.0;
 
-  while( itr != end )
-    {
+  while (itr != end)
+  {
     const double count = itr.GetFrequency();
-    if( count > 0.0 )
-      {
+    if (count > 0.0)
+    {
       const double probability = count / Sum;
-      Entropy1 += - probability * std::log( probability ) / std::log( 2.0 );
-      }
-    ++itr;
+      Entropy1 += -probability * std::log(probability) / std::log(2.0);
     }
+    ++itr;
+  }
   // Software Guide : EndCodeSnippet
 
   std::cout << "Image1 Entropy   = " << Entropy1 << " bits " << std::endl;
@@ -364,24 +368,24 @@ int main( int argc, char * argv [] )
 
   // Software Guide : BeginLatex
   //
-  // The same process is used for computing the entropy of the other component,
-  // simply by swapping the number of bins in the histogram.
+  // The same process is used for computing the entropy of the other
+  // component, simply by swapping the number of bins in the histogram.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  size[0] =   1;  // number of bins for the first channel
-  size[1] = 255;  // number of bins for the second channel
+  size[0] = 1;   // number of bins for the first channel
+  size[1] = 255; // number of bins for the second channel
 
-  histogramFilter->SetHistogramSize( size );
+  histogramFilter->SetHistogramSize(size);
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginLatex
   //
-  // The entropy is computed in a similar manner, just by visiting all the bins on
-  // the histogram and accumulating their entropy contributions.
+  // The entropy is computed in a similar manner, just by visiting all the
+  // bins on the histogram and accumulating their entropy contributions.
   //
   //
   // Software Guide : EndLatex
@@ -392,16 +396,16 @@ int main( int argc, char * argv [] )
 
   double Entropy2 = 0.0;
 
-  while( itr != end )
-    {
+  while (itr != end)
+  {
     const double count = itr.GetFrequency();
-    if( count > 0.0 )
-      {
+    if (count > 0.0)
+    {
       const double probability = count / Sum;
-      Entropy2 += - probability * std::log( probability ) / std::log( 2.0 );
-      }
-    ++itr;
+      Entropy2 += -probability * std::log(probability) / std::log(2.0);
     }
+    ++itr;
+  }
   // Software Guide : EndCodeSnippet
 
   std::cout << "Image2 Entropy   = " << Entropy2 << " bits " << std::endl;
@@ -418,48 +422,50 @@ int main( int argc, char * argv [] )
   double MutualInformation = Entropy1 + Entropy2 - JointEntropy;
   // Software Guide : EndCodeSnippet
 
-  std::cout << "Mutual Information = " << MutualInformation << " bits " << std::endl;
+  std::cout << "Mutual Information = " << MutualInformation << " bits "
+            << std::endl;
 
 
   // Software Guide : BeginLatex
   //
-  // or Normalized Mutual Information, where the value of Mutual Information is
-  // divided by the mean entropy of the input images.
+  // or Normalized Mutual Information, where the value of Mutual Information
+  // is divided by the mean entropy of the input images.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   double NormalizedMutualInformation1 =
-                     2.0 * MutualInformation / ( Entropy1 + Entropy2 );
+    2.0 * MutualInformation / (Entropy1 + Entropy2);
   // Software Guide : EndCodeSnippet
 
-  std::cout << "Normalized Mutual Information 1 = " << NormalizedMutualInformation1 <<  std::endl;
+  std::cout << "Normalized Mutual Information 1 = "
+            << NormalizedMutualInformation1 << std::endl;
 
 
   // Software Guide : BeginLatex
   //
-  // A second form of Normalized Mutual Information has been defined as the mean
-  // entropy of the two images divided by their joint entropy.
+  // A second form of Normalized Mutual Information has been defined as the
+  // mean entropy of the two images divided by their joint entropy.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  double NormalizedMutualInformation2 = ( Entropy1 + Entropy2 ) / JointEntropy;
+  double NormalizedMutualInformation2 = (Entropy1 + Entropy2) / JointEntropy;
   // Software Guide : EndCodeSnippet
 
 
-  std::cout << "Normalized Mutual Information 2 = " << NormalizedMutualInformation2 <<  std::endl;
+  std::cout << "Normalized Mutual Information 2 = "
+            << NormalizedMutualInformation2 << std::endl;
 
 
   // Software Guide : BeginLatex
   //
-  // You probably will find very interesting how the value of Mutual Information
-  // is strongly dependent on the number of bins over which the histogram is
-  // defined.
+  // You probably will find very interesting how the value of Mutual
+  // Information is strongly dependent on the number of bins over which the
+  // histogram is defined.
   //
   // Software Guide : EndLatex
 
 
   return EXIT_SUCCESS;
-
 }

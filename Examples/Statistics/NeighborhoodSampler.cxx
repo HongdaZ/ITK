@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@
 //
 // When we want to create an \subdoxygen{Statistics}{Subsample} object that
 // includes only the measurement vectors within a radius from a center in a
-// sample, we can use the \subdoxygen{Statistics}{NeighborhoodSampler}. In this
-// example, we will use the \subdoxygen{Statistics}{ListSample} as the input
-// sample.
+// sample, we can use the \subdoxygen{Statistics}{NeighborhoodSampler}. In
+// this example, we will use the \subdoxygen{Statistics}{ListSample} as the
+// input sample.
 //
 // We include the header files for the ListSample and the
 // NeighborhoodSampler classes.
@@ -49,7 +49,8 @@
 #include "itkVector.h"
 // Software Guide : EndCodeSnippet
 
-int main()
+int
+main()
 {
   // Software Guide : BeginLatex
   //
@@ -61,26 +62,26 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef int MeasurementType;
-  const unsigned int MeasurementVectorLength = 2;
-  typedef itk::Vector< MeasurementType , MeasurementVectorLength >
-                                                    MeasurementVectorType;
-  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
+  using MeasurementType = int;
+  constexpr unsigned int MeasurementVectorLength = 2;
+  using MeasurementVectorType =
+    itk::Vector<MeasurementType, MeasurementVectorLength>;
+  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
   SampleType::Pointer sample = SampleType::New();
-  sample->SetMeasurementVectorSize( MeasurementVectorLength );
+  sample->SetMeasurementVectorSize(MeasurementVectorLength);
 
   MeasurementVectorType mv;
   for (unsigned int i = 1; i < 6; ++i)
-    {
+  {
     for (unsigned int j = 0; j < 2; ++j)
-      {
-      mv[j] = ( MeasurementType ) i;
-      }
-    for (unsigned int j = 0; j < i; ++j)
-      {
-      sample->PushBack(mv);
-      }
+    {
+      mv[j] = (MeasurementType)i;
     }
+    for (unsigned int j = 0; j < i; ++j)
+    {
+      sample->PushBack(mv);
+    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -97,16 +98,16 @@ int main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::NeighborhoodSampler< SampleType > SamplerType;
+  using SamplerType = itk::Statistics::NeighborhoodSampler<SampleType>;
   SamplerType::Pointer sampler = SamplerType::New();
 
-  sampler->SetInputSample( sample );
-  SamplerType::CenterType center( MeasurementVectorLength );
+  sampler->SetInputSample(sample);
+  SamplerType::CenterType center(MeasurementVectorLength);
   center[0] = 3;
   center[1] = 3;
   double radius = 1.5;
-  sampler->SetCenter( &center );
-  sampler->SetRadius( &radius );
+  sampler->SetCenter(&center);
+  sampler->SetRadius(&radius);
   sampler->Update();
 
   SamplerType::OutputType::Pointer output = sampler->GetOutput();
@@ -123,17 +124,14 @@ int main()
 
   // Software Guide : BeginCodeSnippet
   SamplerType::OutputType::Iterator iter = output->Begin();
-  while ( iter != output->End() )
-    {
+  while (iter != output->End())
+  {
     std::cout << "instance identifier = " << iter.GetInstanceIdentifier()
-              << "\t measurement vector = "
-              << iter.GetMeasurementVector()
-              << "\t frequency = "
-              << iter.GetFrequency() << std::endl;
+              << "\t measurement vector = " << iter.GetMeasurementVector()
+              << "\t frequency = " << iter.GetFrequency() << std::endl;
     ++iter;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;
-
 }

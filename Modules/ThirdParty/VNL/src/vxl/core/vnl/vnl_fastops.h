@@ -1,9 +1,6 @@
 // This is core/vnl/vnl_fastops.h
 #ifndef vnl_fastops_h_
 #define vnl_fastops_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
 //:
 //  \file
 //  \brief Collection of C-style matrix functions
@@ -18,8 +15,8 @@
 //   Mar.2007 -Peter Vanroose- Commented deprecated versions of the functions
 // \endverbatim
 
-#include <vnl/vnl_vector.h>
-#include <vnl/vnl_matrix.h>
+#include "vnl_vector.h"
+#include "vnl_matrix.h"
 #include "vnl/vnl_export.h"
 
 //: Collection of C-style matrix functions for the most time-critical applications.

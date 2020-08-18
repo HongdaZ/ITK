@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@
 //  every cell of dimension $N$, its boundary faces (which are cells of
 //  dimension $N-1$) also belong to the structure.
 //
-//  This section illustrates how to instantiate a K-Complex structure using the
-//  mesh. The example structure is composed of one tetrahedron, its
-//  four triangle faces, its six line edges and its four vertices.
+//  This section illustrates how to instantiate a K-Complex structure using
+//  the mesh. The example structure is composed of one tetrahedron, its four
+//  triangle faces, its six line edges and its four vertices.
 //
 //  \index{itk::Mesh!K-Complex}
 //
@@ -36,8 +36,8 @@
 
 //  Software Guide : BeginLatex
 //
-//  The header files of all the cell types involved should be loaded along with
-//  the header file of the mesh class.
+//  The header files of all the cell types involved should be loaded along
+//  with the header file of the mesh class.
 //
 //  \index{itk::LineCell!header}
 //  \index{itk::VertexCell!header}
@@ -54,7 +54,8 @@
 // Software Guide : EndCodeSnippet
 
 
-int main(int, char *[])
+int
+main(int, char *[])
 {
   //  Software Guide : BeginLatex
   //
@@ -67,8 +68,8 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef float                             PixelType;
-  typedef itk::Mesh< PixelType, 3 >         MeshType;
+  using PixelType = float;
+  using MeshType = itk::Mesh<PixelType, 3>;
   // Software Guide : EndCodeSnippet
 
 
@@ -85,11 +86,11 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef MeshType::CellType                CellType;
-  typedef itk::VertexCell< CellType >       VertexType;
-  typedef itk::LineCell< CellType >         LineType;
-  typedef itk::TriangleCell< CellType >     TriangleType;
-  typedef itk::TetrahedronCell< CellType >  TetrahedronType;
+  using CellType = MeshType::CellType;
+  using VertexType = itk::VertexCell<CellType>;
+  using LineType = itk::LineCell<CellType>;
+  using TriangleType = itk::TriangleCell<CellType>;
+  using TetrahedronType = itk::TetrahedronCell<CellType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -118,22 +119,30 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  MeshType::Pointer  mesh = MeshType::New();
+  MeshType::Pointer mesh = MeshType::New();
 
-  MeshType::PointType   point0;
-  MeshType::PointType   point1;
-  MeshType::PointType   point2;
-  MeshType::PointType   point3;
+  MeshType::PointType point0;
+  MeshType::PointType point1;
+  MeshType::PointType point2;
+  MeshType::PointType point3;
 
-  point0[0] = -1; point0[1] = -1; point0[2] = -1;
-  point1[0] =  1; point1[1] =  1; point1[2] = -1;
-  point2[0] =  1; point2[1] = -1; point2[2] =  1;
-  point3[0] = -1; point3[1] =  1; point3[2] =  1;
+  point0[0] = -1;
+  point0[1] = -1;
+  point0[2] = -1;
+  point1[0] = 1;
+  point1[1] = 1;
+  point1[2] = -1;
+  point2[0] = 1;
+  point2[1] = -1;
+  point2[2] = 1;
+  point3[0] = -1;
+  point3[1] = 1;
+  point3[2] = 1;
 
-  mesh->SetPoint( 0, point0 );
-  mesh->SetPoint( 1, point1 );
-  mesh->SetPoint( 2, point2 );
-  mesh->SetPoint( 3, point3 );
+  mesh->SetPoint(0, point0);
+  mesh->SetPoint(1, point1);
+  mesh->SetPoint(2, point2);
+  mesh->SetPoint(3, point3);
   // Software Guide : EndCodeSnippet
 
 
@@ -156,12 +165,12 @@ int main(int, char *[])
   // Software Guide : BeginCodeSnippet
   CellType::CellAutoPointer cellpointer;
 
-  cellpointer.TakeOwnership( new TetrahedronType );
-  cellpointer->SetPointId( 0, 0 );
-  cellpointer->SetPointId( 1, 1 );
-  cellpointer->SetPointId( 2, 2 );
-  cellpointer->SetPointId( 3, 3 );
-  mesh->SetCell( 0, cellpointer );
+  cellpointer.TakeOwnership(new TetrahedronType);
+  cellpointer->SetPointId(0, 0);
+  cellpointer->SetPointId(1, 1);
+  cellpointer->SetPointId(2, 2);
+  cellpointer->SetPointId(3, 3);
+  mesh->SetCell(0, cellpointer);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -176,11 +185,11 @@ int main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new TriangleType );
-  cellpointer->SetPointId( 0, 0 );
-  cellpointer->SetPointId( 1, 1 );
-  cellpointer->SetPointId( 2, 2 );
-  mesh->SetCell( 1, cellpointer );
+  cellpointer.TakeOwnership(new TriangleType);
+  cellpointer->SetPointId(0, 0);
+  cellpointer->SetPointId(1, 1);
+  cellpointer->SetPointId(2, 2);
+  mesh->SetCell(1, cellpointer);
   // Software Guide : EndCodeSnippet
 
 
@@ -191,11 +200,11 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new TriangleType );
-  cellpointer->SetPointId( 0, 0 );
-  cellpointer->SetPointId( 1, 2 );
-  cellpointer->SetPointId( 2, 3 );
-  mesh->SetCell( 2, cellpointer );
+  cellpointer.TakeOwnership(new TriangleType);
+  cellpointer->SetPointId(0, 0);
+  cellpointer->SetPointId(1, 2);
+  cellpointer->SetPointId(2, 3);
+  mesh->SetCell(2, cellpointer);
   // Software Guide : EndCodeSnippet
 
 
@@ -205,12 +214,12 @@ int main(int, char *[])
   //
   //  Software Guide : EndLatex
 
-   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new TriangleType );
-  cellpointer->SetPointId( 0, 0 );
-  cellpointer->SetPointId( 1, 3 );
-  cellpointer->SetPointId( 2, 1 );
-  mesh->SetCell( 3, cellpointer );
+  // Software Guide : BeginCodeSnippet
+  cellpointer.TakeOwnership(new TriangleType);
+  cellpointer->SetPointId(0, 0);
+  cellpointer->SetPointId(1, 3);
+  cellpointer->SetPointId(2, 1);
+  mesh->SetCell(3, cellpointer);
   // Software Guide : EndCodeSnippet
 
 
@@ -221,11 +230,11 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new TriangleType );
-  cellpointer->SetPointId( 0, 3 );
-  cellpointer->SetPointId( 1, 2 );
-  cellpointer->SetPointId( 2, 1 );
-  mesh->SetCell( 4, cellpointer );
+  cellpointer.TakeOwnership(new TriangleType);
+  cellpointer->SetPointId(0, 3);
+  cellpointer->SetPointId(1, 2);
+  cellpointer->SetPointId(2, 1);
+  mesh->SetCell(4, cellpointer);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -244,35 +253,35 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 0 );
-  cellpointer->SetPointId( 1, 1 );
-  mesh->SetCell( 5, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 0);
+  cellpointer->SetPointId(1, 1);
+  mesh->SetCell(5, cellpointer);
 
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 1 );
-  cellpointer->SetPointId( 1, 2 );
-  mesh->SetCell( 6, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 1);
+  cellpointer->SetPointId(1, 2);
+  mesh->SetCell(6, cellpointer);
 
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 2 );
-  cellpointer->SetPointId( 1, 0 );
-  mesh->SetCell( 7, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 2);
+  cellpointer->SetPointId(1, 0);
+  mesh->SetCell(7, cellpointer);
 
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 1 );
-  cellpointer->SetPointId( 1, 3 );
-  mesh->SetCell( 8, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 1);
+  cellpointer->SetPointId(1, 3);
+  mesh->SetCell(8, cellpointer);
 
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 3 );
-  cellpointer->SetPointId( 1, 2 );
-  mesh->SetCell( 9, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 3);
+  cellpointer->SetPointId(1, 2);
+  mesh->SetCell(9, cellpointer);
 
-  cellpointer.TakeOwnership( new LineType );
-  cellpointer->SetPointId( 0, 3 );
-  cellpointer->SetPointId( 1, 0 );
-  mesh->SetCell( 10, cellpointer );
+  cellpointer.TakeOwnership(new LineType);
+  cellpointer->SetPointId(0, 3);
+  cellpointer->SetPointId(1, 0);
+  mesh->SetCell(10, cellpointer);
   // Software Guide : EndCodeSnippet
 
 
@@ -284,21 +293,21 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellpointer.TakeOwnership( new VertexType );
-  cellpointer->SetPointId( 0, 0 );
-  mesh->SetCell( 11, cellpointer );
+  cellpointer.TakeOwnership(new VertexType);
+  cellpointer->SetPointId(0, 0);
+  mesh->SetCell(11, cellpointer);
 
-  cellpointer.TakeOwnership( new VertexType );
-  cellpointer->SetPointId( 0, 1 );
-  mesh->SetCell( 12, cellpointer );
+  cellpointer.TakeOwnership(new VertexType);
+  cellpointer->SetPointId(0, 1);
+  mesh->SetCell(12, cellpointer);
 
-  cellpointer.TakeOwnership( new VertexType );
-  cellpointer->SetPointId( 0, 2 );
-  mesh->SetCell( 13, cellpointer );
+  cellpointer.TakeOwnership(new VertexType);
+  cellpointer->SetPointId(0, 2);
+  mesh->SetCell(13, cellpointer);
 
-  cellpointer.TakeOwnership( new VertexType );
-  cellpointer->SetPointId( 0, 3 );
-  mesh->SetCell( 14, cellpointer );
+  cellpointer.TakeOwnership(new VertexType);
+  cellpointer->SetPointId(0, 3);
+  mesh->SetCell(14, cellpointer);
   // Software Guide : EndCodeSnippet
 
 
@@ -321,15 +330,15 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef MeshType::PointsContainer::ConstIterator  PointIterator;
+  using PointIterator = MeshType::PointsContainer::ConstIterator;
   PointIterator pointIterator = mesh->GetPoints()->Begin();
-  PointIterator pointEnd      = mesh->GetPoints()->End();
+  PointIterator pointEnd = mesh->GetPoints()->End();
 
-  while( pointIterator != pointEnd )
-    {
+  while (pointIterator != pointEnd)
+  {
     std::cout << pointIterator.Value() << std::endl;
     ++pointIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -346,17 +355,17 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef MeshType::CellsContainer::ConstIterator  CellIterator;
+  using CellIterator = MeshType::CellsContainer::ConstIterator;
 
   CellIterator cellIterator = mesh->GetCells()->Begin();
-  CellIterator cellEnd      = mesh->GetCells()->End();
+  CellIterator cellEnd = mesh->GetCells()->End();
 
-  while( cellIterator != cellEnd )
-    {
+  while (cellIterator != cellEnd)
+  {
     CellType * cell = cellIterator.Value();
     std::cout << cell->GetNumberOfPoints() << std::endl;
     ++cellIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -384,30 +393,30 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   cellIterator = mesh->GetCells()->Begin();
-  cellEnd      = mesh->GetCells()->End();
+  cellEnd = mesh->GetCells()->End();
 
-  while( cellIterator != cellEnd )
-    {
+  while (cellIterator != cellEnd)
+  {
     CellType * cell = cellIterator.Value();
 
     std::cout << "cell with " << cell->GetNumberOfPoints();
     std::cout << " points   " << std::endl;
 
     // Software Guide : BeginCodeSnippet
-    typedef CellType::PointIdIterator     PointIdIterator;
+    using PointIdIterator = CellType::PointIdIterator;
 
     PointIdIterator pointIditer = cell->PointIdsBegin();
-    PointIdIterator pointIdend  = cell->PointIdsEnd();
+    PointIdIterator pointIdend = cell->PointIdsEnd();
 
-    while( pointIditer != pointIdend )
-      {
+    while (pointIditer != pointIdend)
+    {
       std::cout << *pointIditer << std::endl;
       ++pointIditer;
-      }
+    }
     // Software Guide : EndCodeSnippet
 
     ++cellIterator;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -421,16 +430,16 @@ int main(int, char *[])
 
   //  Software Guide : BeginLatex
   //
-  //  Up to here, the topology of the K-Complex is not completely defined since
-  //  we have only introduced the cells. ITK allows the user to define
-  //  explicitly the neighborhood relationships between cells. It is clear that
-  //  a clever exploration of the point identifiers could have allowed a user
-  //  to figure out the neighborhood relationships. For example, two triangle
-  //  cells sharing the same two point identifiers will probably be neighbor
-  //  cells. Some of the drawbacks on this implicit discovery of neighborhood
-  //  relationships is that it takes computing time and that some applications
-  //  may not accept the same assumptions. A specific case is surgery
-  //  simulation. This application typically simulates bistoury cuts
+  //  Up to here, the topology of the K-Complex is not completely defined
+  //  since we have only introduced the cells. ITK allows the user to define
+  //  explicitly the neighborhood relationships between cells. It is clear
+  //  that a clever exploration of the point identifiers could have allowed a
+  //  user to figure out the neighborhood relationships. For example, two
+  //  triangle cells sharing the same two point identifiers will probably be
+  //  neighbor cells. Some of the drawbacks on this implicit discovery of
+  //  neighborhood relationships is that it takes computing time and that some
+  //  applications may not accept the same assumptions. A specific case is
+  //  surgery simulation. This application typically simulates bistoury cuts
   //  in a mesh representing an organ. A small cut in the surface may be made
   //  by specifying that two triangles are not considered to be neighbors any
   //  more.
@@ -441,9 +450,9 @@ int main(int, char *[])
   //  neighbors. Boundary features are classified by dimension. For example, a
   //  line will have two boundary features of dimension zero corresponding to
   //  its two vertices. A tetrahedron will have boundary features of dimension
-  //  zero, one and two, corresponding to its four vertices, six edges and four
-  //  triangular faces. It is up to the user to specify the connections between
-  //  the cells.
+  //  zero, one and two, corresponding to its four vertices, six edges and
+  //  four triangular faces. It is up to the user to specify the connections
+  //  between the cells.
   //
   //  \index{BoundaryFeature}
   //  \index{CellBoundaryFeature}
@@ -460,31 +469,31 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  MeshType::CellIdentifier cellId = 0;  // the tetrahedron
+  MeshType::CellIdentifier cellId = 0; // the tetrahedron
 
-  int dimension = 0;                    // vertices
+  int dimension = 0; // vertices
 
   MeshType::CellFeatureIdentifier featureId = 0;
 
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 11 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 12 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 13 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 14 );
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 11);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 12);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 13);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 14);
   // Software Guide : EndCodeSnippet
 
 
   //  Software Guide : BeginLatex
   //
   //  The \code{featureId} is simply a number associated with the sequence of
-  //  the boundary cells of the same dimension in a specific cell. For example,
-  //  the zero-dimensional features of a tetrahedron are its four vertices.
-  //  Then the zero-dimensional feature-Ids for this cell will range from zero
-  //  to three. The one-dimensional features of the tetrahedron are its six
-  //  edges, hence its one-dimensional feature-Ids will range from zero to
-  //  five. The two-dimensional features of the tetrahedron are its four
-  //  triangular faces. The two-dimensional feature ids will then range from
-  //  zero to three. The following table summarizes the use on indices for
-  //  boundary assignments.
+  //  the boundary cells of the same dimension in a specific cell. For
+  //  example, the zero-dimensional features of a tetrahedron are its four
+  //  vertices. Then the zero-dimensional feature-Ids for this cell will range
+  //  from zero to three. The one-dimensional features of the tetrahedron are
+  //  its six edges, hence its one-dimensional feature-Ids will range from
+  //  zero to five. The two-dimensional features of the tetrahedron are its
+  //  four triangular faces. The two-dimensional feature ids will then range
+  //  from zero to three. The following table summarizes the use on indices
+  //  for boundary assignments.
   //
   //  \begin{center}
   //  \begin{tabular}{ | c || c | c | c | }
@@ -497,29 +506,29 @@ int main(int, char *[])
   //  \end{center}
   //
   //  In the code example above, the values of featureId range from zero to
-  //  three. The cell identifiers of the triangle cells in this example are the
-  //  numbers \{1,2,3,4\}, while the cell identifiers of the vertex cells are
-  //  the numbers \{11,12,13,14\}.
+  //  three. The cell identifiers of the triangle cells in this example are
+  //  the numbers \{1,2,3,4\}, while the cell identifiers of the vertex cells
+  //  are the numbers \{11,12,13,14\}.
 
   //
   //  Let's now assign one-dimensional boundary features of the tetrahedron.
-  //  Those are the line cells with identifiers  \{5,6,7,8,9,10\}. Note that the
-  //  feature identifier is reinitialized to zero since the count is
+  //  Those are the line cells with identifiers  \{5,6,7,8,9,10\}. Note that
+  //  the feature identifier is reinitialized to zero since the count is
   //  independent for each dimension.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellId    = 0;  // still the tetrahedron
-  dimension = 1;  // one-dimensional features = edges
-  featureId = 0;  // reinitialize the count
+  cellId = 0;    // still the tetrahedron
+  dimension = 1; // one-dimensional features = edges
+  featureId = 0; // reinitialize the count
 
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  5 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  6 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  7 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  8 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  9 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 10 );
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 5);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 6);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 7);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 8);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 9);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 10);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -532,21 +541,21 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellId    = 0;  // still the tetrahedron
-  dimension = 2;  // two-dimensional features = triangles
-  featureId = 0;  // reinitialize the count
+  cellId = 0;    // still the tetrahedron
+  dimension = 2; // two-dimensional features = triangles
+  featureId = 0; // reinitialize the count
 
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  1 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  2 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  3 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  4 );
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 1);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 2);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 3);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 4);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
   //
-  //  At this point we can query the tetrahedron cell for information about its
-  //  boundary features. For example, the number of boundary features of each
-  //  dimension can be obtained with the method
+  //  At this point we can query the tetrahedron cell for information about
+  //  its boundary features. For example, the number of boundary features of
+  //  each dimension can be obtained with the method
   //  \code{GetNumberOfBoundaryFeatures()}.
   //
   //  \index{itk::Mesh!CellFeatureCount}
@@ -558,17 +567,18 @@ int main(int, char *[])
   // Software Guide : BeginCodeSnippet
   cellId = 0; // still the tetrahedron
 
-  MeshType::CellFeatureCount n0;  // number of zero-dimensional features
-  MeshType::CellFeatureCount n1;  // number of  one-dimensional features
-  MeshType::CellFeatureCount n2;  // number of  two-dimensional features
+  MeshType::CellFeatureCount n0; // number of zero-dimensional features
+  MeshType::CellFeatureCount n1; // number of  one-dimensional features
+  MeshType::CellFeatureCount n2; // number of  two-dimensional features
 
-  n0 = mesh->GetNumberOfCellBoundaryFeatures( 0, cellId );
-  n1 = mesh->GetNumberOfCellBoundaryFeatures( 1, cellId );
-  n2 = mesh->GetNumberOfCellBoundaryFeatures( 2, cellId );
+  n0 = mesh->GetNumberOfCellBoundaryFeatures(0, cellId);
+  n1 = mesh->GetNumberOfCellBoundaryFeatures(1, cellId);
+  n2 = mesh->GetNumberOfCellBoundaryFeatures(2, cellId);
   // Software Guide : EndCodeSnippet
 
 
-  std::cout << "Number of boundary features of the cellId= " << cellId << std::endl;
+  std::cout << "Number of boundary features of the cellId= " << cellId
+            << std::endl;
   std::cout << "Dimension 0 = " << n0 << std::endl;
   std::cout << "Dimension 1 = " << n1 << std::endl;
   std::cout << "Dimension 2 = " << n2 << std::endl;
@@ -577,8 +587,8 @@ int main(int, char *[])
   //  Software Guide : BeginLatex
   //
   //  The boundary assignments can be recovered with the method
-  //  \code{GetBoundaryAssigment()}. For example, the zero-dimensional features
-  //  of the tetrahedron can be obtained with the following code.
+  //  \code{GetBoundaryAssigment()}. For example, the zero-dimensional
+  //  features of the tetrahedron can be obtained with the following code.
   //
   // \index{itk::Mesh!GetBoundaryAssignment()}
   // \index{GetBoundaryAssignment()!itk::Mesh}
@@ -589,37 +599,38 @@ int main(int, char *[])
 
   // Software Guide : BeginCodeSnippet
   dimension = 0;
-  for(unsigned int b0=0; b0 < n0; b0++)
-    {
+  for (unsigned int b0 = 0; b0 < n0; b0++)
+  {
     MeshType::CellIdentifier id;
-    bool found = mesh->GetBoundaryAssignment( dimension, cellId, b0, &id );
-    if( found ) std::cout << id << std::endl;
-    }
+    bool found = mesh->GetBoundaryAssignment(dimension, cellId, b0, &id);
+    if (found)
+      std::cout << id << std::endl;
+  }
   // Software Guide : EndCodeSnippet
 
   dimension = 1;
   std::cout << "Boundary features of dimension " << dimension << std::endl;
-  for(unsigned int b1=0; b1 < n1; b1++)
-    {
+  for (unsigned int b1 = 0; b1 < n1; b1++)
+  {
     MeshType::CellIdentifier id;
-    bool found = mesh->GetBoundaryAssignment( dimension, cellId, b1, &id );
-    if( found )
-      {
+    bool found = mesh->GetBoundaryAssignment(dimension, cellId, b1, &id);
+    if (found)
+    {
       std::cout << id << std::endl;
-      }
     }
+  }
 
   dimension = 2;
   std::cout << "Boundary features of dimension " << dimension << std::endl;
-  for(unsigned int b2=0; b2 < n2; b2++)
-    {
+  for (unsigned int b2 = 0; b2 < n2; b2++)
+  {
     MeshType::CellIdentifier id;
-    bool found = mesh->GetBoundaryAssignment( dimension, cellId, b2, &id );
-    if( found )
-      {
+    bool found = mesh->GetBoundaryAssignment(dimension, cellId, b2, &id);
+    if (found)
+    {
       std::cout << id << std::endl;
-      }
     }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -630,28 +641,28 @@ int main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  cellId     =  2;    // one of the triangles
-  dimension  =  1;    // boundary edges
-  featureId  =  0;    // start the count of features
+  cellId = 2;    // one of the triangles
+  dimension = 1; // boundary edges
+  featureId = 0; // start the count of features
 
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  7 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++,  9 );
-  mesh->SetBoundaryAssignment( dimension, cellId, featureId++, 10 );
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 7);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 9);
+  mesh->SetBoundaryAssignment(dimension, cellId, featureId++, 10);
   // Software Guide : EndCodeSnippet
 
   std::cout << "In cell Id = " << cellId << std::endl;
   std::cout << "Boundary features of dimension " << dimension;
-  n1 = mesh->GetNumberOfCellBoundaryFeatures( dimension, cellId);
+  n1 = mesh->GetNumberOfCellBoundaryFeatures(dimension, cellId);
   std::cout << " = " << n1 << std::endl;
-  for(unsigned int b1=0; b1 < n1; b1++)
-    {
+  for (unsigned int b1 = 0; b1 < n1; b1++)
+  {
     MeshType::CellIdentifier id;
-    bool found = mesh->GetBoundaryAssignment( dimension, cellId, b1, &id );
-    if( found )
-      {
+    bool found = mesh->GetBoundaryAssignment(dimension, cellId, b1, &id);
+    if (found)
+    {
       std::cout << id << std::endl;
-      }
     }
+  }
 
   return EXIT_SUCCESS;
 }

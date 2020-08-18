@@ -1,12 +1,6 @@
 // This is core/vnl/vnl_matrix.h
 #ifndef vnl_matrix_h_
 #define vnl_matrix_h_
-#ifdef VCL_NEEDS_PRAGMA_INTERFACE
-#pragma interface
-#endif
-#ifdef __INTEL_COMPILER
-#pragma warning disable 444
-#endif
 //:
 // \file
 // \brief An ordinary mathematical matrix
@@ -38,13 +32,15 @@
 
 #include <iosfwd>
 #include <vcl_compiler.h>
-#include <vnl/vnl_tag.h>
-#include <vnl/vnl_c_vector.h>
+#ifdef _MSC_VER
+#  include <vcl_msvc_warnings.h>
+#endif
+#include "vnl_c_vector.h"
 #include <vnl/vnl_config.h>
-#include <vnl/vnl_error.h>
+#include "vnl_error.h"
 #ifndef NDEBUG
 # if VNL_CONFIG_CHECK_BOUNDS
-#  include <vcl_cassert.h>
+#include <cassert>
 # endif
 #else
 # undef VNL_CONFIG_CHECK_BOUNDS
@@ -53,8 +49,8 @@
 #endif
 #include "vnl/vnl_export.h"
 
-VCL_TEMPLATE_EXPORT template <class T> class vnl_vector;
-VCL_TEMPLATE_EXPORT template <class T> class vnl_matrix;
+template <class T> class vnl_vector;
+template <class T> class vnl_matrix;
 
 //--------------------------------------------------------------------------------
 
@@ -62,22 +58,22 @@ VCL_TEMPLATE_EXPORT template <class T> class vnl_matrix;
 #define v vnl_vector<T>
 #define m vnl_matrix<T>
 #endif // DOXYGEN_SHOULD_SKIP_THIS
-template <class T> VNL_TEMPLATE_EXPORT m operator+(T const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT m operator-(T const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT m operator*(T const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT m element_product(m const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT m element_quotient(m const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT T dot_product(m const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT T inner_product(m const&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT T cos_angle(m const&, m const& );
-template <class T> VNL_TEMPLATE_EXPORT std::ostream& operator<<(std::ostream&, m const&);
-template <class T> VNL_TEMPLATE_EXPORT std::istream& operator>>(std::istream&, m&);
+template <class T> VNL_EXPORT m operator+(T const&, m const&);
+template <class T> VNL_EXPORT m operator-(T const&, m const&);
+template <class T> VNL_EXPORT m operator*(T const&, m const&);
+template <class T> VNL_EXPORT m element_product(m const&, m const&);
+template <class T> VNL_EXPORT m element_quotient(m const&, m const&);
+template <class T> VNL_EXPORT T dot_product(m const&, m const&);
+template <class T> VNL_EXPORT T inner_product(m const&, m const&);
+template <class T> VNL_EXPORT T cos_angle(m const&, m const& );
+template <class T> VNL_EXPORT std::ostream& operator<<(std::ostream&, m const&);
+template <class T> VNL_EXPORT std::istream& operator>>(std::istream&, m&);
 #undef v
 #undef m
 
 //--------------------------------------------------------------------------------
 
-enum VNL_TEMPLATE_EXPORT vnl_matrix_type
+enum VNL_EXPORT vnl_matrix_type
 {
   vnl_matrix_null,
   vnl_matrix_identity
@@ -110,16 +106,11 @@ enum VNL_TEMPLATE_EXPORT vnl_matrix_type
 // Note: Use a vnl_vector<T> with these matrices.
 
 template<class T>
-class VNL_TEMPLATE_EXPORT vnl_matrix
+class VNL_EXPORT vnl_matrix
 {
  public:
   //: Default constructor creates an empty matrix of size 0,0.
-  vnl_matrix() :
-    num_rows(0),
-    num_cols(0),
-    data(VXL_NULLPTR)
-  {
-  }
+  vnl_matrix();
 
   //: Construct a matrix of size r rows by c columns
   // Contents are unspecified.
@@ -147,27 +138,19 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
 
   //: Copy construct a matrix
   // Complexity $O(r.c)$
-  vnl_matrix(vnl_matrix<T> const&);                             // from another matrix.
+  vnl_matrix(vnl_matrix<T> const&);    // from another matrix.
 
-#ifndef VXL_DOXYGEN_SHOULD_SKIP_THIS
-// <internal>
-  // These constructors are here so that operator* etc can take
-  // advantage of the C++ return value optimization.
-  vnl_matrix(vnl_matrix<T> const &, vnl_matrix<T> const &, vnl_tag_add); // M + M
-  vnl_matrix(vnl_matrix<T> const &, vnl_matrix<T> const &, vnl_tag_sub); // M - M
-  vnl_matrix(vnl_matrix<T> const &, T,                     vnl_tag_mul); // M * s
-  vnl_matrix(vnl_matrix<T> const &, T,                     vnl_tag_div); // M / s
-  vnl_matrix(vnl_matrix<T> const &, T,                     vnl_tag_add); // M + s
-  vnl_matrix(vnl_matrix<T> const &, T,                     vnl_tag_sub); // M - s
-  vnl_matrix(vnl_matrix<T> const &, vnl_matrix<T> const &, vnl_tag_mul); // M * M
-  vnl_matrix(vnl_matrix<T> &that, vnl_tag_grab)
-    : num_rows(that.num_rows), num_cols(that.num_cols), data(that.data)
-  { that.num_cols=that.num_rows=0; that.data=VXL_NULLPTR; } // "*this" now uses "that"'s data.
-// </internal>
-#endif
+  // NOTE: move-assignment must be allowed to throw an exception, because we need to maintain
+  //       backwards compatibility and the move-construction & move-aasignment
+  //       operators fall back to the copy-assignment operator behavior in
+  //       cases when the memory is externally managed.
+  //: Move-constructor.
+  vnl_matrix(vnl_matrix<T> &&);
+  //: Move-assignment operator
+  vnl_matrix<T>& operator=(vnl_matrix<T>&& rhs);
 
   //: Matrix destructor
-  ~vnl_matrix();
+  virtual ~vnl_matrix();
 
 // Basic 2D-Array functionality-------------------------------------------
 
@@ -202,25 +185,11 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
 
   //: Access an element for reading or writing
   // There are assert style boundary checks - #define NDEBUG to turn them off.
-  T       & operator()(unsigned r, unsigned c)
-  {
-#if VNL_CONFIG_CHECK_BOUNDS
-    assert(r<rows());   // Check the row index is valid
-    assert(c<cols());   // Check the column index is valid
-#endif
-    return this->data[r][c];
-  }
+  T       & operator()(unsigned r, unsigned c);
 
   //: Access an element for reading
   // There are assert style boundary checks - #define NDEBUG to turn them off.
-  T const & operator()(unsigned r, unsigned c) const
-  {
-#if VNL_CONFIG_CHECK_BOUNDS
-    assert(r<rows());   // Check the row index is valid
-    assert(c<cols());   // Check the column index is valid
-#endif
-    return this->data[r][c];
-  }
+  T const & operator()(unsigned r, unsigned c) const;
 
 
   // ----------------------- Filling and copying -----------------------
@@ -319,23 +288,114 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
 
 
   //: Add rhs to each element of lhs matrix and return result in new matrix
-  vnl_matrix<T> operator+(T const& v) const { return vnl_matrix<T>(*this, v, vnl_tag_add()); }
+  vnl_matrix<T> operator+(T const& v) const {
+    vnl_matrix<T> result(this->rows(), this->cols());
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *m = this->data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i = 0; i < n; ++i)
+      dst[i] = T(m[i] + v);
+    return result;
+  }
 
   //: Subtract rhs from each element of lhs matrix and return result in new matrix
-  vnl_matrix<T> operator-(T const& v) const { return vnl_matrix<T>(*this, v, vnl_tag_sub()); }
+  vnl_matrix<T> operator-(T const& v) const {
+    vnl_matrix<T> result(this->rows(), this->cols());
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *m = this->data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i = 0; i < n; ++i)
+      dst[i] = T(m[i] - v);
+    return result;
+  }
 
   //: Scalar multiplication of lhs matrix by rhs  and return result in new matrix
-  vnl_matrix<T> operator*(T const& v) const { return vnl_matrix<T>(*this, v, vnl_tag_mul()); }
+  vnl_matrix<T> operator*(T const& v) const {
+    vnl_matrix<T> result(this->rows(), this->cols());
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *m = this->data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i = 0; i < n; ++i)
+      dst[i] = T(m[i] * v);
+    return result;
+  }
 
   //: Scalar division of lhs matrix by rhs and return result in new matrix
-  vnl_matrix<T> operator/(T const& v) const { return vnl_matrix<T>(*this, v, vnl_tag_div()); }
+  vnl_matrix<T> operator/(T const& v) const {
+    vnl_matrix<T> result(this->rows(), this->cols());
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *m = this->data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i = 0; i < n; ++i)
+      dst[i] = T(m[i] / v);
+    return result;
+  }
 
   //: Matrix add rhs to lhs matrix and return result in new matrix
-  vnl_matrix<T> operator+(vnl_matrix<T> const& rhs) const { return vnl_matrix<T>(*this, rhs, vnl_tag_add()); }
+  vnl_matrix<T> operator+(vnl_matrix<T> const& rhs) const
+  {
+    vnl_matrix<T> result(rhs.rows(),rhs.cols());
+#ifndef NDEBUG
+    if (this->num_rows != rhs.num_rows || this->num_cols != rhs.num_cols)
+      vnl_error_matrix_dimension ("vnl_matrix<T>::operator+", this->num_rows, this->num_cols, rhs.num_rows, rhs.num_cols);
+#endif
+
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *a = this->data[0];
+    T const *b = rhs.data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i=0; i<n; ++i)
+      dst[i] = T(a[i] + b[i]);
+    return result;
+  }
+
   //: Matrix subtract rhs from lhs and return result in new matrix
-  vnl_matrix<T> operator-(vnl_matrix<T> const& rhs) const { return vnl_matrix<T>(*this, rhs, vnl_tag_sub()); }
+  vnl_matrix<T> operator-(vnl_matrix<T> const& rhs) const
+  {
+    vnl_matrix<T> result(rhs.rows(),rhs.cols());
+#ifndef NDEBUG
+    if (this->num_rows != rhs.num_rows || this->num_cols != rhs.num_cols)
+      vnl_error_matrix_dimension ("vnl_matrix<T>::operator+", this->num_rows, this->num_cols, rhs.num_rows, rhs.num_cols);
+#endif
+
+    const unsigned int n = this->num_rows * this->num_cols;
+    T const *a = this->data[0];
+    T const *b = rhs.data[0];
+    T *dst = result.data[0];
+
+    for (unsigned int i=0; i<n; ++i)
+      dst[i] = T(a[i] - b[i]);
+    return result;
+  }
   //: Matrix multiply lhs by rhs matrix and return result in new matrix
-  vnl_matrix<T> operator*(vnl_matrix<T> const& rhs) const { return vnl_matrix<T>(*this, rhs, vnl_tag_mul()); }
+  vnl_matrix<T> operator*(vnl_matrix<T> const& rhs) const
+  {
+    vnl_matrix<T> result(this->rows(), rhs.cols());
+#ifndef NDEBUG
+    if (this->num_cols != rhs.num_rows)
+      vnl_error_matrix_dimension("vnl_matrix<T>::operator*", this->num_rows, this->num_cols,
+                                 rhs.num_rows, rhs.num_cols);
+#endif
+
+    const unsigned int l = this->num_rows;
+    const unsigned int m = this->num_cols; // == rhs.num_rows
+    const unsigned int n = rhs.num_cols;
+
+    for (unsigned int i = 0; i < l; ++i) {
+      for (unsigned int k = 0; k < n; ++k) {
+        T sum{0};
+        for (unsigned int j = 0; j < m; ++j)
+          sum += T(this->data[i][j] * rhs.data[j][k]);
+        result.data[i][k] = sum;
+      }
+    }
+    return result;
+  }
 
   ////--------------------------- Additions ----------------------------
 
@@ -507,7 +567,7 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
   vnl_matrix& scale_column(unsigned col, T value);
 
   //: Swap this matrix with that matrix
-  void swap(vnl_matrix<T> & that);
+  void swap(vnl_matrix<T> & that) noexcept;
 
   //: Type def for norms.
   typedef typename vnl_c_vector<T>::abs_t abs_t;
@@ -631,16 +691,16 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
   //: Iterators
   typedef T       *iterator;
   //: Iterator pointing to start of data
-  iterator       begin() { return data?data[0]:VXL_NULLPTR; }
+  iterator       begin() { return data?data[0]:nullptr; }
   //: Iterator pointing to element beyond end of data
-  iterator       end() { return data?data[0]+num_rows*num_cols:VXL_NULLPTR; }
+  iterator       end() { return data?data[0]+num_rows*num_cols:nullptr; }
 
   //: Const iterators
   typedef T const *const_iterator;
   //: Iterator pointing to start of data
-  const_iterator begin() const { return data?data[0]:VXL_NULLPTR; }
+  const_iterator begin() const { return data?data[0]:nullptr; }
   //: Iterator pointing to element beyond end of data
-  const_iterator end() const { return data?data[0]+num_rows*num_cols:VXL_NULLPTR; }
+  const_iterator end() const { return data?data[0]+num_rows*num_cols:nullptr; }
 
   //: Return a reference to this.
   // Useful in code which would prefer not to know if its argument
@@ -675,15 +735,16 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
 //--------------------------------------------------------------------------------
 
  protected:
-  unsigned num_rows;   // Number of rows
-  unsigned num_cols;   // Number of columns
-  T** data;            // Pointer to the vnl_matrix
-
-#if VCL_HAS_SLICED_DESTRUCTOR_BUG
-  // Since this bug exists, we need a flag that can be set during
-  // construction to tell our destructor whether we own data.
-  char vnl_matrix_own_data;
-#endif
+  vnl_matrix<T>( unsigned ext_num_rows, unsigned ext_num_cols,
+      T * continuous_external_memory_block, bool manage_own_memory )
+  : num_rows{ ext_num_rows}
+  , num_cols{ ext_num_cols}
+  , m_LetArrayManageMemory{ manage_own_memory }
+  {
+    this->data = vnl_c_vector<T>::allocate_Tptr(num_rows);
+    for (unsigned int i = 0; i < num_rows; ++i)
+      this->data[i] = continuous_external_memory_block + i * num_cols;
+  }
 
   void assert_size_internal(unsigned r, unsigned c) const;
   void assert_finite_internal() const;
@@ -691,8 +752,13 @@ class VNL_TEMPLATE_EXPORT vnl_matrix
   //: Delete data
   void destroy();
 
-  // inline function template instantiation hack for gcc 2.97 -- fsm
-  static void inline_function_tickler();
+#if ! VXL_USE_HISTORICAL_PROTECTED_IVARS
+ private:
+#endif
+  unsigned num_rows{0};   // Number of rows
+  unsigned num_cols{0};   // Number of columns
+  T** data{nullptr};      // Pointer to the vnl_matrix
+  bool m_LetArrayManageMemory{true};
 };
 
 
@@ -739,7 +805,7 @@ inline void vnl_matrix<T>
 template<class T>
 inline vnl_matrix<T> operator*(T const& value, vnl_matrix<T> const& m)
 {
-  return vnl_matrix<T>(m, value, vnl_tag_mul());
+  return m*value;;
 }
 
 //:
@@ -747,13 +813,12 @@ inline vnl_matrix<T> operator*(T const& value, vnl_matrix<T> const& m)
 template<class T>
 inline vnl_matrix<T> operator+(T const& value, vnl_matrix<T> const& m)
 {
-  return vnl_matrix<T>(m, value, vnl_tag_add());
+  return m+value;
 }
 
 //: Swap two matrices
 // \relatesalso vnl_matrix
 template<class T>
-inline void swap(vnl_matrix<T> &A, vnl_matrix<T> &B) { A.swap(B); }
-
+inline void swap(vnl_matrix<T> &A, vnl_matrix<T> &B) noexcept { A.swap(B); }
 
 #endif // vnl_matrix_h_

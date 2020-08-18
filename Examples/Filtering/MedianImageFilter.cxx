@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@
 //  The \doxygen{MedianImageFilter} is commonly used as a robust approach for
 //  noise reduction. This filter is particularly efficient against
 //  \emph{salt-and-pepper} noise. In other words, it is robust to the presence
-//  of gray-level outliers. MedianImageFilter computes the value of each output
-//  pixel as the statistical median of the neighborhood of values around the
-//  corresponding input pixel. The following figure illustrates the local
-//  effect of this filter in a $2D$ case. The statistical median of the
+//  of gray-level outliers. MedianImageFilter computes the value of each
+//  output pixel as the statistical median of the neighborhood of values
+//  around the corresponding input pixel. The following figure illustrates the
+//  local effect of this filter in a $2D$ case. The statistical median of the
 //  neighborhood on the left is passed as the output value associated with the
 //  pixel at the center of the neighborhood.
 //
@@ -79,14 +79,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile   outputImageFile" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -96,22 +97,22 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   unsigned char  InputPixelType;
-  typedef   unsigned char  OutputPixelType;
+  using InputPixelType = unsigned char;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< InputPixelType,  2 >   InputImageType;
-  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
+  using InputImageType = itk::Image<InputPixelType, 2>;
+  using OutputImageType = itk::Image<OutputPixelType, 2>;
   // Software Guide : EndCodeSnippet
 
 
-  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName( argv[1] );
-  writer->SetFileName( argv[2] );
+  reader->SetFileName(argv[1]);
+  writer->SetFileName(argv[2]);
 
   //  Software Guide : BeginLatex
   //
@@ -125,8 +126,7 @@ int main( int argc, char * argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::MedianImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  using FilterType = itk::MedianImageFilter<InputImageType, OutputImageType>;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -152,7 +152,7 @@ int main( int argc, char * argv[] )
   indexRadius[0] = 1; // radius along x
   indexRadius[1] = 1; // radius along y
 
-  filter->SetRadius( indexRadius );
+  filter->SetRadius(indexRadius);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -169,8 +169,8 @@ int main( int argc, char * argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput( reader->GetOutput() );
-  writer->SetInput( filter->GetOutput() );
+  filter->SetInput(reader->GetOutput());
+  writer->SetInput(filter->GetOutput());
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -181,13 +181,14 @@ int main( int argc, char * argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{MedianImageFilterOutput}
-  // \itkcaption[Effect of the Median filter.]{Effect of the MedianImageFilter on a
-  // slice from a MRI proton density brain image.}
+  // \itkcaption[Effect of the Median filter.]{Effect of the MedianImageFilter
+  // on a slice from a MRI proton density brain image.}
   // \label{fig:MedianImageFilterOutput}
   // \end{figure}
   //
-  //  Figure \ref{fig:MedianImageFilterOutput} illustrates the effect of the MedianImageFilter
-  //  filter on a slice of MRI brain image using a neighborhood radius of
+  //  Figure \ref{fig:MedianImageFilterOutput} illustrates the effect of the
+  //  MedianImageFilter filter on a slice of MRI brain image using a
+  //  neighborhood radius of
   //  \(1,1\), which corresponds to a $ 3 \times 3 $ classical neighborhood.
   //  The filtered image demonstrates the moderate tendency of the median
   //  filter to preserve edges.

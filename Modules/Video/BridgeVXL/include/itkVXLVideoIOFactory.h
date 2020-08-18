@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,24 +23,29 @@
 
 namespace itk
 {
-/** \class VXLVideoIOFactory
+/**
+ *\class VXLVideoIOFactory
  * \brief Create instances of VXLVideoIO objects using an object factory.
  *
  * \ingroup ITKVideoBridgeVXL
  */
-class VXLVideoIOFactory:public ObjectFactoryBase
+class VXLVideoIOFactory : public ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef VXLVideoIOFactory          Self;
-  typedef ObjectFactoryBase          Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VXLVideoIOFactory);
+
+  /** Standard class type aliases. */
+  using Self = VXLVideoIOFactory;
+  using Superclass = ObjectFactoryBase;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char * GetITKSourceVersion() const;
+  const char *
+  GetITKSourceVersion() const override;
 
-  virtual const char * GetDescription() const;
+  const char *
+  GetDescription() const override;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -49,7 +54,8 @@ public:
   itkTypeMacro(VXLVideoIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void)
+  static void
+  RegisterOneFactory()
   {
     VXLVideoIOFactory::Pointer VXLFactory = VXLVideoIOFactory::New();
 
@@ -59,9 +65,6 @@ public:
 protected:
   VXLVideoIOFactory();
   ~VXLVideoIOFactory();
-
-private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VXLVideoIOFactory);
 };
 } // end namespace itk
 

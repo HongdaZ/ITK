@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@
 
 // Software Guide : BeginLatex
 //
-// The following simple example illustrates how multiple imaging modalities can
-// be registered using the ITK registration framework. The first difference
-// between this and previous examples is the use of the
+// The following simple example illustrates how multiple imaging modalities
+// can be registered using the ITK registration framework. The first
+// difference between this and previous examples is the use of the
 // \doxygen{MutualInformationImageToImageMetric} as the cost-function to be
 // optimized. The second difference is the use of the
 // \doxygen{GradientDescentOptimizer}. Due to the stochastic nature of the
@@ -95,48 +95,51 @@
 class CommandIterationUpdate : public itk::Command
 {
 public:
-  typedef  CommandIterationUpdate   Self;
-  typedef  itk::Command             Superclass;
-  typedef  itk::SmartPointer<Self>  Pointer;
-  itkNewMacro( Self );
+  using Self = CommandIterationUpdate;
+  using Superclass = itk::Command;
+  using Pointer = itk::SmartPointer<Self>;
+  itkNewMacro(Self);
 
 protected:
-  CommandIterationUpdate() {};
+  CommandIterationUpdate() = default;
 
 public:
-  typedef   itk::GradientDescentOptimizer     OptimizerType;
-  typedef   const OptimizerType   *           OptimizerPointer;
+  using OptimizerType = itk::GradientDescentOptimizer;
+  using OptimizerPointer = const OptimizerType *;
 
-  void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
-    {
-    Execute( (const itk::Object *)caller, event);
-    }
+  void
+  Execute(itk::Object * caller, const itk::EventObject & event) override
+  {
+    Execute((const itk::Object *)caller, event);
+  }
 
-  void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
+  void
+  Execute(const itk::Object * object, const itk::EventObject & event) override
+  {
+    auto optimizer = static_cast<OptimizerPointer>(object);
+    if (!itk::IterationEvent().CheckEvent(&event))
     {
-    OptimizerPointer optimizer = static_cast< OptimizerPointer >( object );
-    if( ! itk::IterationEvent().CheckEvent( &event ) )
-      {
       return;
-      }
+    }
     std::cout << optimizer->GetCurrentIteration() << "   ";
     std::cout << optimizer->GetValue() << "   ";
     std::cout << optimizer->GetCurrentPosition() << std::endl;
-    }
+  }
 };
 
 
-int main( int argc, char *argv[] )
+int
+main(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile ";
     std::cerr << "[checkerBoardBefore] [checkerBoardAfter]" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   // Software Guide : BeginLatex
   //
@@ -145,11 +148,11 @@ int main( int argc, char *argv[] )
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  const    unsigned int    Dimension = 2;
-  typedef  unsigned short  PixelType;
+  constexpr unsigned int Dimension = 2;
+  using PixelType = unsigned short;
 
-  typedef itk::Image< PixelType, Dimension >  FixedImageType;
-  typedef itk::Image< PixelType, Dimension >  MovingImageType;
+  using FixedImageType = itk::Image<PixelType, Dimension>;
+  using MovingImageType = itk::Image<PixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -162,8 +165,8 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef   float                                    InternalPixelType;
-  typedef itk::Image< InternalPixelType, Dimension > InternalImageType;
+  using InternalPixelType = float;
+  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
   // Software Guide : EndCodeSnippet
 
 
@@ -177,14 +180,12 @@ int main( int argc, char *argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::TranslationTransform< double, Dimension > TransformType;
-  typedef itk::GradientDescentOptimizer                  OptimizerType;
-  typedef itk::LinearInterpolateImageFunction<
-                                    InternalImageType,
-                                    double             > InterpolatorType;
-  typedef itk::ImageRegistrationMethod<
-                                    InternalImageType,
-                                    InternalImageType >  RegistrationType;
+  using TransformType = itk::TranslationTransform<double, Dimension>;
+  using OptimizerType = itk::GradientDescentOptimizer;
+  using InterpolatorType =
+    itk::LinearInterpolateImageFunction<InternalImageType, double>;
+  using RegistrationType =
+    itk::ImageRegistrationMethod<InternalImageType, InternalImageType>;
   // Software Guide : EndCodeSnippet
 
 
@@ -196,20 +197,20 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::MutualInformationImageToImageMetric<
-                                          InternalImageType,
-                                          InternalImageType >    MetricType;
+  using MetricType =
+    itk::MutualInformationImageToImageMetric<InternalImageType,
+                                             InternalImageType>;
   // Software Guide : EndCodeSnippet
 
 
-  TransformType::Pointer      transform     = TransformType::New();
-  OptimizerType::Pointer      optimizer     = OptimizerType::New();
-  InterpolatorType::Pointer   interpolator  = InterpolatorType::New();
-  RegistrationType::Pointer   registration  = RegistrationType::New();
+  TransformType::Pointer    transform = TransformType::New();
+  OptimizerType::Pointer    optimizer = OptimizerType::New();
+  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  RegistrationType::Pointer registration = RegistrationType::New();
 
-  registration->SetOptimizer(     optimizer     );
-  registration->SetTransform(     transform     );
-  registration->SetInterpolator(  interpolator  );
+  registration->SetOptimizer(optimizer);
+  registration->SetTransform(transform);
+  registration->SetInterpolator(interpolator);
 
 
   //  Software Guide : BeginLatex
@@ -220,8 +221,8 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  MetricType::Pointer         metric        = MetricType::New();
-  registration->SetMetric( metric  );
+  MetricType::Pointer metric = MetricType::New();
+  registration->SetMetric(metric);
   // Software Guide : EndCodeSnippet
 
 
@@ -244,18 +245,20 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  metric->SetFixedImageStandardDeviation(  0.4 );
-  metric->SetMovingImageStandardDeviation( 0.4 );
+  metric->SetFixedImageStandardDeviation(0.4);
+  metric->SetMovingImageStandardDeviation(0.4);
   // Software Guide : EndCodeSnippet
 
-  typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
-  typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
+  using FixedImageReaderType = itk::ImageFileReader<FixedImageType>;
+  using MovingImageReaderType = itk::ImageFileReader<MovingImageType>;
 
-  FixedImageReaderType::Pointer  fixedImageReader  = FixedImageReaderType::New();
-  MovingImageReaderType::Pointer movingImageReader = MovingImageReaderType::New();
+  FixedImageReaderType::Pointer fixedImageReader =
+    FixedImageReaderType::New();
+  MovingImageReaderType::Pointer movingImageReader =
+    MovingImageReaderType::New();
 
-  fixedImageReader->SetFileName(  argv[1] );
-  movingImageReader->SetFileName( argv[2] );
+  fixedImageReader->SetFileName(argv[1]);
+  movingImageReader->SetFileName(argv[2]);
 
 
   //  Software Guide : BeginLatex
@@ -266,21 +269,17 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::NormalizeImageFilter<
-                                FixedImageType,
-                                InternalImageType
-                                        > FixedNormalizeFilterType;
+  using FixedNormalizeFilterType =
+    itk::NormalizeImageFilter<FixedImageType, InternalImageType>;
 
-  typedef itk::NormalizeImageFilter<
-                                MovingImageType,
-                                InternalImageType
-                                              > MovingNormalizeFilterType;
+  using MovingNormalizeFilterType =
+    itk::NormalizeImageFilter<MovingImageType, InternalImageType>;
 
   FixedNormalizeFilterType::Pointer fixedNormalizer =
-                                            FixedNormalizeFilterType::New();
+    FixedNormalizeFilterType::New();
 
   MovingNormalizeFilterType::Pointer movingNormalizer =
-                                            MovingNormalizeFilterType::New();
+    MovingNormalizeFilterType::New();
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -292,16 +291,14 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::DiscreteGaussianImageFilter<
-                                      InternalImageType,
-                                      InternalImageType
-                                                    > GaussianFilterType;
+  using GaussianFilterType =
+    itk::DiscreteGaussianImageFilter<InternalImageType, InternalImageType>;
 
-  GaussianFilterType::Pointer fixedSmoother  = GaussianFilterType::New();
+  GaussianFilterType::Pointer fixedSmoother = GaussianFilterType::New();
   GaussianFilterType::Pointer movingSmoother = GaussianFilterType::New();
 
-  fixedSmoother->SetVariance( 2.0 );
-  movingSmoother->SetVariance( 2.0 );
+  fixedSmoother->SetVariance(2.0);
+  movingSmoother->SetVariance(2.0);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -314,58 +311,58 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  fixedNormalizer->SetInput(  fixedImageReader->GetOutput() );
-  movingNormalizer->SetInput( movingImageReader->GetOutput() );
+  fixedNormalizer->SetInput(fixedImageReader->GetOutput());
+  movingNormalizer->SetInput(movingImageReader->GetOutput());
 
-  fixedSmoother->SetInput( fixedNormalizer->GetOutput() );
-  movingSmoother->SetInput( movingNormalizer->GetOutput() );
+  fixedSmoother->SetInput(fixedNormalizer->GetOutput());
+  movingSmoother->SetInput(movingNormalizer->GetOutput());
 
-  registration->SetFixedImage(    fixedSmoother->GetOutput()    );
-  registration->SetMovingImage(   movingSmoother->GetOutput()   );
+  registration->SetFixedImage(fixedSmoother->GetOutput());
+  registration->SetMovingImage(movingSmoother->GetOutput());
   // Software Guide : EndCodeSnippet
 
 
   fixedNormalizer->Update();
   FixedImageType::RegionType fixedImageRegion =
-       fixedNormalizer->GetOutput()->GetBufferedRegion();
-  registration->SetFixedImageRegion( fixedImageRegion );
+    fixedNormalizer->GetOutput()->GetBufferedRegion();
+  registration->SetFixedImageRegion(fixedImageRegion);
 
-  typedef RegistrationType::ParametersType ParametersType;
-  ParametersType initialParameters( transform->GetNumberOfParameters() );
+  using ParametersType = RegistrationType::ParametersType;
+  ParametersType initialParameters(transform->GetNumberOfParameters());
 
-  initialParameters[0] = 0.0;  // Initial offset in mm along X
-  initialParameters[1] = 0.0;  // Initial offset in mm along Y
+  initialParameters[0] = 0.0; // Initial offset in mm along X
+  initialParameters[1] = 0.0; // Initial offset in mm along Y
 
-  registration->SetInitialTransformParameters( initialParameters );
+  registration->SetInitialTransformParameters(initialParameters);
 
   //  Software Guide : BeginLatex
   //
   //  We should now define the number of spatial samples to be considered in
-  //  the metric computation. Note that we were forced to postpone this setting
-  //  until we had done the preprocessing of the images because the number of
-  //  samples is usually defined as a fraction of the total number of pixels in
-  //  the fixed image.
+  //  the metric computation. Note that we were forced to postpone this
+  //  setting until we had done the preprocessing of the images because the
+  //  number of samples is usually defined as a fraction of the total number
+  //  of pixels in the fixed image.
   //
-  //  The number of spatial samples can usually be as low as $1\%$ of the total
-  //  number of pixels in the fixed image. Increasing the number of samples
-  //  improves the smoothness of the metric from one iteration to another and
-  //  therefore helps when this metric is used in conjunction with optimizers
-  //  that rely of the continuity of the metric values. The trade-off, of
-  //  course, is that a larger number of samples result in longer computation
-  //  times per every evaluation of the metric.
+  //  The number of spatial samples can usually be as low as $1\%$ of the
+  //  total number of pixels in the fixed image. Increasing the number of
+  //  samples improves the smoothness of the metric from one iteration to
+  //  another and therefore helps when this metric is used in conjunction with
+  //  optimizers that rely of the continuity of the metric values. The
+  //  trade-off, of course, is that a larger number of samples result in
+  //  longer computation times per every evaluation of the metric.
   //
   //  It has been demonstrated empirically that the number of samples is not a
   //  critical parameter for the registration process. When you start fine
   //  tuning your own registration process, you should start using high values
-  //  of number of samples, for example in the range of $20\%$ to $50\%$ of the
-  //  number of pixels in the fixed image. Once you have succeeded to register
-  //  your images you can then reduce the number of samples progressively until
-  //  you find a good compromise on the time it takes to compute one evaluation
-  //  of the Metric. Note that it is not useful to have very fast evaluations
-  //  of the Metric if the noise in their values results in more iterations
-  //  being required by the optimizer to converge. You must then study the
-  //  behavior of the metric values as the iterations progress, just as
-  //  illustrated in section~\ref{sec:MonitoringImageRegistration}.
+  //  of number of samples, for example in the range of $20\%$ to $50\%$ of
+  //  the number of pixels in the fixed image. Once you have succeeded to
+  //  register your images you can then reduce the number of samples
+  //  progressively until you find a good compromise on the time it takes to
+  //  compute one evaluation of the Metric. Note that it is not useful to have
+  //  very fast evaluations of the Metric if the noise in their values results
+  //  in more iterations being required by the optimizer to converge. You must
+  //  then study the behavior of the metric values as the iterations progress,
+  //  just as illustrated in section~\ref{sec:MonitoringImageRegistration}.
   //
   //  \index{itk::Mutual\-Information\-Image\-To\-Image\-Metric!SetNumberOfSpatialSamples()}
   //  \index{itk::Mutual\-Information\-Image\-To\-Image\-Metric!Trade-offs}
@@ -375,10 +372,10 @@ int main( int argc, char *argv[] )
   // Software Guide : BeginCodeSnippet
   const unsigned int numberOfPixels = fixedImageRegion.GetNumberOfPixels();
 
-  const unsigned int numberOfSamples =
-                        static_cast< unsigned int >( numberOfPixels * 0.01 );
+  const auto numberOfSamples =
+    static_cast<unsigned int>(numberOfPixels * 0.01);
 
-  metric->SetNumberOfSpatialSamples( numberOfSamples );
+  metric->SetNumberOfSpatialSamples(numberOfSamples);
   // Software Guide : EndCodeSnippet
 
 
@@ -402,8 +399,8 @@ int main( int argc, char *argv[] )
 
 
   // Software Guide : BeginCodeSnippet
-  optimizer->SetLearningRate( 15.0 );
-  optimizer->SetNumberOfIterations( 200 );
+  optimizer->SetLearningRate(15.0);
+  optimizer->SetNumberOfIterations(200);
   optimizer->MaximizeOn();
   // Software Guide : EndCodeSnippet
 
@@ -416,37 +413,38 @@ int main( int argc, char *argv[] )
   // function. The easy way of fine tuning this parameter is to start with
   // small values, probably in the range of $\{5.0,10.0\}$. Once the other
   // registration parameters have been tuned for producing convergence, you
-  // may want to revisit the learning rate and start increasing its value until
-  // you observe that the optimization becomes unstable.  The ideal value for
-  // this parameter is the one that results in a minimum number of iterations
-  // while still keeping a stable path on the parametric space of the
-  // optimization. Keep in mind that this parameter is a multiplicative factor
-  // applied on the gradient of the Metric. Therefore, its effect on the
-  // optimizer step length is proportional to the Metric values themselves.
-  // Metrics with large values will require you to use smaller values for the
-  // learning rate in order to maintain a similar optimizer behavior.
+  // may want to revisit the learning rate and start increasing its value
+  // until you observe that the optimization becomes unstable.  The ideal
+  // value for this parameter is the one that results in a minimum number of
+  // iterations while still keeping a stable path on the parametric space of
+  // the optimization. Keep in mind that this parameter is a multiplicative
+  // factor applied on the gradient of the Metric. Therefore, its effect on
+  // the optimizer step length is proportional to the Metric values
+  // themselves. Metrics with large values will require you to use smaller
+  // values for the learning rate in order to maintain a similar optimizer
+  // behavior.
   //
   // Software Guide : EndLatex
 
   // Create the Command observer and register it with the optimizer.
   //
   CommandIterationUpdate::Pointer observer = CommandIterationUpdate::New();
-  optimizer->AddObserver( itk::IterationEvent(), observer );
+  optimizer->AddObserver(itk::IterationEvent(), observer);
 
 
   try
-    {
+  {
     registration->Update();
     std::cout << "Optimizer stop condition: "
               << registration->GetOptimizer()->GetStopConditionDescription()
               << std::endl;
-    }
-  catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (const itk::ExceptionObject & err)
+  {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   ParametersType finalParameters = registration->GetLastTransformParameters();
 
@@ -462,11 +460,11 @@ int main( int argc, char *argv[] )
   //
   std::cout << std::endl;
   std::cout << "Result = " << std::endl;
-  std::cout << " Translation X = " << TranslationAlongX  << std::endl;
-  std::cout << " Translation Y = " << TranslationAlongY  << std::endl;
+  std::cout << " Translation X = " << TranslationAlongX << std::endl;
+  std::cout << " Translation Y = " << TranslationAlongY << std::endl;
   std::cout << " Iterations    = " << numberOfIterations << std::endl;
-  std::cout << " Metric value  = " << bestValue          << std::endl;
-  std::cout << " Numb. Samples = " << numberOfSamples    << std::endl;
+  std::cout << " Metric value  = " << bestValue << std::endl;
+  std::cout << " Numb. Samples = " << numberOfSamples << std::endl;
 
 
   //  Software Guide : BeginLatex
@@ -483,9 +481,9 @@ int main( int argc, char *argv[] )
   //  \center
   //  \includegraphics[width=0.44\textwidth]{BrainT1SliceBorder20}
   //  \includegraphics[width=0.44\textwidth]{BrainProtonDensitySliceShifted13x17y}
-  //  \itkcaption[Multi-Modality Registration Inputs]{A T1 MRI (fixed image) and a proton
-  //  density MRI (moving image) are provided as input to the registration method.}
-  //  \label{fig:FixedMovingImageRegistration2}
+  //  \itkcaption[Multi-Modality Registration Inputs]{A T1 MRI (fixed image)
+  //  and a proton density MRI (moving image) are provided as input to the
+  //  registration method.} \label{fig:FixedMovingImageRegistration2}
   //  \end{figure}
   //
   //  The second image is the result of intentionally translating the image
@@ -503,83 +501,81 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex
 
-  typedef itk::ResampleImageFilter<
-                            MovingImageType,
-                            FixedImageType >    ResampleFilterType;
+  using ResampleFilterType =
+    itk::ResampleImageFilter<MovingImageType, FixedImageType>;
 
   TransformType::Pointer finalTransform = TransformType::New();
 
-  finalTransform->SetParameters( finalParameters );
-  finalTransform->SetFixedParameters( transform->GetFixedParameters() );
+  finalTransform->SetParameters(finalParameters);
+  finalTransform->SetFixedParameters(transform->GetFixedParameters());
 
   ResampleFilterType::Pointer resample = ResampleFilterType::New();
 
-  resample->SetTransform( finalTransform );
-  resample->SetInput( movingImageReader->GetOutput() );
+  resample->SetTransform(finalTransform);
+  resample->SetInput(movingImageReader->GetOutput());
 
   FixedImageType::Pointer fixedImage = fixedImageReader->GetOutput();
 
-  resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
-  resample->SetOutputOrigin(  fixedImage->GetOrigin() );
-  resample->SetOutputSpacing( fixedImage->GetSpacing() );
-  resample->SetOutputDirection( fixedImage->GetDirection() );
-  resample->SetDefaultPixelValue( 100 );
+  resample->SetSize(fixedImage->GetLargestPossibleRegion().GetSize());
+  resample->SetOutputOrigin(fixedImage->GetOrigin());
+  resample->SetOutputSpacing(fixedImage->GetSpacing());
+  resample->SetOutputDirection(fixedImage->GetDirection());
+  resample->SetDefaultPixelValue(100);
 
 
-  typedef  unsigned char  OutputPixelType;
+  using OutputPixelType = unsigned char;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  typedef itk::CastImageFilter<
-                        FixedImageType,
-                        OutputImageType > CastFilterType;
+  using CastFilterType =
+    itk::CastImageFilter<FixedImageType, OutputImageType>;
 
-  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
-
-
-  WriterType::Pointer      writer =  WriterType::New();
-  CastFilterType::Pointer  caster =  CastFilterType::New();
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
 
 
-  writer->SetFileName( argv[3] );
+  WriterType::Pointer     writer = WriterType::New();
+  CastFilterType::Pointer caster = CastFilterType::New();
 
 
-  caster->SetInput( resample->GetOutput() );
-  writer->SetInput( caster->GetOutput()   );
+  writer->SetFileName(argv[3]);
+
+
+  caster->SetInput(resample->GetOutput());
+  writer->SetInput(caster->GetOutput());
   writer->Update();
 
 
   // Generate checkerboards before and after registration
   //
-  typedef itk::CheckerBoardImageFilter< FixedImageType > CheckerBoardFilterType;
+  using CheckerBoardFilterType = itk::CheckerBoardImageFilter<FixedImageType>;
 
   CheckerBoardFilterType::Pointer checker = CheckerBoardFilterType::New();
 
-  checker->SetInput1( fixedImage );
-  checker->SetInput2( resample->GetOutput() );
+  checker->SetInput1(fixedImage);
+  checker->SetInput2(resample->GetOutput());
 
-  caster->SetInput( checker->GetOutput() );
-  writer->SetInput( caster->GetOutput()   );
+  caster->SetInput(checker->GetOutput());
+  writer->SetInput(caster->GetOutput());
 
   // Before registration
   TransformType::Pointer identityTransform = TransformType::New();
   identityTransform->SetIdentity();
-  resample->SetTransform( identityTransform );
+  resample->SetTransform(identityTransform);
 
-  if( argc > 4 )
-    {
-    writer->SetFileName( argv[4] );
+  if (argc > 4)
+  {
+    writer->SetFileName(argv[4]);
     writer->Update();
-    }
+  }
 
 
   // After registration
-  resample->SetTransform( finalTransform );
-  if( argc > 5 )
-    {
-    writer->SetFileName( argv[5] );
+  resample->SetTransform(finalTransform);
+  if (argc > 5)
+  {
+    writer->SetFileName(argv[5]);
     writer->Update();
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -589,10 +585,9 @@ int main( int argc, char *argv[] )
   // \includegraphics[width=0.32\textwidth]{ImageRegistration2Output}
   // \includegraphics[width=0.32\textwidth]{ImageRegistration2CheckerboardBefore}
   // \includegraphics[width=0.32\textwidth]{ImageRegistration2CheckerboardAfter}
-  // \itkcaption[Multi-Modality Registration outputs]{Mapped moving image (left)
-  // and composition of fixed and moving images before (center) and after
-  // (right) registration.}
-  // \label{fig:ImageRegistration2Output}
+  // \itkcaption[Multi-Modality Registration outputs]{Mapped moving image
+  // (left) and composition of fixed and moving images before (center) and
+  // after (right) registration.} \label{fig:ImageRegistration2Output}
   // \end{figure}
   //
   //  The moving image after resampling is presented on the left
@@ -609,8 +604,8 @@ int main( int argc, char *argv[] )
   // \includegraphics[width=0.44\textwidth]{ImageRegistration2TraceTranslations}
   // \includegraphics[width=0.44\textwidth]{ImageRegistration2TraceTranslations2}
   // \itkcaption[Multi-Modality Registration plot of translations]{Sequence of
-  // translations during the registration process. On the left are iterations 0 to
-  // 200. On the right are iterations 150 to 200.}
+  // translations during the registration process. On the left are iterations
+  // 0 to 200. On the right are iterations 150 to 200.}
   // \label{fig:ImageRegistration2TraceTranslations}
   // \end{figure}
   //
@@ -630,8 +625,8 @@ int main( int argc, char *argv[] )
   // \center
   // \includegraphics[width=0.44\textwidth]{ImageRegistration2TraceMetric}
   // \includegraphics[width=0.44\textwidth]{ImageRegistration2TraceMetric2}
-  // \itkcaption[Multi-Modality Registration plot of metrics]{The sequence of metric
-  // values produced during the registration process. On the left are
+  // \itkcaption[Multi-Modality Registration plot of metrics]{The sequence of
+  // metric values produced during the registration process. On the left are
   // iterations 0 to 200. On the right are iterations 150 to 200.}
   // \label{fig:ImageRegistration2TraceMetric}
   // \end{figure}
@@ -645,8 +640,8 @@ int main( int argc, char *argv[] )
   //  new sets of intensity samples are randomly taken from the image to
   //  compute the density and entropy estimates.  Even with the fluctuations,
   //  the measure initially increases overall with the number of iterations.
-  //  After about 150 iterations, the metric value merely oscillates without further
-  //  noticeable convergence.  The trace plots in Figure
+  //  After about 150 iterations, the metric value merely oscillates without
+  //  further noticeable convergence.  The trace plots in Figure
   //  \ref{fig:ImageRegistration2TraceMetric} highlight one of the
   //  difficulties associated with this particular metric: the stochastic
   //  oscillations make it difficult to determine convergence and limit the
@@ -683,8 +678,8 @@ int main( int argc, char *argv[] )
   //  Open Science is not just an abstract concept. Open Science is something
   //  to be practiced every day with the simple gesture of sharing information
   //  with your peers, and by providing all the tools that they need for
-  //  replicating the results that you are reporting. In Open Science, the only
-  //  bad results are those that can not be
+  //  replicating the results that you are reporting. In Open Science, the
+  //  only bad results are those that can not be
   //  replicated\footnote{\url{http://science.creativecommons.org/}}. Science
   //  is dead when people blindly trust authorities~\footnote{For example:
   //  Reviewers of Scientific Journals.} instead of verifying their statements
