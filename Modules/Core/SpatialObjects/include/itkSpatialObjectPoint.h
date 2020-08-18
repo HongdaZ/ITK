@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,17 +18,13 @@
 #ifndef itkSpatialObjectPoint_h
 #define itkSpatialObjectPoint_h
 
-#include "itkSpatialObject.h"
-
 #include "itkPoint.h"
 #include "vnl/vnl_vector_fixed.h"
 #include "itkRGBAPixel.h"
 
-
 namespace itk
 {
-/**
- *\class SpatialObjectPoint
+/** \class SpatialObjectPoint
  * \brief Point used for spatial objets
  *
  * This class contains all the functions necessary to define a point
@@ -37,197 +33,91 @@ namespace itk
  * \ingroup ITKSpatialObjects
  */
 
-template <unsigned int TDimension, class TSpatialObjectPointType>
-class PointBasedSpatialObject;
-
-template <unsigned int TPointDimension = 3>
+template< unsigned int TPointDimension = 3 >
 class ITK_TEMPLATE_EXPORT SpatialObjectPoint
 {
 public:
-  /** Constructor. */
+
+  /** Constructor. This one defines the number of dimensions in the
+   * SpatialObjectPoint */
   SpatialObjectPoint();
 
   /** Default destructor. */
-  virtual ~SpatialObjectPoint() = default;
+  virtual ~SpatialObjectPoint();
 
-  virtual const char *
-  GetNameOfClass() const
-  {
-    return "SpatialObjectPoint";
-  };
-
-  using Self = SpatialObjectPoint;
-
-  using SpatialObjectType = SpatialObject<TPointDimension>;
-
-  using PointType = Point<double, TPointDimension>;
-  using VectorType = vnl_vector<double>;
-  using ColorType = RGBAPixel<double>;
-
-  /** Set the SpatialObjectPoint Id. */
-  void
-  SetId(int id)
-  {
-    m_Id = id;
-  }
+  typedef SpatialObjectPoint               Self;
+  typedef Point< double, TPointDimension > PointType;
+  typedef vnl_vector< double >             VectorType;
+  typedef RGBAPixel< float >               PixelType;
+  typedef PixelType                        ColorType;
 
   /** Get the SpatialObjectPoint Id. */
-  int
-  GetId() const
-  {
-    return m_Id;
-  }
+  int GetID() const;
 
-  /** Set the point object. */
-  void
-  SetPositionInObjectSpace(const PointType & newPositionInObjectSpace)
-  {
-    m_PositionInObjectSpace = newPositionInObjectSpace;
-  }
-
-  template <typename... TCoordinate>
-  void
-  SetPositionInObjectSpace(const double firstCoordinate, const TCoordinate... otherCoordinate)
-  {
-    static_assert((1 + sizeof...(otherCoordinate)) == TPointDimension,
-                  "The number of coordinates must be equal to the dimensionality!");
-    const double coordinates[] = { firstCoordinate, static_cast<double>(otherCoordinate)... };
-    m_PositionInObjectSpace = coordinates;
-  }
+  /** Set the SpatialObjectPoint Id. */
+  void SetID(const int newID);
 
   /** Return a pointer to the point object. */
-  const PointType &
-  GetPositionInObjectSpace() const
-  {
-    return m_PositionInObjectSpace;
-  }
+  const PointType & GetPosition() const;
 
-  void
-  SetSpatialObject(SpatialObjectType * so)
-  {
-    m_SpatialObject = so;
-  }
+  /** Set the point object. Couldn't use macros for these methods. */
+  void SetPosition(const PointType & newX);
 
-  SpatialObjectType *
-  GetSpatialObject() const
-  {
-    return m_SpatialObject;
-  }
+  void SetPosition(const double x0, const double x1);
 
-  /** Set the position in world coordinates, using the
-   *    spatialObject's objectToWorld transform, inverse */
-  void
-  SetPositionInWorldSpace(const PointType & point);
-
-  /** Returns the position in world coordinates, using the
-   *    spatialObject's objectToWorld transform */
-  PointType
-  GetPositionInWorldSpace() const;
+  void SetPosition(const double x0, const double x1, const double x2);
 
   /** Copy one SpatialObjectPoint to another */
-  Self &
-  operator=(const SpatialObjectPoint & rhs);
+  Self & operator=(const SpatialObjectPoint & rhs);
 
   /** Set/Get color of the point */
-  void
-  SetColor(ColorType color)
-  {
-    m_Color = color;
-  }
+  const PixelType & GetColor() const;
 
-  ColorType
-  GetColor() const
-  {
-    return m_Color;
-  }
+  void SetColor(const PixelType & color);
 
-  /** Set the color */
-  void
-  SetColor(double r, double g, double b, double a = 1);
+  void SetColor(float r, float g, float b, float a = 1);
 
   /** Set/Get red color of the point */
-  void
-  SetRed(double r)
-  {
-    m_Color.SetRed(r);
-  }
+  void SetRed(float r);
 
-  double
-  GetRed() const
-  {
-    return m_Color.GetRed();
-  }
+  float GetRed() const;
 
   /** Set/Get Green color of the point */
-  void
-  SetGreen(double g)
-  {
-    m_Color.SetGreen(g);
-  }
+  void SetGreen(float g);
 
-  double
-  GetGreen() const
-  {
-    return m_Color.GetGreen();
-  }
+  float GetGreen() const;
 
   /** Set/Get blue color of the point */
-  void
-  SetBlue(double b)
-  {
-    m_Color.SetBlue(b);
-  }
+  void SetBlue(float b);
 
-  double
-  GetBlue() const
-  {
-    return m_Color.GetBlue();
-  }
+  float GetBlue() const;
 
   /** Set/Get alpha value of the point */
-  void
-  SetAlpha(double a)
-  {
-    m_Color.SetAlpha(a);
-  }
+  void SetAlpha(float a);
 
-  double
-  GetAlpha() const
-  {
-    return m_Color.GetAlpha();
-  }
+  float GetAlpha() const;
 
   /** PrintSelf method */
-  void
-  Print(std::ostream & os) const
-  {
-    this->PrintSelf(os, 3);
-  }
+  void Print(std::ostream & os) const;
 
 protected:
+
   /** PrintSelf method */
-  virtual void
-  PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const;
 
   /** A unique ID assigned to this SpatialObjectPoint */
-  int m_Id;
+  int m_ID;
 
   /** Position of the point */
-  PointType m_PositionInObjectSpace;
+  PointType m_X;
 
   /** Color of the point */
-  ColorType m_Color;
-
-  // The SpatialObjectPoint keeps a reference to its owning parent
-  // spatial object for its spatial context. A WeakPointer is used to
-  // avoid a memory leak.
-  WeakPointer<SpatialObjectType> m_SpatialObject;
+  PixelType m_Color;
 };
-
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSpatialObjectPoint.hxx"
+#include "itkSpatialObjectPoint.hxx"
 #endif
 
 #endif // itkSpatialObjectPoint_h

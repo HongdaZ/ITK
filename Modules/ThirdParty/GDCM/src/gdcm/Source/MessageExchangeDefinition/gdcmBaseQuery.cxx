@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright NumFOCUS
+*  Copyright Insight Software Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -70,11 +70,7 @@ namespace gdcm
       {
         de.SetVR( VR::US );
       }
-      else if( vr == VR::US_OW )
-      {
-        de.SetVR( VR::OW );
-      }
-       else if( vr == VR::US_SS_OW )
+      else if( vr == VR::US_SS_OW )
       {
         de.SetVR( VR::OW );
       }
@@ -245,7 +241,7 @@ namespace gdcm
 		if ( dataSetToValid.FindDataElement( itor->GetTag() ) )
 		  {
 		  SmartPointer<SequenceOfItems> pSqi = dataSetToValid.GetDataElement( itor->GetTag() ).GetValueAsSQ();
-		  SmartPointer<SequenceOfItems> pSqiRef = pSqi ? itor->GetValueAsSQ() : nullptr ;
+		  SmartPointer<SequenceOfItems> pSqiRef = pSqi ? itor->GetValueAsSQ() : NULL ;
 		  if ( pSqi && pSqiRef )
 			{
 			if( pSqi->GetNumberOfItems() < pSqiRef->GetNumberOfItems() )

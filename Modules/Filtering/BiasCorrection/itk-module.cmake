@@ -6,13 +6,12 @@ uniform across the field of view.")
 
 itk_module(ITKBiasCorrection
   ENABLE_SHARED
-  DEPENDS
-    ITKImageIntensity
   PRIVATE_DEPENDS
     ITKCommon
   COMPILE_DEPENDS
     ITKOptimizers
     ITKImageGrid
+    ITKImageIntensity
     ITKPolynomials
   TEST_DEPENDS
     ITKTestKernel

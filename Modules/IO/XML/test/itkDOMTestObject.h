@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,13 +28,11 @@ namespace itk
 class DOMTestObject : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DOMTestObject);
-
-  /** Standard class type aliases. */
-  using Self = DOMTestObject;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DOMTestObject               Self;
+  typedef Object                      Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -43,15 +41,17 @@ public:
   itkTypeMacro(DOMTestObject, Object);
 
   /** Functions to set/get foo value. */
-  itkSetMacro(FooValue, std::string);
-  itkGetConstMacro(FooValue, std::string);
+  itkSetMacro( FooValue, std::string );
+  itkGetConstMacro( FooValue, std::string );
 
   /** Functions to set/get foo file name. */
-  itkSetMacro(FooFileName, std::string);
-  itkGetConstMacro(FooFileName, std::string);
+  itkSetMacro( FooFileName, std::string );
+  itkGetConstMacro( FooFileName, std::string );
 
 private:
-  DOMTestObject() = default;
+  DOMTestObject() {}
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(DOMTestObject);
 
   std::string m_FooValue;
   std::string m_FooFileName;

@@ -36,8 +36,10 @@
 #ifdef GDCM_HAVE_WINSOCK_H
 #include <winsock.h>
 #endif
-#include <cstdio> // snprintf
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#include <stdio.h> // snprintf
+#if defined(GDCM_HAVE_SNPRINTF)
+// ok nothing to do
+#elif defined(GDCM_HAVE__SNPRINTF)
 #define snprintf _snprintf
 #endif
 #ifdef GDCM_USE_COREFOUNDATION_LIBRARY
@@ -63,6 +65,7 @@
 
 // TODO: WIN32 replacement for C99 stuff:
 // #if defined(_WIN32) || defined(_WIN64)
+// #define snprintf _snprintf
 // #define vsnprintf _vsnprintf
 // #define strcasecmp _stricmp
 // #define strncasecmp _strnicmp
@@ -457,7 +460,7 @@ const char *System::GetCurrentProcessFileName()
 #else
   gdcmErrorMacro( "missing implementation" );
 #endif
-   return nullptr;
+   return 0;
 }
 
 #ifdef __USE_GNU
@@ -472,7 +475,7 @@ const char *System::GetCurrentModuleFileName()
   if (dladdr( (void*)&where_am_i, &info ) == 0)
     {
     size_t len = strlen(info.dli_fname);
-    if( len >= PATH_MAX ) return nullptr; // throw error ?
+    if( len >= PATH_MAX ) return 0; // throw error ?
     // else
     strcpy(path,info.dli_fname);
     return path;
@@ -482,7 +485,7 @@ const char *System::GetCurrentModuleFileName()
   return System::GetCurrentProcessFileName();
 #endif
 
-  return nullptr;
+  return 0;
 }
 
 const char *System::GetCurrentResourcesDirectory()
@@ -491,7 +494,7 @@ const char *System::GetCurrentResourcesDirectory()
   static char path[PATH_MAX];
   Boolean success = false;
   CFURLRef pathURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-  if (pathURL != nullptr)
+  if (pathURL != NULL)
     {
     success = CFURLGetFileSystemRepresentation(pathURL, true /*resolveAgainstBase*/, (unsigned char*) path, PATH_MAX);
     CFRelease(pathURL);
@@ -503,7 +506,7 @@ const char *System::GetCurrentResourcesDirectory()
     }
 #endif
   // Is there such beast on *any* other system but APPLE ?
-  return nullptr;
+  return 0;
 }
 
 /**
@@ -722,7 +725,7 @@ const char *System::GetTimezoneOffsetFromUTC()
 {
   static std::string buffer;
   char outstr[10];
-  time_t t = time(nullptr);
+  time_t t = time(NULL);
   struct tm *tmp = localtime(&t);
   size_t l = strftime(outstr, sizeof(outstr), "%z", tmp);
   assert( l == 5 ); (void)l;
@@ -809,7 +812,7 @@ bool System::GetCurrentDateTime(char date[22])
   // Apparently suseconds_t is defined as long on linux system... why would this be signed ?
 
   struct timeval tv;
-  gettimeofday (&tv, nullptr);
+  gettimeofday (&tv, NULL);
   timep = tv.tv_sec;
   // A concatenated date-time character string in the format:
   // YYYYMMDDHHMMSS.FFFFFF&ZZXX
@@ -903,7 +906,7 @@ char *System::StrTokR(char *str, const char *delim, char **nextp)
   // PD -> http://groups.google.com/group/comp.lang.c/msg/7c7b39328fefab9c
   char *ret;
 
-  if (str == nullptr)
+  if (str == NULL)
     {
     str = *nextp;
     }
@@ -912,7 +915,7 @@ char *System::StrTokR(char *str, const char *delim, char **nextp)
 
   if (*str == '\0')
     {
-    return nullptr;
+    return NULL;
     }
 
   ret = str;
@@ -938,7 +941,7 @@ char *System::StrSep(char **sp, const char *sep)
   // http://stackoverflow.com/questions/8512958/is-there-a-windows-variant-of-strsep
 #if 1
   char *p, *s;
-  if (sp == nullptr || *sp == nullptr || **sp == '\0') return nullptr;
+  if (sp == NULL || *sp == NULL || **sp == '\0') return NULL;
   s = *sp;
   p = s + strcspn(s, sep);
   if (*p != '\0') *p++ = '\0';
@@ -981,7 +984,7 @@ static const char *CharsetAliasToName(const char *alias)
 
 const char *System::GetLocaleCharset()
 {
-  const char *codeset = nullptr;
+  const char *codeset = NULL;
 #if defined(GDCM_HAVE_NL_LANGINFO)
   //setlocale (LC_CTYPE, NULL);
   /* According to documentation nl_langinfo needs :

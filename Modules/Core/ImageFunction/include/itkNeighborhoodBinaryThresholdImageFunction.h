@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,18 +38,16 @@ namespace itk
  * \ingroup ImageFunctions
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = float>
-class ITK_TEMPLATE_EXPORT NeighborhoodBinaryThresholdImageFunction
-  : public BinaryThresholdImageFunction<TInputImage, TCoordRep>
+template< typename TInputImage, typename TCoordRep = float >
+class ITK_TEMPLATE_EXPORT NeighborhoodBinaryThresholdImageFunction:
+  public BinaryThresholdImageFunction< TInputImage, TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodBinaryThresholdImageFunction);
-
-  /** Standard class type aliases. */
-  using Self = NeighborhoodBinaryThresholdImageFunction;
-  using Superclass = BinaryThresholdImageFunction<TInputImage, TCoordRep>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NeighborhoodBinaryThresholdImageFunction               Self;
+  typedef BinaryThresholdImageFunction< TInputImage, TCoordRep > Superclass;
+  typedef SmartPointer< Self >                                   Pointer;
+  typedef SmartPointer< const Self >                             ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(NeighborhoodBinaryThresholdImageFunction, BinaryThresholdImageFunction);
@@ -57,29 +55,30 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
+  /** InputImageType typedef support. */
+  typedef TInputImage InputImageType;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
-  /** PixelType type alias support */
-  using PixelType = typename Superclass::PixelType;
+  /** PixelType typedef support. */
+  typedef typename Superclass::PixelType PixelType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** SizeType of the input image */
-  using InputSizeType = typename InputImageType::SizeType;
+  typedef typename InputImageType::SizeType InputSizeType;
 
   /** Set the radius of the neighborhood used in computation. */
   itkSetMacro(Radius, InputSizeType);
@@ -88,12 +87,10 @@ public:
   itkGetConstReferenceMacro(Radius, InputSizeType);
 
   /** Evalulate the function at specified index */
-  bool
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual bool EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at non-integer positions */
-  bool
-  Evaluate(const PointType & point) const override
+  virtual bool Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -101,8 +98,8 @@ public:
     return this->EvaluateAtIndex(index);
   }
 
-  bool
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override
+  virtual bool EvaluateAtContinuousIndex(
+    const ContinuousIndexType & cindex) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -112,17 +109,18 @@ public:
 
 protected:
   NeighborhoodBinaryThresholdImageFunction();
-  ~NeighborhoodBinaryThresholdImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~NeighborhoodBinaryThresholdImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodBinaryThresholdImageFunction);
+
   InputSizeType m_Radius;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNeighborhoodBinaryThresholdImageFunction.hxx"
+#include "itkNeighborhoodBinaryThresholdImageFunction.hxx"
 #endif
 
 /*

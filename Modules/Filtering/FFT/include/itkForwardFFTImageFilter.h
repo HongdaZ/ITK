@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class ForwardFFTImageFilter
+/** \class ForwardFFTImageFilter
  *
  * \brief Base class for forward Fast Fourier Transform.
  *
@@ -42,73 +41,68 @@ namespace itk
  *
  * This filter works only for real single-component input image types.
  *
- * The output generated from a ForwardFFTImageFilter is in the
- * dual space or frequency domain.
- * Refer to FrequencyFFTLayoutImageRegionConstIteratorWithIndex
- * for a description of the layout of frequencies generated after a forward FFT.
- * Also see ITKImageFrequency for a set of filters requiring input images in the frequency domain.
- *
  * \ingroup FourierTransform
  *
  * \sa InverseFFTImageFilter, FFTComplexToComplexImageFilter
  * \ingroup ITKFFT
- *
- * \sphinx
- * \sphinxexample{Filtering/FFT/ComputeForwardFFT,Compute Forward FFT}
- * \endsphinx
  */
-template <typename TInputImage,
-          typename TOutputImage = Image<std::complex<typename TInputImage::PixelType>, TInputImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT ForwardFFTImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage=Image< std::complex<typename TInputImage::PixelType>, TInputImage::ImageDimension> >
+class ITK_TEMPLATE_EXPORT ForwardFFTImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef TInputImage                          InputImageType;
+  typedef typename InputImageType::PixelType   InputPixelType;
+  typedef typename InputImageType::IndexType   InputIndexType;
+  typedef typename InputImageType::SizeType    InputSizeType;
+  typedef TOutputImage                         OutputImageType;
+  typedef typename OutputImageType::PixelType  OutputPixelType;
+  typedef typename OutputImageType::IndexType  OutputIndexType;
+  typedef typename OutputIndexType::SizeType   OutputSizeType;
 
-  /** Standard class type aliases. */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using InputIndexType = typename InputImageType::IndexType;
-  using InputSizeType = typename InputImageType::SizeType;
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using OutputIndexType = typename OutputImageType::IndexType;
-  using OutputSizeType = typename OutputIndexType::SizeType;
-
-  using Self = ForwardFFTImageFilter;
-  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef ForwardFFTImageFilter                                 Self;
+  typedef ImageToImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Customized object creation methods that support configuration-based
-   * selection of FFT implementation.
-   *
-   * Default implementation is VnlFFT. */
-  static Pointer
-  New();
+    * selection of FFT implementation.
+    *
+    * Default implementation is VnlFFT. */
+  static Pointer New();
 
-  /* Return the preferred greatest prime factor supported for the input image
+  /* Return the prefered greatest prime factor supported for the input image
    * size. Defaults to 2 as many implementations work only for sizes that are
    * power of 2.
    */
-  virtual SizeValueType
-  GetSizeGreatestPrimeFactor() const;
+  virtual SizeValueType GetSizeGreatestPrimeFactor() const;
 
 protected:
-  ForwardFFTImageFilter() = default;
-  ~ForwardFFTImageFilter() override = default;
+  ForwardFFTImageFilter() {}
+  virtual ~ForwardFFTImageFilter() {}
 
   /** This class requires the entire input. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion();
 
   /** This class produces the entire output. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *output);
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardFFTImageFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkForwardFFTImageFilter.hxx"
+#ifndef itkVnlForwardFFTImageFilter_h
+#ifndef itkVnlForwardFFTImageFilter_hxx
+#ifndef itkFFTWForwardFFTImageFilter_h
+#ifndef itkFFTWForwardFFTImageFilter_hxx
+#include "itkForwardFFTImageFilter.hxx"
+#endif
+#endif
+#endif
+#endif
 #endif
 
 #endif

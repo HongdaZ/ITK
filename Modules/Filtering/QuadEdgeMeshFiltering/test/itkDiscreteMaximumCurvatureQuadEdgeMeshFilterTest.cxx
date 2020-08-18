@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,52 +21,60 @@
 #include "itkQuadEdgeMeshExtendedTraits.h"
 #include "itkDiscreteMaximumCurvatureQuadEdgeMeshFilter.h"
 
-int
-itkDiscreteMaximumCurvatureQuadEdgeMeshFilterTest(int argc, char * argv[])
+int itkDiscreteMaximumCurvatureQuadEdgeMeshFilterTest( int argc, char* argv[] )
 {
-  if (argc < 2)
-  {
-    std::cout << "*** GaussianCurvature ***" << std::endl;
-    std::cout << "This example requires at least one argument:" << std::endl;
-    std::cout << " 1- FileName" << std::endl;
+  if( argc < 2 )
+    {
+    std::cout <<"*** GaussianCurvature ***" <<std::endl;
+    std::cout <<"This example requires at least one argument:" <<std::endl;
+    std::cout <<" 1- FileName" <<std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 3;
-  using CoordType = double;
+  const unsigned int Dimension = 3;
+  typedef double CoordType;
 
-  using Traits = itk::QuadEdgeMeshExtendedTraits<CoordType, Dimension, 2, CoordType, CoordType, CoordType, bool, bool>;
+  typedef itk::QuadEdgeMeshExtendedTraits <
+    CoordType,
+    Dimension,
+    2,
+    CoordType,
+    CoordType,
+    CoordType,
+    bool,
+    bool > Traits;
 
-  using MeshType = itk::QuadEdgeMesh<CoordType, Dimension, Traits>;
-  using CurvatureFilterType = itk::DiscreteMaximumCurvatureQuadEdgeMeshFilter<MeshType, MeshType>;
+  typedef itk::QuadEdgeMesh< CoordType, Dimension, Traits > MeshType;
+  typedef itk::DiscreteMaximumCurvatureQuadEdgeMeshFilter<
+    MeshType, MeshType > CurvatureFilterType;
 
-  using ReaderType = itk::MeshFileReader<MeshType>;
+  typedef itk::MeshFileReader< MeshType > ReaderType;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  ReaderType::Pointer reader = ReaderType::New( );
+  reader->SetFileName( argv[1] );
   try
-  {
-    reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    {
+    reader->Update( );
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown while reading the input file " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   MeshType::Pointer mesh = reader->GetOutput();
 
   CurvatureFilterType::Pointer max_curvature = CurvatureFilterType::New();
-  max_curvature->SetInput(mesh);
+  max_curvature->SetInput( mesh );
   max_curvature->Update();
 
   MeshType::Pointer output = max_curvature->GetOutput();
 
-  using WriterType = itk::MeshFileWriter<MeshType>;
+  typedef itk::MeshFileWriter< MeshType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(output);
-  writer->SetFileName("max_curvature.vtk");
+  writer->SetInput( output );
+  writer->SetFileName( "max_curvature.vtk" );
   writer->Update();
 
   return EXIT_SUCCESS;

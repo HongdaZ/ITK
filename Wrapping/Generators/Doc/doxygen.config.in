@@ -426,14 +426,14 @@ PREDEFINED  =  "itkNotUsed(x)="\
                   typename" \
                "FEM_ABSTRACT_CLASS(thisClass,parentClass)= \
                   public:                                               \
-                    /** Standard "Self" type alias.*/                      \
-                    using Self = thisClass;                             \
-                    /** Standard "Superclass" type alias. */               \
-                    using Superclass = parentClass;                     \
+                    /** Standard "Self" typedef.*/                      \
+                    typedef thisClass Self;                             \
+                    /** Standard "Superclass" typedef. */               \
+                    typedef parentClass Superclass;                     \
                     /** Pointer or SmartPointer to an object. */        \
-                    using Pointer = Self*;                              \
+                    typedef Self* Pointer;                              \
                     /** Const pointer or SmartPointer to an object. */  \
-                    using ConstPointer = const Self*;                   \
+                    typedef const Self* ConstPointer;                   \
                   private:"                                             \
                "FEM_CLASS(thisClass,parentClass)= \
                   FEM_ABSTRACT_CLASS(thisClass,parentClass)             \

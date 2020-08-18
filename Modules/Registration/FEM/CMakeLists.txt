@@ -1,3 +1,2 @@
 project(ITKFEMRegistration)
-set(ITKFEMRegistration_LIBRARIES ITKFEMRegistration)
 itk_module_impl()

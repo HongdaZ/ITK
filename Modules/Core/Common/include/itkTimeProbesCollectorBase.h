@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,15 +35,15 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT TimeProbesCollectorBase : public ResourceProbesCollectorBase<TimeProbe>
+class ITKCommon_EXPORT TimeProbesCollectorBase:public ResourceProbesCollectorBase< TimeProbe >
 {
 public:
   /** Constructor */
   TimeProbesCollectorBase();
 
   /** destructor */
-  ~TimeProbesCollectorBase() override;
+  virtual ~TimeProbesCollectorBase();
 };
-} // namespace itk
+}
 
-#endif // itkTimeProbesCollectorBase_h
+#endif //itkTimeProbesCollectorBase_h

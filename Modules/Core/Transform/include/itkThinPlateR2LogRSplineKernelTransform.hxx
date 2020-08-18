@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,42 +21,43 @@
 
 namespace itk
 {
-template <typename TParametersValueType, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 void
 ThinPlateR2LogRSplineKernelTransform<TParametersValueType, NDimensions>::ComputeG(const InputVectorType & x,
-                                                                                  GMatrixType &           gmatrix) const
+                                                                           GMatrixType & gmatrix) const
 {
   const TParametersValueType r = x.GetNorm();
 
   gmatrix.fill(NumericTraits<TParametersValueType>::ZeroValue());
-  const TParametersValueType R2logR =
-    (r > 1e-8) ? r * r * std::log(r) : NumericTraits<TParametersValueType>::ZeroValue();
+  const TParametersValueType      R2logR =
+    ( r > 1e-8 ) ? r *r *std::log(r):NumericTraits<TParametersValueType>::ZeroValue();
 
   gmatrix.fill_diagonal(R2logR);
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
 void
 ThinPlateR2LogRSplineKernelTransform<TParametersValueType, NDimensions>::ComputeDeformationContribution(
-  const InputPointType & thisPoint,
-  OutputPointType &      result) const
+  const InputPointType  & thisPoint,
+  OutputPointType &
+  result) const
 {
   unsigned long numberOfLandmarks = this->m_SourceLandmarks->GetNumberOfPoints();
 
-  PointsIterator sp = this->m_SourceLandmarks->GetPoints()->Begin();
+  PointsIterator sp  = this->m_SourceLandmarks->GetPoints()->Begin();
 
-  for (unsigned int lnd = 0; lnd < numberOfLandmarks; lnd++)
-  {
-    InputVectorType            position = thisPoint - sp->Value();
-    const TParametersValueType r = position.GetNorm();
-    const TParametersValueType R2logR =
-      (r > 1e-8) ? r * r * std::log(r) : NumericTraits<TParametersValueType>::ZeroValue();
-    for (unsigned int odim = 0; odim < NDimensions; odim++)
+  for ( unsigned int lnd = 0; lnd < numberOfLandmarks; lnd++ )
     {
+    InputVectorType        position = thisPoint - sp->Value();
+    const TParametersValueType      r = position.GetNorm();
+    const TParametersValueType      R2logR =
+      ( r > 1e-8 ) ? r *r *std::log(r):NumericTraits<TParametersValueType>::ZeroValue();
+    for ( unsigned int odim = 0; odim < NDimensions; odim++ )
+      {
       result[odim] += R2logR * this->m_DMatrix(odim, lnd);
-    }
+      }
     ++sp;
-  }
+    }
 }
 } // namespace itk
 #endif

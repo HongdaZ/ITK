@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@
 #include "itkLabelObjectLine.h"
 #include "itkLabelObjectLineComparator.h"
 
-int
-itkLabelObjectLineComparatorTest(int, char *[])
+int itkLabelObjectLineComparatorTest(int, char* [] )
 {
-  using LabelObjectLineType = itk::LabelObjectLine<2>;
-  using IndexType = itk::LabelObjectLine<2>::IndexType;
-  using ComparatorType = itk::Functor::LabelObjectLineComparator<LabelObjectLineType>;
+  typedef itk::LabelObjectLine<2>                                      LabelObjectLineType;
+  typedef itk::LabelObjectLine<2>::IndexType                           IndexType;
+  typedef itk::Functor::LabelObjectLineComparator<LabelObjectLineType> ComparatorType;
 
   ComparatorType lessThan;
 
@@ -37,45 +36,45 @@ itkLabelObjectLineComparatorTest(int, char *[])
   highIndex[0] = 14;
   highIndex[1] = 7;
 
-  auto * low = new LabelObjectLineType(lowIndex, 11);
-  auto * high = new LabelObjectLineType(highIndex, 11);
-  auto * lowlong = new LabelObjectLineType(lowIndex, 15);
+  LabelObjectLineType *low = new LabelObjectLineType(lowIndex, 11);
+  LabelObjectLineType *high = new LabelObjectLineType(highIndex, 11);
+  LabelObjectLineType *lowlong = new LabelObjectLineType(lowIndex, 15);
 
   if (lessThan(*high, *low))
-  {
+    {
     std::cerr << "Failed, high<low returned true." << std::endl;
     delete low;
     delete high;
     delete lowlong;
     return (EXIT_FAILURE);
-  }
+    }
 
   if (!lessThan(*low, *high))
-  {
+    {
     std::cerr << "Failed, low<high returned false." << std::endl;
     delete low;
     delete high;
     delete lowlong;
     return (EXIT_FAILURE);
-  }
+    }
 
   if (lessThan(*low, *low))
-  {
+    {
     std::cerr << "Failed, low<low returned true." << std::endl;
     delete low;
     delete high;
     delete lowlong;
     return (EXIT_FAILURE);
-  }
+    }
 
   if (!lessThan(*low, *lowlong))
-  {
+    {
     std::cerr << "Failed, low<lowlong returned false." << std::endl;
     delete low;
     delete high;
     delete lowlong;
     return (EXIT_FAILURE);
-  }
+    }
 
   delete low;
   delete high;

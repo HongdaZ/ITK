@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,24 +45,23 @@ namespace fem
 class ITKFEM_EXPORT Element3DC0LinearHexahedronStrain : public Element3DStrain<Element3DC0LinearHexahedron>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element3DC0LinearHexahedronStrain;
-  using Superclass = Element3DStrain<Element3DC0LinearHexahedron>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element3DC0LinearHexahedronStrain            Self;
+  typedef Element3DStrain<Element3DC0LinearHexahedron> Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Element3DC0LinearHexahedronStrain, Element3DStrain<Element3DC0LinearHexahedron>);
+  itkTypeMacro(Element3DC0LinearHexahedronStrain, Element3DStrain<Element3DC0LinearHexahedron> );
 
   /**
    * CreateAnother method will clone the existing instance of this type,
    * including its internal member variables.
    */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
   /**
    * Default constructor only clears the internal storage
@@ -76,11 +75,11 @@ public:
   Element3DC0LinearHexahedronStrain(NodeIDType ns_[], Material::ConstPointer p_);
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-}; // class Element3DC0LinearHexahedronStrain
-} // end namespace fem
-} // end namespace itk
+};  // class Element3DC0LinearHexahedronStrain
 
-#endif // itkFEMElement3DC0LinearHexahedronStrain_h
+}
+}  // end namespace itk::fem
+
+#endif  // #ifndef itkFEMElement3DC0LinearHexahedronStrain_h

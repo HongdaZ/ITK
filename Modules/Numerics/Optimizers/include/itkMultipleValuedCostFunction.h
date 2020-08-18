@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,53 +32,53 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT MultipleValuedCostFunction : public CostFunction
+class ITKOptimizers_EXPORT MultipleValuedCostFunction:
+  public CostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedCostFunction);
-
-  /** Standard class type aliases. */
-  using Self = MultipleValuedCostFunction;
-  using Superclass = CostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultipleValuedCostFunction Self;
+  typedef CostFunction               Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(MultipleValuedCostFunction, CostFunction);
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
-  /**  MeasureType type alias.
+  /**  MeasureType typedef.
    *  It defines a type used to return the cost function value. */
-  using MeasureType = Array<double>;
+  typedef Array< double > MeasureType;
 
-  /**  DerivativeType type alias.
+  /**  GradientType typedef.
    *  It defines a type used to return the cost function derivative.  */
-  using DerivativeType = Array2D<double>;
+  typedef Array2D< double > DerivativeType;
 
   /** This method returns the value of the cost function corresponding
-   * to the specified parameters.
-   * This method MUST be overloaded by derived classes   */
-  virtual MeasureType
-  GetValue(const ParametersType & parameters) const = 0;
+    * to the specified parameters.
+    * This method MUST be overloaded by derived classes   */
+  virtual MeasureType GetValue(const ParametersType & parameters) const = 0;
 
   /** Return the number of values that are computed by the
    *  multivalued cost function.
    *  This method MUST be overloaded by derived classes */
-  virtual unsigned int
-  GetNumberOfValues() const = 0;
+  virtual unsigned int GetNumberOfValues(void) const  = 0;
 
   /** This method returns the derivative of the cost function corresponding
-   * to the specified parameters
-   * This method MUST be overloaded by derived classes   */
-  virtual void
-  GetDerivative(const ParametersType & parameters, DerivativeType & derivative) const = 0;
+    * to the specified parameters
+    * This method MUST be overloaded by derived classes   */
+  virtual void GetDerivative(const ParametersType & parameters,
+                             DerivativeType & derivative) const = 0;
 
 protected:
-  MultipleValuedCostFunction() = default;
-  ~MultipleValuedCostFunction() override;
+  MultipleValuedCostFunction() {}
+  virtual ~MultipleValuedCostFunction() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedCostFunction);
 };
 } // end namespace itk
 

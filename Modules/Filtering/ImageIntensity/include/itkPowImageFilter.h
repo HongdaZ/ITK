@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkPowImageFilter_h
 #define itkPowImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -30,37 +30,33 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1>
+template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
 class Pow
 {
 public:
-  Pow() = default;
-  bool
-  operator!=(const Pow &) const
+  ;
+  Pow() {}
+  bool operator!=(const Pow &) const
   {
     // we contain no data, so we are always the same
     return false;
   }
 
-  bool
-  operator==(const Pow & other) const
+  bool operator==(const Pow & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
   {
 
-    using RealType1 = typename NumericTraits<TInput1>::RealType;
-    using RealType2 = typename NumericTraits<TInput2>::RealType;
-    return static_cast<TOutput>(std::pow(static_cast<RealType1>(A), static_cast<RealType2>(B)));
+    typedef typename NumericTraits< TInput1 >::RealType RealType1;
+    typedef typename NumericTraits< TInput2 >::RealType RealType2;
+    return static_cast< TOutput >( std::pow(static_cast<RealType1>(A),static_cast<RealType2>(B)) );
   }
 };
-} // namespace Functor
-
-/**
- *\class PowImageFilter
+}
+/** \class PowImageFilter
  * \brief Computes the powers of 2 images
  *
  * This class is templated over the types of the two
@@ -71,48 +67,55 @@ public:
  * the output image.
  *
  * The total operation over one pixel will be
-   \code
-   output_pixel = static_cast< TOutput >( std::pow(static_cast<RealType>(A),static_cast<RealType>(B)) );
-   \endcode
+ * \code
+ * output_pixel = static_cast< TOutput >( std::pow(static_cast<RealType>(A),static_cast<RealType>(B)) );
+ * \endcode
  *
  * The pow function can be applied to two images with the following:
-   \code
-   SetInput1( image1 );
-   SetInput2( image2 );
-   \endcode
+ * \code
+ * SetInput1( image1 );
+ * SetInput2( image2 );
+ * \endcode
  *
  * Additionally, this filter can be used to raise every pixel of an
  * image to a power of a constant by using
-   \code
-   SetInput1( image1 );
-   SetConstant2( constant );
-   \endcode
+ * \code
+ * SetInput1( image1 );
+ * SetConstant2( constant );
+ * \endcode
  *
  * \ingroup IntensityImageFilters  MultiThreaded
  * \ingroup ITKImageIntensity
  *
  */
-template <typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1>
-class PowImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
+class PowImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::Pow<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PowImageFilter);
+  /** Standard class typedefs. */
+  typedef PowImageFilter Self;
+  typedef BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                                    Functor::Pow<
+                                      typename TInputImage1::PixelType,
+                                      typename TInputImage2::PixelType,
+                                      typename TOutputImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = PowImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType =
-    Functor::Pow<typename TInputImage1::PixelType, typename TInputImage2::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(PowImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(PowImageFilter,
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -120,14 +123,11 @@ public:
 #endif
 
 protected:
-  PowImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  PowImageFilter() {}
+  // virtual ~PowImageFilter() {} default implementation OK
 
-  ~PowImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PowImageFilter);
 };
 } // end namespace itk
 

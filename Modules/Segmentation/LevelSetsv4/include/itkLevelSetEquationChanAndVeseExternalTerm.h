@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,80 +45,81 @@ namespace itk
  *
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TInput, // Input image or mesh
-          typename TLevelSetContainer>
-class ITK_TEMPLATE_EXPORT LevelSetEquationChanAndVeseExternalTerm
-  : public LevelSetEquationChanAndVeseInternalTerm<TInput, TLevelSetContainer>
+template< typename TInput, // Input image or mesh
+          typename TLevelSetContainer >
+class ITK_TEMPLATE_EXPORT LevelSetEquationChanAndVeseExternalTerm :
+    public LevelSetEquationChanAndVeseInternalTerm< TInput, TLevelSetContainer >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationChanAndVeseExternalTerm);
-
-  using Self = LevelSetEquationChanAndVeseExternalTerm;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEquationChanAndVeseInternalTerm<TInput, TLevelSetContainer>;
+  typedef LevelSetEquationChanAndVeseExternalTerm         Self;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
+  typedef LevelSetEquationChanAndVeseInternalTerm< TInput,
+                                    TLevelSetContainer >  Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetEquationChanAndVeseExternalTerm, LevelSetEquationChanAndVeseInternalTerm);
+  itkTypeMacro( LevelSetEquationChanAndVeseExternalTerm,
+                LevelSetEquationChanAndVeseInternalTerm );
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType     InputImageType;
+  typedef typename Superclass::InputImagePointer  InputImagePointer;
+  typedef typename Superclass::InputPixelType     InputPixelType;
+  typedef typename Superclass::InputPixelRealType InputPixelRealType;
 
-  using LevelSetContainerType = typename Superclass::LevelSetContainerType;
-  using LevelSetContainerPointer = typename Superclass::LevelSetContainerPointer;
-  using LevelSetType = typename Superclass::LevelSetType;
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
-  using LevelSetOutputPixelType = typename Superclass::LevelSetOutputPixelType;
-  using LevelSetOutputRealType = typename Superclass::LevelSetOutputRealType;
-  using LevelSetInputIndexType = typename Superclass::LevelSetInputIndexType;
-  using LevelSetGradientType = typename Superclass::LevelSetGradientType;
-  using LevelSetHessianType = typename Superclass::LevelSetHessianType;
-  using LevelSetIdentifierType = typename Superclass::LevelSetIdentifierType;
+  typedef typename Superclass::LevelSetContainerType      LevelSetContainerType;
+  typedef typename Superclass::LevelSetContainerPointer   LevelSetContainerPointer;
+  typedef typename Superclass::LevelSetType               LevelSetType;
+  typedef typename Superclass::LevelSetPointer            LevelSetPointer;
+  typedef typename Superclass::LevelSetOutputPixelType    LevelSetOutputPixelType;
+  typedef typename Superclass::LevelSetOutputRealType     LevelSetOutputRealType;
+  typedef typename Superclass::LevelSetInputIndexType     LevelSetInputIndexType;
+  typedef typename Superclass::LevelSetGradientType       LevelSetGradientType;
+  typedef typename Superclass::LevelSetHessianType        LevelSetHessianType;
+  typedef typename Superclass::LevelSetIdentifierType     LevelSetIdentifierType;
 
-  using DomainMapImageFilterType = typename Superclass::DomainMapImageFilterType;
-  using CacheImageType = typename Superclass::CacheImageType;
+  typedef typename Superclass::DomainMapImageFilterType   DomainMapImageFilterType;
+  typedef typename Superclass::CacheImageType             CacheImageType;
 
-  using DomainIteratorType = typename DomainMapImageFilterType::DomainMapType::const_iterator;
+  typedef typename DomainMapImageFilterType::DomainMapType::const_iterator  DomainIteratorType;
 
-  using IdListType = typename LevelSetContainerType::IdListType;
-  using IdListIterator = typename LevelSetContainerType::IdListIterator;
-  using IdListConstIterator = typename LevelSetContainerType::IdListConstIterator;
+  typedef typename LevelSetContainerType::IdListType          IdListType;
+  typedef typename LevelSetContainerType::IdListIterator      IdListIterator;
+  typedef typename LevelSetContainerType::IdListConstIterator IdListConstIterator;
 
-  using HeavisideType = typename Superclass::HeavisideType;
-  using HeavisideConstPointer = typename Superclass::HeavisideConstPointer;
+  typedef typename Superclass::HeavisideType         HeavisideType;
+  typedef typename Superclass::HeavisideConstPointer HeavisideConstPointer;
 
   /** Compute the product of Heaviside functions in the multi-levelset cases */
-  void
-  ComputeProduct(const LevelSetInputIndexType & iP, LevelSetOutputRealType & prod) override;
+  virtual void ComputeProduct( const LevelSetInputIndexType& iP,
+                               LevelSetOutputRealType& prod ) ITK_OVERRIDE;
 
   /** Compute the product of Heaviside functions in the multi-levelset cases
    *  except the current levelset */
-  void
-  ComputeProductTerm(const LevelSetInputIndexType & iP, LevelSetOutputRealType & prod) override;
+  virtual void ComputeProductTerm( const LevelSetInputIndexType& iP,
+                                  LevelSetOutputRealType& prod ) ITK_OVERRIDE;
 
   /** Supply updates at pixels to keep the term parameters always updated */
-  void
-  UpdatePixel(const LevelSetInputIndexType & iP,
-              const LevelSetOutputRealType & oldValue,
-              const LevelSetOutputRealType & newValue) override;
+  virtual void UpdatePixel( const LevelSetInputIndexType& iP,
+                           const LevelSetOutputRealType & oldValue,
+                           const LevelSetOutputRealType & newValue ) ITK_OVERRIDE;
 
 protected:
   LevelSetEquationChanAndVeseExternalTerm();
-  ~LevelSetEquationChanAndVeseExternalTerm() override = default;
+  virtual ~LevelSetEquationChanAndVeseExternalTerm() ITK_OVERRIDE;
 
 private:
-  DomainMapImageFilterType * m_DomainMapImageFilter;
-  CacheImageType *           m_CacheImage;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationChanAndVeseExternalTerm);
+
+  DomainMapImageFilterType *m_DomainMapImageFilter;
+  CacheImageType           *m_CacheImage;
 };
 
-} // namespace itk
+}
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetEquationChanAndVeseExternalTerm.hxx"
+#include "itkLevelSetEquationChanAndVeseExternalTerm.hxx"
 #endif
 
 #endif

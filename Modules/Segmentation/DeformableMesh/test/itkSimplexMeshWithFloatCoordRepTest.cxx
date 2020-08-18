@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,18 +18,18 @@
 #include "itkDefaultDynamicMeshTraits.h"
 #include "itkDeformableSimplexMesh3DFilter.h"
 
-int
-itkSimplexMeshWithFloatCoordRepTest(int, char *[])
+int itkSimplexMeshWithFloatCoordRepTest(int, char* [])
 {
-  constexpr unsigned int Dimension = 3;
+   const unsigned int Dimension = 3;
 
-  using PixelType = float;
-  using CoordRepType = float;
-  using MeshTraits = itk::DefaultDynamicMeshTraits<PixelType, Dimension, Dimension, CoordRepType>;
-  using MeshType = itk::SimplexMesh<PixelType, Dimension, MeshTraits>;
-  using DeformType = itk::DeformableSimplexMesh3DFilter<MeshType, MeshType>;
+   typedef float                                                    PixelType;
+   typedef float                                                    CoordRepType;
+   typedef itk::DefaultDynamicMeshTraits<
+     PixelType,Dimension,Dimension,CoordRepType >                   MeshTraits;
+   typedef itk::SimplexMesh< PixelType,Dimension,MeshTraits >       MeshType;
+   typedef itk::DeformableSimplexMesh3DFilter < MeshType,MeshType > DeformType;
 
-  DeformType::Pointer deform = DeformType::New();
-  deform->Print(std::cout);
-  return EXIT_SUCCESS;
+   DeformType::Pointer deform = DeformType::New();
+   deform->Print(std::cout);
+   return EXIT_SUCCESS;
 }

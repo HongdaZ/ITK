@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 #include "itkQuadEdgeMeshLineCell.h"
 namespace itk
 {
-/**
- *\class QuadEdgeMeshPolygonCell
+/** \class QuadEdgeMeshPolygonCell
  * Class that connects the QE with itk
  *
  * \param TCellInterface Basic type for the itk*Cell. This usually comes
@@ -35,62 +34,61 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TCellInterface>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshPolygonCell : public TCellInterface
+template< typename TCellInterface >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshPolygonCell:public TCellInterface
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshPolygonCell);
-
-  /** Standard class type aliases. */
+  /** Standard class typedefs. */
   // itkCellCommonTypedefs
-  using Self = QuadEdgeMeshPolygonCell;
-  using ConstSelfAutoPointer = AutoPointer<const Self>;
-  using SelfAutoPointer = AutoPointer<Self>;
-  using RawPointer = Self *;
-  using ConstRawPointer = const Self *;
+  typedef QuadEdgeMeshPolygonCell   Self;
+  typedef AutoPointer< const Self > ConstSelfAutoPointer;
+  typedef AutoPointer< Self >       SelfAutoPointer;
+  typedef Self *                    RawPointer;
+  typedef const Self *              ConstRawPointer;
 
   // itkCellInheritedTypedefs
-  using Superclass = TCellInterface;
-  using PixelType = typename Superclass::PixelType;
-  using CellType = typename Superclass::CellType;
-  using CellAutoPointer = typename Superclass::CellAutoPointer;
-  using CellConstAutoPointer = typename Superclass::CellConstAutoPointer;
-  using CellRawPointer = typename Superclass::CellRawPointer;
-  using CellConstRawPointer = typename Superclass::CellConstRawPointer;
-  using CellTraits = typename Superclass::CellTraits;
-  using CoordRepType = typename Superclass::CoordRepType;
-  using InterpolationWeightType = typename Superclass::InterpolationWeightType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
-  using CellIdentifier = typename Superclass::CellIdentifier;
-  using CellFeatureIdentifier = typename Superclass::CellFeatureIdentifier;
-  using CellFeatureCount = typename Superclass::CellFeatureIdentifier;
-  using PointType = typename Superclass::PointType;
-  using PointsContainer = typename Superclass::PointsContainer;
-  using UsingCellsContainer = typename Superclass::UsingCellsContainer;
-  using ParametricCoordArrayType = typename Superclass::ParametricCoordArrayType;
-  using ShapeFunctionsArrayType = typename Superclass::ShapeFunctionsArrayType;
-  static constexpr unsigned int PointDimension = Superclass::PointDimension;
-  static constexpr unsigned int CellDimension = 2;
+  typedef TCellInterface                                Superclass;
+  typedef typename Superclass::PixelType                PixelType;
+  typedef typename Superclass::CellType                 CellType;
+  typedef typename Superclass::CellAutoPointer          CellAutoPointer;
+  typedef typename Superclass::CellConstAutoPointer     CellConstAutoPointer;
+  typedef typename Superclass::CellRawPointer           CellRawPointer;
+  typedef typename Superclass::CellConstRawPointer      CellConstRawPointer;
+  typedef typename Superclass::CellTraits               CellTraits;
+  typedef typename Superclass::CoordRepType             CoordRepType;
+  typedef typename Superclass::InterpolationWeightType  InterpolationWeightType;
+  typedef typename Superclass::PointIdentifier          PointIdentifier;
+  typedef typename Superclass::CellIdentifier           CellIdentifier;
+  typedef typename Superclass::CellFeatureIdentifier    CellFeatureIdentifier;
+  typedef typename Superclass::CellFeatureIdentifier    CellFeatureCount;
+  typedef typename Superclass::PointType                PointType;
+  typedef typename Superclass::PointsContainer          PointsContainer;
+  typedef typename Superclass::UsingCellsContainer      UsingCellsContainer;
+  typedef typename Superclass::CellGeometry             CellGeometry;
+  typedef typename Superclass::ParametricCoordArrayType ParametricCoordArrayType;
+  typedef typename Superclass::ShapeFunctionsArrayType  ShapeFunctionsArrayType;
+  itkStaticConstMacro(PointDimension, unsigned int, Superclass::PointDimension);
+  itkStaticConstMacro(CellDimension, unsigned int, 2);
 
   /** Multivisitor type. */
-  using MultiVisitor = typename CellType::MultiVisitor;
+  typedef typename CellType::MultiVisitor MultiVisitor;
 
-  using EdgeCellType = QuadEdgeMeshLineCell<CellType>;
-  using EdgeCellListType = std::vector<EdgeCellType *>;
+  typedef QuadEdgeMeshLineCell< CellType > EdgeCellType;
+  typedef std::vector< EdgeCellType * >    EdgeCellListType;
 
   //** */
-  using PointIdIterator = typename CellTraits::PointIdIterator;
-  using PointIdConstIterator = typename CellTraits::PointIdConstIterator;
-  using PointIdInternalIterator = typename CellTraits::PointIdInternalIterator;
-  using PointIdInternalConstIterator = typename CellTraits::PointIdInternalConstIterator;
+  typedef typename CellTraits::PointIdIterator              PointIdIterator;
+  typedef typename CellTraits::PointIdConstIterator         PointIdConstIterator;
+  typedef typename CellTraits::PointIdInternalIterator      PointIdInternalIterator;
+  typedef typename CellTraits::PointIdInternalConstIterator PointIdInternalConstIterator;
 
   /** QE types. */
-  using QuadEdgeType = typename CellTraits::QuadEdgeType;
-  using VertexRefType = typename QuadEdgeType::OriginRefType;
-  using FaceRefType = typename QuadEdgeType::DualOriginRefType;
-  using PrimalDataType = typename QuadEdgeType::PrimalDataType;
-  using DualDataType = typename QuadEdgeType::DualDataType;
-  using QEDual = typename QuadEdgeType::DualType;
+  typedef typename CellTraits::QuadEdgeType        QuadEdgeType;
+  typedef typename QuadEdgeType::OriginRefType     VertexRefType;
+  typedef typename QuadEdgeType::DualOriginRefType FaceRefType;
+  typedef typename QuadEdgeType::PrimalDataType    PrimalDataType;
+  typedef typename QuadEdgeType::DualDataType      DualDataType;
+  typedef typename QuadEdgeType::DualType          QEDual;
 
 public:
   /** Standard part of every itk Object. */
@@ -98,204 +96,167 @@ public:
 
   /** Object memory management methods. */
   QuadEdgeMeshPolygonCell(PointIdentifier nPoints = 0);
-  QuadEdgeMeshPolygonCell(QuadEdgeType * e);
-  ~QuadEdgeMeshPolygonCell() override;
+  QuadEdgeMeshPolygonCell(QuadEdgeType *e);
+  virtual ~QuadEdgeMeshPolygonCell() ITK_OVERRIDE;
 
   /** Accessors for m_Ident. */
-  void
-  SetIdent(CellIdentifier cid)
-  {
-    m_Ident = cid;
-  }
-  CellIdentifier
-  GetIdent()
-  {
-    return (m_Ident);
-  }
+  void SetIdent(CellIdentifier cid) { m_Ident = cid; }
+  CellIdentifier GetIdent()          { return ( m_Ident ); }
 
   /** Lnext ring entry accessors. */
-  QuadEdgeType *
-  GetEdgeRingEntry() const
-  {
-    return (m_EdgeRingEntry);
-  }
-  void
-  SetEdgeRingEntry(QuadEdgeType * entry)
-  {
-    m_EdgeRingEntry = entry;
-  }
+  QuadEdgeType * GetEdgeRingEntry() const { return ( m_EdgeRingEntry ); }
+  void SetEdgeRingEntry(QuadEdgeType *entry) { m_EdgeRingEntry = entry; }
 
   /** Implement the standard CellInterface. */
-  SelfAutoPointer
-  New();
+  SelfAutoPointer New();
 
   /** TCellInterface abstract methods definition. */
-  void
-  Accept(CellIdentifier cellId, MultiVisitor * mv) override;
+  virtual void Accept(CellIdentifier cellId, MultiVisitor *mv) ITK_OVERRIDE;
 
-  CellGeometryEnum
-  GetType() const override
-  {
-    return (CellGeometryEnum::POLYGON_CELL);
-  }
+  virtual CellGeometry GetType() const ITK_OVERRIDE { return ( Superclass::POLYGON_CELL ); }
 
   /** itk topology related methods. */
-  static constexpr CellGeometryEnum
-  GetTopologyId()
+  static int GetTopologyId()
   {
-    return CellGeometryEnum::POLYGON_CELL;
+    return ( Superclass::POLYGON_CELL );
   }
 
-  unsigned int
-  GetDimension() const override
+  virtual unsigned int GetDimension() const ITK_OVERRIDE
   {
-    return (Self::CellDimension);
+    return ( Self::CellDimension );
   }
 
-  unsigned int
-  GetNumberOfPoints() const override;
+  virtual unsigned int GetNumberOfPoints() const ITK_OVERRIDE;
 
-  CellFeatureCount
-  GetNumberOfBoundaryFeatures(int dimension) const override;
+  virtual CellFeatureCount GetNumberOfBoundaryFeatures(int dimension) const ITK_OVERRIDE;
 
-  bool
-  GetBoundaryFeature(int dimension, CellFeatureIdentifier cellId, CellAutoPointer & cell) override;
+  virtual bool GetBoundaryFeature(int dimension,
+                                  CellFeatureIdentifier cellId,
+                                  CellAutoPointer & cell) ITK_OVERRIDE;
 
   /** Useless methods. */
-  void
-  MakeCopy(CellAutoPointer & cell) const override
+  virtual void MakeCopy(CellAutoPointer & cell) const ITK_OVERRIDE
   {
     const PointIdentifier numberOfPoints = this->GetNumberOfPoints();
-    auto *                newPolygonCell = new Self(numberOfPoints);
+    Self *                newPolygonCell = new Self(numberOfPoints);
 
     cell.TakeOwnership(newPolygonCell);
-    if (numberOfPoints)
-    {
+    if ( numberOfPoints )
+      {
       PointIdentifier i = 0;
 
-      PointIdInternalConstIterator it = this->InternalPointIdsBegin();
-      PointIdInternalConstIterator end = this->InternalPointIdsEnd();
+      PointIdInternalConstIterator it   = this->InternalPointIdsBegin();
+      PointIdInternalConstIterator end  = this->InternalPointIdsEnd();
 
-      while (it != end)
-      {
-        newPolygonCell->SetPointId(i, it.Value()->GetOrigin());
+      while( it != end )
+        {
+        newPolygonCell->SetPointId( i, it.Value()->GetOrigin() );
         ++i;
         ++it;
+        }
       }
-    }
   }
 
   /** ITK Cell API - Iterator-related methods. */
-  void
-  SetPointIds(PointIdConstIterator first) override;
+  virtual void SetPointIds(PointIdConstIterator first) ITK_OVERRIDE;
 
-  void
-  SetPointIds(PointIdConstIterator first, PointIdConstIterator last) override;
+  virtual void SetPointIds(PointIdConstIterator first,
+                           PointIdConstIterator last) ITK_OVERRIDE;
 
-  void
-  SetPointId(int localId, PointIdentifier pId) override;
+  virtual void SetPointId(int localId, PointIdentifier pId) ITK_OVERRIDE;
 
-  virtual PointIdentifier
-  GetPointId(int localId) const;
+  virtual PointIdentifier GetPointId(int localId) const;
 
-  PointIdIterator
-  PointIdsBegin() override
+  virtual PointIdIterator PointIdsBegin() ITK_OVERRIDE
   {
     // NOTE ALEX: should update the array on the fly to make it faster
     MakePointIds();
-    if (m_PointIds.empty())
-    {
-      return (static_cast<PointIdIterator>(nullptr));
-    }
+    if ( m_PointIds.size() == 0 )
+      {
+      return ( static_cast< PointIdIterator >( ITK_NULLPTR ) );
+      }
     else
-    {
-      return &*(m_PointIds.begin());
-    }
+      {
+      return &*( m_PointIds.begin() );
+      }
   }
 
-  PointIdIterator
-  PointIdsEnd() override
+  virtual PointIdIterator PointIdsEnd() ITK_OVERRIDE
   {
     // NOTE ALEX: should update the array on the fly to make it faster
-    if (m_PointIds.empty())
-    {
-      return (static_cast<PointIdIterator>(nullptr));
-    }
+    if ( m_PointIds.size() == 0 )
+      {
+      return ( static_cast< PointIdIterator >( ITK_NULLPTR ) );
+      }
     else
-    {
+      {
       return &m_PointIds[m_PointIds.size() - 1] + 1;
-    }
+      }
   }
 
-  PointIdConstIterator
-  PointIdsBegin() const override
+  virtual PointIdConstIterator PointIdsBegin() const ITK_OVERRIDE
   {
     // NOTE ALEX: should update the array on the fly to make it faster
     MakePointIds();
-    if (m_PointIds.empty())
-    {
-      return (static_cast<PointIdIterator>(nullptr));
-    }
+    if ( m_PointIds.size() == 0 )
+      {
+      return ( static_cast< PointIdIterator >( ITK_NULLPTR ) );
+      }
     else
-    {
-      return &*(m_PointIds.begin());
-    }
+      {
+      return &*( m_PointIds.begin() );
+      }
   }
 
-  PointIdConstIterator
-  PointIdsEnd() const override
+  virtual PointIdConstIterator PointIdsEnd() const ITK_OVERRIDE
   {
     // NOTE ALEX: should update the array on the fly to make it faster
-    if (m_PointIds.empty())
-    {
-      return (static_cast<PointIdIterator>(nullptr));
-    }
+    if ( m_PointIds.size() == 0 )
+      {
+      return ( static_cast< PointIdIterator >( ITK_NULLPTR ) );
+      }
     else
-    {
+      {
       return &m_PointIds[m_PointIds.size() - 1] + 1;
-    }
+      }
   }
 
   /** QuadEdge internal flavor of cell API */
-  virtual void
-  InternalSetPointIds(PointIdInternalConstIterator first);
+  virtual void InternalSetPointIds(PointIdInternalConstIterator first);
 
-  virtual void
-  InternalSetPointIds(PointIdInternalConstIterator first, PointIdInternalConstIterator last);
+  virtual void InternalSetPointIds(PointIdInternalConstIterator first,
+                                   PointIdInternalConstIterator last);
 
-  virtual PointIdInternalIterator
-  InternalPointIdsBegin();
+  virtual PointIdInternalIterator InternalPointIdsBegin();
 
-  virtual PointIdInternalIterator
-  InternalPointIdsEnd();
+  virtual PointIdInternalIterator InternalPointIdsEnd();
 
-  virtual PointIdInternalConstIterator
-  InternalGetPointIds() const;
+  virtual PointIdInternalConstIterator InternalGetPointIds() const;
 
-  virtual PointIdInternalConstIterator
-  InternalPointIdsBegin() const;
+  virtual PointIdInternalConstIterator InternalPointIdsBegin() const;
 
-  virtual PointIdInternalConstIterator
-  InternalPointIdsEnd() const;
+  virtual PointIdInternalConstIterator InternalPointIdsEnd() const;
 
 protected:
-  using PointIDListType = std::vector<PointIdentifier>;
+  typedef std::vector< PointIdentifier > PointIDListType;
   mutable PointIDListType m_PointIds;
 
 private:
-  void
-  MakePointIds() const
+  QuadEdgeMeshPolygonCell(const Self &); // Not impl.
+  void operator=(const Self &);          // Not impl.
+
+  void MakePointIds() const
   {
     m_PointIds.clear();
 
-    PointIdInternalConstIterator it = this->InternalPointIdsBegin();
-    PointIdInternalConstIterator end = this->InternalPointIdsEnd();
+    PointIdInternalConstIterator it   = this->InternalPointIdsBegin();
+    PointIdInternalConstIterator end  = this->InternalPointIdsEnd();
 
-    while (it != end)
-    {
-      m_PointIds.push_back(it.Value()->GetOrigin());
+    while( it != end )
+      {
+      m_PointIds.push_back( it.Value()->GetOrigin() );
       ++it;
-    }
+      }
   }
 
   /** In order to have constant time access at the itk level instead of
@@ -306,7 +267,7 @@ private:
   /**
    * Entry point into the edge ring.
    */
-  QuadEdgeType * m_EdgeRingEntry;
+  QuadEdgeType *m_EdgeRingEntry;
 
   /**
    * List of EdgeCells created by the constructor for proper deletion
@@ -316,7 +277,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkQuadEdgeMeshPolygonCell.hxx"
+#include "itkQuadEdgeMeshPolygonCell.hxx"
 #endif
 
 #endif

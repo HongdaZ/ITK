@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,15 +22,21 @@
 
 namespace itk
 {
-template <typename TInput, typename TOutput, typename TCriterion>
-SquaredEdgeLengthDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::
-  SquaredEdgeLengthDecimationQuadEdgeMeshFilter()
-  : Superclass()
+template< typename TInput, typename TOutput, typename TCriterion >
+SquaredEdgeLengthDecimationQuadEdgeMeshFilter< TInput, TOutput,
+                                         TCriterion >::SquaredEdgeLengthDecimationQuadEdgeMeshFilter():Superclass()
 {}
 
-template <typename TInput, typename TOutput, typename TCriterion>
-typename SquaredEdgeLengthDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::OutputPointType
-SquaredEdgeLengthDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relocate(OutputQEType * iEdge)
+template< typename TInput, typename TOutput, typename TCriterion >
+SquaredEdgeLengthDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >::
+~SquaredEdgeLengthDecimationQuadEdgeMeshFilter()
+{}
+
+template< typename TInput, typename TOutput, typename TCriterion >
+typename
+SquaredEdgeLengthDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion
+                                         >::OutputPointType
+SquaredEdgeLengthDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >::Relocate(OutputQEType *iEdge)
 {
   OutputMeshPointer     output = this->GetOutput();
   OutputPointIdentifier id_org = iEdge->GetOrigin();
@@ -38,9 +44,10 @@ SquaredEdgeLengthDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relo
 
   OutputPointType oPt;
 
-  oPt.SetToMidPoint(output->GetPoint(id_org), output->GetPoint(id_dest));
+  oPt.SetToMidPoint( output->GetPoint(id_org),
+                     output->GetPoint(id_dest) );
 
   return oPt;
 }
-} // namespace itk
+}
 #endif

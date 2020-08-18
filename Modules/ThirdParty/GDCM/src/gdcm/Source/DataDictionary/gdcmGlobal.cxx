@@ -46,9 +46,9 @@ public:
     {
     assert( RessourcePaths.empty() );
     const char filename2[] = GDCM_CMAKE_INSTALL_PREFIX "/" GDCM_INSTALL_DATA_DIR "/XML/";
-    RessourcePaths.emplace_back(filename2 );
+    RessourcePaths.push_back( filename2 );
     const char filename3[] = GDCM_CMAKE_INSTALL_PREFIX " " GDCM_API_VERSION "/" GDCM_INSTALL_DATA_DIR "/XML/";
-    RessourcePaths.emplace_back(filename3 );
+    RessourcePaths.push_back( filename3 );
     const char *curprocfn = System::GetCurrentProcessFileName();
     if( curprocfn )
       {
@@ -60,13 +60,12 @@ public:
     const char *respath = System::GetCurrentResourcesDirectory();
     if( respath )
       {
-      RessourcePaths.emplace_back(respath );
+      RessourcePaths.push_back( respath );
       }
 #ifdef GDCM_BUILD_TESTING
     // Needed for backward compat and dashboard
     const char src_path[] = GDCM_SOURCE_DIR "/Source/InformationObjectDefinition/";
-    RessourcePaths.emplace_back(src_path );
-    std::rotate(RessourcePaths.rbegin(), RessourcePaths.rbegin() + 1, RessourcePaths.rend());
+    RessourcePaths.push_back( src_path );
 #endif
     }
   std::vector<std::string> RessourcePaths;
@@ -76,7 +75,7 @@ Global::Global()
 {
   if(++GlobalCount == 1)
     {
-    assert( Internals == nullptr ); // paranoid
+    assert( Internals == NULL ); // paranoid
     Internals = new GlobalInternal;
     assert( Internals->GlobalDicts.IsEmpty() );
     // Fill in with default values now !
@@ -96,13 +95,13 @@ Global::~Global()
     {
     //Internals->GlobalDicts.Unload();
     delete Internals;
-    Internals = nullptr; // paranoid
+    Internals = NULL; // paranoid
     }
 }
 
 bool Global::LoadResourcesFiles()
 {
-  assert( Internals != nullptr ); // paranoid
+  assert( Internals != NULL ); // paranoid
   const char *filename = Locate( "Part3.xml" );
   if( filename )
     {
@@ -120,7 +119,7 @@ bool Global::Append(const char *path)
     {
     return false;
     }
-  Internals->RessourcePaths.emplace_back(path );
+  Internals->RessourcePaths.push_back( path );
   return true;
 }
 
@@ -159,14 +158,14 @@ const char *Global::Locate(const char *resfile) const
       if( fullpath.size() >= sizeof(path) )
         {
         gdcmDebugMacro( "Impossible happen: path is too long" );
-        return nullptr;
+        return NULL;
         }
       strcpy(path, fullpath.c_str() );
       return path;
       }
     }
   // no match sorry  :(
-  return nullptr;
+  return NULL;
 }
 
 Dicts const &Global::GetDicts() const

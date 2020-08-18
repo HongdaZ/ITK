@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
 #include "itkNrrdImageIOTest.h"
 
@@ -24,26 +24,25 @@
 // This test is for the NRRD image IO.  The strategy is to generate random
 // images of various data types, dimensionalities and sizes, write these images
 // as NRRDs, read them back, and compare the read images with the originals.
-int
-itkNrrdImageIOTest(int ac, char * av[])
+int itkNrrdImageIOTest(int ac, char* av[])
 {
   std::string inputFile;
-  if (ac < 2)
-  {
+  if(ac < 2)
+    {
     std::cerr << "Usage: " << av[0] << " Output\n";
     return EXIT_FAILURE;
-  }
+    }
 
   if (ac > 2)
-  {
+    {
     inputFile = std::string(av[2]);
-  }
+    }
   else
-  {
+    {
     inputFile = std::string("null");
-  }
-  constexpr int sz = 10;
-  int           ret = EXIT_SUCCESS;
+    }
+  const int sz = 10;
+  int ret = EXIT_SUCCESS;
 
   ret += itkNrrdImageIOTestReadWriteTest<unsigned char, 2>(std::string(av[1]), sz, inputFile);
   ret += itkNrrdImageIOTestReadWriteTest<char, 2>(std::string(av[1]), sz, inputFile);
@@ -99,15 +98,15 @@ itkNrrdImageIOTest(int ac, char * av[])
   ret += itkNrrdImageIOTestReadWriteTest<double, 4>(std::string(av[1]), sz, inputFile, true);
 
   // Now we try to read a file which doen't exist
-  ret += !(itkNrrdImageIOTestReadWriteTest<double, 4>(std::string(av[1]), sz, "IDontExist.nrrd"));
+  ret += !(itkNrrdImageIOTestReadWriteTest<double, 4>(std::string(av[1]), sz, "IDontExist.nrrd" ));
 
   if (ret == EXIT_SUCCESS)
-  {
+    {
     std::cout << "TEST PASSED!" << std::endl;
-  }
+    }
   else
-  {
+    {
     std::cout << "TEST FAILED WITH RETURN VALUE " << ret << std::endl;
-  }
+    }
   return ret;
 }

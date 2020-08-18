@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
  *=========================================================================*/
 #ifndef itkFEMLoadBCMFC_h
 #define itkFEMLoadBCMFC_h
-
-#include <utility>
 
 #include "itkFEMLoadBase.h"
 #include "ITKFEMExport.h"
@@ -51,17 +49,17 @@ namespace fem
  * \ingroup ITKFEM
  */
 
-// forward declarations...
+// forward declaratons...
 // class Solver;
 
 class ITKFEM_EXPORT LoadBCMFC : public Load
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LoadBCMFC;
-  using Superclass = Load;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LoadBCMFC                Self;
+  typedef Load                     Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
@@ -71,8 +69,7 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
   /**
    * \class MFCTerm
@@ -101,23 +98,19 @@ public:
     /**
      * Constructor for easy object creation.
      */
-    MFCTerm(Element::ConstPointer element_, int dof_, Element::Float value_)
-      : m_element(std::move(element_))
-      , dof(dof_)
-      , value(value_)
-    {}
+    MFCTerm(Element::ConstPointer element_, int dof_,
+            Element::Float value_) : m_element(element_), dof(dof_), value(value_)
+    {
+    }
   };
 
   /**
    * Left hand side of the MFC constraint equation
    */
-  using LhsType = std::vector<MFCTerm>;
+  typedef std::vector<MFCTerm> LhsType;
 
   /** Default constructor */
-  LoadBCMFC()
-    : m_LeftHandSide()
-    , m_RightHandSide()
-  {}
+  LoadBCMFC() : m_Index(0), m_LeftHandSide(), m_RightHandSide()  {}
 
   /**
    * With this constructor, we can easy fix the global
@@ -132,61 +125,49 @@ public:
 
   /** Set the index variable for the multi freedom displacement constraint. This is used
   internally by itk::FEM::Solver*/
-  void
-  SetIndex(int ind);
+  void SetIndex(int ind);
 
   /** Get the index variable for the multi freedom displacement constraint. This is used
   internally by itk::FEM::Solver*/
-  int
-  GetIndex() const;
+  int GetIndex();
 
   /** Add terms to the left hand side of multi freedom displacement constraint*/
-  void
-  AddLeftHandSideTerm(LoadBCMFC::MFCTerm term);
+  void AddLeftHandSideTerm(LoadBCMFC::MFCTerm term);
 
   /** Add terms to the right hand side of multi freedom displacement
     constraint*/
-  void
-  AddRightHandSideTerm(Element::Float term);
+  void AddRightHandSideTerm(Element::Float term);
 
   /** Returns the number of terms used to define the left hand side*/
-  int
-  GetNumberOfLeftHandSideTerms() const;
+  int GetNumberOfLeftHandSideTerms() const;
 
   /** Returns the number of terms used to define the right hand side*/
-  int
-  GetNumberOfRightHandSideTerms() const;
+  int GetNumberOfRightHandSideTerms() const;
 
   /** Returns the specified left hand side term*/
-  const MFCTerm
-  GetLeftHandSideTerm(int lhs) const;
+  const MFCTerm GetLeftHandSideTerm(int lhs) const;
 
   /** Returns the number of terms used to define the right hand side*/
-  Element::Float
-  GetRightHandSideTerm(int rhs) const;
+  Element::Float GetRightHandSideTerm(int rhs) const;
 
   /** Returns the array containing the left hand side boundary condition
     values*/
-  const std::vector<MFCTerm> &
-  GetLeftHandSideArray() const;
-  std::vector<MFCTerm> &
-  GetLeftHandSideArray();
+  const std::vector<MFCTerm> & GetLeftHandSideArray() const;
+  std::vector<MFCTerm> & GetLeftHandSideArray();
 
   /** Returns the array containing the right hand side boundary condition
     values*/
-  vnl_vector<Element::Float> &
-  GetRightHandSideArray();
+  vnl_vector<Element::Float> & GetRightHandSideArray();
 
-  //  friend class Solver;
+//  friend class Solver;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   // private:  // FIXME: CrankNicolsonSolver class, which is derived from Solver
   // class also needs access to Index.
   /** used internally by the Solver class */
-  int m_Index{ 0 };
+  int m_Index;
 
   LhsType m_LeftHandSide;
 
@@ -198,7 +179,8 @@ protected:
    */
   vnl_vector<Element::Float> m_RightHandSide;
 };
-} // end namespace fem
-} // end namespace itk
 
-#endif // itkFEMLoadBCMFC_h
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMLoadBCMFC_h

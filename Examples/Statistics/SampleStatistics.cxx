@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@
 #include "itkCovarianceSampleFilter.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -66,37 +65,37 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int MeasurementVectorLength = 3;
-  using MeasurementVectorType = itk::Vector<float, MeasurementVectorLength>;
-  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
+  const unsigned int MeasurementVectorLength = 3;
+  typedef itk::Vector< float, MeasurementVectorLength > MeasurementVectorType;
+  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
   SampleType::Pointer sample = SampleType::New();
-  sample->SetMeasurementVectorSize(MeasurementVectorLength);
+  sample->SetMeasurementVectorSize( MeasurementVectorLength );
   MeasurementVectorType mv;
   mv[0] = 1.0;
   mv[1] = 2.0;
   mv[2] = 4.0;
 
-  sample->PushBack(mv);
+  sample->PushBack( mv );
 
   mv[0] = 2.0;
   mv[1] = 4.0;
   mv[2] = 5.0;
-  sample->PushBack(mv);
+  sample->PushBack( mv );
 
   mv[0] = 3.0;
   mv[1] = 8.0;
   mv[2] = 6.0;
-  sample->PushBack(mv);
+  sample->PushBack( mv );
 
   mv[0] = 2.0;
   mv[1] = 7.0;
   mv[2] = 4.0;
-  sample->PushBack(mv);
+  sample->PushBack( mv );
 
   mv[0] = 3.0;
   mv[1] = 2.0;
   mv[2] = 7.0;
-  sample->PushBack(mv);
+  sample->PushBack( mv );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -112,11 +111,11 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeanAlgorithmType = itk::Statistics::MeanSampleFilter<SampleType>;
+  typedef itk::Statistics::MeanSampleFilter< SampleType > MeanAlgorithmType;
 
   MeanAlgorithmType::Pointer meanAlgorithm = MeanAlgorithmType::New();
 
-  meanAlgorithm->SetInput(sample);
+  meanAlgorithm->SetInput( sample );
   meanAlgorithm->Update();
 
   std::cout << "Sample mean = " << meanAlgorithm->GetMean() << std::endl;
@@ -132,10 +131,12 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using CovarianceAlgorithmType = itk::Statistics::CovarianceSampleFilter<SampleType>;
-  CovarianceAlgorithmType::Pointer covarianceAlgorithm = CovarianceAlgorithmType::New();
+  typedef itk::Statistics::CovarianceSampleFilter< SampleType >
+    CovarianceAlgorithmType;
+  CovarianceAlgorithmType::Pointer covarianceAlgorithm =
+    CovarianceAlgorithmType::New();
 
-  covarianceAlgorithm->SetInput(sample);
+  covarianceAlgorithm->SetInput( sample );
   covarianceAlgorithm->Update();
 
   std::cout << "Mean = " << std::endl;

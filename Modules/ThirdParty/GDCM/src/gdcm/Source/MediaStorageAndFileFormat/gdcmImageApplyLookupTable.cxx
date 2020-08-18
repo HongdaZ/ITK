@@ -18,22 +18,6 @@
 namespace gdcm
 {
 
-struct ImageApplyLookupTable::impl
-{
-  bool rgb8;
-};
-
-ImageApplyLookupTable::ImageApplyLookupTable():pimpl(new impl)
-{
-  pimpl->rgb8 = false;
-}
-
-ImageApplyLookupTable::~ImageApplyLookupTable()
-{
-  delete pimpl;
-}
-
-
 bool ImageApplyLookupTable::Apply()
 {
   Output = Input;
@@ -48,11 +32,6 @@ bool ImageApplyLookupTable::Apply()
   const LookupTable &lut = image.GetLUT();
   int bitsample = lut.GetBitSample();
   if( !bitsample ) return false;
-  if( pimpl->rgb8 && !lut.IsRGB8() )
-    {
-    gdcmDebugMacro( "LUT is not compatible with RGB8" );
-    return false;
-    }
 
   const unsigned long len = image.GetBufferLength();
   std::vector<char> v;
@@ -76,21 +55,13 @@ bool ImageApplyLookupTable::Apply()
 #else
   std::vector<char> v2;
   v2.resize( len * 3 );
-  if( pimpl->rgb8 )
-    lut.Decode8(&v2[0], v2.size(), &v[0], v.size());
-  else
-    lut.Decode(&v2[0], v2.size(), &v[0], v.size());
+  lut.Decode(&v2[0], v2.size(), &v[0], v.size());
   assert( v2.size() < (size_t)std::numeric_limits<uint32_t>::max() );
-  if( pimpl->rgb8 )
-    de.SetByteValue( &v2[0], (uint32_t)v2.size() / 2);
-  else
-    de.SetByteValue( &v2[0], (uint32_t)v2.size() );
+  de.SetByteValue( &v2[0], (uint32_t)v2.size());
 #endif
   Output->GetLUT().Clear();
   Output->SetPhotometricInterpretation( PhotometricInterpretation::RGB );
   Output->GetPixelFormat().SetSamplesPerPixel( 3 );
-  if( pimpl->rgb8 )
-    Output->GetPixelFormat().SetBitsAllocated(8);
   Output->SetPlanarConfiguration( 0 ); // FIXME OT-PAL-8-face.dcm has a PlanarConfiguration while being PALETTE COLOR...
   const TransferSyntax &ts = image.GetTransferSyntax();
   //assert( ts == TransferSyntax::RLELossless );
@@ -130,9 +101,5 @@ bool ImageApplyLookupTable::Apply()
   return success;
 }
 
-void ImageApplyLookupTable::SetRGB8(bool b)
-{
-  pimpl->rgb8 = b;
-}
 
 } // end namespace gdcm

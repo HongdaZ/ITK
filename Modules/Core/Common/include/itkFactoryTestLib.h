@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,10 +26,8 @@
  *
  * itkLoad() is C (not C++) function.
  */
-extern "C"
-{
-  ITK_ABI_EXPORT itk::ObjectFactoryBase *
-                 itkLoad();
+extern "C" {
+    ITK_ABI_EXPORT itk::ObjectFactoryBase* itkLoad();
 }
 
 #endif

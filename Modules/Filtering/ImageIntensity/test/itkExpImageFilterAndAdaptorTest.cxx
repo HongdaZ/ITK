@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,32 +21,33 @@
 #include "itkSubtractImageFilter.h"
 
 
-int
-itkExpImageFilterAndAdaptorTest(int, char *[])
+int itkExpImageFilterAndAdaptorTest(int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int ImageDimension = 3;
+  const unsigned int ImageDimension = 3;
 
   // Declare the types of the images
-  using InputImageType = itk::Image<float, ImageDimension>;
-  using OutputImageType = itk::Image<float, ImageDimension>;
+  typedef itk::Image<float, ImageDimension>  InputImageType;
+  typedef itk::Image<float, ImageDimension>  OutputImageType;
 
   // Declare Iterator types apropriated for each image
-  using InputIteratorType = itk::ImageRegionIteratorWithIndex<InputImageType>;
-  using OutputIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  InputImageType>  InputIteratorType;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  OutputImageType> OutputIteratorType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<ImageDimension>;
+  typedef itk::Index<ImageDimension>         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<ImageDimension>;
+  typedef itk::Size<ImageDimension>          SizeType;
 
   // Declare the type of the Region
-  using RegionType = itk::ImageRegion<ImageDimension>;
+  typedef itk::ImageRegion<ImageDimension>   RegionType;
 
   // Create two images
-  InputImageType::Pointer inputImage = InputImageType::New();
+  InputImageType::Pointer inputImage  = InputImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -60,30 +61,31 @@ itkExpImageFilterAndAdaptorTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetLargestPossibleRegion( region );
+  inputImage->SetBufferedRegion( region );
+  inputImage->SetRequestedRegion( region );
   inputImage->Allocate();
   // Create one iterator for the Input Image (this is a light object)
-  InputIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  InputIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image A
   const double value = itk::Math::pi / 6.0;
   std::cout << "Content of the Input " << std::endl;
   it.GoToBegin();
-  while (!it.IsAtEnd())
-  {
-    it.Set(value);
+  while( !it.IsAtEnd() )
+    {
+    it.Set( value );
     std::cout << it.Get() << std::endl;
     ++it;
-  }
+    }
 
   // Declare the type for the Exp filter
-  using FilterType = itk::ExpImageFilter<InputImageType, OutputImageType>;
+  typedef itk::ExpImageFilter< InputImageType,
+                               OutputImageType  >  FilterType;
 
 
   // Create an ADD Filter
@@ -91,8 +93,8 @@ itkExpImageFilterAndAdaptorTest(int, char *[])
 
 
   // Connect the input images
-  filter->SetInput(inputImage);
-  filter->SetNumberOfWorkUnits(1);
+  filter->SetInput( inputImage );
+  filter->SetNumberOfThreads(1);
 
   // Get the Smart Pointer to the Filter Output
   OutputImageType::Pointer outputImage = filter->GetOutput();
@@ -100,6 +102,7 @@ itkExpImageFilterAndAdaptorTest(int, char *[])
 
   // Execute the filter
   filter->Update();
+  filter->SetFunctor(filter->GetFunctor());
 
   // Create an iterator for going through the image output
   OutputIteratorType ot(outputImage, outputImage->GetRequestedRegion());
@@ -109,42 +112,46 @@ itkExpImageFilterAndAdaptorTest(int, char *[])
   const OutputImageType::PixelType epsilon = 1e-6;
   ot.GoToBegin();
   it.GoToBegin();
-  while (!ot.IsAtEnd())
-  {
-    std::cout << ot.Get() << " = ";
-    std::cout << std::exp(it.Get()) << std::endl;
-    const InputImageType::PixelType  input = it.Get();
-    const OutputImageType::PixelType output = ot.Get();
-    const OutputImageType::PixelType exponential = std::exp(input);
-    if (std::fabs(exponential - output) > epsilon)
+  while( !ot.IsAtEnd() )
     {
+    std::cout <<  ot.Get() << " = ";
+    std::cout <<  std::exp( it.Get() )  << std::endl;
+    const InputImageType::PixelType  input  = it.Get();
+    const OutputImageType::PixelType output = ot.Get();
+    const OutputImageType::PixelType exponential  = std::exp(input);
+    if( std::fabs( exponential - output ) > epsilon )
+      {
       std::cerr << "Error in itkExpImageFilterTest " << std::endl;
       std::cerr << " std::exp( " << input << ") = " << exponential << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++ot;
     ++it;
-  }
+    }
 
 
   //---------------------------------------
   // This section tests for ExpImageAdaptor
   //---------------------------------------
 
-  using AdaptorType = itk::ExpImageAdaptor<InputImageType, OutputImageType::PixelType>;
+  typedef itk::ExpImageAdaptor<InputImageType,
+                          OutputImageType::PixelType>  AdaptorType;
 
   AdaptorType::Pointer expAdaptor = AdaptorType::New();
 
-  expAdaptor->SetImage(inputImage);
+  expAdaptor->SetImage( inputImage );
 
-  using DiffFilterType = itk::SubtractImageFilter<OutputImageType, AdaptorType, OutputImageType>;
+  typedef itk::SubtractImageFilter<
+                        OutputImageType,
+                        AdaptorType,
+                        OutputImageType   > DiffFilterType;
 
   DiffFilterType::Pointer diffFilter = DiffFilterType::New();
 
-  diffFilter->SetInput1(outputImage);
-  diffFilter->SetInput2(expAdaptor);
+  diffFilter->SetInput1( outputImage );
+  diffFilter->SetInput2( expAdaptor  );
 
   diffFilter->Update();
 
@@ -159,21 +166,21 @@ itkExpImageFilterAndAdaptorTest(int, char *[])
   OutputIteratorType dt(diffImage, diffImage->GetRequestedRegion());
 
   dt.GoToBegin();
-  while (!dt.IsAtEnd())
-  {
-    std::cout << dt.Get() << std::endl;
-    const OutputImageType::PixelType diff = dt.Get();
-    if (std::fabs(diff) > epsilon)
+  while( !dt.IsAtEnd() )
     {
+    std::cout <<  dt.Get() << std::endl;
+    const OutputImageType::PixelType diff = dt.Get();
+    if( std::fabs( diff ) > epsilon )
+      {
       std::cerr << "Error in itkExpImageFilterTest " << std::endl;
       std::cerr << "Comparing results with Adaptors" << std::endl;
       std::cerr << " difference = " << diff << std::endl;
       std::cerr << " differs from 0 ";
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++dt;
-  }
+    }
 
 
   return EXIT_SUCCESS;

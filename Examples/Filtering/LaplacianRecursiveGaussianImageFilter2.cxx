@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,17 +58,14 @@
 // Software Guide : EndCodeSnippet
 #include "itkRescaleIntensityImageFilter.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0]
-              << "  inputImageFile  outputImageFile  sigma [RescaledOutputImageFile] "
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile  outputImageFile  sigma [RescaledOutputImageFile] " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -77,8 +74,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = float;
-  using OutputPixelType = float;
+  typedef    float    InputPixelType;
+  typedef    float    OutputPixelType;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -88,11 +85,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  typedef itk::Image< InputPixelType,  2 >   InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
 
   //  Software Guide : BeginLatex
   //
@@ -104,12 +101,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType =
-    itk::LaplacianRecursiveGaussianImageFilter<InputImageType, OutputImageType>;
+  typedef itk::LaplacianRecursiveGaussianImageFilter<
+                        InputImageType, OutputImageType >  FilterType;
   // Software Guide : EndCodeSnippet
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   //  Software Guide : BeginLatex
   //
@@ -135,7 +132,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  laplacian->SetNormalizeAcrossScale(false);
+  laplacian->SetNormalizeAcrossScale( false );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -146,7 +143,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  laplacian->SetInput(reader->GetOutput());
+  laplacian->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -162,10 +159,10 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const double sigma = std::stod(argv[3]);
+  const double sigma = atof( argv[3] );
 
   // Software Guide : BeginCodeSnippet
-  laplacian->SetSigma(sigma);
+  laplacian->SetSigma( sigma );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -178,48 +175,48 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     laplacian->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // The image can also be saved into  a file, by using the ImageFileWriter.
   //
-  using WritePixelType = float;
-  using WriteImageType = itk::Image<WritePixelType, 2>;
+  typedef  float                          WritePixelType;
+  typedef itk::Image< WritePixelType, 2 > WriteImageType;
 
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(laplacian->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( laplacian->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->Update();
 
   // Rescale float outputs to png for inclusion in the Software guide
   //
   if (argc > 4)
-  {
-    using CharPixelType = unsigned char;
-    using CharImageType = itk::Image<CharPixelType, 2>;
+    {
+    typedef unsigned char                CharPixelType;
+    typedef itk::Image<CharPixelType, 2> CharImageType;
 
-    using RescaleFilterType =
-      itk::RescaleIntensityImageFilter<OutputImageType, CharImageType>;
+    typedef itk::RescaleIntensityImageFilter< OutputImageType, CharImageType>
+                                                            RescaleFilterType;
     RescaleFilterType::Pointer rescale = RescaleFilterType::New();
-    rescale->SetInput(laplacian->GetOutput());
-    rescale->SetOutputMinimum(0);
-    rescale->SetOutputMaximum(255);
-    using CharWriterType = itk::ImageFileWriter<CharImageType>;
+    rescale->SetInput( laplacian->GetOutput() );
+    rescale->SetOutputMinimum(   0 );
+    rescale->SetOutputMaximum( 255 );
+    typedef itk::ImageFileWriter< CharImageType >  CharWriterType;
     CharWriterType::Pointer charWriter = CharWriterType::New();
-    charWriter->SetFileName(argv[4]);
-    charWriter->SetInput(rescale->GetOutput());
+    charWriter->SetFileName( argv[4] );
+    charWriter->SetInput( rescale->GetOutput() );
     charWriter->Update();
-  }
+    }
 
   return EXIT_SUCCESS;
 }

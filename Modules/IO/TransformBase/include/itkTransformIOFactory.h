@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,55 +18,55 @@
 #ifndef itkTransformIOFactory_h
 #define itkTransformIOFactory_h
 
+#include "ITKIOTransformBaseExport.h"
+
 #include "itkObject.h"
 #include "itkTransformIOBase.h"
-#include "ITKIOTransformBaseExport.h"
-#include "itkCommonEnums.h"
 
 namespace itk
 {
 
-#if !defined(ITK_LEGACY_REMOVE)
-using TransformIOFactoryFileModeEnum = IOFileModeEnum;
-#endif
+/** Mode in which the files is intended to be used */
+typedef enum { ReadMode, WriteMode } TransformIOFactoryFileModeType;
 
 /** \class TransformIOFactoryTemplate
  * \brief Create instances of TransformIO objects using an object factory.
  * \ingroup ITKIOTransformBase
  */
-template <typename TParametersValueType>
-class ITK_TEMPLATE_EXPORT TransformIOFactoryTemplate : public Object
+template<typename TParametersValueType>
+class ITK_TEMPLATE_EXPORT TransformIOFactoryTemplate:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformIOFactoryTemplate);
-
-  /** Standard class type aliases. */
-  using Self = TransformIOFactoryTemplate;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef TransformIOFactoryTemplate Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer<Self>         Pointer;
+  typedef SmartPointer<const Self>   ConstPointer;
 
   /** Class Methods used to interface with the registered factories */
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(TransformIOFactoryTemplate, Object);
 
-  /** Convenient type alias. */
-  using TransformIOBasePointer = typename TransformIOBaseTemplate<TParametersValueType>::Pointer;
+  /** Convenient typedefs. */
+  typedef typename TransformIOBaseTemplate<TParametersValueType>::Pointer TransformIOBasePointer;
 
   /** Create the appropriate TransformIO depending on
    *  the particulars of the file.
    */
   static TransformIOBasePointer
-  CreateTransformIO(const char * path, IOFileModeEnum mode);
+  CreateTransformIO(const char *path, TransformIOFactoryFileModeType mode);
 
 protected:
   TransformIOFactoryTemplate();
-  ~TransformIOFactoryTemplate() override;
+  virtual ~TransformIOFactoryTemplate() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TransformIOFactoryTemplate);
 };
 
 /** This helps to meet backward compatibility */
-using TransformIOFactory = TransformIOFactoryTemplate<double>;
+typedef TransformIOFactoryTemplate<double> TransformIOFactory;
 
 } // end namespace itk
 
@@ -84,24 +84,30 @@ using TransformIOFactory = TransformIOFactoryTemplate<double>;
 //            need to be considered. This code *MUST* be *OUTSIDE* the header
 //            guards.
 //
-#if defined(ITKIOTransformBase_EXPORTS)
+#  if defined( ITKIOTransformBase_EXPORTS )
 //   We are building this library
-#  define ITKIOTransformBase_EXPORT_EXPLICIT ITK_FORWARD_EXPORT
-#else
+#    define ITKIOTransformBase_EXPORT_EXPLICIT ITK_FORWARD_EXPORT
+#  else
 //   We are using this library
-#  define ITKIOTransformBase_EXPORT_EXPLICIT ITKIOTransformBase_EXPORT
-#endif
+#    define ITKIOTransformBase_EXPORT_EXPLICIT ITKIOTransformBase_EXPORT
+#  endif
 namespace itk
 {
 
-ITK_GCC_PRAGMA_DIAG_PUSH()
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
 ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
 
-extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformIOFactoryTemplate<double>;
-extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformIOFactoryTemplate<float>;
+extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformIOFactoryTemplate< double >;
+extern template class ITKIOTransformBase_EXPORT_EXPLICIT TransformIOFactoryTemplate< float >;
 
-ITK_GCC_PRAGMA_DIAG_POP()
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
 
 } // end namespace itk
-#undef ITKIOTransformBase_EXPORT_EXPLICIT
+#  undef ITKIOTransformBase_EXPORT_EXPLICIT
 #endif

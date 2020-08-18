@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,19 +22,21 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage, typename TKernel>
-ErodeObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::ErodeObjectMorphologyImageFilter()
+template< typename TInputImage, typename TOutputImage, typename TKernel >
+ErodeObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
+::ErodeObjectMorphologyImageFilter()
 {
-  m_BackgroundValue = NumericTraits<PixelType>::ZeroValue();
+  m_BackgroundValue = NumericTraits< PixelType >::ZeroValue();
 
-  m_ErodeBoundaryCondition.SetConstant(NumericTraits<PixelType>::max());
+  m_ErodeBoundaryCondition.SetConstant( NumericTraits< PixelType >::max() );
   this->OverrideBoundaryCondition(&m_ErodeBoundaryCondition);
 }
 
-template <typename TInputImage, typename TOutputImage, typename TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
 void
-ErodeObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::Evaluate(OutputNeighborhoodIteratorType & nit,
-                                                                               const KernelType &               kernel)
+ErodeObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
+::Evaluate(OutputNeighborhoodIteratorType & nit,
+           const KernelType & kernel)
 {
   unsigned int             i;
   KernelIteratorType       kernel_it;
@@ -42,18 +44,19 @@ ErodeObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::Evaluate(O
 
   bool valid = true;
 
-  for (i = 0, kernel_it = kernel.Begin(); kernel_it < kernelEnd; ++kernel_it, ++i)
-  {
-    if (*kernel_it)
+  for ( i = 0, kernel_it = kernel.Begin(); kernel_it < kernelEnd; ++kernel_it, ++i )
     {
+    if ( *kernel_it )
+      {
       nit.SetPixel(i, m_BackgroundValue, valid);
+      }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage, typename TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
 void
-ErodeObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::PrintSelf(std::ostream & os, Indent indent) const
+ErodeObjectMorphologyImageFilter< TInputImage, TOutputImage, TKernel >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "BackgroundValue : " << m_BackgroundValue << std::endl;

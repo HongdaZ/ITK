@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,35 +18,34 @@
 
 #include "itkGrayscaleFunctionErodeImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 #include "itkImageFileWriter.h"
 
-int
-itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
+int itkGrayscaleFunctionErodeImageFilterTest(int argc, char* argv[] )
 {
   unsigned int i;
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 2;
+  const unsigned int myDimension = 2;
 
   // Define the values of the input images
-  constexpr unsigned short fgValue = 1;
-  constexpr unsigned short bgValue = 2;
+  const unsigned short fgValue = 1;
+  const unsigned short bgValue = 2;
 
   // Declare the types of the images
-  using myImageType = itk::Image<unsigned short, myDimension>;
+  typedef itk::Image<unsigned short, myDimension>  myImageType;
 
   // Declare the type of the index to access images
-  using myIndexType = itk::Index<myDimension>;
+  typedef itk::Index<myDimension>         myIndexType;
 
   // Declare the type of the size
-  using mySizeType = itk::Size<myDimension>;
+  typedef itk::Size<myDimension>          mySizeType;
 
   // Declare the type of the Region
-  using myRegionType = itk::ImageRegion<myDimension>;
+  typedef itk::ImageRegion<myDimension>        myRegionType;
 
   // Create an image
-  myImageType::Pointer inputImage = myImageType::New();
+  myImageType::Pointer inputImage  = myImageType::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -58,18 +57,18 @@ itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
   start[1] = 0;
 
   myRegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image
-  inputImage->SetRegions(region);
+  inputImage->SetRegions( region );
   inputImage->Allocate();
 
   // Declare Iterator types apropriated for each image
-  using myIteratorType = itk::ImageRegionIterator<myImageType>;
+  typedef itk::ImageRegionIterator<myImageType>  myIteratorType;
 
   // Create one iterator for image (this is a light object)
-  myIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  myIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image
   std::cout << "Input image " << std::endl;
@@ -101,29 +100,31 @@ itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
 
   i = 0;
   it.GoToBegin();
-  while (!it.IsAtEnd())
-  {
+  while ( !it.IsAtEnd() )
+    {
     std::cout << it.Get() << "  ";
     ++it;
 
     if (++i % 20 == 0)
-    {
+      {
       std::cout << std::endl;
+      }
     }
-  }
 
   // Declare the type for the structuring element
-  using myKernelType = itk::BinaryBallStructuringElement<unsigned short, myDimension>;
+  typedef itk::BinaryBallStructuringElement<unsigned short, myDimension>
+    myKernelType;
 
   // Declare the type for the morphology Filter
-  using myFilterType = itk::GrayscaleFunctionErodeImageFilter<myImageType, myImageType, myKernelType>;
+  typedef itk::GrayscaleFunctionErodeImageFilter<myImageType, myImageType, myKernelType>
+    myFilterType;
 
   // Create the filter
-  myFilterType::Pointer    filter = myFilterType::New();
-  itk::SimpleFilterWatcher watcher(filter, "filter");
+  myFilterType::Pointer filter = myFilterType::New();
+  FilterWatcher watcher(filter, "filter");
 
   // Create the structuring element
-  myKernelType           ball;
+  myKernelType ball;
   myKernelType::SizeType ballSize;
   ballSize[0] = 1;
   ballSize[1] = 4;
@@ -131,8 +132,8 @@ itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
   ball.CreateStructuringElement();
 
   // Connect the input image
-  filter->SetInput(inputImage);
-  filter->SetKernel(ball);
+  filter->SetInput( inputImage );
+  filter->SetKernel( ball );
 
   // Get the Smart Pointer to the Filter Output
   myImageType::Pointer outputImage = filter->GetOutput();
@@ -140,7 +141,7 @@ itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
 
   // Execute the filter
   try
-  {
+    {
 
     filter->Update();
     // Create an iterator for going through the image output
@@ -148,35 +149,36 @@ itkGrayscaleFunctionErodeImageFilterTest(int argc, char * argv[])
 
     //  Print the content of the result image
     std::cout << "Result " << std::endl;
-    i = 0;
-    while (!it2.IsAtEnd())
-    {
+    i=0;
+    while( !it2.IsAtEnd() )
+      {
       std::cout << it2.Get() << "  ";
       ++it2;
 
       if (++i % 20 == 0)
-      {
+        {
         std::cout << std::endl;
+        }
       }
-    }
-  }
+   }
 
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught during filter Update\n" << e;
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception caught during filter Update\n"  << e;
     return -1;
-  }
+    }
 
   if (argc == 2)
-  {
-    using WriterType = itk::ImageFileWriter<myImageType>;
+    {
+    typedef  itk::ImageFileWriter<  myImageType  > WriterType;
     WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(argv[1]);
-    writer->SetInput(filter->GetOutput());
+    writer->SetFileName( argv[1] );
+    writer->SetInput( filter->GetOutput() );
     writer->Update();
-  }
+    }
 
   // All objects should be automatically destroyed at this point
 
   return EXIT_SUCCESS;
+
 }

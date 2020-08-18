@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,44 +49,41 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT ImageIORegion : public Region
+class ITKCommon_EXPORT ImageIORegion:public Region
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ImageIORegion;
-  using Superclass = Region;
+  /** Standard class typedefs. */
+  typedef ImageIORegion Self;
+  typedef Region        Superclass;
 
   /** these types correspond to those of itk::Size, itk::Offset and itk::Index
-   */
-  using SizeValueType = ::itk::SizeValueType;
-  using IndexValueType = ::itk::IndexValueType;
-  using OffsetValueType = ::itk::OffsetValueType;
+    */
+  typedef ::itk::SizeValueType    SizeValueType;
+  typedef ::itk::IndexValueType   IndexValueType;
+  typedef ::itk::OffsetValueType  OffsetValueType;
 
-  /** Index type alias support An index is used to access pixel values. */
-  using IndexType = std::vector<IndexValueType>;
+  /** Index typedef support. An index is used to access pixel values. */
+  typedef std::vector< IndexValueType > IndexType;
 
-  /** Size type alias support A size is used to define region bounds. */
-  using SizeType = std::vector<SizeValueType>;
+  /** Size typedef support. A size is used to define region bounds. */
+  typedef std::vector< SizeValueType > SizeType;
 
   /** Region type taken from the superclass */
-  using RegionType = Superclass::RegionEnum;
+  typedef Superclass::RegionType RegionType;
 
   /** Standard part of all itk objects. */
   itkTypeMacro(ImageIORegion, Region);
 
   /** Dimension of the image available at run time. */
-  unsigned int
-  GetImageDimension() const;
+  unsigned int GetImageDimension() const;
 
   /** Dimension of the region to be written. This differs from the
    * the image dimension and is calculated at run-time by examining
    * the size of the image in each coordinate direction. */
-  unsigned int
-  GetRegionDimension() const;
+  unsigned int GetRegionDimension() const;
 
   /** Return the region type. Images are described with structured regions. */
-  RegionType
-  GetRegionType() const override;
+  virtual RegionType GetRegionType() const ITK_OVERRIDE;
 
   /** Constructor. ImageIORegion is a lightweight object that is not reference
    * counted, so the constructor is public. */
@@ -94,103 +91,78 @@ public:
 
   /** Constructor. ImageIORegion is a lightweight object that is not reference
    * counted, so the constructor is public.  Default dimension is 2. */
-  ImageIORegion() = default;
+  ImageIORegion();
 
   /** Destructor. ImageIORegion is a lightweight object that is not reference
    * counted, so the destructor is public. */
-  ~ImageIORegion() override;
+  virtual ~ImageIORegion() ITK_OVERRIDE;
 
   /** Copy constructor. ImageIORegion is a lightweight object that is not
    * reference counted, so the copy constructor is public. */
-  ImageIORegion(const Self &) = default;
+  ImageIORegion(const Self & region);
 
-  /** Move-constructor. Fast and non-throwing. */
-  ImageIORegion(Self &&) = default;
-
-  /** Copy-assignment operator. ImageIORegion is a lightweight object that is not reference
+  /** operator=. ImageIORegion is a lightweight object that is not reference
    * counted, so operator= is public. */
-  Self &
-  operator=(const Self & region);
-
-  /** Move-assignment operator. Fast and non-throwing. */
-  Self &
-  operator=(Self &&) = default;
+  void operator=(const Self & region);
 
   /** Set the index defining the corner of the region. */
-  void
-  SetIndex(const IndexType & index);
+  void SetIndex(const IndexType & index);
 
   /** Get index defining the corner of the region. */
-  const IndexType &
-  GetIndex() const;
-  IndexType &
-  GetModifiableIndex();
+  const IndexType & GetIndex() const;
+  IndexType & GetModifiableIndex();
 
   /** Set the size of the region. This plus the index determines the
    * rectangular shape, or extent, of the region. */
-  void
-  SetSize(const SizeType & size);
+  void SetSize(const SizeType & size);
 
   /** Get the size of the region. */
-  const SizeType &
-  GetSize() const;
-  SizeType &
-  GetModifiableSize();
+  const SizeType & GetSize() const;
+  SizeType & GetModifiableSize();
 
   /** Convenience methods to get the size of the image in a particular
    * coordinate direction i. Do not try to access image sizes beyond the
    * the ImageDimension. */
-  SizeValueType
-  GetSize(unsigned long i) const;
+  SizeValueType GetSize(unsigned long i) const;
 
-  IndexValueType
-  GetIndex(unsigned long i) const;
+  IndexValueType GetIndex(unsigned long i) const;
 
-  void
-  SetSize(const unsigned long i, SizeValueType size);
+  void SetSize(const unsigned long i, SizeValueType size);
 
-  void
-  SetIndex(const unsigned long i, IndexValueType idx);
+  void SetIndex(const unsigned long i, IndexValueType idx);
 
   /** Compare two regions. */
-  bool
-  operator==(const Self & region) const;
+  bool operator==(const Self & region) const;
 
   /** Compare two regions. */
-  bool
-  operator!=(const Self & region) const;
+  bool operator!=(const Self & region) const;
 
   /** Test if an index is inside */
-  bool
-  IsInside(const IndexType & index) const;
+  bool IsInside(const IndexType & index) const;
 
   /** Test if a region (the argument) is completly inside of this region */
-  bool
-  IsInside(const Self & region) const;
+  bool IsInside(const Self & region) const;
 
   /** Get the number of pixels contained in this region. This just
    * multiplies the size components. */
-  SizeValueType
-  GetNumberOfPixels() const;
+  SizeValueType GetNumberOfPixels() const;
 
 protected:
   /** Methods invoked by Print() to print information about the object
    * including superclasses. Typically not called by the user (use Print()
    * instead) but used in the hierarchical print process to combine the
    * output of several classes.  */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  unsigned int m_ImageDimension{ 2 };
-  IndexType    m_Index{ IndexType(2) };
-  SizeType     m_Size{ SizeType(2) };
+  unsigned int m_ImageDimension;
+  IndexType    m_Index;
+  SizeType     m_Size;
 };
 
 
 // Declare operator<<
-extern ITKCommon_EXPORT std::ostream &
-                        operator<<(std::ostream & os, const ImageIORegion & region);
+extern ITKCommon_EXPORT std::ostream & operator<<(std::ostream & os, const ImageIORegion & region);
 
 
 /** \class ImageIORegionAdaptor
@@ -198,20 +170,19 @@ extern ITKCommon_EXPORT std::ostream &
  *
  * \ingroup ITKCommon
  */
-template <unsigned int VDimension>
+template< unsigned int VDimension >
 class ImageIORegionAdaptor
 {
 public:
-  using ImageRegionType = ImageRegion<VDimension>;
-  using ImageIORegionType = ImageIORegion;
+  typedef ImageRegion< VDimension > ImageRegionType;
+  typedef ImageIORegion             ImageIORegionType;
 
-  using ImageSizeType = typename ImageRegionType::SizeType;
-  using ImageIndexType = typename ImageRegionType::IndexType;
+  typedef typename ImageRegionType::SizeType  ImageSizeType;
+  typedef typename ImageRegionType::IndexType ImageIndexType;
 
-  static void
-  Convert(const ImageRegionType & inImageRegion,
-          ImageIORegionType &     outIORegion,
-          const ImageIndexType &  largestRegionIndex)
+  static void Convert(const ImageRegionType & inImageRegion,
+                      ImageIORegionType & outIORegion,
+                      const ImageIndexType & largestRegionIndex)
   {
     //
     // The ImageRegion and ImageIORegion objects may have different dimensions.
@@ -227,36 +198,35 @@ public:
     const unsigned int ioDimension = outIORegion.GetImageDimension();
     const unsigned int imageDimension = VDimension;
 
-    const unsigned int minDimension = std::min(ioDimension, imageDimension);
+    const unsigned int minDimension = std::min( ioDimension, imageDimension );
 
-    const ImageSizeType &  size = inImageRegion.GetSize();
+    const ImageSizeType & size = inImageRegion.GetSize();
     const ImageIndexType & index = inImageRegion.GetIndex();
 
-    for (unsigned int i = 0; i < minDimension; ++i)
-    {
+    for( unsigned int i = 0; i < minDimension; ++i )
+      {
       outIORegion.SetSize(i, size[i]);
       outIORegion.SetIndex(i, index[i] - largestRegionIndex[i]);
-    }
+      }
 
     //
     // Fill in the remaining codimension (if any) with default values
     //
-    for (unsigned int k = minDimension; k < ioDimension; ++k)
-    {
-      outIORegion.SetSize(k, 1); // Note that default size in IO is 1 not 0
+    for( unsigned int k = minDimension; k < ioDimension; ++k )
+      {
+      outIORegion.SetSize(k, 1);    // Note that default size in IO is 1 not 0
       outIORegion.SetIndex(k, 0);
-    }
+      }
   }
 
-  static void
-  Convert(const ImageIORegionType & inIORegion,
-          ImageRegionType &         outImageRegion,
-          const ImageIndexType &    largestRegionIndex)
+  static void Convert(const ImageIORegionType & inIORegion,
+                      ImageRegionType & outImageRegion,
+                      const ImageIndexType & largestRegionIndex)
   {
     ImageSizeType  size;
     ImageIndexType index;
 
-    size.Fill(1); // initialize with default values
+    size.Fill(1);  // initialize with default values
     index.Fill(0);
 
     //
@@ -273,13 +243,13 @@ public:
     const unsigned int ioDimension = inIORegion.GetImageDimension();
     const unsigned int imageDimension = VDimension;
 
-    const unsigned int minDimension = std::min(ioDimension, imageDimension);
+    const unsigned int minDimension = std::min( ioDimension, imageDimension );
 
-    for (unsigned int i = 0; i < minDimension; ++i)
-    {
-      size[i] = inIORegion.GetSize(i);
+    for( unsigned int i = 0; i < minDimension; ++i )
+      {
+      size[i]  = inIORegion.GetSize(i);
       index[i] = inIORegion.GetIndex(i) + largestRegionIndex[i];
-    }
+      }
 
     outImageRegion.SetSize(size);
     outImageRegion.SetIndex(index);

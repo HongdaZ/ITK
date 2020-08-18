@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,19 +20,17 @@
 #include <fstream>
 #include "itkStdStreamLogOutput.h"
 #include "itkLoggerOutput.h"
-#include "itkTestingMacros.h"
 
 
-int
-itkLoggerOutputTest(int argc, char * argv[])
+int itkLoggerOutputTest( int argc, char *argv [] )
 {
   try
-  {
-    if (argc < 2)
     {
-      std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << " logFilename" << std::endl;
+    if (argc < 2)
+      {
+      std::cout << "Usage: " << argv[0] << " logFilename" << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
 
     // Create an ITK StdStreamLogOutputs
@@ -49,8 +47,8 @@ itkLoggerOutputTest(int argc, char * argv[])
 
     // Setting the logger
     logger->SetName("org.itk.rootLogger");
-    logger->SetPriorityLevel(itk::LoggerBase::PriorityLevelEnum::INFO);
-    logger->SetLevelForFlushing(itk::LoggerBase::PriorityLevelEnum::CRITICAL);
+    logger->SetPriorityLevel(itk::LoggerBase::INFO);
+    logger->SetLevelForFlushing(itk::LoggerBase::CRITICAL);
 
     std::cout << "  Adding console and file stream LogOutputs" << std::endl;
     logger->AddLogOutput(coutput);
@@ -64,7 +62,7 @@ itkLoggerOutputTest(int argc, char * argv[])
     // Create an ITK LoggerOutput and then test it.
     itk::LoggerOutput::Pointer pOver = itk::LoggerOutput::New();
     pOver->OverrideITKWindow();
-    pOver->SetLogger(logger); // redirect messages from ITK OutputWindow -> logger2
+    pOver->SetLogger(logger);  // redirect messages from ITK OutputWindow -> logger2
 
     // test message for ITK OutputWindow
     itk::OutputWindow::GetInstance()->DisplayText("** This is from ITK OutputWindow **\n");
@@ -72,12 +70,13 @@ itkLoggerOutputTest(int argc, char * argv[])
     itk::OutputWindow::GetInstance()->DisplayWarningText("** This is from ITK OutputWindow **\n");
     itk::OutputWindow::GetInstance()->DisplayErrorText("** This is from ITK OutputWindow **\n");
     itk::OutputWindow::GetInstance()->DisplayGenericOutputText("** This is from ITK OutputWindow **\n");
-  }
-  catch (...)
-  {
+
+    }
+  catch(...)
+    {
     std::cerr << "Exception catched !!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "[PASSED]" << std::endl;
   return EXIT_SUCCESS;

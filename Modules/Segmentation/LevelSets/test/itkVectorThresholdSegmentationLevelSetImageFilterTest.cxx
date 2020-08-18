@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,62 +23,65 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkMath.h"
 
-int
-itkVectorThresholdSegmentationLevelSetImageFilterTest(int ac, char * av[])
+int itkVectorThresholdSegmentationLevelSetImageFilterTest(int ac, char* av[] )
 {
   // Comment the following if you want to use the itk text output window
   itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
-  if (ac < 6)
-  {
+  if(ac < 6)
+    {
     std::cerr << "Usage: " << av[0] << " InputInitialImage InputColorImage BaselineImage threshold curvatureScaling\n";
     return -1;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelComponentType = unsigned char;
-  using RGBPixelType = itk::RGBPixel<PixelComponentType>;
-  using InputPixelType = unsigned char;
-  using OutputPixelType = float;
-  using WritePixelType = unsigned char;
+  typedef unsigned char                     PixelComponentType;
+  typedef itk::RGBPixel<PixelComponentType> RGBPixelType;
+  typedef unsigned char                     InputPixelType;
+  typedef float                             OutputPixelType;
+  typedef unsigned char                     WritePixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using RGBImageType = itk::Image<RGBPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using WriteImageType = itk::Image<WritePixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension > InputImageType;
+  typedef itk::Image< RGBPixelType,    Dimension > RGBImageType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image< WritePixelType,  Dimension > WriteImageType;
 
-  using InputReaderType = itk::ImageFileReader<InputImageType>;
-  using RGBReaderType = itk::ImageFileReader<RGBImageType>;
+  typedef itk::ImageFileReader< InputImageType >   InputReaderType;
+  typedef itk::ImageFileReader< RGBImageType >     RGBReaderType;
 
-  RGBReaderType::Pointer   rgbReader = RGBReaderType::New();
+  RGBReaderType::Pointer   rgbReader   = RGBReaderType::New();
   InputReaderType::Pointer inputReader = InputReaderType::New();
 
   inputReader->SetFileName(av[1]);
   rgbReader->SetFileName(av[2]);
 
   // Create a filter
-  using FilterType = itk::VectorThresholdSegmentationLevelSetImageFilter<InputImageType, RGBImageType, OutputPixelType>;
+  typedef itk::VectorThresholdSegmentationLevelSetImageFilter<
+                                              InputImageType,
+                                              RGBImageType,
+                                              OutputPixelType
+                                                > FilterType;
 
   FilterType::Pointer filter = FilterType::New();
 
-  filter->SetInput(inputReader->GetOutput());
+  filter->SetInput( inputReader->GetOutput() );
 
-  filter->SetFeatureImage(rgbReader->GetOutput());
+  filter->SetFeatureImage( rgbReader->GetOutput() );
 
   // Mean values hand coded for the VisibleWomanSlice.png color file
-  using MeanVectorType = FilterType::MeanVectorType;
-  MeanVectorType mean = MeanVectorType(3);
+  typedef FilterType::MeanVectorType  MeanVectorType;
+  MeanVectorType  mean = MeanVectorType(3);
 
   mean[0] = 44.7504;
   mean[1] = 37.5443;
   mean[2] = 29.5179;
 
-  filter->SetMean(mean);
+  filter->SetMean( mean );
 
   // Covariance values hand coded for the VisibleWomanSlice.png color file
-  using CovarianceMatrixType = FilterType::CovarianceMatrixType;
-  CovarianceMatrixType covariance = CovarianceMatrixType(3, 3);
+  typedef FilterType::CovarianceMatrixType  CovarianceMatrixType;
+  CovarianceMatrixType  covariance = CovarianceMatrixType( 3, 3 );
 
   covariance[0][0] = 79.2225;
   covariance[1][1] = 81.0314;
@@ -90,52 +93,52 @@ itkVectorThresholdSegmentationLevelSetImageFilterTest(int ac, char * av[])
   covariance[2][0] = covariance[0][2];
   covariance[2][1] = covariance[1][2];
 
-  filter->SetCovariance(covariance);
+  filter->SetCovariance(  covariance );
 
-  const double threshold = std::stod(av[4]);
+  const double threshold = atof( av[4] );
 
-  filter->SetThreshold(threshold);
+  filter->SetThreshold( threshold );
 
-  const double curvatureScaling = std::stod(av[5]);
+  const double curvatureScaling = atof( av[5] );
 
-  filter->SetCurvatureScaling(curvatureScaling);
+  filter->SetCurvatureScaling( curvatureScaling );
 
   try
-  {
+    {
     rgbReader->Update();
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception detected: " << e.GetDescription();
+    }
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception detected: "  << e.GetDescription();
     return -1;
-  }
+    }
 
   // Test the GetMacros
-  if (itk::Math::NotExactlyEquals(filter->GetThreshold(), threshold))
-  {
+  if( itk::Math::NotExactlyEquals(filter->GetThreshold(), threshold) )
+    {
     std::cerr << "Error GetThreshold returns a value";
     std::cerr << " different from the one in SetThreshold" << std::endl;
     std::cerr << "threshold      = " << threshold << std::endl;
     std::cerr << "GetThreshold() = " << filter->GetThreshold() << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using RescalerType = itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
+  typedef itk::RescaleIntensityImageFilter< OutputImageType, WriteImageType > RescalerType;
   RescalerType::Pointer rescaler = RescalerType::New();
 
-  rescaler->SetInput(filter->GetOutput());
+  rescaler->SetInput( filter->GetOutput() );
 
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
 
   // Generate test image
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >   WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetInput(rescaler->GetOutput());
-  writer->SetFileName(av[3]);
+  writer->SetInput( rescaler->GetOutput() );
+  writer->SetFileName( av[3] );
   writer->Update();
 
   std::cout << "Test PASSED !" << std::endl;

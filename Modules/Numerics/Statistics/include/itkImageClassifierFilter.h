@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class ImageClassifierFilter
+/** \class ImageClassifierFilter
  *
  *  \brief Image classification class
  *
@@ -45,79 +44,83 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TSample, typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ImageClassifierFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TSample, typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT ImageClassifierFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageClassifierFilter);
-
-  /** Standard class type alias */
-  using Self = ImageClassifierFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedef */
+  typedef ImageClassifierFilter                           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Standard macros */
   itkTypeMacro(ImageClassifierFilter, ImageToImagefilter);
   itkNewMacro(Self);
 
-  /** Image pixel value type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TOutputImage::PixelType;
+  /** Image pixel value typedef. */
+  typedef           TInputImage            InputImageType;
+  typedef           TOutputImage           OutputImageType;
+  typedef typename TInputImage::PixelType  InputPixelType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
 
-  /** Image related type alias. */
-  using InputImagePointer = typename TInputImage::Pointer;
-  using OutputImagePointer = typename TOutputImage::Pointer;
+  /** Image related typedefs. */
+  typedef typename TInputImage::Pointer  InputImagePointer;
+  typedef typename TOutputImage::Pointer OutputImagePointer;
 
-  using InputSizeType = typename TInputImage::SizeType;
-  using InputIndexType = typename TInputImage::IndexType;
-  using InputImageRegionType = typename TInputImage::RegionType;
-  using OutputSizeType = typename TOutputImage::SizeType;
-  using OutputIndexType = typename TOutputImage::IndexType;
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TInputImage::SizeType    InputSizeType;
+  typedef typename TInputImage::IndexType   InputIndexType;
+  typedef typename TInputImage::RegionType  InputImageRegionType;
+  typedef typename TOutputImage::SizeType   OutputSizeType;
+  typedef typename TOutputImage::IndexType  OutputIndexType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Type of the input Sample */
-  using SampleType = TSample;
+  typedef TSample SampleType;
 
-  /** type alias from SampleType object */
-  using MeasurementType = typename SampleType::MeasurementType;
-  using MeasurementVectorType = typename SampleType::MeasurementVectorType;
+  /** typedefs from SampleType object */
+  typedef typename SampleType::MeasurementType       MeasurementType;
+  typedef typename SampleType::MeasurementVectorType MeasurementVectorType;
 
-  /** type alias for the MembershipFunction */
-  using MembershipFunctionType = MembershipFunctionBase<MeasurementVectorType>;
-  using MembershipFunctionPointer = typename MembershipFunctionType::ConstPointer;
-  using MembershipFunctionVectorType = std::vector<MembershipFunctionPointer>;
-  using MembershipFunctionVectorObjectType = SimpleDataObjectDecorator<MembershipFunctionVectorType>;
-  using MembershipFunctionVectorObjectPointer = typename MembershipFunctionVectorObjectType::Pointer;
+  /** typedef for the MembershipFunction */
+  typedef MembershipFunctionBase< MeasurementVectorType > MembershipFunctionType;
+  typedef typename MembershipFunctionType::ConstPointer   MembershipFunctionPointer;
+  typedef std::vector< MembershipFunctionPointer >        MembershipFunctionVectorType;
+  typedef SimpleDataObjectDecorator<
+    MembershipFunctionVectorType >                        MembershipFunctionVectorObjectType;
+  typedef typename
+  MembershipFunctionVectorObjectType::Pointer MembershipFunctionVectorObjectPointer;
 
-  /** type alias for membership functions weight proprtion */
-  using MembershipFunctionsWeightsArrayType = Array<double>;
+  /** typedef for membership functions weight proprtion */
+  typedef Array< double > MembershipFunctionsWeightsArrayType;
 
-  using MembershipFunctionsWeightsArrayObjectType = SimpleDataObjectDecorator<MembershipFunctionsWeightsArrayType>;
-  using MembershipFunctionsWeightsArrayPointer = typename MembershipFunctionsWeightsArrayObjectType::Pointer;
+  typedef SimpleDataObjectDecorator<
+    MembershipFunctionsWeightsArrayType >                 MembershipFunctionsWeightsArrayObjectType;
+  typedef typename
+  MembershipFunctionsWeightsArrayObjectType::Pointer MembershipFunctionsWeightsArrayPointer;
 
-  /** type alias for class label type */
-  using ClassLabelType = IdentifierType;
-  using ClassLabelVectorType = std::vector<ClassLabelType>;
-  using ClassLabelVectorObjectType = SimpleDataObjectDecorator<ClassLabelVectorType>;
-  using ClassLabelVectorObjectPointer = ClassLabelVectorObjectType::Pointer;
+  /** typedef for class label type */
+  typedef IdentifierType                ClassLabelType;
+  typedef std::vector< ClassLabelType > ClassLabelVectorType;
+  typedef SimpleDataObjectDecorator<
+    ClassLabelVectorType >                            ClassLabelVectorObjectType;
+  typedef ClassLabelVectorObjectType::Pointer ClassLabelVectorObjectPointer;
 
   /** type of the decision rule */
-  using DecisionRuleType = DecisionRule;
-  using DecisionRulePointer = DecisionRuleType::ConstPointer;
+  typedef DecisionRule                   DecisionRuleType;
+  typedef DecisionRuleType::ConstPointer DecisionRulePointer;
 
   /** Sets the input image */
-  void
-  SetImage(const InputImageType * image);
+  void SetImage(const InputImageType *image);
 
-  const InputImageType *
-  GetImage() const;
+  const InputImageType *  GetImage() const;
 
   /** Number of classes. This must match the number of labels and membership
    * functions provided by the user, otherwise an exception will be thrown at
@@ -132,40 +135,38 @@ public:
   /** Sets input vector of class labels. The length of this vector must match
    * the number of classes, otherwise an exception will be thrown at run time.
    * */
-  void
-  SetClassLabels(const ClassLabelVectorObjectType * classLabels);
+  void SetClassLabels(const ClassLabelVectorObjectType *classLabels);
 
   /** Sets input vector of membership functions. The length of this vector must match
    * the number of classes, otherwise an exception will be thrown at run time.
    * */
-  void
-  SetMembershipFunctions(const MembershipFunctionVectorObjectType * membershipFunctions);
+  void SetMembershipFunctions(const MembershipFunctionVectorObjectType *membershipFunctions);
 
   /** Sets array of weights for the membership functions */
-  void
-  SetMembershipFunctionsWeightsArray(const MembershipFunctionsWeightsArrayObjectType * weightsArray);
+  void SetMembershipFunctionsWeightsArray(const MembershipFunctionsWeightsArrayObjectType *weightsArray);
 
 protected:
   ImageClassifierFilter();
-  ~ImageClassifierFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ImageClassifierFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageClassifierFilter);
 
   /** Starts the classification process */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+
   unsigned int m_NumberOfClasses;
 
   /** Decision Rule */
   DecisionRulePointer m_DecisionRule;
-}; // end of class
+};  // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageClassifierFilter.hxx"
+#include "itkImageClassifierFilter.hxx"
 #endif
 
 #endif

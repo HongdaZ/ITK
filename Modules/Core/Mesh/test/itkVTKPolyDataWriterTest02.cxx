@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,78 +21,77 @@
 
 #include <iostream>
 
-int
-itkVTKPolyDataWriterTest02(int argc, char * argv[])
+int itkVTKPolyDataWriterTest02( int argc, char * argv [] )
 {
-  if (argc != 2)
-  {
+  if( argc != 2 )
+    {
     std::cerr << "Usage: itkVTKPolyDataWriter outputFileName" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using MeshType = itk::Mesh<float, 3>;
+  typedef itk::Mesh<float, 3>   MeshType;
 
-  using SphereMeshSourceType = itk::RegularSphereMeshSource<MeshType>;
+  typedef itk::RegularSphereMeshSource< MeshType >  SphereMeshSourceType;
 
-  SphereMeshSourceType::Pointer mySphereMeshSource = SphereMeshSourceType::New();
+  SphereMeshSourceType::Pointer  mySphereMeshSource = SphereMeshSourceType::New();
 
-  using PointType = SphereMeshSourceType::PointType;
-  using VectorType = SphereMeshSourceType::VectorType;
+  typedef SphereMeshSourceType::PointType   PointType;
+  typedef SphereMeshSourceType::VectorType  VectorType;
 
   PointType center;
-  center.Fill(7.4);
+  center.Fill( 7.4 );
 
-  constexpr double radius = 1.5;
-  const double     tolerance = 1e-5;
+  const double radius = 1.5;
+  const double tolerance = 1e-5;
 
   VectorType scale;
-  scale.Fill(radius);
+  scale.Fill( radius );
 
-  mySphereMeshSource->SetCenter(center);
-  mySphereMeshSource->SetResolution(1);
-  mySphereMeshSource->SetScale(scale);
+  mySphereMeshSource->SetCenter( center );
+  mySphereMeshSource->SetResolution( 1 );
+  mySphereMeshSource->SetScale( scale );
 
   mySphereMeshSource->Modified();
 
   try
-  {
+    {
     mySphereMeshSource->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Error during Update() " << std::endl;
     std::cerr << excp << std::endl;
-  }
+    }
 
   std::cout << "mySphereMeshSource: " << mySphereMeshSource;
 
   MeshType::Pointer myMesh = mySphereMeshSource->GetOutput();
 
   PointType pt;
-  pt.Fill(0.);
+  pt.Fill( 0. );
 
   bool testPassed = true;
 
-  std::cout << "Testing itk::RegularSphereMeshSource " << std::endl;
+  std::cout << "Testing itk::RegularSphereMeshSource "<< std::endl;
 
-  for (unsigned int i = 0; i < myMesh->GetNumberOfPoints(); i++)
-  {
+  for( unsigned int i=0; i< myMesh->GetNumberOfPoints(); i++)
+    {
     myMesh->GetPoint(i, &pt);
     std::cout << "Point[" << i << "]: " << pt << std::endl;
 
-    const double distanceToCenter = pt.EuclideanDistanceTo(center);
+    const double distanceToCenter = pt.EuclideanDistanceTo( center );
 
-    if (itk::Math::abs(distanceToCenter - radius) > tolerance)
-    {
+    if( itk::Math::abs( distanceToCenter - radius ) > tolerance )
+      {
       std::cerr << "Distance to center " << distanceToCenter;
       std::cerr << " is too different from radius " << radius << std::endl;
       testPassed = false;
+      }
     }
-  }
 
-  using CellsContainerPointer = MeshType::CellsContainerPointer;
-  using CellType = MeshType::CellType;
+  typedef MeshType::CellsContainerPointer  CellsContainerPointer;
+  typedef MeshType::CellType               CellType;
 
   CellsContainerPointer cells = myMesh->GetCells();
 
@@ -101,43 +100,44 @@ itkVTKPolyDataWriterTest02(int argc, char * argv[])
   MeshType::CellsContainerIterator cellsItr = cells->Begin();
 
 
-  while (cellsItr != cells->End())
-  {
+  while( cellsItr != cells->End() )
+    {
     CellType * cellPointer = cellsItr.Value();
 
-    if (static_cast<int>(cellPointer->GetType()) != 1)
-    {
+    if( cellPointer->GetType() != 1 )
+      {
       const unsigned int numberOfPoints = cellPointer->GetNumberOfPoints();
 
-      std::cout << "Face " << faceId << " has " << numberOfPoints << " points" << std::endl;
+      std::cout <<"Face " << faceId << " has " << numberOfPoints <<" points" << std::endl;
 
-      if (numberOfPoints != 3)
-      {
+      if( numberOfPoints != 3 )
+        {
         std::cerr << "Face with wrong number of points" << std::endl;
         testPassed = false;
+        }
       }
-    }
 
     ++cellsItr;
     ++faceId;
-  }
+    }
 
 
-  using WriterType = itk::VTKPolyDataWriter<MeshType>;
+  typedef itk::VTKPolyDataWriter<MeshType>   WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(myMesh);
-  writer->SetFileName(argv[1]);
+  writer->SetInput( myMesh  );
+  writer->SetFileName( argv[1] );
   writer->Write();
 
 
-  if (!testPassed)
-  {
-    std::cout << "Test FAILED! " << std::endl;
+  if( !testPassed )
+    {
+    std::cout << "Test FAILED! "<< std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  std::cout << "Test PASSED! " << std::endl;
+  std::cout << "Test PASSED! "<< std::endl;
 
   return EXIT_SUCCESS;
+
 }

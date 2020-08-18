@@ -34,7 +34,6 @@ itkCellInterfaceTest.cxx
 itkNewTest.cxx
 itkQuadrilateralCellTest.cxx
 itkTriangleCellTest.cxx
-itkMeshCellDataTest.cxx
 )
 
 set(ITKMesh-Test_LIBRARIES ${ITKMesh-Test_LIBRARIES})
@@ -183,7 +182,7 @@ itk_add_test(NAME itkNewTest COMMAND ITKMeshTestDriver itkNewTest)
 itk_add_test(NAME itkCellInterfaceTest COMMAND ITKMeshTestDriver itkCellInterfaceTest)
 itk_add_test(NAME itkTriangleCellTest COMMAND ITKMeshTestDriver itkTriangleCellTest)
 itk_add_test(NAME itkQuadrilateralCellTest COMMAND ITKMeshTestDriver itkQuadrilateralCellTest)
-itk_add_test(NAME itkMeshCellDataTest COMMAND ITKMeshTestDriver itkMeshCellDataTest)
+
 
 set_tests_properties(itkVTKPolyDataReaderTest2
    itkVTKPolyDataReaderBadTest0
@@ -205,3 +204,20 @@ set_tests_properties(itkVTKPolyDataReaderTest2
    itkVTKPolyDataReaderBadTest16
    itkVTKPolyDataReaderBadTest17
    PROPERTIES WILL_FAIL true)
+
+ itk_python_expression_add_test(NAME itkBYUMeshIOPythonTest
+   EXPRESSION "instance = itk.BYUMeshIO.New()")
+ itk_python_expression_add_test(NAME itkFreeSurferAsciiMeshIOPythonTest
+   EXPRESSION "instance = itk.FreeSurferAsciiMeshIO.New()")
+ itk_python_expression_add_test(NAME itkFreeSurferBinaryMeshIOPythonTest
+   EXPRESSION "instance = itk.FreeSurferBinaryMeshIO.New()")
+ itk_python_expression_add_test(NAME itkMeshFileReaderPythonTest
+   EXPRESSION "instance = itk.MeshFileReader.New()")
+ itk_python_expression_add_test(NAME itkMeshFileWriterPythonTest
+   EXPRESSION "instance = itk.MeshFileWriter.New()")
+ itk_python_expression_add_test(NAME itkOBJMeshIOPythonTest
+   EXPRESSION "instance = itk.OBJMeshIO.New()")
+ itk_python_expression_add_test(NAME itkOFFMeshIOPythonTest
+   EXPRESSION "instance = itk.OFFMeshIO.New()")
+ itk_python_expression_add_test(NAME itkVTKPolyDataMeshIOPythonTest
+   EXPRESSION "instance = itk.VTKPolyDataMeshIO.New()")

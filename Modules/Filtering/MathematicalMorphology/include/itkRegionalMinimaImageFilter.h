@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace itk
  * minima or not.  The SetFlatIsMinima() method let the user choose which
  * behavior to use.
  *
- * This class was contributed to the Insight Journal by
+ * This class was contribtued to the Insight Journal by
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
  * INRA de Jouy-en-Josas, France.
  *      https://hdl.handle.net/1926/153
@@ -44,43 +44,45 @@ namespace itk
  * \ingroup MathematicalMorphologyImageFilters
  * \ingroup ITKMathematicalMorphology
  *
- * \sphinx
- * \sphinxexample{Filtering/MathematicalMorphology/RegionalMinimal,Regional Minimal}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/RegionalMinimaImageFilter,RegionalMinimaImageFilter}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT RegionalMinimaImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT RegionalMinimaImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionalMinimaImageFilter);
+  /** Standard class typedefs. */
+  typedef RegionalMinimaImageFilter                       Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = RegionalMinimaImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageConstPointer = typename OutputImageType::ConstPointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                            InputImageType;
+  typedef TOutputImage                           OutputImageType;
+  typedef typename InputImageType::Pointer       InputImagePointer;
+  typedef typename InputImageType::ConstPointer  InputImageConstPointer;
+  typedef typename InputImageType::RegionType    InputImageRegionType;
+  typedef typename InputImageType::PixelType     InputImagePixelType;
+  typedef typename OutputImageType::Pointer      OutputImagePointer;
+  typedef typename OutputImageType::ConstPointer OutputImageConstPointer;
+  typedef typename OutputImageType::RegionType   OutputImageRegionType;
+  typedef typename OutputImageType::PixelType    OutputImagePixelType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(RegionalMinimaImageFilter, ImageToImageFilter);
+  itkTypeMacro(RegionalMinimaImageFilter,
+               ImageToImageFilter);
 
   /**
    * Set/Get whether the connected components are defined strictly by
@@ -107,7 +109,7 @@ public:
   itkGetConstMacro(BackgroundValue, OutputImagePixelType);
 
   /**
-   * Set/Get whether a flat image must be considered as a minima or not.
+   * Set/Get wether a flat image must be considered as a minima or not.
    * Defaults to true.
    */
   itkSetMacro(FlatIsMinima, bool);
@@ -116,42 +118,42 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasPixelTraitsCheck, (Concept::HasPixelTraits<InputImagePixelType>));
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputImagePixelType>));
+  itkConceptMacro( InputHasPixelTraitsCheck,
+                   ( Concept::HasPixelTraits< InputImagePixelType > ) );
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputImagePixelType > ) );
   // End concept checking
 #endif
 
 protected:
   RegionalMinimaImageFilter();
-  ~RegionalMinimaImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~RegionalMinimaImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** RegionalMinimaImageFilter needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** RegionalMinimaImageFilter will produce the entire output. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) ) ITK_OVERRIDE;
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to GrayscaleGeodesicErodeImageFilter. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
-  bool                 m_FullyConnected{ false };
-  bool                 m_FlatIsMinima{ true };
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegionalMinimaImageFilter);
+
+  bool                 m_FullyConnected;
+  bool                 m_FlatIsMinima;
   OutputImagePixelType m_ForegroundValue;
   OutputImagePixelType m_BackgroundValue;
 }; // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRegionalMinimaImageFilter.hxx"
+#include "itkRegionalMinimaImageFilter.hxx"
 #endif
 
 #endif

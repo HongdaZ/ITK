@@ -86,22 +86,22 @@ class METAIO_EXPORT MetaContour : public MetaObject
 
 public:
 
- typedef std::list<ContourControlPnt*> ControlPointListType;
- typedef std::list<ContourInterpolatedPnt*> InterpolatedPointListType;
+ typedef METAIO_STL::list<ContourControlPnt*> ControlPointListType;
+ typedef METAIO_STL::list<ContourInterpolatedPnt*> InterpolatedPointListType;
 
  MetaContour(void);
  MetaContour(const char *_headerName);
  MetaContour(const MetaContour *_Contour);
  MetaContour(unsigned int dim);
 
- ~MetaContour(void) override;
+ ~MetaContour(void) MET_OVERRIDE;
 
-  void PrintInfo(void) const override;
-  void CopyInfo(const MetaObject * _object) override;
+  void PrintInfo(void) const MET_OVERRIDE;
+  void CopyInfo(const MetaObject * _object) MET_OVERRIDE;
 
   //    NPoints(...)
   //       Required Field
-  //       Number of points which compose the tube
+  //       Number of points wich compose the tube
   int   NControlPoints(void) const;
 
   //    ControlPointDim(...)
@@ -127,7 +127,7 @@ public:
   void DisplayOrientation(int display);
   int  DisplayOrientation() const;
 
-  void  Clear(void) override;
+  void  Clear(void) MET_OVERRIDE;
 
   ControlPointListType & GetControlPoints(void)
     {return m_ControlPointsList;}
@@ -142,11 +142,11 @@ public:
 protected:
 
   bool  m_ElementByteOrderMSB;
-  void  M_Destroy(void) override;
-  void  M_SetupReadFields(void) override;
-  void  M_SetupWriteFields(void) override;
-  bool  M_Read(void) override;
-  bool  M_Write(void) override;
+  void  M_Destroy(void) MET_OVERRIDE;
+  void  M_SetupReadFields(void) MET_OVERRIDE;
+  void  M_SetupWriteFields(void) MET_OVERRIDE;
+  bool  M_Read(void) MET_OVERRIDE;
+  bool  M_Write(void) MET_OVERRIDE;
 
   int m_NControlPoints;
   int m_NInterpolatedPoints;

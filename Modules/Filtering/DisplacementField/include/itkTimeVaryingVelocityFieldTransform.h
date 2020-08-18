@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,94 +50,90 @@ namespace itk
  * \ingroup Transforms
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
-class ITK_TEMPLATE_EXPORT TimeVaryingVelocityFieldTransform
-  : public VelocityFieldTransform<TParametersValueType, NDimensions>
+template<typename TParametersValueType, unsigned int NDimensions>
+class ITK_TEMPLATE_EXPORT TimeVaryingVelocityFieldTransform :
+  public VelocityFieldTransform<TParametersValueType, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingVelocityFieldTransform);
-
-  /** Standard class type aliases. */
-  using Self = TimeVaryingVelocityFieldTransform;
-  using Superclass = VelocityFieldTransform<TParametersValueType, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef TimeVaryingVelocityFieldTransform                         Self;
+  typedef VelocityFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                        Pointer;
+  typedef SmartPointer<const Self>                                  ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(TimeVaryingVelocityFieldTransform, VelocityFieldTransform);
+  itkTypeMacro( TimeVaryingVelocityFieldTransform, VelocityFieldTransform );
 
   /** New macro for creation of through a Smart Pointer */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  typedef typename Superclass::InverseTransformBasePointer InverseTransformBasePointer;
 
   /** Interpolator types.*/
-  using InterpolatorType = typename Superclass::InterpolatorType;
-  using VelocityFieldIntegratorType = typename Superclass::VelocityFieldInterpolatorType;
+  typedef typename Superclass::InterpolatorType                     InterpolatorType;
+  typedef typename Superclass::VelocityFieldInterpolatorType        VelocityFieldIntegratorType;
 
   /** Field types. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using VelocityFieldType = typename Superclass::VelocityFieldType;
+  typedef typename Superclass::DisplacementFieldType                DisplacementFieldType;
+  typedef typename Superclass::VelocityFieldType                    VelocityFieldType;
 
-  using TimeVaryingVelocityFieldType = VelocityFieldType;
-  using TimeVaryingVelocityFieldPointer = typename VelocityFieldType::Pointer;
+  typedef VelocityFieldType                                         TimeVaryingVelocityFieldType;
+  typedef typename VelocityFieldType::Pointer                       TimeVaryingVelocityFieldPointer;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType              ScalarType;
 
   /** Type of the input parameters. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename ParametersType::ValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename FixedParametersType::ValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  typedef typename Superclass::ParametersType          ParametersType;
+  typedef typename ParametersType::ValueType           ParametersValueType;
+  typedef typename Superclass::FixedParametersType     FixedParametersType;
+  typedef typename FixedParametersType::ValueType      FixedParametersValueType;
+  typedef typename Superclass::NumberOfParametersType  NumberOfParametersType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType          DerivativeType;
 
-  using TransformPointer = typename Transform<TParametersValueType, NDimensions, NDimensions>::Pointer;
+  typedef typename Transform<TParametersValueType,NDimensions, NDimensions>::Pointer TransformPointer;
 
   /** Get the time-varying velocity field. */
-#if !defined(ITK_LEGACY_REMOVE)
-  VelocityFieldType *
-  GetTimeVaryingVelocityField()
-  {
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
+  VelocityFieldType * GetTimeVaryingVelocityField()
+    {
     return this->GetModifiableVelocityField();
-  }
+    }
 #endif
-  VelocityFieldType *
-  GetModifiableTimeVaryingVelocityField()
-  {
+  VelocityFieldType * GetModifiableTimeVaryingVelocityField()
+    {
     return this->GetModifiableVelocityField();
-  }
-  const VelocityFieldType *
-  GetTimeVaryingVelocityField() const
-  {
+    }
+  const VelocityFieldType * GetTimeVaryingVelocityField() const
+    {
     return this->GetVelocityField();
-  }
+    }
 
   /** Set the time-varying velocity field.  */
-  virtual void
-  SetTimeVaryingVelocityField(VelocityFieldType * field)
-  {
-    this->SetVelocityField(field);
-  }
+  virtual void SetTimeVaryingVelocityField( VelocityFieldType * field )
+    {
+    this->SetVelocityField( field );
+    }
 
   /** Trigger the computation of the displacement field by integrating
    * the time-varying velocity field. */
-  void
-  IntegrateVelocityField() override;
+  virtual void IntegrateVelocityField() ITK_OVERRIDE;
 
 protected:
-  TimeVaryingVelocityFieldTransform() = default;
-  ~TimeVaryingVelocityFieldTransform() override = default;
+  TimeVaryingVelocityFieldTransform();
+  virtual ~TimeVaryingVelocityFieldTransform() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingVelocityFieldTransform);
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkTimeVaryingVelocityFieldTransform.hxx"
+# include "itkTimeVaryingVelocityFieldTransform.hxx"
 #endif
 
 #endif // itkTimeVaryingVelocityFieldTransform_h

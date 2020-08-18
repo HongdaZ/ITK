@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -61,24 +61,23 @@ namespace itk
  * \ingroup ImageToImageFilter
  * \ingroup ITKDisplacementField
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT InverseDisplacementFieldImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT InverseDisplacementFieldImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InverseDisplacementFieldImageFilter);
+  /** Standard class typedefs. */
+  typedef InverseDisplacementFieldImageFilter             Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = InverseDisplacementFieldImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef TOutputImage                          OutputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,31 +86,33 @@ public:
   itkTypeMacro(InverseDisplacementFieldImageFilter, ImageToImageFilter);
 
   /** Number of dimensions. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Transform type alias.
+  /** Transform typedef.
    *
    * \todo Check that input and output images have the same number of
-   * dimensions; this is required for consistency.  */
-  using KernelTransformType = KernelTransform<double, Self::ImageDimension>;
-  using KernelTransformPointerType = typename KernelTransformType::Pointer;
+     * dimensions; this is required for consistency.  */
+  typedef KernelTransform<
+    double, itkGetStaticConstMacro(ImageDimension) > KernelTransformType;
+  typedef typename KernelTransformType::Pointer KernelTransformPointerType;
 
-  /** Image size type alias. */
-  using SizeType = typename OutputImageType::SizeType;
+  /** Image size typedef. */
+  typedef typename OutputImageType::SizeType SizeType;
 
-  /** Image index type alias. */
-  using IndexType = typename OutputImageType::IndexType;
+  /** Image index typedef. */
+  typedef typename OutputImageType::IndexType IndexType;
 
-  /** Image pixel value type alias. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputPixelComponentType = typename OutputPixelType::ValueType;
+  /** Image pixel value typedef. */
+  typedef typename TOutputImage::PixelType    OutputPixelType;
+  typedef typename OutputPixelType::ValueType OutputPixelComponentType;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
-  /** Image spacing type alias */
-  using SpacingType = typename TOutputImage::SpacingType;
-  using OriginPointType = typename TOutputImage::PointType;
+  /** Image spacing typedef */
+  typedef typename TOutputImage::SpacingType SpacingType;
+  typedef typename TOutputImage::PointType   OriginPointType;
 
   /** Get/Set the coordinate transformation.
    * Set the KernelBase spline used for resampling the displacement grid.
@@ -127,16 +128,14 @@ public:
 
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
-  virtual void
-  SetOutputSpacing(const double * values);
+  virtual void SetOutputSpacing(const double *values);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
 
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, OriginPointType);
-  virtual void
-  SetOutputOrigin(const double * values);
+  virtual void SetOutputOrigin(const double *values);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, OriginPointType);
@@ -154,60 +153,57 @@ public:
    * for GenerateOutputInformation() in order to inform the pipeline
    * execution model.  The original documentation of this method is
    * below. \sa ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** InverseDisplacementFieldImageFilter needs a different input requested region than
    * the output requested region.  As such, InverseDisplacementFieldImageFilter needs
    * to provide an implementation for GenerateInputRequestedRegion()
    * in order to inform the pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Method Compute the Modified Time based on changed to the components. */
-  ModifiedTimeType
-  GetMTime() const override;
+  ModifiedTimeType GetMTime(void) const ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputPixelComponentType>));
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< OutputPixelComponentType > ) );
   // End concept checking
 #endif
 
 protected:
   InverseDisplacementFieldImageFilter();
-  ~InverseDisplacementFieldImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~InverseDisplacementFieldImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /**
    * GenerateData() computes the internal KernelBase spline and resamples
    * the displacement field.
    */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** Subsample the input displacement field and generate the
    *  landmarks for the kernel base spline
    */
-  void
-  PrepareKernelBaseSpline();
+  void PrepareKernelBaseSpline();
 
 private:
-  SizeType                   m_Size;            // Size of the output image
-  KernelTransformPointerType m_KernelTransform; // Coordinate transform to
-                                                // use
-  SpacingType     m_OutputSpacing;              // output image spacing
-  OriginPointType m_OutputOrigin;               // output image origin
+  ITK_DISALLOW_COPY_AND_ASSIGN(InverseDisplacementFieldImageFilter);
 
-  unsigned int m_SubsamplingFactor; // factor to subsample the
-                                    // input field.
+  SizeType                   m_Size;                 // Size of the output image
+  KernelTransformPointerType m_KernelTransform;      // Coordinate transform to
+                                                     // use
+  SpacingType     m_OutputSpacing;                   // output image spacing
+  OriginPointType m_OutputOrigin;                    // output image origin
+
+  unsigned int m_SubsamplingFactor;                  // factor to subsample the
+                                                     // input field.
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkInverseDisplacementFieldImageFilter.hxx"
+#include "itkInverseDisplacementFieldImageFilter.hxx"
 #endif
 
 #endif

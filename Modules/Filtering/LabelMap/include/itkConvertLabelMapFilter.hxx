@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,27 +25,30 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ConvertLabelMapFilter<TInputImage, TOutputImage>::GenerateData()
+ConvertLabelMapFilter< TInputImage, TOutputImage >
+::GenerateData()
 {
   this->AllocateOutputs();
 
-  TOutputImage *      outputImage = this->GetOutput();
+  TOutputImage * outputImage = this->GetOutput();
   const TInputImage * inputImage = this->GetInput();
 
-  outputImage->SetBackgroundValue(inputImage->GetBackgroundValue());
+  outputImage->SetBackgroundValue( inputImage->GetBackgroundValue() );
 
-  ProgressReporter progress(this, 0, inputImage->GetNumberOfLabelObjects());
+  ProgressReporter progress( this, 0, inputImage->GetNumberOfLabelObjects() );
 
-  for (typename TInputImage::ConstIterator it(inputImage); !it.IsAtEnd(); ++it)
-  {
-    const LabelObjectType *                 labelObject = it.GetLabelObject();
+  for( typename TInputImage::ConstIterator it( inputImage );
+       ! it.IsAtEnd();
+       ++it)
+    {
+    const LabelObjectType * labelObject = it.GetLabelObject();
     typename OutputLabelObjectType::Pointer newLabelObject = OutputLabelObjectType::New();
     newLabelObject->template CopyAllFrom<typename TInputImage::LabelObjectType>(labelObject);
     outputImage->AddLabelObject(newLabelObject);
     progress.CompletedPixel();
-  }
+    }
 }
 
 } // end namespace itk

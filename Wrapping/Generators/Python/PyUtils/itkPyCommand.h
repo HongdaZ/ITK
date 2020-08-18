@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@
 // The python header defines _POSIX_C_SOURCE without a preceding #undef
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
-#include "Python.h"
+// For Python 2.7 hypot bug, see https://bugs.python.org/issue11566
+#include "PatchedPython27pyconfig.h"
+#include <Python.h>
 
 namespace itk
 {
@@ -35,7 +37,7 @@ namespace itk
  *
  * With this class, arbitrary Python callable objects (e.g. functions)
  * can be associated with an instance to be used in AddObserver calls.
- * This is analogous to itk::TclCommand, but then a tad more flexible.;)
+ * This is analogous to itk::TclCommand, but then a tad more flexible. ;)
  *
  * This class was contributed by Charl P. Botha <cpbotha |AT| ieee.org>
  */
@@ -43,13 +45,13 @@ class PyCommand : public Command
 {
 public:
   ///! Standard "Self" typedef.
-  using Self = PyCommand;
+  typedef PyCommand         Self;
 
-  ///! Smart pointer type alias support
-  using Pointer = SmartPointer<Self>;
+  ///! Smart pointer typedef support.
+  typedef SmartPointer<Self>  Pointer;
 
   ///! Run-time type information (and related methods).
-  itkTypeMacro(PyCommand, Command);
+  itkTypeMacro(PyCommand,Command);
 
   ///! Method for creation through the object factory.
   itkNewMacro(Self);
@@ -59,28 +61,22 @@ public:
    * a binding to the callable, PyCommand will also take out a reference
    * to make sure the Callable sticks around.
    */
-  void
-  SetCommandCallable(PyObject * obj);
+  void SetCommandCallable(PyObject *obj);
 
-  PyObject *
-  GetCommandCallable();
+  PyObject * GetCommandCallable();
 
-  void
-  Execute(Object *, const EventObject &);
-  void
-  Execute(const Object *, const EventObject &);
+  void Execute(Object *, const EventObject&);
+  void Execute(const Object *, const EventObject&);
 
 protected:
   PyCommand();
   ~PyCommand();
-  void
-  PyExecute();
-  PyCommand(const Self &); // Not implemented.
-  PyCommand &
-  operator=(const Self &); // Not implemented.
+  void PyExecute();
+  PyCommand(const Self&);     // Not implemented.
+  PyCommand & operator=(const Self&); // Not implemented.
 
 private:
-  PyObject * m_Object;
+  PyObject *m_Object;
 };
 
 

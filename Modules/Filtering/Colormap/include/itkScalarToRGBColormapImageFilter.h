@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,64 +19,12 @@
 #define itkScalarToRGBColormapImageFilter_h
 
 #include "itkImageToImageFilter.h"
+
 #include "itkColormapFunction.h"
-#include "ITKColormapExport.h"
 
 namespace itk
 {
-/**\class ScalarToRGBColormapImageFilterEnums
- * \brief Contains all enum classes for ScalarToRGBColormapImageFilter class
- * \ingroup ITKColormap
- */
-class ScalarToRGBColormapImageFilterEnums
-{
-public:
-  /**\class RGBColormapFilter
-   * \ingroup ITKColormap
-   * Enum type that provides for an easy interface to existing colormaps. */
-  enum class RGBColormapFilter : uint8_t
-  {
-    Red,
-    Green,
-    Blue,
-    Grey,
-    Hot,
-    Cool,
-    Spring,
-    Summer,
-    Autumn,
-    Winter,
-    Copper,
-    Jet,
-    HSV,
-    OverUnder
-  };
-};
-#if !defined(ITK_LEGACY_REMOVE)
-using RGBColormapFilterEnum = ScalarToRGBColormapImageFilterEnums::RGBColormapFilter;
-using RGBColormapFilterEnumType = ScalarToRGBColormapImageFilterEnums::RGBColormapFilter;
-// We need to expose the enum values at the class level
-// for backwards compatibility
-static constexpr RGBColormapFilterEnum Red = RGBColormapFilterEnum::Red;
-static constexpr RGBColormapFilterEnum Green = RGBColormapFilterEnum::Green;
-static constexpr RGBColormapFilterEnum Blue = RGBColormapFilterEnum::Blue;
-static constexpr RGBColormapFilterEnum Grey = RGBColormapFilterEnum::Grey;
-static constexpr RGBColormapFilterEnum Hot = RGBColormapFilterEnum::Hot;
-static constexpr RGBColormapFilterEnum Cool = RGBColormapFilterEnum::Cool;
-static constexpr RGBColormapFilterEnum Spring = RGBColormapFilterEnum::Spring;
-static constexpr RGBColormapFilterEnum Summer = RGBColormapFilterEnum::Summer;
-static constexpr RGBColormapFilterEnum Autumn = RGBColormapFilterEnum::Autumn;
-static constexpr RGBColormapFilterEnum Winter = RGBColormapFilterEnum::Winter;
-static constexpr RGBColormapFilterEnum Copper = RGBColormapFilterEnum::Copper;
-static constexpr RGBColormapFilterEnum Jet = RGBColormapFilterEnum::Jet;
-static constexpr RGBColormapFilterEnum HSV = RGBColormapFilterEnum::HSV;
-static constexpr RGBColormapFilterEnum OverUnder = RGBColormapFilterEnum::OverUnder;
-#endif
-/** Define how to print enumerations */
-extern ITKColormap_EXPORT std::ostream &
-                          operator<<(std::ostream & out, const ScalarToRGBColormapImageFilterEnums::RGBColormapFilter value);
-/**
- *\class ScalarToRGBColormapImageFilter
+/** \class ScalarToRGBColormapImageFilter
  * \brief Implements pixel-wise intensity->rgb mapping operation on one image.
  *
  * This class is parameterized over the type of the input image and
@@ -84,11 +32,11 @@ extern ITKColormap_EXPORT std::ostream &
  *
  * The input image's scalar pixel values are mapped into a color map.
  * The color map is specified by passing the SetColormap function one of the
- * predefined maps. The following selects the "RGBColormapFilterEnum::Hot" colormap:
-   \code
-   RGBFilterType::Pointer colormapImageFilter = RGBFilterType::New();
-   colormapImageFilter->SetColormap( RGBFilterType::Hot );
-   \endcode
+ * predefined maps. The following selects the "Hot" colormap:
+ * \code
+ * RGBFilterType::Pointer colormapImageFilter = RGBFilterType::New();
+ * colormapImageFilter->SetColormap( RGBFilterType::Hot );
+ * \endcode
  *
  * You can also specify a custom color map. This is done by creating
  * a CustomColormapFunction, and then creating lists of values for
@@ -96,16 +44,16 @@ extern ITKColormap_EXPORT std::ostream &
  * of a colormap with only 2 colors is given below. The blue and green channels
  * should be specified in the same manner.
  *
-   \code
-   // Create the custom colormap
-   using ColormapType = itk::Function::CustomColormapFunction<RealImageType::PixelType,
-   RGBImageType::PixelType>;
-   ColormapType::Pointer colormap = ColormapType::New();
-   // Setup the red channel of the colormap
-   ColormapType::ChannelType redChannel;
-   redChannel.push_back(0); redChannel.push_back(255);
-   colormap->SetRedChannel( channel );
-   \endcode
+ * \code
+ * // Create the custom colormap
+ * typedef itk::Function::CustomColormapFunction<RealImageType::PixelType,
+ * RGBImageType::PixelType> ColormapType;
+ * ColormapType::Pointer colormap = ColormapType::New();
+ * // Setup the red channel of the colormap
+ * ColormapType::ChannelType redChannel;
+ * redChannel.push_back(0); redChannel.push_back(255);
+ * colormap->SetRedChannel( channel );
+ * \endcode
  *
  * The range of values present in the input image is the range that is mapped to the entire
  * range of colors.
@@ -121,22 +69,20 @@ extern ITKColormap_EXPORT std::ostream &
  * \ingroup   IntensityImageFilters     MultiThreaded
  * \ingroup ITKColormap
  *
- * \sphinx
- * \sphinxexample{Filtering/Colormap/CreateACustomColormap, Create A Custom Colormap}
- * \sphinxexample{Filtering/Colormap/ApplyAColormapToAnImage,Apply A Colormap To An Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{SimpleOperations/ScalarToRGBColormapImageFilter,Apply a color map to an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ScalarToRGBColormapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT ScalarToRGBColormapImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarToRGBColormapImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ScalarToRGBColormapImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ScalarToRGBColormapImageFilter                  Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -144,48 +90,28 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ScalarToRGBColormapImageFilter, ImageToImageFilter);
 
-  /** Some type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
+  /** Some typedefs. */
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::ConstPointer InputImagePointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
+  typedef TOutputImage                          OutputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
+  typedef typename OutputImageType::PixelType   OutputImagePixelType;
 
-  using ColormapType = Function::ColormapFunction<InputImagePixelType, OutputImagePixelType>;
-
-  using RGBColormapFilterEnum = ScalarToRGBColormapImageFilterEnums::RGBColormapFilter;
-#if !defined(ITK_LEGACY_REMOVE)
-  /** Reverse compatibility for enum values */
-  using ColormapEnumType = RGBColormapFilterEnum;
-#endif
-
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr RGBColormapFilterEnum Red = RGBColormapFilterEnum::Red;
-  static constexpr RGBColormapFilterEnum Green = RGBColormapFilterEnum::Green;
-  static constexpr RGBColormapFilterEnum Blue = RGBColormapFilterEnum::Blue;
-  static constexpr RGBColormapFilterEnum Grey = RGBColormapFilterEnum::Grey;
-  static constexpr RGBColormapFilterEnum Hot = RGBColormapFilterEnum::Hot;
-  static constexpr RGBColormapFilterEnum Cool = RGBColormapFilterEnum::Cool;
-  static constexpr RGBColormapFilterEnum Spring = RGBColormapFilterEnum::Spring;
-  static constexpr RGBColormapFilterEnum Summer = RGBColormapFilterEnum::Summer;
-  static constexpr RGBColormapFilterEnum Autumn = RGBColormapFilterEnum::Autumn;
-  static constexpr RGBColormapFilterEnum Winter = RGBColormapFilterEnum::Winter;
-  static constexpr RGBColormapFilterEnum Copper = RGBColormapFilterEnum::Copper;
-  static constexpr RGBColormapFilterEnum Jet = RGBColormapFilterEnum::Jet;
-  static constexpr RGBColormapFilterEnum HSV = RGBColormapFilterEnum::HSV;
-  static constexpr RGBColormapFilterEnum OverUnder = RGBColormapFilterEnum::OverUnder;
-#endif
+  typedef Function::ColormapFunction< InputImagePixelType,
+                                    OutputImagePixelType >                                ColormapType;
 
   /** Set/Get the colormap object. */
   itkSetObjectMacro(Colormap, ColormapType);
   itkGetModifiableObjectMacro(Colormap, ColormapType);
 
-  void SetColormap(RGBColormapFilterEnum);
+  /** Enum type that provides for an easy interface to existing colormaps. */
+  typedef enum { Red, Green, Blue, Grey, Hot, Cool, Spring, Summer,
+                 Autumn, Winter, Copper, Jet, HSV, OverUnder } ColormapEnumType;
+
+  void SetColormap(ColormapEnumType);
 
   /** Set/Get UseInputImageExtremaForScaling. If true, the colormap uses the
    * min and max values from the image to scale appropriately. Otherwise,
@@ -196,49 +122,48 @@ public:
 
 protected:
   ScalarToRGBColormapImageFilter();
-  ~ScalarToRGBColormapImageFilter() override = default;
+  virtual ~ScalarToRGBColormapImageFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Overloaded method so that if the output image is a VectorImage, then
    * the correct number of components are set. */
-  void
-  GenerateOutputInformation() override
+  virtual void GenerateOutputInformation() ITK_OVERRIDE
   {
     Superclass::GenerateOutputInformation();
-    OutputImageType * output = this->GetOutput();
+    OutputImageType* output = this->GetOutput();
 
-    if (!output)
-    {
+    if ( !output )
+      {
       return;
-    }
-    if (output->GetNumberOfComponentsPerPixel() != 3)
-    {
-      output->SetNumberOfComponentsPerPixel(3);
-    }
+      }
+    if ( output->GetNumberOfComponentsPerPixel() != 3 )
+      {
+      output->SetNumberOfComponentsPerPixel( 3 );
+      }
   }
 
   /** Perform the pixel-wise mapping.
    * ScalarToRGBColormapImageFilter can be implemented as a multithreaded
    * filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData() routine
+   * Therefore, this implementation provides a ThreadedGenerateData() routine
    * which is called for each processing thread. The output image data is
    * allocated automatically by the superclass prior to calling
-   * DynamicThreadedGenerateData(). DynamicThreadedGenerateData can only write to the
+   * ThreadedGenerateData(). ThreadedGenerateData can only write to the
    * portion of the output image specified by the parameter
    * "outputRegionForThread".
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
   /** Process to execute before entering the multithreaded section. */
-  void
-  BeforeThreadedGenerateData() override;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarToRGBColormapImageFilter);
+
 private:
   typename ColormapType::Pointer m_Colormap;
 
@@ -247,7 +172,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkScalarToRGBColormapImageFilter.hxx"
+#include "itkScalarToRGBColormapImageFilter.hxx"
 #endif
 
 #endif

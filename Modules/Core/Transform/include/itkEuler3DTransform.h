@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,17 +43,16 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT Euler3DTransform : public Rigid3DTransform<TParametersValueType>
+template<typename TParametersValueType=double >
+class ITK_TEMPLATE_EXPORT Euler3DTransform :
+  public Rigid3DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Euler3DTransform);
-
-  /** Standard class type aliases. */
-  using Self = Euler3DTransform;
-  using Superclass = Rigid3DTransform<TParametersValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Euler3DTransform                       Self;
+  typedef Rigid3DTransform<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
   itkNewMacro(Self);
@@ -62,52 +61,45 @@ public:
   itkTypeMacro(Euler3DTransform, Rigid3DTransform);
 
   /** Dimension of the space. */
-  static constexpr unsigned int SpaceDimension = 3;
-  static constexpr unsigned int InputSpaceDimension = 3;
-  static constexpr unsigned int OutputSpaceDimension = 3;
-  static constexpr unsigned int ParametersDimension = 6;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 6);
 
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using ScalarType = typename Superclass::ScalarType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using MatrixType = typename Superclass::MatrixType;
-  using InverseMatrixType = typename Superclass::InverseMatrixType;
-  using CenterType = typename Superclass::CenterType;
-  using TranslationType = typename Superclass::TranslationType;
-  using OffsetType = typename Superclass::OffsetType;
-  using AngleType = typename Superclass::ScalarType;
+  typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::ParametersValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType  FixedParametersValueType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::ScalarType                ScalarType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
+  typedef typename Superclass::InputVnlVectorType        InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType       OutputVnlVectorType;
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::MatrixType                MatrixType;
+  typedef typename Superclass::InverseMatrixType         InverseMatrixType;
+  typedef typename Superclass::CenterType                CenterType;
+  typedef typename Superclass::TranslationType           TranslationType;
+  typedef typename Superclass::OffsetType                OffsetType;
+  typedef typename Superclass::ScalarType                AngleType;
 
   /** Set/Get the transformation from a container of parameters
    * This is typically used by optimizers.  There are 6 parameters. The first
    * three represent the angles to rotate around the coordinate axis, and the
    * last three represents the offset. */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
-  const ParametersType &
-  GetParameters() const override;
+  const ParametersType & GetParameters(void) const ITK_OVERRIDE;
 
-  const FixedParametersType &
-  GetFixedParameters() const override;
-  void
-  SetFixedParameters(const FixedParametersType & parameters) override;
+  const FixedParametersType & GetFixedParameters() const ITK_OVERRIDE;
+  virtual void SetFixedParameters(const FixedParametersType & parameters) ITK_OVERRIDE;
 
   /** Set the rotational part of the transform. */
-  void
-  SetRotation(ScalarType angleX, ScalarType angleY, ScalarType angleZ);
+  void SetRotation(ScalarType angleX, ScalarType angleY, ScalarType angleZ);
 
   itkGetConstMacro(AngleX, ScalarType);
   itkGetConstMacro(AngleY, ScalarType);
@@ -117,9 +109,7 @@ public:
    * given point or vector, returning the transformed point or
    * vector. The rank of the Jacobian will also indicate if the
    * transform is invertible at this point. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
-  using Superclass::ComputeJacobianWithRespectToPosition;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
   /** The Euler angle representation of a rotation is not unique and
    * depends on the order of rotations. In general there are 12
@@ -127,44 +117,40 @@ public:
    * default is ZXY. These functions set and get the value which
    * indicates whether the rotation is ZYX or ZXY.
    */
-  virtual void
-  SetComputeZYX(const bool flag);
+  virtual void SetComputeZYX (const bool flag);
   itkGetConstMacro(ComputeZYX, bool);
 
-  void
-  SetIdentity() override;
+  virtual void SetIdentity(void) ITK_OVERRIDE;
 
 protected:
   Euler3DTransform(const MatrixType & matrix, const OutputPointType & offset);
   Euler3DTransform(unsigned int paramsSpaceDims);
   Euler3DTransform();
 
-  ~Euler3DTransform() override = default;
+  ~Euler3DTransform() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Set values of angles directly without recomputing other parameters. */
-  void
-  SetVarRotation(ScalarType angleX, ScalarType angleY, ScalarType angleZ);
+  void SetVarRotation(ScalarType angleX, ScalarType angleY, ScalarType angleZ);
 
   /** Compute the components of the rotation matrix in the superclass. */
-  void
-  ComputeMatrix() override;
+  void ComputeMatrix(void) ITK_OVERRIDE;
 
-  void
-  ComputeMatrixParameters() override;
+  void ComputeMatrixParameters(void) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Euler3DTransform);
+
   ScalarType m_AngleX;
   ScalarType m_AngleY;
   ScalarType m_AngleZ;
   bool       m_ComputeZYX;
 }; // class Euler3DTransform
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEuler3DTransform.hxx"
+#include "itkEuler3DTransform.hxx"
 #endif
 
 #endif /* itkEuler3DTransform_h */

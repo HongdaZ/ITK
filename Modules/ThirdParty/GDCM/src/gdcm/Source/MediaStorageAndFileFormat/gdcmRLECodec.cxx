@@ -327,9 +327,9 @@ bool RLECodec::Code(DataElement const &in, DataElement &out)
   unsigned long image_len = bvl / dims[2];
 
   // If 16bits, need to do the padded composite...
-  char *buffer = nullptr;
+  char *buffer = 0;
   // if rgb (3 comp) need to the planar configuration
-  char *bufferrgb = nullptr;
+  char *bufferrgb = 0;
   if( GetPixelFormat().GetBitsAllocated() > 8 )
     {
     //RequestPaddedCompositePixelCode = true;
@@ -400,7 +400,7 @@ bool RLECodec::Code(DataElement const &in, DataElement &out)
         {
         assert( GetPixelFormat().GetBitsAllocated() == 16 );
         // should not happen right ?
-        DoInvertPlanarConfiguration<short>((short*)(void*)bufferrgb, (const short*)(const void*)ptr_img, (uint32_t)(image_len / sizeof(short)));
+        DoInvertPlanarConfiguration<short>((short*)bufferrgb, (const short*)ptr_img, (uint32_t)(image_len / sizeof(short)));
         }
       ptr_img = bufferrgb;
       }
@@ -903,30 +903,30 @@ public:
   memsrc( const char * data, size_t datalen ):ptr(data),cur(data),len(datalen)
     {
     }
-  int read( char * out, int l ) override
+  int read( char * out, int l )
     {
     memcpy( out, cur, l );
     cur += l;
     assert( cur <= ptr + len );
     return l;
     }
-  streampos_t tell() override
+  streampos_t tell()
     {
     assert( cur <= ptr + len );
     return (streampos_t)(cur - ptr);
     }
-  bool seek(streampos_t pos) override
+  bool seek(streampos_t pos)
     {
     cur = ptr + pos;
     assert( cur <= ptr + len && cur >= ptr );
     return true;
     }
-  bool eof() override
+  bool eof()
     {
     assert( cur <= ptr + len );
     return cur == ptr + len;
     }
-  memsrc * clone() override
+  memsrc * clone()
     {
     memsrc * ret = new memsrc( ptr, len );
     return ret;
@@ -951,12 +951,12 @@ public:
   {
   start = os.tellp();
   }
-  int write( const char * in, int len ) override
+  int write( const char * in, int len )
     {
     stream.write(in, len );
     return len;
     }
-  bool seek( streampos_t abs_pos ) override
+  bool seek( streampos_t abs_pos )
     {
     stream.seekp( abs_pos + start );
     return true;

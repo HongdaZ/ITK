@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class LabelShapeOpeningImageFilter
+/** \class LabelShapeOpeningImageFilter
  * \brief remove the objects according to the value of their shape attribute
  *
  * LabelShapeOpeningImageFilter removes the objects in a labeled image
@@ -44,55 +43,62 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT LabelShapeOpeningImageFilter : public ImageToImageFilter<TInputImage, TInputImage>
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT LabelShapeOpeningImageFilter:
+  public ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelShapeOpeningImageFilter);
+  /** Standard class typedefs. */
+  typedef LabelShapeOpeningImageFilter                   Self;
+  typedef ImageToImageFilter< TInputImage, TInputImage > Superclass;
+  typedef SmartPointer< Self >                           Pointer;
+  typedef SmartPointer< const Self >                     ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = LabelShapeOpeningImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageConstPointer = typename OutputImageType::ConstPointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                            InputImageType;
+  typedef TInputImage                            OutputImageType;
+  typedef typename InputImageType::Pointer       InputImagePointer;
+  typedef typename InputImageType::ConstPointer  InputImageConstPointer;
+  typedef typename InputImageType::RegionType    InputImageRegionType;
+  typedef typename InputImageType::PixelType     InputImagePixelType;
+  typedef typename OutputImageType::Pointer      OutputImagePointer;
+  typedef typename OutputImageType::ConstPointer OutputImageConstPointer;
+  typedef typename OutputImageType::RegionType   OutputImageRegionType;
+  typedef typename OutputImageType::PixelType    OutputImagePixelType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  using LabelObjectType = ShapeLabelObject<InputImagePixelType, Self::ImageDimension>;
-  using LabelMapType = LabelMap<LabelObjectType>;
-  using LabelizerType = LabelImageToLabelMapFilter<InputImageType, LabelMapType>;
-  using ShapeLabelFilterOutput = Image<typename OutputImageType::PixelType, Self::OutputImageDimension>;
-  using LabelObjectValuatorType = ShapeLabelMapFilter<LabelMapType, ShapeLabelFilterOutput>;
-  using AttributeType = typename LabelObjectType::AttributeType;
-  using OpeningType = ShapeOpeningLabelMapFilter<LabelMapType>;
-  using BinarizerType = LabelMapToLabelImageFilter<LabelMapType, OutputImageType>;
+  typedef ShapeLabelObject< InputImagePixelType, itkGetStaticConstMacro(ImageDimension) > LabelObjectType;
+  typedef LabelMap< LabelObjectType >                                                     LabelMapType;
+  typedef LabelImageToLabelMapFilter< InputImageType, LabelMapType >                      LabelizerType;
+  typedef Image< typename OutputImageType::PixelType, itkGetStaticConstMacro(OutputImageDimension) >
+  ShapeLabelFilterOutput;
+  typedef ShapeLabelMapFilter< LabelMapType, ShapeLabelFilterOutput > LabelObjectValuatorType;
+  typedef typename LabelObjectType::AttributeType                     AttributeType;
+  typedef ShapeOpeningLabelMapFilter< LabelMapType >                  OpeningType;
+  typedef LabelMapToLabelImageFilter< LabelMapType, OutputImageType > BinarizerType;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LabelShapeOpeningImageFilter, ImageToImageFilter);
+  itkTypeMacro(LabelShapeOpeningImageFilter,
+               ImageToImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputEqualityComparableCheck, (Concept::EqualityComparable<InputImagePixelType>));
-  itkConceptMacro(IntConvertibleToInputCheck, (Concept::Convertible<int, InputImagePixelType>));
-  itkConceptMacro(InputOStreamWritableCheck, (Concept::OStreamWritable<InputImagePixelType>));
+  itkConceptMacro( InputEqualityComparableCheck,
+                   ( Concept::EqualityComparable< InputImagePixelType > ) );
+  itkConceptMacro( IntConvertibleToInputCheck,
+                   ( Concept::Convertible< int, InputImagePixelType > ) );
+  itkConceptMacro( InputOStreamWritableCheck,
+                   ( Concept::OStreamWritable< InputImagePixelType > ) );
   // End concept checking
 #endif
 
@@ -125,34 +131,31 @@ public:
    */
   itkGetConstMacro(Attribute, AttributeType);
   itkSetMacro(Attribute, AttributeType);
-  void
-  SetAttribute(const std::string & s)
+  void SetAttribute(const std::string & s)
   {
-    this->SetAttribute(LabelObjectType::GetAttributeFromName(s));
+    this->SetAttribute( LabelObjectType::GetAttributeFromName(s) );
   }
 
 protected:
   LabelShapeOpeningImageFilter();
-  ~LabelShapeOpeningImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~LabelShapeOpeningImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** LabelShapeOpeningImageFilter needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** LabelShapeOpeningImageFilter will produce the entire output. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) ) ITK_OVERRIDE;
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to GrayscaleGeodesicErodeImageFilter. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LabelShapeOpeningImageFilter);
+
   OutputImagePixelType m_BackgroundValue;
   double               m_Lambda;
   bool                 m_ReverseOrdering;
@@ -161,7 +164,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLabelShapeOpeningImageFilter.hxx"
+#include "itkLabelShapeOpeningImageFilter.hxx"
 #endif
 
 #endif

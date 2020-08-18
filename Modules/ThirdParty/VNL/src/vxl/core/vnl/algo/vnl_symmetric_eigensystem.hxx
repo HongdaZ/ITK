@@ -13,10 +13,8 @@
 #include <cmath>
 #include <iostream>
 #include "vnl_symmetric_eigensystem.h"
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
 #include <vnl/vnl_copy.h>
 #include <vnl/vnl_math.h>
 #include <vnl/algo/vnl_netlib.h> // rs_()

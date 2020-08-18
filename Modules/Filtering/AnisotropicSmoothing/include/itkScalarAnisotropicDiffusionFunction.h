@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,43 +37,46 @@ namespace itk
  * \ingroup ImageEnhancement
  * \ingroup ITKAnisotropicSmoothing
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT ScalarAnisotropicDiffusionFunction : public AnisotropicDiffusionFunction<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT ScalarAnisotropicDiffusionFunction:
+  public AnisotropicDiffusionFunction< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarAnisotropicDiffusionFunction);
-
-  /** Standard class type aliases. */
-  using Self = ScalarAnisotropicDiffusionFunction;
-  using Superclass = AnisotropicDiffusionFunction<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ScalarAnisotropicDiffusionFunction     Self;
+  typedef AnisotropicDiffusionFunction< TImage > Superclass;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef SmartPointer< const Self >             ConstPointer;
 
   /** Inherit some parameters from the superclass type. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension);
 
   /** Inherit some parameters from the superclass type. */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  typedef typename Superclass::ImageType        ImageType;
+  typedef typename Superclass::PixelType        PixelType;
+  typedef typename Superclass::PixelRealType    PixelRealType;
+  typedef typename Superclass::RadiusType       RadiusType;
+  typedef typename Superclass::NeighborhoodType NeighborhoodType;
+  typedef typename Superclass::TimeStepType     TimeStepType;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ScalarAnisotropicDiffusionFunction, AnisotropicDiffusionFunction);
+  itkTypeMacro(ScalarAnisotropicDiffusionFunction,
+               AnisotropicDiffusionFunction);
 
-  void
-  CalculateAverageGradientMagnitudeSquared(TImage *) override;
+  virtual void CalculateAverageGradientMagnitudeSquared(TImage *) ITK_OVERRIDE;
 
 protected:
-  ScalarAnisotropicDiffusionFunction() = default;
-  ~ScalarAnisotropicDiffusionFunction() override = default;
+  ScalarAnisotropicDiffusionFunction() {}
+  ~ScalarAnisotropicDiffusionFunction() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarAnisotropicDiffusionFunction);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkScalarAnisotropicDiffusionFunction.hxx"
+#include "itkScalarAnisotropicDiffusionFunction.hxx"
 #endif
 
 #endif

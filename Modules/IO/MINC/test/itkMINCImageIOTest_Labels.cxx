@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,46 +23,45 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-int
-itkMINCImageIOTest_Labels(int argc, char * argv[])
+int itkMINCImageIOTest_Labels( int argc, char * argv [] )
 {
 
-  if (argc < 3)
-  {
+  if ( argc < 3 )
+    {
     std::cerr << "Missing Arguments " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputfile outputfile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   itk::MINCImageIOFactory::RegisterOneFactory();
 
-  using ImageType = itk::Image<unsigned char, 3>;
+  typedef itk::Image< unsigned char, 3 > ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
-  writer->SetInput(reader->GetOutput());
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
+  writer->SetInput( reader->GetOutput() );
   writer->UseCompressionOn();
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   ImageType::ConstPointer image = reader->GetOutput();
 
-  image->Print(std::cout);
+  image->Print( std::cout );
 
   return EXIT_SUCCESS;
 }

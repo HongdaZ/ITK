@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,25 +19,22 @@
 #include <iostream>
 #include "itkMembershipFunctionBase.h"
 
-namespace itk
-{
-namespace Statistics
-{
-namespace MembershipFunctionBaseTest
-{
+namespace itk {
+namespace Statistics {
+namespace MembershipFunctionBaseTest {
 
 template <typename TMeasurementVector>
-class MyMembershipFunctionBase : public MembershipFunctionBase<TMeasurementVector>
+class MyMembershipFunctionBase : public MembershipFunctionBase< TMeasurementVector >
 {
 public:
-  /** Standard class type alias. */
-  using Self = MyMembershipFunctionBase;
+  /** Standard class typedef. */
+  typedef MyMembershipFunctionBase  Self;
 
-  using Superclass = MembershipFunctionBase<TMeasurementVector>;
+  typedef MembershipFunctionBase< TMeasurementVector > Superclass;
 
-  using Pointer = SmartPointer<Self>;
+  typedef SmartPointer< Self > Pointer;
 
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Standard macros */
   itkTypeMacro(MyMembershipFunctionBase, MembershipFunctionBase);
@@ -46,30 +43,29 @@ public:
   itkNewMacro(Self);
 
   /** Evaluate membership score */
-  double
-  Evaluate(const TMeasurementVector &) const override
-  {
+  double Evaluate(const TMeasurementVector & ) const ITK_OVERRIDE
+    {
     double score;
     score = 1;
     return score;
-  }
+    }
+
 };
 
-} // namespace MembershipFunctionBaseTest
-} // namespace Statistics
-} // namespace itk
+}
+}
+}
 
 /* Test MembershipFunctionBase using a resizable vector type */
-int
-itkMembershipFunctionBaseTest2(int, char *[])
+int itkMembershipFunctionBaseTest2(int, char* [] )
 {
 
-  constexpr unsigned int MeasurementVectorSize = 3;
+  const unsigned int MeasurementVectorSize = 3;
 
-  using MeasurementVectorType = itk::Array<float>;
+  typedef itk::Array< float>  MeasurementVectorType;
 
-  using MembershipFunctionBaseType =
-    itk::Statistics::MembershipFunctionBaseTest::MyMembershipFunctionBase<MeasurementVectorType>;
+  typedef itk::Statistics::MembershipFunctionBaseTest::MyMembershipFunctionBase<
+    MeasurementVectorType >   MembershipFunctionBaseType;
 
   MembershipFunctionBaseType::Pointer function = MembershipFunctionBaseType::New();
 
@@ -78,30 +74,30 @@ itkMembershipFunctionBaseTest2(int, char *[])
 
   function->Print(std::cout);
 
-  function->SetMeasurementVectorSize(MeasurementVectorSize);
-  if (function->GetMeasurementVectorSize() != MeasurementVectorSize)
-  {
+  function->SetMeasurementVectorSize( MeasurementVectorSize );
+  if( function->GetMeasurementVectorSize() != MeasurementVectorSize )
+    {
     std::cerr << "Set/GetMeasurementVectorSize() Failed !" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  // Test if it is possible to reset the vector size
-  function->SetMeasurementVectorSize(MeasurementVectorSize);
-  if (function->GetMeasurementVectorSize() != MeasurementVectorSize)
-  {
+  //Test if it is possible to reset the vector size
+  function->SetMeasurementVectorSize( MeasurementVectorSize );
+  if( function->GetMeasurementVectorSize() != MeasurementVectorSize )
+    {
     std::cerr << "Set/GetMeasurementVectorSize() Failed !" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  // test if it is possible to change the measurement vector size
+  //test if it is possible to change the measurement vector size
   MembershipFunctionBaseType::MeasurementVectorSizeType newSize = 5;
-  function->SetMeasurementVectorSize(newSize); // for code coverage
+  function->SetMeasurementVectorSize( newSize ); // for code coverage
 
-  if (function->GetMeasurementVectorSize() != newSize)
-  {
+  if( function->GetMeasurementVectorSize() != newSize )
+    {
     std::cerr << "Set/GetMeasurementVectorSize() Failed !" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

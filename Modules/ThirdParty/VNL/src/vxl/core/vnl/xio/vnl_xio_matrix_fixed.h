@@ -24,9 +24,7 @@
 #include <string>
 #include <iosfwd>
 #include <vnl/vnl_matrix_fixed.h>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: XML save vnl_matrix_fixed to stream.
 // \relatesalso vnl_matrix_fixed

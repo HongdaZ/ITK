@@ -31,7 +31,8 @@ KAKADUCodec::KAKADUCodec()
 }
 
 KAKADUCodec::~KAKADUCodec()
-= default;
+{
+}
 
 bool KAKADUCodec::CanDecode(TransferSyntax const &ts) const
 {
@@ -236,7 +237,7 @@ bool KAKADUCodec::Code(DataElement const &in, DataElement &out)
 
 ImageCodec * KAKADUCodec::Clone() const
 {
-  return nullptr;
+  return NULL;
 }
 
 } // end namespace gdcm

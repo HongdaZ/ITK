@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ namespace network
 ULConnection::ULConnection(const ULConnectionInfo& inConnectInfo)
 {
   mCurrentState = eSta1Idle;
-  mSocket = nullptr;
-  mEcho = nullptr;
+  mSocket = NULL;
+  mEcho = NULL;
   mInfo = inConnectInfo;
 
   TransferSyntaxSub ts1;
@@ -38,15 +38,15 @@ ULConnection::ULConnection(const ULConnectionInfo& inConnectInfo)
 
 ULConnection::~ULConnection()
 {
-  if (mEcho != nullptr)
+  if (mEcho != NULL)
     {
     delete mEcho;
-    mEcho = nullptr;
+    mEcho = NULL;
     }
-  if (mSocket != nullptr)
+  if (mSocket != NULL)
     {
     delete mSocket;
-    mSocket = nullptr;
+    mSocket = NULL;
     }
 }
 
@@ -73,7 +73,7 @@ std::iostream* ULConnection::GetProtocol()
     {
     return mSocket;
     }
-  return nullptr;
+  return NULL;
 }
 
 ARTIMTimer& ULConnection::GetTimer()
@@ -109,7 +109,7 @@ void ULConnection::SetPresentationContexts(
   for( size_t i = 0; i < inContexts.size(); ++i )
     {
     PresentationContext const &in = inContexts[i];
-    mPresentationContexts.emplace_back(in );
+    mPresentationContexts.push_back( in );
     }
 }
 
@@ -164,15 +164,15 @@ bool ULConnection::InitializeConnection()
     //make sure to convert timeouts to platform appropriate values.
     (*p)->recvtimeout((int)GetTimer().GetTimeout());
     (*p)->sendtimeout((int)GetTimer().GetTimeout());
-    if (mEcho != nullptr)
+    if (mEcho != NULL)
       {
       delete mEcho;
-      mEcho = nullptr;
+      mEcho = NULL;
       }
-    if (mSocket != nullptr)
+    if (mSocket != NULL)
       {
       delete mSocket;
-      mSocket = nullptr;
+      mSocket = NULL;
       }
     mEcho = p;
     }
@@ -198,15 +198,15 @@ bool ULConnection::InitializeIncomingConnection()
 {
   try
     {
-    if (mEcho != nullptr)
+    if (mEcho != NULL)
       {
       delete mEcho;
-      mEcho = nullptr;
+      mEcho = NULL;
       }
-    if (mSocket != nullptr)
+    if (mSocket != NULL)
       {
       delete mSocket;
-      mSocket = nullptr;
+      mSocket = NULL;
       }
     sockinetbuf sin (sockbuf::sock_stream);
     // http://hea-www.harvard.edu/~fine/Tech/addrinuse.html
@@ -264,10 +264,10 @@ bool ULConnection::InitializeIncomingConnection()
 
 void ULConnection::StopProtocol()
 {
-  if (mEcho != nullptr)
+  if (mEcho != NULL)
     {
     delete mEcho;
-    mEcho = nullptr;
+    mEcho = NULL;
     SetState(eSta1Idle);
     }
   else
@@ -291,7 +291,7 @@ const PresentationContextRQ *ULConnection::GetPresentationContextRQByID(uint8_t 
       }
     }
 
-  return nullptr;
+  return NULL;
 }
 
 const PresentationContextAC *ULConnection::GetPresentationContextACByID(uint8_t id) const
@@ -307,7 +307,7 @@ const PresentationContextAC *ULConnection::GetPresentationContextACByID(uint8_t 
       }
     }
 
-  return nullptr;
+  return NULL;
 }
 
 uint8_t ULConnection::GetPresentationContextIDFromPresentationContext(PresentationContextRQ const & pc) const

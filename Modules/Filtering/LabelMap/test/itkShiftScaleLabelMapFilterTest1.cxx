@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,68 +36,65 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkShiftScaleLabelMapFilterTest1(int argc, char * argv[])
+int itkShiftScaleLabelMapFilterTest1(int argc, char * argv[])
 {
 
-  if (argc != 6)
-  {
+  if( argc != 6 )
+    {
     std::cerr << "usage: " << argv[0] << " input output shift scale change_bg" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int dim = 2;
+  const unsigned int dim = 2;
 
-  using ImageType = itk::Image<unsigned char, dim>;
+  typedef itk::Image< unsigned char, dim > ImageType;
 
-  using LabelObjectType = itk::LabelObject<unsigned char, dim>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::LabelObject< unsigned char, dim > LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >       LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using I2LType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< ImageType, LabelMapType> I2LType;
   I2LType::Pointer i2l = I2LType::New();
-  i2l->SetInput(reader->GetOutput());
+  i2l->SetInput( reader->GetOutput() );
 
-  using ChangeType = itk::ShiftScaleLabelMapFilter<LabelMapType>;
+  typedef itk::ShiftScaleLabelMapFilter< LabelMapType > ChangeType;
   ChangeType::Pointer change = ChangeType::New();
-  change->SetInput(i2l->GetOutput());
+  change->SetInput( i2l->GetOutput() );
 
-  change->SetShift(std::stod(argv[3]));
-  ITK_TEST_SET_GET_VALUE(std::stod(argv[3]), change->GetShift());
+  change->SetShift( atof( argv[3] ) );
+  TEST_SET_GET_VALUE( atof( argv[3] ), change->GetShift() );
 
-  change->SetScale(std::stod(argv[4]));
-  ITK_TEST_SET_GET_VALUE(std::stod(argv[4]), change->GetScale());
+  change->SetScale( atof( argv[4] ) );
+  TEST_SET_GET_VALUE( atof( argv[4] ), change->GetScale() );
 
 
-  const std::string        shouldChangBackgroundBoolean{ argv[5] };
-  static const std::string trueString{ "true" };
-  const bool               changeBackground = (shouldChangBackgroundBoolean == trueString) ? true : false;
-  change->SetChangeBackgroundValue(changeBackground);
-  ITK_TEST_SET_GET_VALUE(changeBackground, change->GetChangeBackgroundValue());
+  bool changeBackground = atoi( argv[5] );
+  change->SetChangeBackgroundValue( changeBackground );
+  TEST_SET_GET_VALUE( (atoi( argv[5] ) != 0), change->GetChangeBackgroundValue() );
 
   change->ChangeBackgroundValueOff();
-  ITK_TEST_SET_GET_VALUE(false, change->GetChangeBackgroundValue());
+  TEST_SET_GET_VALUE( false, change->GetChangeBackgroundValue() );
 
   change->ChangeBackgroundValueOn();
-  ITK_TEST_SET_GET_VALUE(true, change->GetChangeBackgroundValue());
+  TEST_SET_GET_VALUE( true, change->GetChangeBackgroundValue() );
 
 
   itk::SimpleFilterWatcher watcher6(change, "filter");
 
-  using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> L2IType;
   L2IType::Pointer l2i = L2IType::New();
-  l2i->SetInput(change->GetOutput());
+  l2i->SetInput( change->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(l2i->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( l2i->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

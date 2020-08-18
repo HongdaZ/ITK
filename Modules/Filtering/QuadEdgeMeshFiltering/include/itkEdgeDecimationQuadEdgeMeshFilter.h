@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,62 +36,62 @@ namespace itk
  * \brief
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template <typename TInput, typename TOutput, typename TCriterion>
-class ITK_TEMPLATE_EXPORT EdgeDecimationQuadEdgeMeshFilter
-  : public DecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>
+template< typename TInput, typename TOutput, typename TCriterion >
+class ITK_TEMPLATE_EXPORT EdgeDecimationQuadEdgeMeshFilter:
+  public DecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EdgeDecimationQuadEdgeMeshFilter);
-
-  using Self = EdgeDecimationQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = DecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>;
+  typedef EdgeDecimationQuadEdgeMeshFilter Self;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
+  typedef DecimationQuadEdgeMeshFilter<
+    TInput, TOutput, TCriterion >          Superclass;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(EdgeDecimationQuadEdgeMeshFilter, DecimationQuadEdgeMeshFilter);
 
-  using InputMeshType = TInput;
-  using InputMeshPointer = typename InputMeshType::Pointer;
+  typedef TInput                          InputMeshType;
+  typedef typename InputMeshType::Pointer InputMeshPointer;
 
-  using OutputMeshType = TOutput;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputVectorType = typename OutputPointType::VectorType;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputEdgeCellType = typename OutputMeshType::EdgeCellType;
-  using OutputCellType = typename OutputMeshType::CellType;
-  using OutputCellIdentifier = typename OutputMeshType::CellIdentifier;
-  using OutputCellsContainerPointer = typename OutputMeshType::CellsContainerPointer;
-  using OutputCellsContainerIterator = typename OutputMeshType::CellsContainerIterator;
+  typedef TOutput                                         OutputMeshType;
+  typedef typename OutputMeshType::Pointer                OutputMeshPointer;
+  typedef typename OutputMeshType::PointIdentifier        OutputPointIdentifier;
+  typedef typename OutputMeshType::PointType              OutputPointType;
+  typedef typename OutputPointType::VectorType            OutputVectorType;
+  typedef typename OutputMeshType::QEType                 OutputQEType;
+  typedef typename OutputMeshType::EdgeCellType           OutputEdgeCellType;
+  typedef typename OutputMeshType::CellType               OutputCellType;
+  typedef typename OutputMeshType::CellIdentifier         OutputCellIdentifier;
+  typedef typename OutputMeshType::CellsContainerPointer  OutputCellsContainerPointer;
+  typedef typename OutputMeshType::CellsContainerIterator OutputCellsContainerIterator;
 
-  using OutputPolygonType = QuadEdgeMeshPolygonCell<OutputCellType>;
+  typedef QuadEdgeMeshPolygonCell< OutputCellType > OutputPolygonType;
 
-  using CriterionType = TCriterion;
-  using CriterionPointer = typename CriterionType::Pointer;
-  using MeasureType = typename CriterionType::MeasureType;
-  using PriorityType = typename CriterionType::PriorityType;
-  using PriorityQueueItemType = typename CriterionType::PriorityQueueWrapperType;
+  typedef TCriterion                                       CriterionType;
+  typedef typename CriterionType::Pointer                  CriterionPointer;
+  typedef typename CriterionType::MeasureType              MeasureType;
+  typedef typename CriterionType::PriorityType             PriorityType;
+  typedef typename CriterionType::PriorityQueueWrapperType PriorityQueueItemType;
 
-  using PriorityQueueType = PriorityQueueContainer<PriorityQueueItemType *,
-                                                   ElementWrapperPointerInterface<PriorityQueueItemType *>,
-                                                   PriorityType>;
-  using PriorityQueuePointer = typename PriorityQueueType::Pointer;
+  typedef PriorityQueueContainer< PriorityQueueItemType *,
+                                  ElementWrapperPointerInterface< PriorityQueueItemType * >,
+                                  PriorityType >                                          PriorityQueueType;
+  typedef typename PriorityQueueType::Pointer PriorityQueuePointer;
 
-  using QueueMapType = std::map<OutputQEType *, PriorityQueueItemType *>;
-  using QueueMapConstIterator = typename QueueMapType::const_iterator;
-  using QueueMapIterator = typename QueueMapType::iterator;
+  typedef std::map< OutputQEType *, PriorityQueueItemType * > QueueMapType;
+  typedef typename QueueMapType::const_iterator               QueueMapConstIterator;
+  typedef typename QueueMapType::iterator                     QueueMapIterator;
 
-  using OperatorType = QuadEdgeMeshEulerOperatorJoinVertexFunction<OutputMeshType, OutputQEType>;
-  using OperatorPointer = typename OperatorType::Pointer;
+  typedef QuadEdgeMeshEulerOperatorJoinVertexFunction< OutputMeshType, OutputQEType > OperatorType;
+  typedef typename OperatorType::Pointer                                              OperatorPointer;
 
 protected:
-  EdgeDecimationQuadEdgeMeshFilter();
-  ~EdgeDecimationQuadEdgeMeshFilter() override;
 
-  bool m_Relocate{ true };
-  bool m_CheckOrientation{ false };
+  EdgeDecimationQuadEdgeMeshFilter();
+  virtual ~EdgeDecimationQuadEdgeMeshFilter() ITK_OVERRIDE;
+
+  bool m_Relocate;
+  bool m_CheckOrientation;
 
   PriorityQueuePointer m_PriorityQueue;
   QueueMapType         m_QueueMapper;
@@ -100,155 +100,144 @@ protected:
   OperatorPointer      m_JoinVertexFunction;
 
   /**
-   * \brief Compute the measure value for iEdge
-   * \param[in] iEdge
-   * \return measure value
-   */
-  virtual MeasureType
-  MeasureEdge(OutputQEType * iEdge) = 0;
+  * \brief Compute the measure value for iEdge
+  * \param[in] iEdge
+  * \return measure value
+  */
+  virtual MeasureType MeasureEdge(OutputQEType *iEdge) = 0;
 
   /**
-   * \brief Fill the priority queue
-   */
-  void
-  FillPriorityQueue() override;
+  * \brief Fill the priority queue
+  */
+  void FillPriorityQueue() ITK_OVERRIDE;
 
   /**
-   * \brief Push one edge in the priority queue
-   * \param[in] iEdge
-   */
-  void
-  PushElement(OutputQEType * iEdge);
+  * \brief Push one edge in the priority queue
+  * \param[in] iEdge
+  */
+  void PushElement(OutputQEType *iEdge);
 
   /**
-   * \brief Check if iEdge is valid and then can be processed
-   * \param[in] iEdge
-   * \return
-   */
-  bool
-  IsEdgeOKToBeProcessed(OutputQEType * iEdge);
+  * \brief Check if iEdge is valid and then can be processed
+  * \param[in] iEdge
+  * \return
+  */
+  bool IsEdgeOKToBeProcessed(OutputQEType *iEdge);
 
   /**
-   * \brief Extract the edge to be processed
-   */
-  void
-  Extract() override;
+  * \brief Extract the edge to be processed
+  */
+  void Extract() ITK_OVERRIDE;
 
   /**
-   * \brief Delete a given edge in the priority queue
-   * \param[in] iEdge
-   */
-  void
-  DeleteElement(OutputQEType * iEdge);
+  * \brief Delete a given edge in the priority queue
+  * \param[in] iEdge
+  */
+  void DeleteElement(OutputQEType *iEdge);
 
-  virtual void
-  DeletePoint(const OutputPointIdentifier & iIdToBeDeleted, const OutputPointIdentifier & iRemaing);
-
-  /**
-   * \brief Push iEdge in the priority queue if it is not already, else
-   * its corresponding priority value is updated.
-   * \param[in] iEdge
-   */
-  virtual void
-  PushOrUpdateElement(OutputQEType * iEdge);
+  virtual void DeletePoint(const OutputPointIdentifier & iIdToBeDeleted,
+                           const OutputPointIdentifier & iRemaing);
 
   /**
-   * \brief
-   */
-  virtual void
-  JoinVertexFailed();
+  * \brief Push iEdge in the priority queue if it is not already, else
+  * its corresponding priority value is updated.
+  * \param[in] iEdge
+  */
+  virtual void PushOrUpdateElement(OutputQEType *iEdge);
 
   /**
-   * \brief
-   */
-  bool
-  ProcessWithoutAnyTopologicalGuarantee() override;
+  * \brief
+  */
+  virtual void JoinVertexFailed();
 
   /**
-   * \brief
-   * \return
-   */
-  virtual unsigned int
-  CheckQEProcessingStatus();
+  * \brief
+  */
+  virtual bool ProcessWithoutAnyTopologicalGuarantee() ITK_OVERRIDE;
 
   /**
-   * \brief
-   * \return
-   */
-  bool
-  ProcessWithTopologicalGuarantee() override;
+  * \brief
+  * \return
+  */
+  virtual unsigned int CheckQEProcessingStatus();
 
   /**
-   * \brief
-   */
-  SizeValueType
-  NumberOfCommonVerticesIn0Ring() const;
+  * \brief
+  * \return
+  */
+  virtual bool ProcessWithTopologicalGuarantee() ITK_OVERRIDE;
 
   /**
-   * \brief
-   */
-  void
-  RemoveSamosa();
+  * \brief
+  */
+  SizeValueType NumberOfCommonVerticesIn0Ring() const;
 
   /**
-   * \brief
-   * \param[in] iEdge
-   */
-  void
-  TagElementOut(OutputQEType * iEdge);
+  * \brief
+  */
+  void RemoveSamosa();
 
   /**
-   * \brief
-   */
-  void
-  RemoveEye();
+  * \brief
+  * \param[in] iEdge
+  */
+  void TagElementOut(OutputQEType *iEdge);
 
   /**
-   * \brief
-   * \param[in] iEdge (the one which will be merged)
-   * \return the new location of merged points
-   */
-  virtual OutputPointType
-  Relocate(OutputQEType * iEdge) = 0;
+  * \brief
+  */
+  void RemoveEye();
 
   /**
-   * \brief
-   * \todo Finish to implement this method!
-   */
-  bool
-  CheckOrientation(OutputQEType * iEdge, const OutputPointIdentifier & iId, const OutputPointType & iPt)
+  * \brief
+  * \param[in] iEdge (the one which will be merged)
+  * \return the new location of merged points
+  */
+  virtual OutputPointType Relocate(OutputQEType *iEdge) = 0;
+
+  /**
+  * \brief
+  * \todo Finish to implement this method!
+  */
+  bool CheckOrientation(OutputQEType *iEdge,
+                        const OutputPointIdentifier & iId,
+                        const OutputPointType & iPt)
   {
     OutputMeshPointer           output = this->GetOutput();
     OutputCellsContainerPointer cells = output->GetCells();
 
-    std::list<OutputCellIdentifier> r1, r2, elements_to_be_tested;
-    OutputQEType *                  qe = iEdge;
-    OutputQEType *                  qe_it = qe->GetOnext();
+    std::list< OutputCellIdentifier > r1, r2, elements_to_be_tested;
+    OutputQEType *                    qe = iEdge;
+    OutputQEType *                    qe_it = qe->GetOnext();
 
     do
-    {
-      r1.push_back(qe_it->GetLeft());
+      {
+      r1.push_back( qe_it->GetLeft() );
       qe_it = qe_it->GetOnext();
-    } while (qe_it != qe);
+      }
+    while ( qe_it != qe );
 
     qe = iEdge->GetSym();
     qe_it = qe->GetOnext();
 
     do
-    {
-      r2.push_back(qe_it->GetLeft());
+      {
+      r2.push_back( qe_it->GetLeft() );
       qe_it = qe_it->GetOnext();
-    } while (qe_it != qe);
+      }
+    while ( qe_it != qe );
 
     r1.sort();
     r2.sort();
 
-    std::set_symmetric_difference(
-      r1.begin(), r1.end(), r2.begin(), r2.end(), std::back_inserter(elements_to_be_tested));
+    std::set_symmetric_difference( r1.begin(), r1.end(),
+                                   r2.begin(), r2.end(),
+                                   std::back_inserter(elements_to_be_tested) );
 
-    typename std::list<OutputCellIdentifier>::iterator it = elements_to_be_tested.begin();
+    typename std::list< OutputCellIdentifier >::iterator
+    it = elements_to_be_tested.begin();
 
-    using TriangleType = TriangleHelper<OutputPointType>;
+    typedef TriangleHelper< OutputPointType > TriangleType;
 
     bool                  orientation_ok(true);
     OutputCellIdentifier  c_id(0);
@@ -260,29 +249,30 @@ protected:
 
     OutputVectorType n_bef, n_aft;
 
-    while ((it != elements_to_be_tested.end()) && orientation_ok)
-    {
+    while ( ( it != elements_to_be_tested.end() ) && orientation_ok )
+      {
       c_id = *it;
-      poly = dynamic_cast<OutputPolygonType *>(cells->GetElement(c_id));
+      poly = dynamic_cast< OutputPolygonType * >( cells->GetElement(c_id) );
 
       qe = poly->GetEdgeRingEntry();
       qe_it = qe;
       k = 0;
 
       do
-      {
-        p_id = qe_it->GetOrigin();
-        if (p_id == iId)
         {
+        p_id = qe_it->GetOrigin();
+        if ( p_id == iId )
+          {
           replace_k = k;
-        }
+          }
         pt[k++] = output->GetPoint(p_id);
         qe_it = qe_it->GetLnext();
-      } while (qe_it != qe);
+        }
+      while ( qe_it != qe );
 
       n_bef = TriangleType::ComputeNormal(pt[0], pt[1], pt[2]);
-      switch (replace_k)
-      {
+      switch ( replace_k )
+        {
         default:
         case 0:
           n_aft = TriangleType::ComputeNormal(iPt, pt[1], pt[2]);
@@ -293,11 +283,11 @@ protected:
         case 2:
           n_aft = TriangleType::ComputeNormal(pt[0], pt[1], iPt);
           break;
-      }
+        }
 
-      orientation_ok = (n_bef * n_aft) < 0.;
+      orientation_ok = ( n_bef * n_aft ) < 0.;
       ++it;
-    }
+      }
 
     return orientation_ok;
   }
@@ -306,10 +296,14 @@ protected:
    * \brief
    * \return
    */
-  bool
-  IsCriterionSatisfied() override;
+  bool IsCriterionSatisfied() ITK_OVERRIDE;
+
+private:
+  EdgeDecimationQuadEdgeMeshFilter(const Self &);
+  void operator=(const Self &);
+
 };
-} // namespace itk
+}
 
 #include "itkEdgeDecimationQuadEdgeMeshFilter.hxx"
 #endif

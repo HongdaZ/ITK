@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,28 +38,27 @@ namespace itk
  * \ingroup MeshFilters
  * \ingroup ITKMesh
  */
-template <typename TInputMesh, typename TOutputMesh, typename TTransform>
-class ITK_TEMPLATE_EXPORT TransformMeshFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh, typename TTransform >
+class ITK_TEMPLATE_EXPORT TransformMeshFilter:
+  public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformMeshFilter);
+  /** Standard class typedefs. */
+  typedef TransformMeshFilter                         Self;
+  typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = TransformMeshFilter;
-  using Superclass = MeshToMeshFilter<TInputMesh, TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using InputMeshType = TInputMesh;
-  using OutputMeshType = TOutputMesh;
-  using InputMeshPointer = typename InputMeshType::Pointer;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
+  typedef TInputMesh                       InputMeshType;
+  typedef TOutputMesh                      OutputMeshType;
+  typedef typename InputMeshType::Pointer  InputMeshPointer;
+  typedef typename OutputMeshType::Pointer OutputMeshPointer;
 
   /** Type for representing coordinates. */
-  using CoordRepType = typename TInputMesh::CoordRepType;
+  typedef typename TInputMesh::CoordRepType CoordRepType;
 
   /** Type of the transform. */
-  using TransformType = TTransform;
+  typedef TTransform TransformType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,21 +72,22 @@ public:
 
 protected:
   TransformMeshFilter();
-  ~TransformMeshFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~TransformMeshFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate Requested Data */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Transform to apply to all the mesh points. */
   typename TransformType::Pointer m_Transform;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TransformMeshFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkTransformMeshFilter.hxx"
+#include "itkTransformMeshFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,14 +23,18 @@ namespace itk
 {
 OpenCVVideoIOFactory::OpenCVVideoIOFactory()
 {
-  this->RegisterOverride(
-    "itkVideoIOBase", "itkOpenCVVideoIO", "OpenCV Video IO", 1, CreateObjectFunction<OpenCVVideoIO>::New());
+  this->RegisterOverride( "itkVideoIOBase",
+                          "itkOpenCVVideoIO",
+                          "OpenCV Video IO",
+                          1,
+                          CreateObjectFunction< OpenCVVideoIO >::New() );
 }
 
-OpenCVVideoIOFactory::~OpenCVVideoIOFactory() {}
+OpenCVVideoIOFactory::~OpenCVVideoIOFactory()
+{}
 
 const char *
-OpenCVVideoIOFactory::GetITKSourceVersion() const
+OpenCVVideoIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -46,14 +50,13 @@ OpenCVVideoIOFactory::GetDescription() const
 
 static bool OpenCVVideoIOFactoryHasBeenRegistered;
 
-void
-OpenCVVideoIOFactoryRegister__Private()
+void OpenCVVideoIOFactoryRegister__Private(void)
 {
-  if (!OpenCVVideoIOFactoryHasBeenRegistered)
-  {
+  if( ! OpenCVVideoIOFactoryHasBeenRegistered )
+    {
     OpenCVVideoIOFactoryHasBeenRegistered = true;
     OpenCVVideoIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

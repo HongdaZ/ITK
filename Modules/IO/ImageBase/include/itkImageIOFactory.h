@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 
 #include "itkObject.h"
 #include "itkImageIOBase.h"
-#include "ITKIOImageBaseExport.h"
 
 namespace itk
 {
@@ -29,44 +28,37 @@ namespace itk
  * \brief Create instances of ImageIO objects using an object factory.
  * \ingroup ITKIOImageBase
  */
-class ITKIOImageBase_EXPORT ImageIOFactory : public Object
+class ITKIOImageBase_EXPORT ImageIOFactory:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = ImageIOFactory;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageIOFactory             Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class Methods used to interface with the registered factories */
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageIOFactory, Object);
 
-  /** Convenient type alias. */
-  using ImageIOBasePointer = ::itk::ImageIOBase::Pointer;
+  /** Convenient typedefs. */
+  typedef::itk::ImageIOBase::Pointer ImageIOBasePointer;
 
-  using IOFileModeEnum = itk::IOFileModeEnum;
-#if !defined(ITK_LEGACY_REMOVE)
-  using FileModeEnum = itk::IOFileModeEnum;
-  using FileModeType = IOFileModeEnum;
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr IOFileModeEnum ReadMode = IOFileModeEnum::ReadMode;
-  static constexpr IOFileModeEnum WriteMode = IOFileModeEnum::WriteMode;
-#endif
+  /** Mode in which the files is intended to be used */
+  typedef enum { ReadMode, WriteMode } FileModeType;
+
   /** Create the appropriate ImageIO depending on the particulars of the file.
-   */
-  static ImageIOBasePointer
-  CreateImageIO(const char * path, IOFileModeEnum mode);
+    */
+  static ImageIOBasePointer CreateImageIO(const char *path, FileModeType mode);
 
 protected:
   ImageIOFactory();
-  ~ImageIOFactory() override;
-};
+  ~ImageIOFactory() ITK_OVERRIDE;
 
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageIOFactory);
+};
 } // end namespace itk
 
 #endif

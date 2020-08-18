@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,17 +43,16 @@ namespace itk
  * \sa VersorRigid3DTransform
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT Similarity3DTransform : public VersorRigid3DTransform<TParametersValueType>
+template<typename TParametersValueType=double>
+class ITK_TEMPLATE_EXPORT Similarity3DTransform :
+  public VersorRigid3DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Similarity3DTransform);
-
-  /** Standard class type aliases. */
-  using Self = Similarity3DTransform;
-  using Superclass = VersorRigid3DTransform<TParametersValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Similarity3DTransform                        Self;
+  typedef VersorRigid3DTransform<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
   itkNewMacro(Self);
@@ -62,41 +61,38 @@ public:
   itkTypeMacro(Similarity3DTransform, VersorRigid3DTransform);
 
   /** Dimension of parameters. */
-  static constexpr unsigned int SpaceDimension = 3;
-  static constexpr unsigned int InputSpaceDimension = 3;
-  static constexpr unsigned int OutputSpaceDimension = 3;
-  static constexpr unsigned int ParametersDimension = 7;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 7);
 
   /** Parameters Type   */
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using ScalarType = typename Superclass::ScalarType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using MatrixType = typename Superclass::MatrixType;
-  using InverseMatrixType = typename Superclass::InverseMatrixType;
-  using CenterType = typename Superclass::CenterType;
-  using OffsetType = typename Superclass::OffsetType;
-  using TranslationType = typename Superclass::TranslationType;
+  typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::ScalarType                ScalarType;
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputVnlVectorType        InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType       OutputVnlVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
+  typedef typename Superclass::MatrixType                MatrixType;
+  typedef typename Superclass::InverseMatrixType         InverseMatrixType;
+  typedef typename Superclass::CenterType                CenterType;
+  typedef typename Superclass::OffsetType                OffsetType;
+  typedef typename Superclass::TranslationType           TranslationType;
 
   /** Versor type. */
-  using VersorType = typename Superclass::VersorType;
-  using AxisType = typename Superclass::AxisType;
-  using AngleType = typename Superclass::AngleType;
-  using ScaleType = TParametersValueType;
+  typedef typename Superclass::VersorType VersorType;
+  typedef typename Superclass::AxisType   AxisType;
+  typedef typename Superclass::AngleType  AngleType;
+  typedef          TParametersValueType   ScaleType;
 
   /** Set the parameters to the IdentityTransform */
-  void
-  SetIdentity() override;
+  virtual void SetIdentity(void) ITK_OVERRIDE;
 
   /** Directly set the rotation matrix of the transform.
    *
@@ -104,8 +100,7 @@ public:
    * to within a specified tolerance, else an exception is thrown.
    *
    * \sa MatrixOffsetTransformBase::SetMatrix() */
-  void
-  SetMatrix(const MatrixType & matrix) override;
+  virtual void SetMatrix(const MatrixType & matrix) ITK_OVERRIDE;
 
   /** Directly set the rotation matrix of the transform.
    *
@@ -113,22 +108,18 @@ public:
    * to within the specified tolerance, else an exception is thrown.
    *
    * \sa MatrixOffsetTransformBase::SetMatrix() */
-  void
-  SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance) override;
+  virtual void SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance) ITK_OVERRIDE;
 
   /** Set the transformation from a container of parameters This is typically
    * used by optimizers.  There are 7 parameters. The first three represent the
    * versor, the next three represent the translation and the last one
    * represents the scaling factor. */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
-  const ParametersType &
-  GetParameters() const override;
+  virtual const ParametersType & GetParameters(void) const ITK_OVERRIDE;
 
   /** Set/Get the value of the isotropic scaling factor */
-  void
-  SetScale(ScaleType scale);
+  void SetScale(ScaleType scale);
 
   itkGetConstReferenceMacro(Scale, ScaleType);
 
@@ -136,34 +127,32 @@ public:
    * given point or vector, returning the transformed point or
    * vector. The rank of the Jacobian will also indicate if the
    * transform is invertible at this point. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
 protected:
   Similarity3DTransform(const MatrixType & matrix, const OutputVectorType & offset);
   Similarity3DTransform(unsigned int paramDim);
   Similarity3DTransform();
-  ~Similarity3DTransform() override = default;
+  ~Similarity3DTransform() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Recomputes the matrix by calling the Superclass::ComputeMatrix() and then
    * applying the scale factor. */
-  void
-  ComputeMatrix() override;
+  void ComputeMatrix() ITK_OVERRIDE;
 
   /** Computes the parameters from an input matrix. */
-  void
-  ComputeMatrixParameters() override;
+  void ComputeMatrixParameters() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Similarity3DTransform);
+
   ScaleType m_Scale;
 }; // class Similarity3DTransform
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSimilarity3DTransform.hxx"
+#include "itkSimilarity3DTransform.hxx"
 #endif
 
 #endif /* itkSimilarity3DTransform_h */

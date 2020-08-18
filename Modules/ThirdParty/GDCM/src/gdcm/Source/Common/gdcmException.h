@@ -54,9 +54,9 @@ class Exception : public std::exception
                                  const unsigned int lineNumber,
                                  const char* const func)
   {
-    assert(desc != nullptr);
-    assert(file != nullptr);
-    assert(func != nullptr);
+    assert(desc != NULL);
+    assert(file != NULL);
+    assert(func != NULL);
     std::ostringstream oswhat;
     oswhat << file << ":" << lineNumber << " (" << func << "):\n";
     oswhat << desc;
@@ -80,10 +80,10 @@ public:
   {
   }
 
-  ~Exception() throw() override {}
+  virtual ~Exception() throw() {}
 
   /// what implementation
-  const char* what() const throw() override
+  const char* what() const throw()
     {
     return What.what();
     }

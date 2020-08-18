@@ -45,17 +45,17 @@ public:
   SequenceOfFragments():Table(),SequenceLengthField(0xFFFFFFFF) { }
 
   /// \brief Returns the SQ length, as read from disk
-  VL GetLength() const override {
+  VL GetLength() const {
     return SequenceLengthField;
   }
 
   /// \brief Sets the actual SQ length
-  void SetLength(VL length) override {
+  void SetLength(VL length) {
     SequenceLengthField = length;
   }
 
   /// \brief Clear
-  void Clear() override;
+  void Clear();
 
   /// \brief Appends a Fragment to the already added ones
   void AddFragment(Fragment const &item);
@@ -294,7 +294,7 @@ std::ostream const &Write(std::ostream &os) const
 
 protected:
 public:
-  void Print(std::ostream &os) const override {
+  void Print(std::ostream &os) const {
     os << "SQ L= " << SequenceLengthField << "\n";
     os << "Table:" << Table << "\n";
     for(ConstIterator it = Begin();it != End(); ++it)
@@ -309,7 +309,7 @@ public:
       os << "\t" << zero;
       }
   }
-  bool operator==(const Value &val) const override
+  bool operator==(const Value &val) const
     {
     const SequenceOfFragments &sqf = dynamic_cast<const SequenceOfFragments&>(val);
     return Table == sqf.Table &&

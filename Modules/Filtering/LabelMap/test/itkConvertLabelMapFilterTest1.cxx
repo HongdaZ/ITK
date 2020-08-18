@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,51 +23,50 @@
 #include "itkTestingMacros.h"
 #include "itkSimpleFilterWatcher.h"
 
-int
-itkConvertLabelMapFilterTest1(int argc, char * argv[])
+int itkConvertLabelMapFilterTest1(int argc, char * argv[])
 {
-  if (argc != 3)
-  {
+  if( argc != 3 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputLabelImage outputLabelImage";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int dim = 2;
+  const unsigned int dim = 2;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, dim>;
+  typedef itk::Image< PixelType, dim > ImageType;
 
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using L2SType = itk::LabelImageToShapeLabelMapFilter<ImageType>;
+  typedef itk::LabelImageToShapeLabelMapFilter< ImageType > L2SType;
   L2SType::Pointer l2s = L2SType::New();
-  l2s->SetInput(reader->GetOutput());
+  l2s->SetInput( reader->GetOutput() );
 
-  using LabelObjectType = itk::LabelObject<PixelType, dim>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::LabelObject< PixelType, dim >     LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >       LabelMapType;
 
-  using CastType = itk::ConvertLabelMapFilter<L2SType::OutputImageType, LabelMapType>;
+  typedef itk::ConvertLabelMapFilter< L2SType::OutputImageType, LabelMapType > CastType;
   CastType::Pointer cast = CastType::New();
-  cast->SetInput(l2s->GetOutput());
+  cast->SetInput( l2s->GetOutput() );
   itk::SimpleFilterWatcher watcher(cast, "cast");
 
-  using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> L2IType;
   L2IType::Pointer l2i = L2IType::New();
-  l2i->SetInput(cast->GetOutput());
+  l2i->SetInput( cast->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(l2i->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( l2i->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   // for visual validation
   std::cout << " ============ original label map ============" << std::endl;

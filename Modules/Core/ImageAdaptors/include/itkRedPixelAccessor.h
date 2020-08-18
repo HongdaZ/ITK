@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class RedPixelAccessor
+/** \class RedPixelAccessor
  * \brief Give access to the red component of a RGBPixel type.
  *
  * This class is intended to be used as parameter of
@@ -35,47 +34,43 @@ namespace itk
  * \ingroup ITKImageAdaptors
  */
 
-template <typename T>
+template< typename T >
 class RedPixelAccessor
 {
 public:
-  /** Standard class type aliases. */
-  using Self = RedPixelAccessor;
+  /** Standard class typedefs. */
+  typedef   RedPixelAccessor Self;
 
-  /** External type alias. It defines the external aspect
-   * that this class will exhibit */
-  using ExternalType = T;
+  /** External typedef. It defines the external aspect
+    * that this class will exhibit */
+  typedef T ExternalType;
 
-  /** Internal type alias. It defines the internal real
+  /** Internal typedef. It defines the internal real
    * representation of data */
-  using InternalType = RGBPixel<T>;
+  typedef     RGBPixel< T > InternalType;
 
   /** Write access to the Red component */
-  inline void
-  Set(InternalType & output, const ExternalType & input) const
+  inline void Set(InternalType & output, const ExternalType & input) const
   {
     output.SetRed(input);
   }
 
   /** Read access to the Red component */
-  inline const ExternalType &
-  Get(const InternalType & input) const
+  inline const ExternalType & Get(const InternalType & input) const
   {
     return input.GetRed();
   }
 
-  bool
-  operator!=(const Self &) const
+  bool operator!=(const Self &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Self & other) const
+  bool operator==(const Self & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 };
-} // end namespace itk
+}  // end namespace itk
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,34 +26,33 @@
 
 #include "itkTestingMacros.h"
 
-int
-itkAttributeRelabelLabelMapFilterTest1(int argc, char * argv[])
+int itkAttributeRelabelLabelMapFilterTest1(int argc, char * argv[])
 {
-  if (argc != 4)
-  {
+  if( argc != 4 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " input output";
     std::cerr << " reverseOrdering(0/1)";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int dim = 3;
+  const unsigned int dim = 3;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, dim>;
+  typedef itk::Image< PixelType, dim > ImageType;
 
-  using LabelObjectType = itk::AttributeLabelObject<PixelType, dim, int>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::AttributeLabelObject< PixelType, dim, int >      LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >                      LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using I2LType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< ImageType, LabelMapType> I2LType;
   I2LType::Pointer i2l = I2LType::New();
-  i2l->SetInput(reader->GetOutput());
+  i2l->SetInput( reader->GetOutput() );
 
 
   // The next step is made outside the pipeline model, so we call Update() now.
@@ -64,44 +63,44 @@ itkAttributeRelabelLabelMapFilterTest1(int argc, char * argv[])
   LabelMapType::Pointer labelMap = i2l->GetOutput();
 
   int pos = 0;
-  for (LabelMapType::Iterator it(labelMap); !it.IsAtEnd(); ++it)
-  {
+  for( LabelMapType::Iterator it(labelMap); !it.IsAtEnd(); ++it )
+    {
     LabelObjectType * labelObject = it.GetLabelObject();
-    labelObject->SetAttribute(pos++);
-  }
+    labelObject->SetAttribute( pos++ );
+    }
 
 
-  using LabelRelabelType = itk::AttributeRelabelLabelMapFilter<LabelMapType>;
+  typedef itk::AttributeRelabelLabelMapFilter< LabelMapType > LabelRelabelType;
   LabelRelabelType::Pointer relabel = LabelRelabelType::New();
 
-  // testing get and set macros for ReverseOrdering
-  // testing boolean macro for ReverseOrdering
+  //testing get and set macros for ReverseOrdering
+  //testing boolean macro for ReverseOrdering
   relabel->ReverseOrderingOn();
-  ITK_TEST_SET_GET_VALUE(true, relabel->GetReverseOrdering());
+  TEST_SET_GET_VALUE( true, relabel->GetReverseOrdering() );
 
   relabel->ReverseOrderingOff();
-  ITK_TEST_SET_GET_VALUE(false, relabel->GetReverseOrdering());
+  TEST_SET_GET_VALUE( false, relabel->GetReverseOrdering() );
 
-  bool reverseOrdering = std::stoi(argv[3]);
-  relabel->SetReverseOrdering(reverseOrdering);
-  ITK_TEST_SET_GET_VALUE(reverseOrdering, relabel->GetReverseOrdering());
+  bool reverseOrdering = atoi( argv[3] );
+  relabel->SetReverseOrdering( reverseOrdering );
+  TEST_SET_GET_VALUE( reverseOrdering , relabel->GetReverseOrdering() );
 
-  relabel->SetInput(labelMap);
+  relabel->SetInput( labelMap );
 
   itk::SimpleFilterWatcher watcher(relabel, "filter");
 
-  using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> L2IType;
   L2IType::Pointer l2i = L2IType::New();
-  l2i->SetInput(relabel->GetOutput());
+  l2i->SetInput( relabel->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(l2i->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( l2i->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ namespace itk
 // Implementation" to hide MINC data from the ITK interface.
 struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
 
-/**
- *\class MINCImageIO
+/** \class MINCImageIO
  *
  * \author Leila Baghdadi
  * \brief Class that defines how to read MINC file format.
@@ -54,10 +53,7 @@ struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
  * vector_dimension and so on or xfrequencey, yfrequency, zfrequency,
  * tfrequency and vector_dimension and so on NOTE** This class only
  * reads the regularly sampled dimensions as I am not sure how to deal
- * with "irregularly sampled" dimensions yet!
- *
- * Compression is supported with only the default compressor. The
- * compression level option is supported in the range 0-9.
+ * with "iregularly sampled" dimensions yet!
  *
  * This code was contributed in the Insight Journal paper:
  * "MINC2.0 IO Support for ITK"
@@ -71,13 +67,11 @@ struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
 class ITKIOMINC_EXPORT MINCImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MINCImageIO);
-
-  /** Standard class type aliases. */
-  using Self = MINCImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
-  using MatrixType = Matrix<float, 3, 3>;
+  /** Standard class typedefs. */
+  typedef MINCImageIO           Self;
+  typedef ImageIOBase           Superclass;
+  typedef SmartPointer< Self >  Pointer;
+  typedef Matrix< float, 3, 3 > MatrixType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -85,74 +79,71 @@ public:
   itkTypeMacro(MINCImageIO, Superclass);
 
   /** Right now MINC supports up to 3D with multiple components */
-  bool
-  SupportsDimension(unsigned long dim) override
+  virtual bool SupportsDimension(unsigned long dim) ITK_OVERRIDE
   {
-    return dim < 4;
+    return dim<4;
   }
+
+  /** Set/Get the level of compression for the output images.
+   *  0-9; 0 = none, 9 = maximum. */
+  void SetCompressionLevel(int level);
+  int GetCompressionLevel() const;
 
   /*-------- This part of the interface deals with reading data. ------ */
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation() ITK_OVERRIDE;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
 protected:
   MINCImageIO();
-  ~MINCImageIO() override;
+  ~MINCImageIO() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  WriteSlice(std::string & fileName, const void * buffer);
+  void WriteSlice(std::string & fileName, const void *buffer);
 
   // will assign m_NDims and allocate all internal buffers to hold the
   // information
-  void
-  AllocateDimensions(int nDims);
+  void AllocateDimensions(int nDims);
 
   // cleanup internal buffers
-  void
-  CleanupDimensions();
+  void CleanupDimensions();
 
   // close existing volume, cleanup internal structures
-  void
-  CloseVolume();
+  void CloseVolume();
 
 private:
-  MINCImageIOPImpl * m_MINCPImpl;
 
-  MatrixType m_DirectionCosines;
+  MINCImageIOPImpl *m_MINCPImpl;
+
+  MatrixType     m_DirectionCosines;
 
   // complex type images, composed of complex numbers
-  // int m_Complex;
+  //int m_Complex;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(MINCImageIO);
+
 };
 } // end namespace itk
 

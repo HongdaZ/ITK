@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,30 +24,24 @@
 
 namespace itk
 {
-/**
- *\class PNGImageIO
+/** \class PNGImageIO
  *
  * \brief ImageIO object for reading and writing PNG images
- *
- * Compression is support with only the default compressor. The
- * compression level option is supported in the range 0-9.
  *
  * \ingroup IOFilters
  *
  * \ingroup ITKIOPNG
  */
-class ITKIOPNG_EXPORT PNGImageIO : public ImageIOBase
+class ITKIOPNG_EXPORT PNGImageIO:public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PNGImageIO);
+  /** Standard class typedefs. */
+  typedef PNGImageIO           Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
-  /** Standard class type aliases. */
-  using Self = PNGImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
-
-  using RGBPixelType = RGBPixel<unsigned char>;
-  using PaletteType = std::vector<RGBPixelType>;
+  typedef RGBPixel< unsigned char >   RGBPixelType;
+  typedef std::vector< RGBPixelType > PaletteType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,69 +49,60 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(PNGImageIO, ImageIOBase);
 
-  /** Get a const ref to the palette of the image. In the case of non palette
-   * image or ExpandRGBPalette set to true, a vector of size
-   * 0 is returned */
-  itkGetConstReferenceMacro(ColorPalette, PaletteType);
+  /** Set/Get the level of compression for the output images.
+   *  0-9; 0 = none, 9 = maximum. */
+  itkSetMacro(CompressionLevel, int);
+  itkGetConstMacro(CompressionLevel, int);
 
-  /** Set the palette of the image. */
-  void
-  SetColorPalette(const PaletteType _arg)
-  {
-    if (this->m_ColorPalette != _arg)
-    {
-      this->m_ColorPalette = _arg;
-      this->Modified();
-    }
-  }
+  /** Get a const ref to the palette of the image. In the case of non palette
+    * image or ExpandRGBPalette set to true, a vector of size
+    * 0 is returned */
+  itkGetConstReferenceMacro(ColorPalette, PaletteType);
 
   /*-------- This part of the interface deals with reading data. ------ */
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /** Reads 3D data from multiple files assuming one slice per file. */
-  virtual void
-  ReadVolume(void * buffer);
+  virtual void ReadVolume(void *buffer);
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation() ITK_OVERRIDE;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
 protected:
   PNGImageIO();
-  ~PNGImageIO() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~PNGImageIO() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  WriteSlice(const std::string & fileName, const void * buffer);
+  void WriteSlice(const std::string & fileName, const void *buffer);
 
+  /** Determines the level of compression for written files.
+   *  Range 0-9; 0 = none, 9 = maximum , default = 4 */
+  int m_CompressionLevel;
 
   PaletteType m_ColorPalette;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PNGImageIO);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,13 +20,10 @@
 
 #include "itkUnaryFunctorImageFilter.h"
 #include "itkProgressReporter.h"
-#include "itkMetaProgrammingLibrary.h"
 
-#include <type_traits>
 
 namespace itk
 {
-#if !defined(ITK_LEGACY_REMOVE)
 namespace Functor
 {
 /** \class Cast
@@ -35,32 +32,28 @@ namespace Functor
  * \ingroup ITKImageFilterBase
  */
 
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class ITK_TEMPLATE_EXPORT Cast
 {
 public:
-  Cast() = default;
-  virtual ~Cast() = default;
-  bool
-  operator!=(const Cast &) const
+  Cast() {}
+  virtual ~Cast() {}
+  bool operator!=(const Cast &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Cast & other) const
+  bool operator==(const Cast & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(A);
+    return static_cast< TOutput >( A );
   }
 };
-} // namespace Functor
-#endif
+}
 
 
 /** \class CastImageFilter
@@ -71,22 +64,22 @@ public:
  * and the output image type.
  *
  * A typical use is to cast a
-   \code
-   itk::Image<type1, dim>
-   \endcode
+ * \code
+ * itk::Image<type1, dim>
+ * \endcode
  * to a
-   \code
-   itk::Image<type2, dim>
-   \endcode
+ * \code
+ * itk::Image<type2, dim>
+ * \endcode
  *
  * This filter can also be used to cast a
-   \code
-   itk::VectorImage<type1, dim>
-   \endcode
+ * \code
+ * itk::VectorImage<type1, dim>
+ * \endcode
  * to a
-   \code
-   itk::VectorImage<type2, dim>
-   \endcode
+ * \code
+ * itk::VectorImage<type2, dim>
+ * \endcode
  *
  * If you need to perform a dimensionaly reduction, you may want
  * to use the ExtractImageFilter instead of the CastImageFilter.
@@ -96,29 +89,25 @@ public:
  * \sa ExtractImageFilter
  * \ingroup ITKImageFilterBase
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFilterBase/CastAnImageToAnotherType,Cast An Image To Another Type}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/CastImageFilter,Cast an image from one type to another}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT CastImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT CastImageFilter:
+    public InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CastImageFilter);
+  /** Standard class typedefs. */
+  typedef CastImageFilter Self;
 
-  /** Standard class type aliases. */
-  using Self = CastImageFilter;
+  typedef InPlaceImageFilter< TInputImage, TOutputImage >  Superclass;
 
-  using Superclass = InPlaceImageFilter<TInputImage, TOutputImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
 
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TOutputImage::PixelType;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -126,32 +115,26 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CastImageFilter, InPlaceImageFilter);
 
+#ifdef ITK_USE_CONCEPT_CHECKING
+  // Begin concept checking
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType,
+                                           typename TOutputImage::PixelType > ) );
+  // End concept checking
+#endif
+
 protected:
   CastImageFilter();
-  ~CastImageFilter() override = default;
+  // virtual ~CastImageFilter() {} default OK
 
-  void
-  GenerateOutputInformation() override;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
-  template <typename TInputPixelType,
-            typename TOutputPixelType,
-            typename std::enable_if<mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int>::type = 0>
-  void
-  DynamicThreadedGenerateDataDispatched(const OutputImageRegionType & outputRegionForThread);
-
-  template <typename TInputPixelType,
-            typename TOutputPixelType,
-            typename std::enable_if<!mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int>::type = 0>
-  void
-  DynamicThreadedGenerateDataDispatched(const OutputImageRegionType & outputRegionForThread);
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CastImageFilter);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,55 +20,53 @@
 #include "itkMorphologicalGradientImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
 #include "itkSimpleFilterWatcher.h"
-#include "itkTestingMacros.h"
 
-int
-itkMorphologicalGradientImageFilterTest(int argc, char * argv[])
+int itkMorphologicalGradientImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 3)
+  if( argc < 3 )
   {
     std::cerr << "Missing Arguments" << std::endl;
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImage outputImage " << std::endl;
+    std::cerr << argv[0] << " inputImage outputImage " << std::endl;
     return EXIT_FAILURE;
   }
 
-  constexpr int dim = 2;
+  const int dim = 2;
 
-  using PType = unsigned char;
-  using IType = itk::Image<PType, dim>;
+  typedef unsigned char            PType;
+  typedef itk::Image< PType, dim > IType;
 
-  using ReaderType = itk::ImageFileReader<IType>;
+  typedef itk::ImageFileReader< IType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
-  using StructuringElementType = itk::BinaryBallStructuringElement<PType, dim>;
-  StructuringElementType structuringElement;
-  structuringElement.SetRadius(2);
+  typedef itk::BinaryBallStructuringElement< PType, dim  > StructuringElementType;
+  StructuringElementType  structuringElement;
+  structuringElement.SetRadius( 2 );
   structuringElement.CreateStructuringElement();
 
-  using GradientType = itk::MorphologicalGradientImageFilter<IType, IType, StructuringElementType>;
+  typedef itk::MorphologicalGradientImageFilter< IType, IType, StructuringElementType > GradientType;
   GradientType::Pointer gradient = GradientType::New();
   gradient->SetInput(reader->GetOutput());
-  gradient->SetKernel(structuringElement);
+  gradient->SetKernel(  structuringElement );
 
   itk::SimpleFilterWatcher watcher(gradient);
 
-  using WriterType = itk::ImageFileWriter<IType>;
+  typedef itk::ImageFileWriter< IType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(gradient->GetOutput());
   writer->SetFileName(argv[2]);
 
   try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    {
+  writer->Update();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception caught ! " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

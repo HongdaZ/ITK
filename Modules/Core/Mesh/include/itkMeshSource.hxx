@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,15 +25,17 @@ namespace itk
 /**
  *
  */
-template <typename TOutputMesh>
-MeshSource<TOutputMesh>::MeshSource()
+template< typename TOutputMesh >
+MeshSource< TOutputMesh >
+::MeshSource()
 {
   // Create the output. We use static_cast<> here because we know the default
   // output must be of type TOutputMesh
-  OutputMeshPointer output = static_cast<TOutputMesh *>(this->MakeOutput(0).GetPointer());
+  OutputMeshPointer output =
+    static_cast< TOutputMesh * >( this->MakeOutput(0).GetPointer() );
 
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
-  this->ProcessObject::SetNthOutput(0, output.GetPointer());
+  this->ProcessObject::SetNthOutput( 0, output.GetPointer() );
 
   m_GenerateDataRegion = 0;
   m_GenerateDataNumberOfRegions = 0;
@@ -42,8 +44,10 @@ MeshSource<TOutputMesh>::MeshSource()
 /**
  *
  */
-template <typename TOutputMesh>
-typename MeshSource<TOutputMesh>::DataObjectPointer MeshSource<TOutputMesh>::MakeOutput(DataObjectPointerArraySizeType)
+template< typename TOutputMesh >
+typename MeshSource< TOutputMesh >::DataObjectPointer
+MeshSource< TOutputMesh >
+::MakeOutput(DataObjectPointerArraySizeType)
 {
   return TOutputMesh::New().GetPointer();
 }
@@ -51,41 +55,47 @@ typename MeshSource<TOutputMesh>::DataObjectPointer MeshSource<TOutputMesh>::Mak
 /**
  *
  */
-template <typename TOutputMesh>
-typename MeshSource<TOutputMesh>::OutputMeshType *
-MeshSource<TOutputMesh>::GetOutput()
+template< typename TOutputMesh >
+typename MeshSource< TOutputMesh >::OutputMeshType *
+MeshSource< TOutputMesh >
+::GetOutput(void)
 {
-  return itkDynamicCastInDebugMode<TOutputMesh *>(this->GetPrimaryOutput());
+  return itkDynamicCastInDebugMode< TOutputMesh * >( this->GetPrimaryOutput() );
 }
 
 /**
  *
  */
-template <typename TOutputMesh>
-typename MeshSource<TOutputMesh>::OutputMeshType *
-MeshSource<TOutputMesh>::GetOutput(unsigned int idx)
+template< typename TOutputMesh >
+typename MeshSource< TOutputMesh >::OutputMeshType *
+MeshSource< TOutputMesh >
+::GetOutput(unsigned int idx)
 {
-  return itkDynamicCastInDebugMode<TOutputMesh *>(this->ProcessObject::GetOutput(idx));
+  return itkDynamicCastInDebugMode< TOutputMesh * >
+         ( this->ProcessObject::GetOutput(idx) );
 }
 
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::SetOutput(OutputMeshType * output)
+MeshSource< TOutputMesh >
+::SetOutput(OutputMeshType *output)
 {
-  itkWarningMacro(<< "SetOutput(): This method is slated to be removed from ITK.  Please use GraftOutput() in possible "
-                     "combination with DisconnectPipeline() instead.");
+  itkWarningMacro(
+    <<
+    "SetOutput(): This method is slated to be removed from ITK.  Please use GraftOutput() in possible combination with DisconnectPipeline() instead.");
   this->ProcessObject::SetNthOutput(0, output);
 }
 
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::GenerateInputRequestedRegion()
+MeshSource< TOutputMesh >
+::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
 }
@@ -93,9 +103,10 @@ MeshSource<TOutputMesh>::GenerateInputRequestedRegion()
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::GraftOutput(DataObject * graft)
+MeshSource< TOutputMesh >
+::GraftOutput(DataObject *graft)
 {
   this->GraftNthOutput(0, graft);
 }
@@ -103,18 +114,19 @@ MeshSource<TOutputMesh>::GraftOutput(DataObject * graft)
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::GraftOutput(const DataObjectIdentifierType & key, DataObject * graft)
+MeshSource< TOutputMesh >
+::GraftOutput(const DataObjectIdentifierType & key, DataObject *graft)
 {
-  if (!graft)
-  {
-    itkExceptionMacro(<< "Requested to graft output that is a nullptr pointer");
-  }
+  if ( !graft )
+    {
+    itkExceptionMacro(<< "Requested to graft output that is a ITK_NULLPTR pointer");
+    }
 
   // we use the process object method since all out output may not be
   // of the same type
-  DataObject * output = this->ProcessObject::GetOutput(key);
+  DataObject *output = this->ProcessObject::GetOutput(key);
 
   // Call GraftImage to copy meta-information, regions, and the pixel container
   output->Graft(graft);
@@ -123,24 +135,26 @@ MeshSource<TOutputMesh>::GraftOutput(const DataObjectIdentifierType & key, DataO
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::GraftNthOutput(unsigned int idx, DataObject * graft)
+MeshSource< TOutputMesh >
+::GraftNthOutput(unsigned int idx, DataObject *graft)
 {
-  if (idx >= this->GetNumberOfIndexedOutputs())
-  {
-    itkExceptionMacro(<< "Requested to graft output " << idx << " but this filter only has "
-                      << this->GetNumberOfIndexedOutputs() << " indexed Outputs.");
-  }
-  this->GraftOutput(this->MakeNameFromOutputIndex(idx), graft);
+  if ( idx >= this->GetNumberOfIndexedOutputs() )
+    {
+    itkExceptionMacro(<< "Requested to graft output " << idx
+                      << " but this filter only has " << this->GetNumberOfIndexedOutputs() << " indexed Outputs.");
+    }
+  this->GraftOutput( this->MakeNameFromOutputIndex(idx), graft );
 }
 
 /**
  *
  */
-template <typename TOutputMesh>
+template< typename TOutputMesh >
 void
-MeshSource<TOutputMesh>::PrintSelf(std::ostream & os, Indent indent) const
+MeshSource< TOutputMesh >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

@@ -17,8 +17,6 @@
 #include "metaUtils.h"
 #include "metaEvent.h"
 
-#include <string>
-
 #ifdef _MSC_VER
 #pragma warning ( disable: 4251 )
 #endif
@@ -29,7 +27,7 @@ namespace METAIO_NAMESPACE {
 #endif
 
 class METAIO_EXPORT MetaObject
-{
+  {
   ////
   //
   // PROTECTED
@@ -37,17 +35,17 @@ class METAIO_EXPORT MetaObject
   ////
   protected:
 
-      typedef std::vector<MET_FieldRecordType *> FieldsContainerType;
+      typedef METAIO_STL::vector<MET_FieldRecordType *> FieldsContainerType;
 
-      std::ifstream * m_ReadStream;
-      std::ofstream * m_WriteStream;
+      METAIO_STREAM::ifstream * m_ReadStream;
+      METAIO_STREAM::ofstream * m_WriteStream;
 
       FieldsContainerType m_Fields;
       FieldsContainerType m_UserDefinedWriteFields;
       FieldsContainerType m_UserDefinedReadFields;
       FieldsContainerType m_AdditionalReadFields;
 
-      std::string m_FileName;
+      char  m_FileName[255];
 
       char  m_Comment[255];            // "Comment = "       ""
 
@@ -81,11 +79,10 @@ class METAIO_EXPORT MetaObject
 
       bool  m_BinaryDataByteOrderMSB;
 
-      std::streamoff m_CompressedDataSize;
+      METAIO_STL::streamoff m_CompressedDataSize;
       // Used internally to set if the dataSize should be written
       bool m_WriteCompressedDataSize;
       bool m_CompressedData;
-      int  m_CompressionLevel;
 
       virtual void M_Destroy(void);
 
@@ -126,13 +123,13 @@ class METAIO_EXPORT MetaObject
 
       virtual void  CopyInfo(const MetaObject * _object);
 
-      bool  Read(const char * _fileName=nullptr);
+      bool  Read(const char * _fileName=NULL);
 
-      bool  ReadStream(int _nDims, std::ifstream * _stream);
+      bool  ReadStream(int _nDims, METAIO_STREAM::ifstream * _stream);
 
-      bool  Write(const char * _fileName=nullptr);
+      bool  Write(const char * _fileName=NULL);
 
-      virtual bool  Append(const char *_headName=nullptr);
+      virtual bool  Append(const char *_headName=NULL);
 
       ////
       //
@@ -271,9 +268,6 @@ class METAIO_EXPORT MetaObject
       void  CompressedData(bool _compressedData);
       bool  CompressedData(void) const;
 
-      // Compression level 0-9. 0 = no compression.
-      void CompressionLevel(int _compressionLevel);
-      int CompressionLevel() const;
 
       virtual void Clear(void);
 
@@ -304,7 +298,7 @@ class METAIO_EXPORT MetaObject
             return (*it);
             }
           }
-        return nullptr;
+        return 0;
       }
 
       // Add a user's field
@@ -320,7 +314,7 @@ class METAIO_EXPORT MetaObject
         MET_FieldRecordType* mFw =
           this->FindFieldRecord(m_UserDefinedWriteFields,
                                 _fieldName);
-        if(mFw == nullptr)
+        if(mFw == 0)
           {
           duplicate = false;
           mFw = new MET_FieldRecordType;
@@ -335,7 +329,7 @@ class METAIO_EXPORT MetaObject
         MET_FieldRecordType* mFr =
           this->FindFieldRecord(m_UserDefinedReadFields,
                                 _fieldName);
-        if(mFr == nullptr)
+        if(mFr == 0)
           {
           duplicate = false;
           mFr = new MET_FieldRecordType;
@@ -374,7 +368,7 @@ class METAIO_EXPORT MetaObject
         return m_DoublePrecision;
         }
 
-};
+  };
 
 #if (METAIO_USE_NAMESPACE)
 };

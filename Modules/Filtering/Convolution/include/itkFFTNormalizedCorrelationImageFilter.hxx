@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage>
-void
-FFTNormalizedCorrelationImageFilter<TInputImage, TOutputImage>::GenerateData()
+template<typename TInputImage, typename TOutputImage>
+void FFTNormalizedCorrelationImageFilter<TInputImage, TOutputImage>
+::GenerateData()
 {
   // Generate the output for this filter by calling the more general
   // itkMaskedFFTNormalizedCorrelationImageFilter.  If the masks for
@@ -35,11 +35,12 @@ FFTNormalizedCorrelationImageFilter<TInputImage, TOutputImage>::GenerateData()
   Superclass::GenerateData();
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-FFTNormalizedCorrelationImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+FFTNormalizedCorrelationImageFilter<TInputImage, TOutputImage>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
-  Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf(os,indent);
 }
 
 } // end namespace itk

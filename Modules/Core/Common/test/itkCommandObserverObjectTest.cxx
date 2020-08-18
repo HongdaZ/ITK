@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,45 +34,39 @@ namespace
 
 unsigned int onAnyCount = 0;
 
-void
-onAny(itk::Object *, const itk::EventObject &, void *)
+void onAny( itk::Object *, const itk::EventObject &, void *  )
 {
   ++onAnyCount;
 }
 
-void
-onAnyInvokeUser(itk::Object * o, const itk::EventObject &, void *)
+void onAnyInvokeUser( itk::Object *o, const itk::EventObject &, void *  )
 {
   static bool invoke = true;
   if (invoke)
-  {
+    {
     invoke = false;
-    o->InvokeEvent(itk::UserEvent());
+    o->InvokeEvent( itk::UserEvent() );
     invoke = true;
-  }
+    }
 }
 
-void
-onAnyConst(const itk::Object *, const itk::EventObject &, void *)
+void onAnyConst( const itk::Object *, const itk::EventObject &, void *  )
 {
   ++onAnyCount;
 }
 
-void
-onAnyThrow(itk::Object *, const itk::EventObject &, void *)
+void onAnyThrow( itk::Object *, const itk::EventObject &, void *  )
 {
   throw;
 }
 
-void
-onUserRemove(itk::Object * o, const itk::EventObject &, void * data)
+void onUserRemove( itk::Object *o, const itk::EventObject &, void *data )
 {
-  unsigned long idToRemove = *static_cast<unsigned long *>(data);
+  unsigned long idToRemove = *static_cast<unsigned long*>(data);
   o->RemoveObserver(idToRemove);
 }
 
-int
-testDeleteObserverDuringEvent()
+int testDeleteObserverDuringEvent(void)
 {
   itk::Object::Pointer o = itk::Object::New();
 
@@ -94,17 +88,17 @@ testDeleteObserverDuringEvent()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::UserEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::UserEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
   o->RemoveAllObservers();
 
@@ -115,17 +109,17 @@ testDeleteObserverDuringEvent()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::UserEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::UserEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
   o->RemoveAllObservers();
 
@@ -136,17 +130,17 @@ testDeleteObserverDuringEvent()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::UserEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::UserEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
   o->RemoveAllObservers();
 
@@ -157,17 +151,17 @@ testDeleteObserverDuringEvent()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::UserEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::UserEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
   o->RemoveAllObservers();
 
@@ -176,12 +170,11 @@ testDeleteObserverDuringEvent()
 }
 
 
-int
-testCommandConstObject()
+int testCommandConstObject(void)
 {
 
-  itk::Object::Pointer      o = itk::Object::New();
-  itk::Object::ConstPointer co = o;
+  itk::Object::Pointer o = itk::Object::New();
+  itk::Object::ConstPointer co = o.GetPointer();
 
   itk::CStyleCommand::Pointer cmd = itk::CStyleCommand::New();
   cmd->SetConstCallback(onAnyConst);
@@ -192,31 +185,30 @@ testCommandConstObject()
   removeCmd->SetObjectName("Remove Command");
 
   co->AddObserver(itk::AnyEvent(), cmd);
-  ITK_TEST_EXPECT_TRUE(co->HasObserver(itk::AnyEvent()));
+  TEST_EXPECT_TRUE( co->HasObserver( itk::AnyEvent() ) );
 
   // the constant command doesn't get executed from the non-const
   // invocation
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 0);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 0 );
 
   onAnyCount = 0;
-  co->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 1);
+  co->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 1 );
 
   return EXIT_SUCCESS;
 }
 
 
-int
-testCommandRecursiveObject()
+int testCommandRecursiveObject(void)
 {
   // this test has an command invoking another event, while removing a
   // a Command.
   // This is a super-mean test that is not likely to really be used.
 
-  itk::Object::Pointer      o = itk::Object::New();
-  itk::Object::ConstPointer co = o;
+  itk::Object::Pointer o = itk::Object::New();
+  itk::Object::ConstPointer co = o.GetPointer();
 
   unsigned long idToRemove;
 
@@ -239,8 +231,8 @@ testCommandRecursiveObject()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   o->RemoveAllObservers();
 
@@ -251,8 +243,8 @@ testCommandRecursiveObject()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 2);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 2 );
 
   o->RemoveAllObservers();
 
@@ -263,15 +255,14 @@ testCommandRecursiveObject()
   removeCmd->SetClientData(&idToRemove);
 
   onAnyCount = 0;
-  o->InvokeEvent(itk::AnyEvent());
-  ITK_TEST_EXPECT_TRUE(onAnyCount == 0);
+  o->InvokeEvent( itk::AnyEvent() );
+  TEST_EXPECT_TRUE( onAnyCount == 0 );
 
   return EXIT_SUCCESS;
 }
 
 
-bool
-testDeleteEventThrow()
+bool testDeleteEventThrow(void)
 {
   // check the case where an exception in thrown in the DeleteEvent
   itk::Object::Pointer o = itk::Object::New();
@@ -286,15 +277,14 @@ testDeleteEventThrow()
 } // end namespace
 
 
-int
-itkCommandObserverObjectTest(int, char *[])
+int itkCommandObserverObjectTest(int, char* [] )
 {
   bool ret = true;
 
-  ret &= (testDeleteObserverDuringEvent() == EXIT_SUCCESS);
-  ret &= (testCommandConstObject() == EXIT_SUCCESS);
-  ret &= (testCommandRecursiveObject() == EXIT_SUCCESS);
-  ret &= (testDeleteEventThrow() == EXIT_SUCCESS);
+  ret &= ( testDeleteObserverDuringEvent() == EXIT_SUCCESS );
+  ret &= ( testCommandConstObject() == EXIT_SUCCESS );
+  ret &= ( testCommandRecursiveObject() == EXIT_SUCCESS );
+  ret &= ( testDeleteEventThrow() == EXIT_SUCCESS );
 
   return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

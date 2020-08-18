@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 namespace itk
 {
 
-/**
- *\class IntermodesThresholdCalculator
+/** \class IntermodesThresholdCalculator
  * \brief Computes the Intermodes's threshold for an image.
  *
  * J. M. S. Prewitt and M. L. Mendelsohn, "The analysis of cell images," in
@@ -53,17 +52,15 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKThresholding
  */
-template <typename THistogram, typename TOutput = double>
+template <typename THistogram, typename TOutput=double>
 class ITK_TEMPLATE_EXPORT IntermodesThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IntermodesThresholdCalculator);
-
-  /** Standard class type aliases. */
-  using Self = IntermodesThresholdCalculator;
-  using Superclass = HistogramThresholdCalculator<THistogram, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef IntermodesThresholdCalculator                     Self;
+  typedef HistogramThresholdCalculator<THistogram, TOutput> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -72,19 +69,19 @@ public:
   itkTypeMacro(IntermodesThresholdCalculator, HistogramThresholdCalculator);
 
   /** Type definition for the input image. */
-  using HistogramType = THistogram;
-  using OutputType = TOutput;
+  typedef THistogram  HistogramType;
+  typedef TOutput     OutputType;
 
-  using InstanceIdentifier = typename HistogramType::InstanceIdentifier;
+  typedef typename HistogramType::InstanceIdentifier          InstanceIdentifier;
 
-  itkSetMacro(MaximumSmoothingIterations, SizeValueType);
-  itkGetConstMacro(MaximumSmoothingIterations, SizeValueType);
+  itkSetMacro( MaximumSmoothingIterations, SizeValueType );
+  itkGetConstMacro( MaximumSmoothingIterations, SizeValueType );
 
   /** Select whether midpoint (intermode = true) or minimum between
   peaks is used. Default is "On". */
-  itkSetMacro(UseInterMode, bool);
-  itkGetConstMacro(UseInterMode, bool);
-  itkBooleanMacro(UseInterMode);
+  itkSetMacro( UseInterMode, bool);
+  itkGetConstMacro( UseInterMode, bool );
+  itkBooleanMacro( UseInterMode );
 
 protected:
   IntermodesThresholdCalculator()
@@ -93,19 +90,17 @@ protected:
     m_UseInterMode = true;
   }
 
-  ~IntermodesThresholdCalculator() override = default;
+  virtual ~IntermodesThresholdCalculator() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void GenerateData(void) ITK_OVERRIDE;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  using TotalAbsoluteFrequencyType = typename HistogramType::TotalAbsoluteFrequencyType;
-  using AbsoluteFrequencyType = typename HistogramType::AbsoluteFrequencyType;
+  typedef typename HistogramType::TotalAbsoluteFrequencyType  TotalAbsoluteFrequencyType;
+  typedef typename HistogramType::AbsoluteFrequencyType       AbsoluteFrequencyType;
 
 private:
-  bool
-  BimodalTest(const std::vector<double> & h);
+  ITK_DISALLOW_COPY_AND_ASSIGN(IntermodesThresholdCalculator);
+  bool BimodalTest(const std::vector<double> & h);
 
   SizeValueType m_MaximumSmoothingIterations;
   bool          m_UseInterMode;
@@ -115,7 +110,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkIntermodesThresholdCalculator.hxx"
+#include "itkIntermodesThresholdCalculator.hxx"
 #endif
 
 #endif

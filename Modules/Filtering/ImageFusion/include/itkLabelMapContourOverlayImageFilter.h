@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@
 #define itkLabelMapContourOverlayImageFilter_h
 
 #include "itkLabelMapFilter.h"
+#include "itkBarrier.h"
 #include "itkLabelOverlayFunctor.h"
 #include "itkRGBPixel.h"
 
-namespace itk
-{
+namespace itk {
 
-/**
- *\class LabelMapContourOverlayImageFilter
+/** \class LabelMapContourOverlayImageFilter
  * \brief Apply a colormap to the contours (outlines) of each object in a label map
  *        and superimpose it on top of the feature image.
  *
@@ -51,220 +50,192 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKImageFusion
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFusion/ColorBoundariesOfRegions,Color Boundaries Of Labeled Regions}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Segmentation/LabelMapContourOverlayImageFilter,Color the boundaries of labeled regions in an image}
+ * \endwiki
  */
-template <typename TLabelMap,
-          typename TFeatureImage,
-          typename TOutputImage = Image<RGBPixel<typename TFeatureImage::PixelType>, TFeatureImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT LabelMapContourOverlayImageFilter : public LabelMapFilter<TLabelMap, TOutputImage>
+template<typename TLabelMap, typename TFeatureImage, typename TOutputImage=Image< RGBPixel< typename TFeatureImage::PixelType >, TFeatureImage::ImageDimension > >
+class ITK_TEMPLATE_EXPORT LabelMapContourOverlayImageFilter :
+    public LabelMapFilter<TLabelMap, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelMapContourOverlayImageFilter);
+  /** Standard class typedefs. */
+  typedef LabelMapContourOverlayImageFilter         Self;
+  typedef LabelMapFilter<TLabelMap, TOutputImage>   Superclass;
+  typedef SmartPointer<Self>                        Pointer;
+  typedef SmartPointer<const Self>                  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = LabelMapContourOverlayImageFilter;
-  using Superclass = LabelMapFilter<TLabelMap, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TLabelMap                                LabelMapType;
+  typedef typename LabelMapType::Pointer           LabelMapPointer;
+  typedef typename LabelMapType::ConstPointer      LabelMapConstPointer;
+  typedef typename LabelMapType::RegionType        LabelMapRegionType;
+  typedef typename LabelMapType::PixelType         LabelMapPixelType;
+  typedef typename LabelMapType::LabelObjectType   LabelObjectType;
+  typedef typename LabelObjectType::LabelType      LabelType;
 
-  /** Some convenient type alias. */
-  using LabelMapType = TLabelMap;
-  using LabelMapPointer = typename LabelMapType::Pointer;
-  using LabelMapConstPointer = typename LabelMapType::ConstPointer;
-  using LabelMapRegionType = typename LabelMapType::RegionType;
-  using LabelMapPixelType = typename LabelMapType::PixelType;
-  using LabelObjectType = typename LabelMapType::LabelObjectType;
-  using LabelType = typename LabelObjectType::LabelType;
+  typedef TFeatureImage                             FeatureImageType;
+  typedef typename FeatureImageType::Pointer        FeatureImagePointer;
+  typedef typename FeatureImageType::ConstPointer   FeatureImageConstPointer;
+  typedef typename FeatureImageType::RegionType     FeatureImageRegionType;
+  typedef typename FeatureImageType::PixelType      FeatureImagePixelType;
 
-  using FeatureImageType = TFeatureImage;
-  using FeatureImagePointer = typename FeatureImageType::Pointer;
-  using FeatureImageConstPointer = typename FeatureImageType::ConstPointer;
-  using FeatureImageRegionType = typename FeatureImageType::RegionType;
-  using FeatureImagePixelType = typename FeatureImageType::PixelType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename OutputImageType::Pointer        OutputImagePointer;
+  typedef typename OutputImageType::ConstPointer   OutputImageConstPointer;
+  typedef typename OutputImageType::RegionType     OutputImageRegionType;
+  typedef typename OutputImageType::PixelType      OutputImagePixelType;
+  typedef typename OutputImageType::IndexType      IndexType;
+  typedef typename OutputImageType::SizeType       SizeType;
+  typedef typename OutputImageType::RegionType     RegionType;
 
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageConstPointer = typename OutputImageType::ConstPointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
-  using IndexType = typename OutputImageType::IndexType;
-  using SizeType = typename OutputImageType::SizeType;
-  using RegionType = typename OutputImageType::RegionType;
-
-  using FunctorType =
-    typename Functor::LabelOverlayFunctor<FeatureImagePixelType, LabelMapPixelType, OutputImagePixelType>;
+  typedef typename Functor::LabelOverlayFunctor<FeatureImagePixelType, LabelMapPixelType, OutputImagePixelType> FunctorType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int LabelMapDimension = TLabelMap::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(LabelMapDimension, unsigned int,
+                      TLabelMap::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   enum
-  {
+    {
     PLAIN = 0,
     CONTOUR = 1,
-    SLICE_CONTOUR = 2
-  };
+    SLICE_CONTOUR=2
+    };
 
   enum
-  {
+    {
     HIGH_LABEL_ON_TOP = 0,
     LOW_LABEL_ON_TOP = 1
-  };
+    };
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LabelMapContourOverlayImageFilter, ImageToImageFilter);
+  itkTypeMacro(LabelMapContourOverlayImageFilter,
+               ImageToImageFilter);
 
-  /** Set the feature image */
-  void
-  SetFeatureImage(TFeatureImage * input)
-  {
+   /** Set the feature image */
+  void SetFeatureImage(TFeatureImage *input)
+    {
     // Process object is not const-correct so the const casting is required.
-    this->SetNthInput(1, const_cast<TFeatureImage *>(input));
-  }
+    this->SetNthInput( 1, const_cast<TFeatureImage *>(input) );
+    }
 
   /** Get the feature image */
-  FeatureImageType *
-  GetFeatureImage()
-  {
-    return itkDynamicCastInDebugMode<FeatureImageType *>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
-  }
+  FeatureImageType * GetFeatureImage()
+    {
+    return itkDynamicCastInDebugMode<FeatureImageType*>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
+    }
 
-  /** Set the input image */
-  void
-  SetInput1(TLabelMap * input)
-  {
-    this->SetInput(input);
-  }
+   /** Set the input image */
+  void SetInput1(TLabelMap *input)
+    {
+    this->SetInput( input );
+    }
 
   /** Set the feature image */
-  void
-  SetInput2(TFeatureImage * input)
-  {
-    this->SetFeatureImage(input);
-  }
+  void SetInput2(TFeatureImage *input)
+    {
+    this->SetFeatureImage( input );
+    }
 
   /** Set/Get the opacity of the colored label image. The value must be
    * between 0 and 1
    */
-  itkSetMacro(Opacity, double);
-  itkGetConstReferenceMacro(Opacity, double);
+  itkSetMacro( Opacity, double );
+  itkGetConstReferenceMacro( Opacity, double );
 
   /** Set/Get the overlay type - CONTOUR is used by default.
    */
-  itkSetMacro(Type, int);
-  itkGetConstReferenceMacro(Type, int);
+  itkSetMacro( Type, int );
+  itkGetConstReferenceMacro( Type, int );
 
   /** Set/Get the object priority - HIGH_LABEL_ON_TOP by default.
    */
-  itkSetMacro(Priority, int);
-  itkGetConstReferenceMacro(Priority, int);
+  itkSetMacro( Priority, int );
+  itkGetConstReferenceMacro( Priority, int );
 
   /** Set/Get the object dilation radius - 0 by default.
    */
-  itkSetMacro(DilationRadius, SizeType);
-  itkGetConstReferenceMacro(DilationRadius, SizeType);
+  itkSetMacro( DilationRadius, SizeType );
+  itkGetConstReferenceMacro( DilationRadius, SizeType );
 
   /** Set/Get the contour thickness - 1 by default.
    */
-  itkSetMacro(ContourThickness, SizeType);
-  itkGetConstReferenceMacro(ContourThickness, SizeType);
+  itkSetMacro( ContourThickness, SizeType );
+  itkGetConstReferenceMacro( ContourThickness, SizeType );
 
   /** Set/Get the slice dimension - defaults to image dimension - 1.
    */
-  itkSetMacro(SliceDimension, int);
-  itkGetConstReferenceMacro(SliceDimension, int);
+  itkSetMacro( SliceDimension, int );
+  itkGetConstReferenceMacro( SliceDimension, int );
 
   /** Set/Get the overlay functor - defaults to a reasonable set of colors.
    * This can be used to apply a different colormap.
    */
-  virtual void
-  SetFunctor(const FunctorType & functor)
+  virtual void SetFunctor(const FunctorType & functor)
   {
-    if (m_Functor != functor)
-    {
+    if ( m_Functor != functor )
+      {
       m_Functor = functor;
       this->Modified();
-    }
+      }
   }
-  FunctorType &
-  GetFunctor()
-  {
-    return m_Functor;
-  }
-  const FunctorType &
-  GetFunctor() const
-  {
-    return m_Functor;
-  }
+  FunctorType &       GetFunctor() { return m_Functor; }
+  const FunctorType & GetFunctor() const { return m_Functor; }
 
 protected:
   LabelMapContourOverlayImageFilter();
-  ~LabelMapContourOverlayImageFilter() override = default;
+  ~LabelMapContourOverlayImageFilter() ITK_OVERRIDE {};
 
   /** LabelMapContourOverlayImageFilter needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** LabelMapContourOverlayImageFilter will produce the entire output. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion(DataObject *itkNotUsed(output)) ITK_OVERRIDE;
 
-  void
-  BeforeThreadedGenerateData() override;
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
-  // part of a compile error workaround for GCC 4.8.5-28 (Red Hat) from 20150623
-  void
-  SuperclassDynamicTGD(const OutputImageRegionType & outputRegion)
-  {
-    Superclass::DynamicThreadedGenerateData(outputRegion);
-  }
+  virtual void ThreadedProcessLabelObject( LabelObjectType * labelObject ) ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  ThreadedProcessLabelObject(LabelObjectType * labelObject) override;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
-
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-
-  LabelMapType *
-  GetLabelMap() override
-  {
+  virtual LabelMapType * GetLabelMap() ITK_OVERRIDE
+    {
     return m_TempImage;
-  }
+    }
 
 private:
-  double      m_Opacity;
-  int         m_Type;
-  int         m_Priority;
-  SizeType    m_ContourThickness;
-  SizeType    m_DilationRadius;
-  int         m_SliceDimension;
-  FunctorType m_Functor;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LabelMapContourOverlayImageFilter);
 
-  LabelMapPointer m_TempImage;
+  double                    m_Opacity;
+  typename Barrier::Pointer m_Barrier;
+  int                       m_Type;
+  int                       m_Priority;
+  SizeType                  m_ContourThickness;
+  SizeType                  m_DilationRadius;
+  int                       m_SliceDimension;
+  FunctorType               m_Functor;
+
+  LabelMapPointer           m_TempImage;
 
 }; // end of class
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLabelMapContourOverlayImageFilter.hxx"
+#include "itkLabelMapContourOverlayImageFilter.hxx"
 #endif
 
 #endif

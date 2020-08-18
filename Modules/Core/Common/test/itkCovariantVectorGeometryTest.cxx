@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@
 #include "itkCovariantVector.h"
 #include <iostream>
 
-int
-itkCovariantVectorGeometryTest(int, char *[])
+int itkCovariantVectorGeometryTest(int, char* [] )
 {
   // Dimension & Type
-  constexpr unsigned int N = 3;
-  using ValueType = double;
+  const     unsigned int    N = 3;
+  typedef   double          ValueType;
 
   //  Vector type
-  using VectorType = itk::CovariantVector<ValueType, N>;
+  typedef    itk::CovariantVector< ValueType, N >    VectorType;
 
 
   VectorType va;
@@ -53,15 +52,15 @@ itkCovariantVectorGeometryTest(int, char *[])
   std::cout << "vb = (1,3,5)   = ";
   std::cout << vb << std::endl;
 
-  VectorType vc = vb - va;
+  VectorType   vc  =  vb - va;
   std::cout << "vc  =  vb - va  = ";
   std::cout << vc << std::endl;
 
-  VectorType vd = va * 5.0;
+  VectorType   vd  =  va * 5.0;
   std::cout << "vd  =  va * 5.0 = ";
   std::cout << vd << std::endl;
 
-  VectorType ve = vd / 5.0;
+  VectorType   ve  =  vd / 5.0;
   std::cout << "ve  =  vd * 5.0 = ";
   std::cout << ve << std::endl;
 
@@ -73,11 +72,11 @@ itkCovariantVectorGeometryTest(int, char *[])
   std::cout << "ve  -=  vb      = ";
   std::cout << ve << std::endl;
 
-  VectorType vh = vb;
+  VectorType   vh  =  vb;
   std::cout << "vh   =  vb      = ";
   std::cout << vh << std::endl;
 
-  VectorType vg(va);
+  VectorType   vg( va );
   std::cout << "vg( va )        = ";
   std::cout << vg << std::endl;
 
@@ -85,7 +84,7 @@ itkCovariantVectorGeometryTest(int, char *[])
   std::cout << "vg squared norm = ";
   std::cout << norm2 << std::endl;
 
-  ValueType norm = vg.GetNorm();
+  ValueType norm  = vg.GetNorm();
   std::cout << "vg norm = ";
   std::cout << norm << std::endl;
 
@@ -93,18 +92,18 @@ itkCovariantVectorGeometryTest(int, char *[])
   std::cout << "vg after normalizing: " << vg << std::endl;
   if (norm != normX)
   {
-    std::cout << "Norms from GetNorm() and from Normalize() are different" << std::endl;
-    return EXIT_FAILURE;
+      std::cout << "Norms from GetNorm() and from Normalize() are different" << std::endl;
+      return EXIT_FAILURE;
   }
 
 
   // Test for vnl interface
 
   // Test the no const version that returns an vnl_vector_ref
-  vnl_vector_ref<ValueType> vnlVector = va.GetVnlVector();
+  vnl_vector_ref< ValueType > vnlVector = va.GetVnlVector();
   {
     std::cout << "vnl_vector_ref = va ";
-    for (unsigned int i = 0; i < N; i++)
+    for( unsigned int i=0; i<N; i++ )
     {
       std::cout << vnlVector[i] << ", ";
     }
@@ -113,15 +112,15 @@ itkCovariantVectorGeometryTest(int, char *[])
     std::cout << "vnl_vector_ref.begin() = va.Begin()";
     std::cout << std::endl;
     std::cout << vnlVector.begin() << " = ";
-    std::cout << va.cbegin() << std::endl;
+    std::cout << va.Begin() << std::endl;
   }
 
   // Test the const version that returns an vnl_vector
-  const VectorType      vf(va);
+  const VectorType vf(va);
   vnl_vector<ValueType> vnlVector2 = vf.GetVnlVector();
   {
     std::cout << "vnl_vector = va ";
-    for (unsigned int i = 0; i < N; i++)
+    for( unsigned int i=0; i<N; i++ )
     {
       std::cout << vnlVector2[i] << ", ";
     }
@@ -130,55 +129,57 @@ itkCovariantVectorGeometryTest(int, char *[])
     std::cout << "vnl_vector.begin() != vf.Begin()";
     std::cout << std::endl;
     std::cout << vnlVector2.begin() << " = ";
-    std::cout << vf.cbegin() << std::endl;
+    std::cout << vf.Begin() << std::endl;
   }
 
   // Test for CastFrom() method
   {
-    std::cout << "Test for CastFrom() method... ";
+  std::cout << "Test for CastFrom() method... ";
 
-    const float tolerance = 1e-7;
+  const float tolerance = 1e-7;
 
-    //  CovariantVector Classes
-    using DoubleCovariantVectorType = itk::CovariantVector<double, N>;
-    using FloatCovariantVectorType = itk::CovariantVector<float, N>;
+  //  CovariantVector Classes
+  typedef    itk::CovariantVector<  double, N >    DoubleCovariantVectorType;
+  typedef    itk::CovariantVector<  float , N >    FloatCovariantVectorType;
 
-    DoubleCovariantVectorType dp;
-    dp[0] = 1.0;
-    dp[1] = 1.7;
-    dp[2] = 1.9;
+  DoubleCovariantVectorType dp;
+  dp[0] = 1.0;
+  dp[1] = 1.7;
+  dp[2] = 1.9;
 
-    FloatCovariantVectorType fp;
-    fp[0] = 0.0;
-    fp[1] = 0.0;
-    fp[2] = 0.0;
+  FloatCovariantVectorType fp;
+  fp[0] = 0.0;
+  fp[1] = 0.0;
+  fp[2] = 0.0;
 
-    fp.CastFrom(dp);
+  fp.CastFrom( dp );
 
-    std::cout << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+  std::cout << std::endl;
+  for(unsigned int i=0; i<N; i++)
     {
-      auto val = static_cast<FloatCovariantVectorType::ValueType>(dp[i]);
+    FloatCovariantVectorType::ValueType val =
+        static_cast< FloatCovariantVectorType::ValueType >( dp[i] );
 
-      //   std::cout << val   << std::endl;
-      //   std::cout << fp[i] << std::endl;
+//   std::cout << val   << std::endl;
+//   std::cout << fp[i] << std::endl;
 
-      const float diff = itk::Math::abs(val - fp[i]);
-      std::cout << "difference = " << diff << std::endl;
-      if (itk::Math::abs(val - fp[i]) > tolerance)
+    const float diff = itk::Math::abs( val - fp[i] );
+    std::cout << "difference = " << diff << std::endl;
+    if( itk::Math::abs ( val - fp[i] ) > tolerance )
       {
         std::cout << "Test failed at component " << i << std::endl;
         return EXIT_FAILURE;
       }
     }
 
-    std::cout << " PASSED ! " << std::endl;
+  std::cout << " PASSED ! " << std::endl;
+
   }
 
   // Test the inner products
   {
-    using ContravariantVectorType = itk::Vector<double, 3>;
-    using CovariantVectorType = itk::CovariantVector<double, 3>;
+    typedef itk::Vector<double, 3>           ContravariantVectorType;
+    typedef itk::CovariantVector<double, 3>  CovariantVectorType;
 
     ContravariantVectorType contravariant;
     contravariant[0] = 1.0;
@@ -192,18 +193,18 @@ itkCovariantVectorGeometryTest(int, char *[])
 
     const double expectedValue = -28.0;
 
-    if (!itk::Math::FloatAlmostEqual(expectedValue, covariant * contravariant) ||
-        !itk::Math::FloatAlmostEqual(expectedValue, contravariant * covariant))
-    {
-      std::cerr << "Error in inner product computation." << std::endl;
-      return EXIT_FAILURE;
-    }
+    if( !itk::Math::FloatAlmostEqual( expectedValue, covariant * contravariant ) ||
+        !itk::Math::FloatAlmostEqual( expectedValue, contravariant * covariant ) )
+        {
+        std::cerr << "Error in inner product computation." << std::endl;
+        return EXIT_FAILURE;
+        }
   }
 
   // Test the Cross products
   {
-    using ContravariantVectorType = itk::Vector<double, 3>;
-    using CovariantVectorType = itk::CovariantVector<double, 3>;
+    typedef itk::Vector<double, 3>           ContravariantVectorType;
+    typedef itk::CovariantVector<double, 3>  CovariantVectorType;
 
     ContravariantVectorType vaa;
     ContravariantVectorType vbb;
@@ -218,7 +219,7 @@ itkCovariantVectorGeometryTest(int, char *[])
 
     CovariantVectorType normal;
 
-    itk::CrossProduct(normal, vaa, vbb);
+    itk::CrossProduct( normal, vaa, vbb );
 
     CovariantVectorType expectedNormal;
 
@@ -226,33 +227,35 @@ itkCovariantVectorGeometryTest(int, char *[])
     expectedNormal[1] = 0.0;
     expectedNormal[2] = 1.0;
 
-    if (!itk::Math::FloatAlmostEqual(normal[0], expectedNormal[0]) ||
-        !itk::Math::FloatAlmostEqual(normal[1], expectedNormal[1]) ||
-        !itk::Math::FloatAlmostEqual(normal[2], expectedNormal[2]))
-    {
+    if( !itk::Math::FloatAlmostEqual( normal[0], expectedNormal[0] ) ||
+        !itk::Math::FloatAlmostEqual( normal[1], expectedNormal[1] ) ||
+        !itk::Math::FloatAlmostEqual( normal[2], expectedNormal[2] ) )
+      {
       std::cerr << "Error in CrossProduct computation." << std::endl;
       return EXIT_FAILURE;
-    }
+      }
+
   }
   //
   // test that the ComponentType is present
   {
-    using CovariantVectorType = itk::CovariantVector<double, 3>;
-    CovariantVectorType::ComponentType comp(1.0);
-    double                             x(1.0);
-    if (sizeof(comp) != sizeof(double))
+  typedef itk::CovariantVector<double, 3>  CovariantVectorType;
+  CovariantVectorType::ComponentType comp(1.0);
+  double x(1.0);
+  if(sizeof(comp) != sizeof(double))
     {
-      std::cerr << "error -- CovariantVectorType::ComponentType size != sizeof(double)" << std::endl;
-      return EXIT_FAILURE;
+    std::cerr << "error -- CovariantVectorType::ComponentType size != sizeof(double)"
+              << std::endl;
+    return EXIT_FAILURE;
     }
-    auto * compp = reinterpret_cast<char *>(&comp);
-    auto * xp = reinterpret_cast<char *>(&x);
-    for (unsigned i = 0; i < sizeof(CovariantVectorType::ComponentType); i++)
+  char *compp = reinterpret_cast<char *>(&comp);
+  char *xp = reinterpret_cast<char *>(&x);
+  for(unsigned i = 0; i < sizeof(CovariantVectorType::ComponentType); i++)
     {
-      if (compp[i] != xp[i])
+    if(compp[i] != xp[i])
       {
-        std::cerr << "error -- bit pattern for CovariantVectorType::ComponentType doesn't match "
-                  << " double with same value" << std::endl;
+      std::cerr << "error -- bit pattern for CovariantVectorType::ComponentType doesn't match "
+                << " double with same value" << std::endl;
       }
     }
   }

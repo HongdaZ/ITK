@@ -29,12 +29,12 @@ public:
   WLMFindQuery();
 
   // no sense here
-  void InitializeDataSet(const EQueryLevel& inQueryLevel) override;
-  std::vector<Tag> GetTagListByLevel(const EQueryLevel& inQueryLevel) override;
+  void InitializeDataSet(const EQueryLevel& inQueryLevel);
+  std::vector<Tag> GetTagListByLevel(const EQueryLevel& inQueryLevel);
   // validate query has required tag
-  bool ValidateQuery(bool inStrict = true) const override;
+  bool ValidateQuery(bool inStrict = true) const;
 
-  UIDs::TSName GetAbstractSyntaxUID() const override;
+  UIDs::TSName GetAbstractSyntaxUID() const;
 protected :
   DataSet GetValidDataSet() const;
 };

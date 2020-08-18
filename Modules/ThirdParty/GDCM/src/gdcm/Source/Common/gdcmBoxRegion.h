@@ -31,7 +31,7 @@ class GDCM_EXPORT BoxRegion : public Region
 {
 public :
   BoxRegion();
-  ~BoxRegion() override;
+  ~BoxRegion();
 
   /// Set domain
   void SetDomain(unsigned int xmin, unsigned int xmax,
@@ -47,13 +47,13 @@ public :
   unsigned int GetZMax() const;
 
   // Satisfy pure virtual parent class
-  Region *Clone() const override;
-  bool Empty() const override;
-  bool IsValid() const override;
-  size_t Area() const override;
-  BoxRegion ComputeBoundingBox() override;
+  Region *Clone() const;
+  bool Empty() const;
+  bool IsValid() const;
+  size_t Area() const;
+  BoxRegion ComputeBoundingBox();
 
-  void Print(std::ostream &os = std::cout) const override;
+  void Print(std::ostream &os = std::cout) const;
 
   /// Helper class to compute the bounding box of two BoxRegion
   static BoxRegion BoundingBox(BoxRegion const & b1, BoxRegion const & b2 );

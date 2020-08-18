@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,14 +44,13 @@
 #include "itkImageFileWriter.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc != 2)
-  {
+  if( argc != 2 )
+    {
     std::cerr << "Usage: " << argv[0] << " outputimagefile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -62,10 +61,10 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char PixelType;
+  const unsigned int    Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >       ImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -77,7 +76,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PolygonType = itk::PolygonSpatialObject<Dimension>;
+  typedef itk::PolygonSpatialObject< Dimension >  PolygonType;
   // Software Guide : EndCodeSnippet
 
 
@@ -89,8 +88,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SpatialObjectToImageFilterType =
-    itk::SpatialObjectToImageFilter<PolygonType, ImageType>;
+  typedef itk::SpatialObjectToImageFilter<
+    PolygonType, ImageType >   SpatialObjectToImageFilterType;
 
   SpatialObjectToImageFilterType::Pointer imageFilter =
     SpatialObjectToImageFilterType::New();
@@ -107,20 +106,20 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   ImageType::SizeType size;
-  size[0] = 100;
-  size[1] = 100;
-  size[2] = 1;
+  size[ 0 ] =  100;
+  size[ 1 ] =  100;
+  size[ 2 ] =    1;
 
-  imageFilter->SetSize(size);
+  imageFilter->SetSize( size );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginCodeSnippet
   ImageType::SpacingType spacing;
-  spacing[0] = 100.0 / size[0];
-  spacing[1] = 100.0 / size[1];
-  spacing[2] = 1.0;
+  spacing[0] =  100.0 / size[0];
+  spacing[1] =  100.0 / size[1];
+  spacing[2] =    1.0;
 
-  imageFilter->SetSpacing(spacing);
+  imageFilter->SetSpacing( spacing );
   // Software Guide : EndCodeSnippet
 
 
@@ -143,39 +142,32 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int                      numberOfPoints = 6;
-  typename PolygonType::PointType             point;
-  typename PolygonType::PointType::VectorType radial;
+  const unsigned int numberOfPoints = 6;
+  PolygonType::PointType point;
+  PolygonType::PointType::VectorType radial;
   radial[0] = 0.0;
   radial[1] = 0.0;
   radial[2] = 0.0;
 
-  typename PolygonType::PointType center;
+  PolygonType::PointType center;
   center[0] = 50.0;
   center[1] = 50.0;
-  center[2] = 0.0;
+  center[2] =  0.0;
 
-  constexpr double radius = 40.0;
+  const double radius = 40.0;
 
-  typename PolygonType::PolygonPointType polygonPoint;
-
-  for (unsigned int i = 0; i < numberOfPoints; i++)
-  {
+  for( unsigned int i=0; i < numberOfPoints; i++ )
+    {
     const double angle = 2.0 * itk::Math::pi * i / numberOfPoints;
-    radial[0] = radius * std::cos(angle);
-    radial[1] = radius * std::sin(angle);
+    radial[0] = radius * std::cos( angle );
+    radial[1] = radius * std::sin( angle );
     point = center + radial;
-    polygonPoint.SetPositionInObjectSpace(point);
-    polygon->GetPoints().push_back(polygonPoint);
-  }
-  polygon->SetIsClosed(true);
-  polygon->Update();
+    polygon->AddPoint( point );
+    }
   // Software Guide : EndCodeSnippet
 
-  std::cout << "Polygon Perimeter = " << polygon->MeasurePerimeterInObjectSpace()
-            << std::endl;
-  std::cout << "Polygon Area      = " << polygon->MeasureAreaInObjectSpace()
-            << std::endl;
+  std::cout << "Polygon Perimeter = " << polygon->MeasurePerimeter() << std::endl;
+  std::cout << "Polygon Area      = " << polygon->MeasureArea() << std::endl;
 
   //  Software Guide : BeginLatex
   //
@@ -184,7 +176,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  imageFilter->SetInput(polygon);
+  imageFilter->SetInput(  polygon  );
   // Software Guide : EndCodeSnippet
 
 
@@ -197,22 +189,22 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType >     WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[1]);
-  writer->SetInput(imageFilter->GetOutput());
+  writer->SetFileName( argv[1] );
+  writer->SetInput( imageFilter->GetOutput() );
 
   try
-  {
+    {
     imageFilter->Update();
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,19 +23,30 @@
 
 namespace itk
 {
-template <typename TLevelSetContainer>
+template< typename TLevelSetContainer >
+LevelSetEvolutionNumberOfIterationsStoppingCriterion< TLevelSetContainer >::
+LevelSetEvolutionNumberOfIterationsStoppingCriterion() {}
+
+template< typename TLevelSetContainer >
+LevelSetEvolutionNumberOfIterationsStoppingCriterion< TLevelSetContainer >::
+~LevelSetEvolutionNumberOfIterationsStoppingCriterion() {}
+
+
+template< typename TLevelSetContainer >
 bool
-LevelSetEvolutionNumberOfIterationsStoppingCriterion<TLevelSetContainer>::IsSatisfied() const
+LevelSetEvolutionNumberOfIterationsStoppingCriterion< TLevelSetContainer >::
+IsSatisfied() const
 {
-  return (this->m_CurrentIteration >= this->m_NumberOfIterations);
+  return ( this->m_CurrentIteration >= this->m_NumberOfIterations );
 }
 
-template <typename TLevelSetContainer>
+template< typename TLevelSetContainer >
 std::string
-LevelSetEvolutionNumberOfIterationsStoppingCriterion<TLevelSetContainer>::GetDescription() const
+LevelSetEvolutionNumberOfIterationsStoppingCriterion< TLevelSetContainer >::
+GetDescription() const
 {
   return "Current Iteration Number >= Number Of Iterations";
 }
 
-} // namespace itk
-#endif
+}
+ #endif

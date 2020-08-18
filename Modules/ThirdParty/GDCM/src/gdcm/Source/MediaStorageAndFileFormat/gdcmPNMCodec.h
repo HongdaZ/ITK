@@ -30,15 +30,15 @@ class GDCM_EXPORT PNMCodec : public ImageCodec
 {
 public:
   PNMCodec();
-  ~PNMCodec() override;
-  bool CanDecode(TransferSyntax const &ts) const override;
-  bool CanCode(TransferSyntax const &ts) const override;
+  ~PNMCodec();
+  bool CanDecode(TransferSyntax const &ts) const;
+  bool CanCode(TransferSyntax const &ts) const;
 
   unsigned long GetBufferLength() const { return BufferLength; }
   void SetBufferLength(unsigned long l) { BufferLength = l; }
 
-  bool GetHeaderInfo(std::istream &is, TransferSyntax &ts) override;
-  ImageCodec * Clone() const override;
+  bool GetHeaderInfo(std::istream &is, TransferSyntax &ts);
+  virtual ImageCodec * Clone() const;
 
   bool Read(const char *filename, DataElement &out) const;
   bool Write(const char *filename, const DataElement &out) const;

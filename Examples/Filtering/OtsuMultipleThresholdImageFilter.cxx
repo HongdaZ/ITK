@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,26 +39,24 @@
 #include "itkNumericTraits.h"
 
 #include <iomanip>
-#include <cstdio>
+#include <stdio.h>
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputImageFileBase ";
-    std::cerr << "  outputImageFileExtension numberOfThresholdsToCalculate "
-              << std::endl;
+    std::cerr << "  outputImageFileExtension numberOfThresholdsToCalculate "  << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  // Convenience type alias
-  using InputPixelType = unsigned short;
-  using OutputPixelType = unsigned char;
+  //Convenience typedefs
+  typedef  unsigned short  InputPixelType;
+  typedef  unsigned char   OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  typedef itk::Image< InputPixelType,  2 >   InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
 
   // Software Guide : BeginLatex
   //
@@ -71,16 +69,17 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ScalarImageToHistogramGeneratorType =
-    itk::Statistics::ScalarImageToHistogramGenerator<InputImageType>;
+  typedef itk::Statistics::ScalarImageToHistogramGenerator<
+                         InputImageType > ScalarImageToHistogramGeneratorType;
 
-  using HistogramType = ScalarImageToHistogramGeneratorType::HistogramType;
+  typedef ScalarImageToHistogramGeneratorType::HistogramType HistogramType;
 
-  using CalculatorType = itk::OtsuMultipleThresholdsCalculator<HistogramType>;
+  typedef itk::OtsuMultipleThresholdsCalculator< HistogramType >
+                                                               CalculatorType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
 
   // Software Guide : BeginLatex
   //
@@ -90,7 +89,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>;
+  typedef itk::BinaryThresholdImageFilter<
+  InputImageType, OutputImageType >  FilterType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -101,11 +101,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ScalarImageToHistogramGeneratorType::Pointer scalarImageToHistogramGenerator =
-    ScalarImageToHistogramGeneratorType::New();
+  ScalarImageToHistogramGeneratorType::Pointer scalarImageToHistogramGenerator
+    = ScalarImageToHistogramGeneratorType::New();
 
   CalculatorType::Pointer calculator = CalculatorType::New();
-  FilterType::Pointer     filter = FilterType::New();
+  FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
   ReaderType::Pointer reader = ReaderType::New();
@@ -120,20 +120,18 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  scalarImageToHistogramGenerator->SetNumberOfBins(128);
-  calculator->SetNumberOfThresholds(std::stoi(argv[4]));
+  scalarImageToHistogramGenerator->SetNumberOfBins( 128 );
+  calculator->SetNumberOfThresholds( atoi( argv[4] ) );
   // Software Guide : EndCodeSnippet
 
-  calculator->SetReturnBinMidpoint(true); // regression test requires this
+  const OutputPixelType outsideValue = 0;
+  const OutputPixelType insideValue = 255;
 
-  constexpr OutputPixelType outsideValue = 0;
-  constexpr OutputPixelType insideValue = 255;
+  filter->SetOutsideValue( outsideValue );
+  filter->SetInsideValue(  insideValue  );
 
-  filter->SetOutsideValue(outsideValue);
-  filter->SetInsideValue(insideValue);
-
-  // Connect Pipeline
-  reader->SetFileName(argv[1]);
+  //Connect Pipeline
+  reader->SetFileName( argv[1] );
 
   // Software Guide : BeginLatex
   //
@@ -142,32 +140,33 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  scalarImageToHistogramGenerator->SetInput(reader->GetOutput());
-  calculator->SetInputHistogram(scalarImageToHistogramGenerator->GetOutput());
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  scalarImageToHistogramGenerator->SetInput( reader->GetOutput() );
+  calculator->SetInputHistogram(
+                               scalarImageToHistogramGenerator->GetOutput() );
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
-  // Invoke pipeline
+  //Invoke pipeline
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown while reading image" << excp << std::endl;
-  }
+    }
   scalarImageToHistogramGenerator->Compute();
 
   try
-  {
+    {
     calculator->Compute();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << excp << std::endl;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -177,10 +176,10 @@ main(int argc, char * argv[])
   //
   // Software Guide : EndLatex
 
-  // Get Thresholds
+  //Get Thresholds
 
   // Software Guide : BeginCodeSnippet
-  const CalculatorType::OutputType & thresholdVector = calculator->GetOutput();
+  const CalculatorType::OutputType &thresholdVector = calculator->GetOutput();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -198,36 +197,43 @@ main(int argc, char * argv[])
   InputPixelType upperThreshold;
 
   // Software Guide : BeginCodeSnippet
-  for (auto itNum = thresholdVector.begin(); itNum != thresholdVector.end(); ++itNum)
-  {
-    std::cout
-      << "OtsuThreshold[" << (int)(itNum - thresholdVector.begin()) << "] = "
-      << static_cast<itk::NumericTraits<CalculatorType::MeasurementType>::PrintType>(
-           *itNum)
-      << std::endl;
+  typedef CalculatorType::OutputType::const_iterator ThresholdItType;
+
+  for( ThresholdItType itNum = thresholdVector.begin();
+       itNum != thresholdVector.end();
+       ++itNum )
+    {
+    std::cout << "OtsuThreshold["
+              << (int)(itNum - thresholdVector.begin())
+              << "] = "
+              << static_cast<itk::NumericTraits<
+                          CalculatorType::MeasurementType>::PrintType>(*itNum)
+              << std::endl;
     // Software Guide : EndCodeSnippet
 
     upperThreshold = static_cast<InputPixelType>(*itNum);
 
-    filter->SetLowerThreshold(lowerThreshold);
-    filter->SetUpperThreshold(upperThreshold);
+    filter->SetLowerThreshold( lowerThreshold );
+    filter->SetUpperThreshold( upperThreshold );
 
     lowerThreshold = upperThreshold;
 
     std::ostringstream outputFilename;
-    outputFilename << outputFileBase << std::setfill('0') << std::setw(3)
-                   << (itNum - thresholdVector.begin()) << "." << argv[3];
-    writer->SetFileName(outputFilename.str());
+    outputFilename << outputFileBase
+                   << std::setfill('0') << std::setw(3) << (itNum - thresholdVector.begin())
+                   << "."
+                   << argv[3];
+    writer->SetFileName( outputFilename.str() );
 
     try
-    {
+      {
       writer->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
+      }
+    catch( itk::ExceptionObject & excp )
+      {
       std::cerr << "Exception thrown " << excp << std::endl;
+      }
     }
-  }
 
   // Software Guide : BeginLatex
   //
@@ -238,23 +244,25 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   upperThreshold = itk::NumericTraits<InputPixelType>::max();
-  filter->SetLowerThreshold(lowerThreshold);
-  filter->SetUpperThreshold(upperThreshold);
+  filter->SetLowerThreshold( lowerThreshold );
+  filter->SetUpperThreshold( upperThreshold );
   // Software Guide : EndCodeSnippet
 
   std::ostringstream outputFilename2;
-  outputFilename2 << outputFileBase << std::setfill('0') << std::setw(3)
-                  << thresholdVector.size() << "." << argv[3];
-  writer->SetFileName(outputFilename2.str());
+  outputFilename2 << outputFileBase
+                  << std::setfill('0') << std::setw(3) << thresholdVector.size()
+                  << "."
+                  << argv[3];
+  writer->SetFileName( outputFilename2.str() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << excp << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

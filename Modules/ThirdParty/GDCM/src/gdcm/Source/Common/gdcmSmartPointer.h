@@ -39,7 +39,7 @@ template<class ObjectType>
 class SmartPointer
 {
 public:
-  SmartPointer():Pointer(nullptr) {}
+  SmartPointer():Pointer(0) {}
   SmartPointer(const SmartPointer<ObjectType>& p):Pointer(p.Pointer)
     { Register(); }
   SmartPointer(ObjectType* p):Pointer(p)
@@ -51,7 +51,7 @@ public:
     }
   ~SmartPointer() {
     UnRegister();
-    Pointer = nullptr;
+    Pointer = 0;
   }
 
   /// Overload operator ->

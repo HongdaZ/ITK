@@ -6,10 +6,18 @@ itkMetaImageIOTest.cxx
 itkMetaImageIOTest2.cxx
 itkLargeMetaImageWriteReadTest.cxx
 testMetaArray.cxx
+testMetaBlob.cxx
 testMetaCommand.cxx
 testMetaGroup.cxx
 testMetaImage.cxx
+testMetaLandmark.cxx
+testMetaLine.cxx
 testMetaMesh.cxx
+testMetaObject.cxx
+testMetaScene.cxx
+testMetaSurface.cxx
+testMetaTube.cxx
+testMetaUtils.cxx
 itkMetaImageStreamingIOTest.cxx
 itkMetaImageStreamingWriterIOTest.cxx
 itkMetaTestLongFilename.cxx
@@ -59,8 +67,29 @@ itk_add_test(NAME testMetaGroup
               ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME testMetaImage
       COMMAND ITKIOMetaTestDriver testMetaImage)
+itk_add_test(NAME testMetaLandmark
+      COMMAND ITKIOMetaTestDriver testMetaLandmark
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaLine
+      COMMAND ITKIOMetaTestDriver testMetaLine
+              ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME testMetaMesh
       COMMAND ITKIOMetaTestDriver testMetaMesh
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaObject
+      COMMAND ITKIOMetaTestDriver testMetaObject
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaScene
+      COMMAND ITKIOMetaTestDriver testMetaScene
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaSurface
+      COMMAND ITKIOMetaTestDriver testMetaSurface
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaTube
+      COMMAND ITKIOMetaTestDriver testMetaTube
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaUtils
+      COMMAND ITKIOMetaTestDriver testMetaUtils
               ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME MetaCommandRequiredOptionsWithMultipleStrings
       COMMAND ITKIOMetaTestDriver testMetaCommand
@@ -100,6 +129,9 @@ itk_add_test(NAME MetaCommandRequiredAndOptionalOptoinsWithArgumentsMissing
               -ExpectedFailStatus 1 -sum 207 -r1c_rs StringValue1 StringValue2 StringValue3 -r2_ri 7 -o3_ri_oi)
 itk_add_test(NAME testMetaArray
       COMMAND ITKIOMetaTestDriver testMetaArray
+              ${ITK_TEST_OUTPUT_DIR})
+itk_add_test(NAME testMetaBlob
+      COMMAND ITKIOMetaTestDriver testMetaBlob
               ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME itkMetaImageStreamingIOTest
       COMMAND ITKIOMetaTestDriver
@@ -163,7 +195,6 @@ if( "${ITK_COMPUTER_MEMORY_SIZE}" GREATER 5 )
                        PROPERTIES
                        LABELS BigIO
                        RESOURCE_LOCK MEMORY_SIZE
-                       COST 10
                       )
   set_property(TEST itkLargeMetaImageWriteReadTest1 APPEND PROPERTY LABELS RUNS_LONG)
   set_property(TEST itkLargeMetaImageWriteReadTest2 APPEND PROPERTY LABELS RUNS_LONG)
@@ -183,7 +214,6 @@ if( "${ITK_COMPUTER_MEMORY_SIZE}" GREATER 12 )
     PROPERTIES
     LABELS BigIO
     RESOURCE_LOCK MEMORY_SIZE
-    COST 30
     )
   set_property(TEST itkLargeMetaImageWriteReadTest4 APPEND PROPERTY LABELS RUNS_LONG)
 

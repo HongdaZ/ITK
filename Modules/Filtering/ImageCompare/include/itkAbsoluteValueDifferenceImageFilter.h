@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@
 #ifndef itkAbsoluteValueDifferenceImageFilter_h
 #define itkAbsoluteValueDifferenceImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 #include "itkConceptChecking.h"
 
 namespace itk
 {
-/**
- *\class AbsoluteValueDifferenceImageFilter
+/** \class AbsoluteValueDifferenceImageFilter
  * \brief Implements pixel-wise the computation of absolute value difference.
  *
- * This filter is parameterized over the types of the two
+ * This filter is parametrized over the types of the two
  * input images and the type of the output image.
  *
  * Numeric conversions (castings) are done by the C++ defaults.
@@ -48,83 +47,87 @@ namespace itk
  * \ingroup IntensityImageFilters MultiThreaded
  * \ingroup ITKImageCompare
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageCompare/AbsValueOfTwoImages,Absolute Value Of Difference Between Two Images}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/AbsoluteValueDifferenceImageFilter,Compute the absolute value of the difference of corresponding pixels in two images}
+ * \endwiki
  */
 namespace Functor
 {
-template <typename TInput1, typename TInput2, typename TOutput>
+template< typename TInput1, typename TInput2, typename TOutput >
 class AbsoluteValueDifference2
 {
 public:
-  AbsoluteValueDifference2() = default;
-  ~AbsoluteValueDifference2() = default;
-  bool
-  operator!=(const AbsoluteValueDifference2 &) const
+  AbsoluteValueDifference2() {}
+  ~AbsoluteValueDifference2() {}
+  bool operator!=(const AbsoluteValueDifference2 &) const
   {
     return false;
   }
 
-  bool
-  operator==(const AbsoluteValueDifference2 & other) const
+  bool operator==(const AbsoluteValueDifference2 & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A,
+                            const TInput2 & B) const
   {
-    const auto   dA = static_cast<double>(A);
-    const auto   dB = static_cast<double>(B);
+    const double dA = static_cast< double >( A );
+    const double dB = static_cast< double >( B );
     const double diff = dA - dB;
-    const double absdiff = (diff > 0.0) ? diff : -diff;
+    const double absdiff = ( diff > 0.0 ) ? diff : -diff;
 
-    return static_cast<TOutput>(absdiff);
+    return static_cast< TOutput >( absdiff );
   }
 };
-} // namespace Functor
+}
 
-template <typename TInputImage1, typename TInputImage2, typename TOutputImage>
-class AbsoluteValueDifferenceImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename TInputImage1, typename TInputImage2, typename TOutputImage >
+class AbsoluteValueDifferenceImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::AbsoluteValueDifference2<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AbsoluteValueDifferenceImageFilter);
+  /** Standard class typedefs. */
+  typedef AbsoluteValueDifferenceImageFilter Self;
+  typedef BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                                    Functor::AbsoluteValueDifference2<
+                                      typename TInputImage1::PixelType,
+                                      typename TInputImage2::PixelType,
+                                      typename TOutputImage::PixelType >
+                                    >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = AbsoluteValueDifferenceImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-
-  using FunctorType = Functor::AbsoluteValueDifference2<typename TInputImage1::PixelType,
-                                                        typename TInputImage2::PixelType,
-                                                        typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AbsoluteValueDifferenceImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(AbsoluteValueDifferenceImageFilter,
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(Input1CovertibleToDoubleCheck, (Concept::Convertible<typename TInputImage1::PixelType, double>));
-  itkConceptMacro(Input2ConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage2::PixelType, double>));
-  itkConceptMacro(DoubleCovertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( Input1CovertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage1::PixelType, double > ) );
+  itkConceptMacro( Input2ConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage2::PixelType, double > ) );
+  itkConceptMacro( DoubleCovertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  AbsoluteValueDifferenceImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
-  ~AbsoluteValueDifferenceImageFilter() override = default;
+  AbsoluteValueDifferenceImageFilter() {}
+  virtual ~AbsoluteValueDifferenceImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AbsoluteValueDifferenceImageFilter);
 };
 } // end namespace itk
 

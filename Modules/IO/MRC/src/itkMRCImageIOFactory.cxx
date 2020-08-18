@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,20 +33,24 @@ namespace itk
 {
 MRCImageIOFactory::MRCImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkMRCImageIO", "MRC Image IO", true, CreateObjectFunction<MRCImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkMRCImageIO",
+                          "MRC Image IO",
+                          1,
+                          CreateObjectFunction< MRCImageIO >::New() );
 }
 
-MRCImageIOFactory::~MRCImageIOFactory() = default;
+MRCImageIOFactory::~MRCImageIOFactory()
+{}
 
 const char *
-MRCImageIOFactory::GetITKSourceVersion() const
+MRCImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-MRCImageIOFactory::GetDescription() const
+MRCImageIOFactory::GetDescription(void) const
 {
   return "MRC ImageIO Factory, allows the loading of MRC images into ITK";
 }
@@ -56,14 +60,13 @@ MRCImageIOFactory::GetDescription() const
 
 static bool MRCImageIOFactoryHasBeenRegistered;
 
-void ITKIOMRC_EXPORT
-     MRCImageIOFactoryRegister__Private()
+void ITKIOMRC_EXPORT MRCImageIOFactoryRegister__Private(void)
 {
-  if (!MRCImageIOFactoryHasBeenRegistered)
-  {
+  if( !MRCImageIOFactoryHasBeenRegistered )
+    {
     MRCImageIOFactoryHasBeenRegistered = true;
     MRCImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

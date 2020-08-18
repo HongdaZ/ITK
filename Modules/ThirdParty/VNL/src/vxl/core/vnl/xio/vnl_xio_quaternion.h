@@ -21,9 +21,7 @@
 #include <string>
 #include <iosfwd>
 #include <vnl/vnl_quaternion.h>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: XML save vnl_quaternion to stream.
 // \relatesalso vnl_quaternion

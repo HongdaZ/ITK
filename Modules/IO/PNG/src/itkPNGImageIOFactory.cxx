@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,20 +23,24 @@ namespace itk
 {
 PNGImageIOFactory::PNGImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkPNGImageIO", "PNG Image IO", true, CreateObjectFunction<PNGImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkPNGImageIO",
+                          "PNG Image IO",
+                          1,
+                          CreateObjectFunction< PNGImageIO >::New() );
 }
 
-PNGImageIOFactory::~PNGImageIOFactory() = default;
+PNGImageIOFactory::~PNGImageIOFactory()
+{}
 
 const char *
-PNGImageIOFactory::GetITKSourceVersion() const
+PNGImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-PNGImageIOFactory::GetDescription() const
+PNGImageIOFactory::GetDescription(void) const
 {
   return "PNG ImageIO Factory, allows the loading of PNG images into insight";
 }
@@ -46,14 +50,13 @@ PNGImageIOFactory::GetDescription() const
 
 static bool PNGImageIOFactoryHasBeenRegistered;
 
-void ITKIOPNG_EXPORT
-     PNGImageIOFactoryRegister__Private()
+void ITKIOPNG_EXPORT PNGImageIOFactoryRegister__Private(void)
 {
-  if (!PNGImageIOFactoryHasBeenRegistered)
-  {
+  if( ! PNGImageIOFactoryHasBeenRegistered )
+    {
     PNGImageIOFactoryHasBeenRegistered = true;
     PNGImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,48 +24,49 @@
 #include "itkImageFileWriter.h"
 #include "itkTestingMacros.h"
 
-int
-itkPasteImageFilterTest(int argc, char * argv[])
+int itkPasteImageFilterTest( int argc, char* argv[] )
 {
-  if (argc < 4)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " DestinationImage SourceImage OutputImage\n";
+  if(argc < 4)
+    {
+    std::cerr << "Usage: " << argv[0] << " DestinationImage SourceImage OutputImage\n";
     return -1;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
-  using PixelType = unsigned char;
+  const unsigned int                Dimension = 2;
+  typedef unsigned char             PixelType;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension > ImageType;
 
-  itk::ImageFileReader<ImageType>::Pointer dest = itk::ImageFileReader<ImageType>::New();
+  itk::ImageFileReader< ImageType >::Pointer dest =
+    itk::ImageFileReader< ImageType >::New();
 
-  dest->SetFileName(argv[1]);
+  dest->SetFileName( argv[1] );
 
-  itk::ImageFileReader<ImageType>::Pointer src = itk::ImageFileReader<ImageType>::New();
+  itk::ImageFileReader< ImageType >::Pointer src =
+    itk::ImageFileReader< ImageType >::New();
 
-  src->SetFileName(argv[2]);
+  src->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(src->Update());
+  TRY_EXPECT_NO_EXCEPTION( src->Update() );
 
   // Create the filter
-  using FilterType = itk::PasteImageFilter<ImageType>;
+  typedef itk::PasteImageFilter< ImageType > FilterType;
 
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, PasteImageFilter, InPlaceImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, PasteImageFilter, InPlaceImageFilter );
 
-  filter->SetDestinationImage(dest->GetOutput());
-  filter->SetSourceImage(src->GetOutput());
+  filter->SetDestinationImage( dest->GetOutput() );
+  filter->SetSourceImage( src->GetOutput() );
 
   FilterType::InputImageIndexType destIndex;
   destIndex[0] = 100;
   destIndex[1] = 70;
-  filter->SetDestinationIndex(destIndex);
-  ITK_TEST_SET_GET_VALUE(destIndex, filter->GetDestinationIndex());
+  filter->SetDestinationIndex( destIndex );
+  TEST_SET_GET_VALUE( destIndex, filter->GetDestinationIndex() );
 
-  FilterType::InputImageIndexType  srcIndex;
-  FilterType::InputImageSizeType   srcSize;
+  FilterType::InputImageIndexType srcIndex;
+  FilterType::InputImageSizeType srcSize;
   FilterType::InputImageRegionType srcRegion;
 
   srcIndex[0] = 20;
@@ -74,46 +75,46 @@ itkPasteImageFilterTest(int argc, char * argv[])
   srcSize[0] = 60;
   srcSize[1] = 40;
 
-  srcRegion.SetIndex(srcIndex);
-  srcRegion.SetSize(srcSize);
+  srcRegion.SetIndex( srcIndex );
+  srcRegion.SetSize( srcSize );
 
-  filter->SetSourceRegion(srcRegion);
-  ITK_TEST_SET_GET_VALUE(srcRegion, filter->GetSourceRegion());
+  filter->SetSourceRegion( srcRegion );
+  TEST_SET_GET_VALUE( srcRegion, filter->GetSourceRegion() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+  TRY_EXPECT_NO_EXCEPTION( filter->Update() );
 
   // We'll tie this to a streamer to really exercise the paste code
-  using SplitterType = itk::ImageRegionSplitterMultidimensional;
+  typedef itk::ImageRegionSplitterMultidimensional SplitterType;
   SplitterType::Pointer splitter = SplitterType::New();
 
-  using StreamerType = itk::StreamingImageFilter<ImageType, ImageType>;
+  typedef itk::StreamingImageFilter< ImageType, ImageType > StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
-  streamer->SetInput(filter->GetOutput());
-  streamer->SetNumberOfStreamDivisions(25);
-  streamer->SetRegionSplitter(splitter);
+  streamer->SetInput( filter->GetOutput() );
+  streamer->SetNumberOfStreamDivisions( 25 );
+  streamer->SetRegionSplitter( splitter );
 
   try
-  {
+    {
     streamer->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject& e)
+    {
     std::cerr << "Exception detected: " << e.GetDescription();
     return -1;
-  }
+    }
   catch (...)
-  {
+    {
     std::cerr << "Some other exception occurred" << std::endl;
     return -2;
-  }
+    }
 
   // Generate test image
-  itk::ImageFileWriter<ImageType>::Pointer writer;
-  writer = itk::ImageFileWriter<ImageType>::New();
-  writer->SetInput(streamer->GetOutput());
-  writer->SetFileName(argv[3]);
+  itk::ImageFileWriter< ImageType >::Pointer writer;
+  writer = itk::ImageFileWriter< ImageType >::New();
+  writer->SetInput( streamer->GetOutput() );
+  writer->SetFileName( argv[3] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

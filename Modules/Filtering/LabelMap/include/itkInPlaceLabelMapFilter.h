@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@
 
 namespace itk
 {
-/**
- *\class InPlaceLabelMapFilter
+/** \class InPlaceLabelMapFilter
  * \brief Base class for filters that takes an image as input and overwrites
  * that image as the output
  *
@@ -80,17 +79,15 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT InPlaceLabelMapFilter : public LabelMapFilter<TInputImage, TInputImage>
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT InPlaceLabelMapFilter:public LabelMapFilter< TInputImage, TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InPlaceLabelMapFilter);
-
-  /** Standard class type aliases. */
-  using Self = InPlaceLabelMapFilter;
-  using Superclass = LabelMapFilter<TInputImage, TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef InPlaceLabelMapFilter                      Self;
+  typedef LabelMapFilter< TInputImage, TInputImage > Superclass;
+  typedef SmartPointer< Self >                       Pointer;
+  typedef SmartPointer< const Self >                 ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(InPlaceLabelMapFilter, LabelMapFilter);
@@ -98,29 +95,29 @@ public:
   /** Standard New method. */
   itkNewMacro(Self);
 
-  /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageType       OutputImageType;
+  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using LabelObjectType = typename InputImageType::LabelObjectType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::Pointer         InputImagePointer;
+  typedef typename InputImageType::ConstPointer    InputImageConstPointer;
+  typedef typename InputImageType::RegionType      InputImageRegionType;
+  typedef typename InputImageType::PixelType       InputImagePixelType;
+  typedef typename InputImageType::LabelObjectType LabelObjectType;
 
-  using PixelType = typename InputImageType::PixelType;
-  using IndexType = typename InputImageType::IndexType;
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::PixelType  PixelType;
+  typedef typename InputImageType::IndexType  IndexType;
+  typedef typename InputImageType::RegionType RegionType;
 
-  using TOutputImage = TInputImage;
+  typedef TInputImage TOutputImage;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** In place operation can be turned on and off. This only has an
    * effect when the input and output image type match. */
@@ -134,8 +131,7 @@ public:
    * determine whether a particular use of the filter is really
    * running in place. Some filters may be able to optimize their
    * operation if the InPlace is true and CanRunInPlace is true. */
-  bool
-  CanRunInPlace() const
+  bool CanRunInPlace() const
   {
     return true; // used to test if TInputImage == TOutputImage. But
                  // if you look above, the superclass declaration
@@ -145,11 +141,10 @@ public:
   }
 
 protected:
-  InPlaceLabelMapFilter() = default;
-  ~InPlaceLabelMapFilter() override = default;
+  InPlaceLabelMapFilter();
+  ~InPlaceLabelMapFilter() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** The GenerateData method normally allocates the buffers for all
    * of the outputs of a filter. Since InPlaceLabelMapFilter's can use an
@@ -163,26 +158,26 @@ protected:
    * an InPlaceFilter is not threaded (i.e. it provides an
    * implementation of GenerateData()), then this method (or
    * equivalent) must be called in GenerateData(). */
-  void
-  AllocateOutputs() override;
+  virtual void AllocateOutputs() ITK_OVERRIDE;
 
   /**
    * Return the output label collection image, instead of the input as in the default
    * implementation
    */
-  InputImageType *
-  GetLabelMap() override
+  virtual InputImageType * GetLabelMap() ITK_OVERRIDE
   {
     return this->GetOutput();
   }
 
 private:
-  bool m_InPlace{ true };
+  ITK_DISALLOW_COPY_AND_ASSIGN(InPlaceLabelMapFilter);
+
+  bool m_InPlace;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkInPlaceLabelMapFilter.hxx"
+#include "itkInPlaceLabelMapFilter.hxx"
 #endif
 
 #endif

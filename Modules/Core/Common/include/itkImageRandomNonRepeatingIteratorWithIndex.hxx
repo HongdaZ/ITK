@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,30 +22,36 @@
 
 namespace itk
 {
-template <typename TImage>
-ImageRandomNonRepeatingIteratorWithIndex<TImage>::ImageRandomNonRepeatingIteratorWithIndex(ImageType *        ptr,
-                                                                                           const RegionType & region)
-  : ImageRandomNonRepeatingConstIteratorWithIndex<TImage>(ptr, region)
+template< typename TImage >
+ImageRandomNonRepeatingIteratorWithIndex< TImage >
+::ImageRandomNonRepeatingIteratorWithIndex():
+  ImageRandomNonRepeatingConstIteratorWithIndex< TImage >()
 {}
 
-template <typename TImage>
-ImageRandomNonRepeatingIteratorWithIndex<TImage>::ImageRandomNonRepeatingIteratorWithIndex(
-  const ImageIteratorWithIndex<TImage> & it)
-  : ImageRandomNonRepeatingConstIteratorWithIndex<TImage>(it)
+template< typename TImage >
+ImageRandomNonRepeatingIteratorWithIndex< TImage >
+::ImageRandomNonRepeatingIteratorWithIndex(ImageType *ptr, const RegionType & region):
+  ImageRandomNonRepeatingConstIteratorWithIndex< TImage >(ptr, region)
 {}
 
-template <typename TImage>
-ImageRandomNonRepeatingIteratorWithIndex<TImage>::ImageRandomNonRepeatingIteratorWithIndex(
-  const ImageRandomNonRepeatingConstIteratorWithIndex<TImage> & it)
-  : ImageRandomNonRepeatingConstIteratorWithIndex<TImage>(it)
+template< typename TImage >
+ImageRandomNonRepeatingIteratorWithIndex< TImage >
+::ImageRandomNonRepeatingIteratorWithIndex(const ImageIteratorWithIndex< TImage > & it):
+  ImageRandomNonRepeatingConstIteratorWithIndex< TImage >(it)
 {}
 
-template <typename TImage>
-ImageRandomNonRepeatingIteratorWithIndex<TImage> &
-ImageRandomNonRepeatingIteratorWithIndex<TImage>::operator=(
-  const ImageRandomNonRepeatingConstIteratorWithIndex<TImage> & it)
+template< typename TImage >
+ImageRandomNonRepeatingIteratorWithIndex< TImage >
+::ImageRandomNonRepeatingIteratorWithIndex(const ImageRandomNonRepeatingConstIteratorWithIndex< TImage > & it):
+  ImageRandomNonRepeatingConstIteratorWithIndex< TImage >(it)
+{}
+
+template< typename TImage >
+ImageRandomNonRepeatingIteratorWithIndex< TImage > &
+ImageRandomNonRepeatingIteratorWithIndex< TImage >
+::operator=(const ImageRandomNonRepeatingConstIteratorWithIndex< TImage > & it)
 {
-  this->ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::operator=(it);
+  this->ImageRandomNonRepeatingConstIteratorWithIndex< TImage >::operator=(it);
   return *this;
 }
 } // end namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,60 +42,68 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKMathematicalMorphology
  */
-template <typename TInputImage, typename TOutputImage, typename TKernel>
-class ITK_TEMPLATE_EXPORT BasicErodeImageFilter : public MorphologyImageFilter<TInputImage, TOutputImage, TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
+class ITK_TEMPLATE_EXPORT BasicErodeImageFilter:
+  public MorphologyImageFilter< TInputImage, TOutputImage, TKernel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BasicErodeImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BasicErodeImageFilter;
-  using Superclass = MorphologyImageFilter<TInputImage, TOutputImage, TKernel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BasicErodeImageFilter                                       Self;
+  typedef MorphologyImageFilter< TInputImage, TOutputImage, TKernel > Superclass;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(BasicErodeImageFilter, MorphologyImageFilter);
+  itkTypeMacro(BasicErodeImageFilter,
+               MorphologyImageFilter);
 
   /** Declaration of pixel type. */
-  using PixelType = typename Superclass::PixelType;
+  typedef typename Superclass::PixelType PixelType;
 
   /** Kernel (structuring element) iterator. */
-  using KernelIteratorType = typename Superclass::KernelIteratorType;
+  typedef typename Superclass::KernelIteratorType KernelIteratorType;
 
   /** Neighborhood iterator type. */
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  typedef typename Superclass::NeighborhoodIteratorType NeighborhoodIteratorType;
 
-  /** Kernel type alias. */
-  using KernelType = typename Superclass::KernelType;
+  /** Kernel typedef. */
+  typedef typename Superclass::KernelType KernelType;
 
   /** Default boundary condition type */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  typedef typename Superclass::DefaultBoundaryConditionType DefaultBoundaryConditionType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int KernelDimension = TKernel::NeighborhoodDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(KernelDimension, unsigned int,
+                      TKernel::NeighborhoodDimension);
 
   /** Type of the pixels in the Kernel. */
-  using KernelPixelType = typename TKernel::PixelType;
+  typedef typename TKernel::PixelType KernelPixelType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToOutputCheck, (Concept::Convertible<PixelType, typename TOutputImage::PixelType>));
-  itkConceptMacro(SameDimensionCheck1, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
-  itkConceptMacro(SameDimensionCheck2, (Concept::SameDimension<InputImageDimension, KernelDimension>));
-  itkConceptMacro(InputLessThanComparableCheck, (Concept::LessThanComparable<PixelType>));
-  itkConceptMacro(KernelGreaterThanComparableCheck, (Concept::GreaterThanComparable<KernelPixelType>));
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< PixelType, typename TOutputImage::PixelType > ) );
+  itkConceptMacro( SameDimensionCheck1,
+                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( SameDimensionCheck2,
+                   ( Concept::SameDimension< InputImageDimension, KernelDimension > ) );
+  itkConceptMacro( InputLessThanComparableCheck,
+                   ( Concept::LessThanComparable< PixelType > ) );
+  itkConceptMacro( KernelGreaterThanComparableCheck,
+                   ( Concept::GreaterThanComparable< KernelPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   BasicErodeImageFilter();
-  ~BasicErodeImageFilter() override = default;
+  ~BasicErodeImageFilter() ITK_OVERRIDE {}
 
   /** Evaluate image neighborhood with kernel to find the new value
    * for the center pixel value.
@@ -103,12 +111,13 @@ protected:
    * It will return the minimum value of the image pixels whose corresponding
    * element in the structuring element is positive. This version of
    * Evaluate is used for non-boundary pixels. */
-  PixelType
-  Evaluate(const NeighborhoodIteratorType & nit,
-           const KernelIteratorType         kernelBegin,
-           const KernelIteratorType         kernelEnd) override;
+  virtual PixelType Evaluate(const NeighborhoodIteratorType & nit,
+                             const KernelIteratorType kernelBegin,
+                             const KernelIteratorType kernelEnd) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BasicErodeImageFilter);
+
   // Default boundary condition for erosion filter, defaults to
   // NumericTraits<PixelType>::max()
   DefaultBoundaryConditionType m_ErodeBoundaryCondition;
@@ -116,7 +125,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBasicErodeImageFilter.hxx"
+#include "itkBasicErodeImageFilter.hxx"
 #endif
 
 #endif

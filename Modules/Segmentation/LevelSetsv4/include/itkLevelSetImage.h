@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,56 +35,56 @@ namespace itk
  *
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TInput, unsigned int VDimension, typename TOutput>
-class ITK_TEMPLATE_EXPORT LevelSetImage : public LevelSetBase<TInput, VDimension, TOutput, ImageBase<VDimension>>
+template< typename TInput, unsigned int VDimension, typename TOutput >
+class ITK_TEMPLATE_EXPORT LevelSetImage :
+  public LevelSetBase< TInput, VDimension, TOutput, ImageBase< VDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetImage);
+  typedef ImageBase< VDimension >                                    ImageBaseType;
 
-  using ImageBaseType = ImageBase<VDimension>;
-
-  using Self = LevelSetImage;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetBase<TInput, VDimension, TOutput, ImageBaseType>;
+  typedef LevelSetImage                                              Self;
+  typedef SmartPointer< Self >                                       Pointer;
+  typedef SmartPointer< const Self >                                 ConstPointer;
+  typedef LevelSetBase< TInput, VDimension, TOutput, ImageBaseType > Superclass;
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetImage, LevelSetBase);
+  itkTypeMacro ( LevelSetImage, LevelSetBase );
 
-  static constexpr unsigned int Dimension = Superclass::Dimension;
+  itkStaticConstMacro ( Dimension, unsigned int, Superclass::Dimension );
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
-  using OutputRealType = typename Superclass::OutputRealType;
-  using GradientType = typename Superclass::GradientType;
-  using HessianType = typename Superclass::HessianType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
-  using OffsetType = typename ImageBaseType::OffsetType;
-  using OffsetValueType = typename ImageBaseType::OffsetValueType;
+  typedef typename Superclass::InputType          InputType;
+  typedef typename Superclass::OutputType         OutputType;
+  typedef typename Superclass::OutputRealType     OutputRealType;
+  typedef typename Superclass::GradientType       GradientType;
+  typedef typename Superclass::HessianType        HessianType;
+  typedef typename Superclass::LevelSetDataType   LevelSetDataType;
+  typedef typename ImageBaseType::OffsetType      OffsetType;
+  typedef typename ImageBaseType::OffsetValueType OffsetValueType;
 
   /* Set/Get the domain offset from input domain */
-  itkSetMacro(DomainOffset, OffsetType);
-  itkGetConstMacro(DomainOffset, OffsetType);
+  itkSetMacro( DomainOffset, OffsetType );
+  itkGetConstMacro( DomainOffset, OffsetType );
 
 protected:
   LevelSetImage();
 
-  ~LevelSetImage() override = default;
+  virtual ~LevelSetImage() ITK_OVERRIDE;
 
-  using ScalingType = GradientType;
+  typedef GradientType ScalingType;
   ScalingType m_NeighborhoodScales;
   OffsetType  m_DomainOffset;
 
-  virtual bool
-  IsInsideDomain(const InputType & iP) const = 0;
+  virtual bool IsInsideDomain( const InputType& iP ) const = 0;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetImage);
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetImage.hxx"
+#include "itkLevelSetImage.hxx"
 #endif
 
 #endif // itkLevelSetImage_h

@@ -565,7 +565,8 @@ class pointer_t(compound_t):
         if isinstance(self.base, calldef_type_t):
             # This is a function pointer. Do not add supplementary *
             return decl_string
-        return decl_string + " *"
+        else:
+            return decl_string + " *"
 
     def _clone_impl(self):
         return pointer_t(self.base.clone())
@@ -636,11 +637,12 @@ class array_t(compound_t):
             return self.base.__bds_for_multi_dim_arrays(
                 parent_dims,
                 with_defaults)
-
-        tmp = []
-        for s in parent_dims:
-            tmp.append('[%d]' % s)
-        return self.base.build_decl_string(with_defaults) + " " + "".join(tmp)
+        else:
+            tmp = []
+            for s in parent_dims:
+                tmp.append('[%d]' % s)
+            return \
+                self.base.build_decl_string(with_defaults) + " " + "".join(tmp)
 
     def _clone_impl(self):
         return array_t(self.base.clone(), self.size)
@@ -903,8 +905,8 @@ class declarated_t(type_t, byte_info.byte_info):
     def build_decl_string(self, with_defaults=True):
         if with_defaults:
             return self._declaration.decl_string
-
-        return self._declaration.partial_decl_string
+        else:
+            return self._declaration.partial_decl_string
 
     def _clone_impl(self):
         return declarated_t(self._declaration)
@@ -926,7 +928,8 @@ class type_qualifiers_t(object):
             and self.has_extern == other.has_extern \
             and self.has_mutable == other.has_mutable
 
-    __hash__ = object.__hash__
+    def __hash__(self):
+        return super(type_qualifiers_t, self).__hash__()
 
     def __ne__(self, other):
         return not self.__eq__(other)

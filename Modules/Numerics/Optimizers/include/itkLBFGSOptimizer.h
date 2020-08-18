@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -82,16 +82,15 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT LBFGSOptimizer : public SingleValuedNonLinearVnlOptimizer
+class ITKOptimizers_EXPORT LBFGSOptimizer:
+  public SingleValuedNonLinearVnlOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizer);
-
-  /** Standard "Self" type alias. */
-  using Self = LBFGSOptimizer;
-  using Superclass = SingleValuedNonLinearVnlOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef LBFGSOptimizer                    Self;
+  typedef SingleValuedNonLinearVnlOptimizer Superclass;
+  typedef SmartPointer< Self >              Pointer;
+  typedef SmartPointer< const Self >        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -99,36 +98,31 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(LBFGSOptimizer, SingleValuedNonLinearVnlOptimizer);
 
-  /** InternalParameters type alias. */
-  using InternalParametersType = vnl_vector<double>;
+  /** InternalParameters typedef. */
+  typedef   vnl_vector< double > InternalParametersType;
 
   /** Internal optimizer type. */
-  using InternalOptimizerType = vnl_lbfgs;
+  typedef   vnl_lbfgs InternalOptimizerType;
 
   /** Method for getting access to the internal optimizer. */
-  vnl_lbfgs *
-  GetOptimizer();
+  vnl_lbfgs * GetOptimizer();
 
   /** Start optimization with an initial value. */
-  void
-  StartOptimization() override;
+  virtual void StartOptimization(void) ITK_OVERRIDE;
 
   /** Plug in a Cost Function into the optimizer  */
-  void
-  SetCostFunction(SingleValuedCostFunction * costFunction) override;
+  virtual void SetCostFunction(SingleValuedCostFunction *costFunction) ITK_OVERRIDE;
 
   /** Set/Get the optimizer trace flag. If set to true, the optimizer
    * prints out information every iteration.
    */
-  virtual void
-  SetTrace(bool flag);
+  virtual void SetTrace(bool flag);
 
   itkGetMacro(Trace, bool);
   itkBooleanMacro(Trace);
 
   /** Set/Get the maximum number of function evaluations allowed. */
-  virtual void
-  SetMaximumNumberOfFunctionEvaluations(unsigned int n);
+  virtual void SetMaximumNumberOfFunctionEvaluations(unsigned int n);
 
   itkGetMacro(MaximumNumberOfFunctionEvaluations, unsigned int);
 
@@ -137,19 +131,17 @@ public:
    * be found. The optimization terminates when:
    * ||G|| < gtol max(1,||X||) where ||.|| denotes the Euclidean norm.
    */
-  virtual void
-  SetGradientConvergenceTolerance(double gtol);
+  virtual void SetGradientConvergenceTolerance(double gtol);
 
   itkGetMacro(GradientConvergenceTolerance, double);
 
   /** Set/Get the line search accuracy. This is a positive real number
    * with a default value of 0.9, which controls the accuracy of the line
-   * search. If the function and gradient evaluations are inexpensive with
+   * search. If the function and gradient evalutions are inexpensive with
    * respect to the cost of the iterations it may be advantageous to set
    * the value to a small value (say 0.1).
    */
-  virtual void
-  SetLineSearchAccuracy(double tol);
+  virtual void SetLineSearchAccuracy(double tol);
 
   itkGetMacro(LineSearchAccuracy, double);
 
@@ -157,28 +149,26 @@ public:
    * with a default value of 1.0 which determines the stpe size in the line
    * search.
    */
-  virtual void
-  SetDefaultStepLength(double stp);
+  virtual void SetDefaultStepLength(double stp);
 
   itkGetMacro(DefaultStepLength, double);
 
   /** Return Current Value */
-  MeasureType
-  GetValue() const;
+  MeasureType GetValue() const;
 
   /** Get the reason for termination */
-  const std::string
-  GetStopConditionDescription() const override;
+  virtual const std::string GetStopConditionDescription() const ITK_OVERRIDE;
 
 protected:
   LBFGSOptimizer();
-  ~LBFGSOptimizer() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~LBFGSOptimizer() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  using CostFunctionAdaptorType = Superclass::CostFunctionAdaptorType;
+  typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizer);
+
   bool                       m_OptimizerInitialized;
   InternalOptimizerType *    m_VnlOptimizer;
   mutable std::ostringstream m_StopConditionDescription;

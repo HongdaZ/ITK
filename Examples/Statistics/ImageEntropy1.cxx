@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,17 +58,16 @@
 
 #include "itkImageFileReader.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  ImageEntropy1  inputImageFileName ";
     std::cerr << "numberOfHistogramBins" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -78,29 +77,28 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char       PixelType;
+  const   unsigned int        Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension > ImageType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Problem encoutered while reading image file : " << argv[1]
-              << std::endl;
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    std::cerr << "Problem encoutered while reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -110,10 +108,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramGeneratorType =
-    itk::Statistics::ScalarImageToHistogramGenerator<ImageType>;
+  typedef itk::Statistics::ScalarImageToHistogramGenerator<
+                                      ImageType >   HistogramGeneratorType;
 
-  HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();
+  HistogramGeneratorType::Pointer histogramGenerator =
+                                      HistogramGeneratorType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -128,10 +127,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int numberOfHistogramBins = std::stoi(argv[2]);
+  const unsigned int numberOfHistogramBins = atoi( argv[2] );
 
-  histogramGenerator->SetNumberOfBins(numberOfHistogramBins);
-  histogramGenerator->SetMarginalScale(10.0);
+  histogramGenerator->SetNumberOfBins( numberOfHistogramBins );
+  histogramGenerator->SetMarginalScale( 10.0 );
   // Software Guide : EndCodeSnippet
 
 
@@ -144,7 +143,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramGenerator->SetInput(reader->GetOutput());
+  histogramGenerator->SetInput(  reader->GetOutput() );
 
   histogramGenerator->Compute();
   // Software Guide : EndCodeSnippet
@@ -159,7 +158,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramType = HistogramGeneratorType::HistogramType;
+  typedef HistogramGeneratorType::HistogramType  HistogramType;
 
   const HistogramType * histogram = histogramGenerator->GetOutput();
   // Software Guide : EndCodeSnippet
@@ -169,11 +168,11 @@ main(int argc, char * argv[])
 
   std::cout << "Histogram size " << histogramSize << std::endl;
 
-  for (unsigned int bin = 0; bin < histogramSize; ++bin)
-  {
+  for (unsigned int bin=0; bin < histogramSize; ++bin)
+    {
     std::cout << "bin = " << bin << " frequency = ";
-    std::cout << histogram->GetFrequency(bin, 0) << std::endl;
-  }
+    std::cout << histogram->GetFrequency( bin, 0 ) << std::endl;
+    }
 
 
   // Software Guide : BeginLatex
@@ -219,16 +218,16 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  while (itr != end)
-  {
+  while( itr != end )
+    {
     const double probability = itr.GetFrequency() / Sum;
 
-    if (probability > 0.99 / Sum)
-    {
-      Entropy += -probability * std::log(probability) / std::log(2.0);
-    }
+    if( probability > 0.99 / Sum )
+      {
+      Entropy += - probability * std::log( probability ) / std::log( 2.0 );
+      }
     ++itr;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -278,4 +277,5 @@ main(int argc, char * argv[])
 
 
   return EXIT_SUCCESS;
+
 }

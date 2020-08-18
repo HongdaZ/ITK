@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -65,23 +65,19 @@ namespace itk
  *
  * The application developer may overload the default implementation to provide
  * a specialized Print() characteristics to produce results desirable for their application.
- * A set of very crude Macros {NATIVE_TYPE_METADATAPRINT, ITK_OBJECT_TYPE_METADATAPRINT_1COMMA,
- * ITK_IMAGE_TYPE_METADATAPRINT  } are provided to facilitate a very simple implementation, and as an example.
- *
+ * A set of very crude Macros {NATIVE_TYPE_METADATAPRINT, ITK_OBJECT_TYPE_METADATAPRINT_1COMMA, ITK_IMAGE_TYPE_METADATAPRINT  }
+ * are provided to facilitate a very simple implementation, and as an example.
  * \ingroup ITKCommon
- *
  */
-template <typename MetaDataObjectType>
-class ITK_TEMPLATE_EXPORT MetaDataObject : public MetaDataObjectBase
+template< typename MetaDataObjectType >
+class ITK_TEMPLATE_EXPORT MetaDataObject:public MetaDataObjectBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaDataObject);
-
-  /** Smart pointer type alias support */
-  using Self = MetaDataObject;
-  using Superclass = MetaDataObjectBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support. */
+  typedef MetaDataObject             Self;
+  typedef MetaDataObjectBase         Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkFactorylessNewMacro(Self);
@@ -95,8 +91,7 @@ public:
    * \author Hans J. Johnson
    * \return A pointer to a const char array containing the unique type name.
    */
-  const char *
-  GetMetaDataObjectTypeName() const override;
+  virtual const char * GetMetaDataObjectTypeName() const ITK_OVERRIDE;
 
   /**
    * The definition of this function is necessary to fulfill
@@ -104,37 +99,35 @@ public:
    * \author Hans J. Johnson
    * \return A constant reference to a std::type_info object
    */
-  const std::type_info &
-  GetMetaDataObjectTypeInfo() const override;
+  virtual const std::type_info & GetMetaDataObjectTypeInfo() const ITK_OVERRIDE;
 
   /**
    * Function to return the stored value of type MetaDataObjectType.
    * \author Hans J. Johnson
    * \return a constant reference to a MetaDataObjectType
    */
-  const MetaDataObjectType &
-  GetMetaDataObjectValue() const;
+  const MetaDataObjectType & GetMetaDataObjectValue() const;
 
   /**
    * Function to set the stored value of type MetaDataObjectType.
    * \author Hans J. Johnson
    * \param newValue A constant reference to at MetaDataObjectType.
    */
-  void
-  SetMetaDataObjectValue(const MetaDataObjectType & newValue);
+  void SetMetaDataObjectValue(const MetaDataObjectType & newValue);
 
   /**
    * Defines the default behavior for printing out this element
    * \param os An output stream
    */
-  void
-  Print(std::ostream & os) const override;
+  virtual void Print(std::ostream & os) const ITK_OVERRIDE;
 
 protected:
-  MetaDataObject() = default;
-  ~MetaDataObject() override = default;
+  MetaDataObject();
+  virtual ~MetaDataObject() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaDataObject);
+
   /**
    * A variable to store this derived type.
    * \author Hans J. Johnson
@@ -151,18 +144,16 @@ private:
  * \return A smartpointer ot a MetaDataObject that is suitable for
  * insertion into a MetaDataDictionary.
  */
-template <typename T>
-inline void
-EncapsulateMetaData(MetaDataDictionary & Dictionary, const std::string & key, const T & invalue)
+template< typename T >
+inline void EncapsulateMetaData(MetaDataDictionary & Dictionary, const std::string & key, const T & invalue)
 {
-  typename MetaDataObject<T>::Pointer temp = MetaDataObject<T>::New();
+  typename MetaDataObject< T >::Pointer temp = MetaDataObject< T >::New();
   temp->SetMetaDataObjectValue(invalue);
   Dictionary[key] = temp;
 }
 
-template <typename T>
-inline void
-EncapsulateMetaData(MetaDataDictionary & Dictionary, const char * key, const T & invalue)
+template< typename T >
+inline void EncapsulateMetaData(MetaDataDictionary & Dictionary, const char *key, const T & invalue)
 {
   EncapsulateMetaData(Dictionary, std::string(key), invalue);
 }
@@ -176,21 +167,20 @@ EncapsulateMetaData(MetaDataDictionary & Dictionary, const char * key, const T &
  * \param key -- string identifier for this object
  * \param outval -- where to store value found in table.
  */
-template <typename T>
-inline bool
-ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T & outval)
+template< typename T >
+inline bool ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T & outval)
 {
-  auto keyIter = Dictionary.Find(key);
-  if (keyIter == Dictionary.End())
-  {
+  if ( !Dictionary.HasKey(key) )
+    {
     return false;
-  }
+    }
 
-  auto const * const TempMetaDataObject = dynamic_cast<MetaDataObject<T> const *>(keyIter->second.GetPointer());
-  if (TempMetaDataObject == nullptr)
-  {
+  const MetaDataObjectBase::ConstPointer baseObjectSmartPointer = Dictionary[key];
+  MetaDataObject< T > const * const TempMetaDataObject = dynamic_cast< MetaDataObject< T > const * >( baseObjectSmartPointer.GetPointer() );
+  if ( TempMetaDataObject == ITK_NULLPTR )
+    {
     return false;
-  }
+    }
 
   outval = TempMetaDataObject->GetMetaDataObjectValue();
   return true;
@@ -205,12 +195,14 @@ ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T &
  * have operator<< defined.
  * \param TYPE_NAME the native type parameter type
  */
-#define ITK_NATIVE_TYPE_METADATAPRINT(TYPE_NAME)                                                                       \
-  template <>                                                                                                          \
-  void ::itk::MetaDataObject<TYPE_NAME>::Print(std::ostream & os) const                                                \
-  {                                                                                                                    \
-    os << this->m_MetaDataObjectValue << std::endl;                                                                    \
-  }
+#define ITK_NATIVE_TYPE_METADATAPRINT(TYPE_NAME)        \
+  template< >                                       \
+  void                                              \
+  ::itk::MetaDataObject< TYPE_NAME >                  \
+  ::Print(std::ostream & os) const                  \
+    {                                               \
+    os << this->m_MetaDataObjectValue << std::endl; \
+    }                                               \
 
 /**
  * \def ITK_OBJECT_TYPE_METADATAPRINT_1COMMA( TYPE_NAME_PART1, TYPE_NAME_PART2 )
@@ -220,12 +212,14 @@ ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T &
  * \param TYPE_NAME_PART1
  * \param TYPE_NAME_PART2
  */
-#define ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(TYPE_NAME_PART1, TYPE_NAME_PART2)                                         \
-  template <>                                                                                                          \
-  void itk::MetaDataObject<TYPE_NAME_PART1, TYPE_NAME_PART2>::Print(std::ostream & os) const                           \
-  {                                                                                                                    \
-    this->m_MetaDataObjectValue->Print(os);                                                                            \
-  }
+#define ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(TYPE_NAME_PART1, TYPE_NAME_PART2) \
+  template< >                                                                  \
+  void                                                                         \
+  itk::MetaDataObject< TYPE_NAME_PART1, TYPE_NAME_PART2 >                      \
+  ::Print(std::ostream & os) const                                             \
+    {                                                                          \
+    this->m_MetaDataObjectValue->Print(os);                                    \
+    }                                                                          \
 
 /**
  * \def ITK_IMAGE_TYPE_METADATAPRINT( STORAGE_TYPE )
@@ -234,21 +228,21 @@ ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T &
  * itk::Image\<STORAGE_TYPE,[1-8]\>\::Pointer
  * \param STORAGE_TYPE The storage type of the image type to print.
  */
-#define ITK_IMAGE_TYPE_METADATAPRINT(STORAGE_TYPE)                                                                     \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 1>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 2>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 3>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 4>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 5>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 6>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 7>::Pointer)                                           \
-  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image<STORAGE_TYPE, 8>::Pointer)
+#define ITK_IMAGE_TYPE_METADATAPRINT(STORAGE_TYPE)                             \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 1 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 2 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 3 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 4 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 5 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 6 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 7 >::Pointer) \
+  ITK_OBJECT_TYPE_METADATAPRINT_1COMMA(itk::Image< STORAGE_TYPE, 8 >::Pointer) \
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMetaDataObject.hxx"
+#include "itkMetaDataObject.hxx"
 #endif
 
-#endif // itkMetaDataObject_h
+#endif //itkMetaDataObject_h
 
 /** Explicit instantiations */
 #ifndef ITK_TEMPLATE_EXPLICIT_MetaDataObject
@@ -260,46 +254,52 @@ ExposeMetaData(const MetaDataDictionary & Dictionary, const std::string key, T &
 //            need to be considered. This code *MUST* be *OUTSIDE* the header
 //            guards.
 //
-#if defined(ITKCommon_EXPORTS)
+#  if defined( ITKCommon_EXPORTS )
 //   We are building this library
-#  define ITKCommon_EXPORT_EXPLICIT ITK_TEMPLATE_EXPORT
-#else
+#    define ITKCommon_EXPORT_EXPLICIT ITK_TEMPLATE_EXPORT
+#  else
 //   We are using this library
-#  define ITKCommon_EXPORT_EXPLICIT ITKCommon_EXPORT
-#endif
+#    define ITKCommon_EXPORT_EXPLICIT ITKCommon_EXPORT
+#  endif
 namespace itk
 {
 
-ITK_GCC_PRAGMA_DIAG_PUSH()
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_PUSH()
+#endif
 ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
 
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<bool>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<unsigned char>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<char>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<signed char>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<unsigned short>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<short>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<unsigned int>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<int>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<unsigned long>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<long>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<unsigned long long>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<long long>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<float>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<double>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<std::string>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<std::vector<float>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<std::vector<double>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<std::vector<std::vector<float>>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<std::vector<std::vector<double>>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<Array<char>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<Array<int>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<Array<float>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<Array<double>>;
-extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject<Matrix<double>>;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< bool >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< unsigned char >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< char >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< signed char >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< unsigned short >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< short >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< unsigned int >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< int >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< unsigned long >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< long >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< unsigned long long >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< long long >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< float >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< double >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< std::string >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< std::vector<float> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< std::vector<double> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< std::vector<std::vector<float> > >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< std::vector<std::vector<double> > >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< Array<char> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< Array<int> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< Array<float> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< Array<double> >;
+extern template class ITKCommon_EXPORT_EXPLICIT MetaDataObject< Matrix<double> >;
 
-ITK_GCC_PRAGMA_DIAG_POP()
+#ifdef ITK_HAS_GCC_PRAGMA_DIAG_PUSHPOP
+  ITK_GCC_PRAGMA_DIAG_POP()
+#else
+  ITK_GCC_PRAGMA_DIAG(warning "-Wattributes")
+#endif
 
 } // end namespace itk
-#undef ITKCommon_EXPORT_EXPLICIT
+#  undef ITKCommon_EXPORT_EXPLICIT
 #endif

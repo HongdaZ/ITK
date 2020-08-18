@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,20 +23,22 @@ namespace itk
 {
 GDCMImageIOFactory::GDCMImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkGDCMImageIO", "GDCM Image IO", true, CreateObjectFunction<GDCMImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkGDCMImageIO",
+                          "GDCM Image IO",
+                          1,
+                          CreateObjectFunction< GDCMImageIO >::New() );
 }
 
-GDCMImageIOFactory::~GDCMImageIOFactory() = default;
+GDCMImageIOFactory::~GDCMImageIOFactory()
+{}
 
-const char *
-GDCMImageIOFactory::GetITKSourceVersion() const
+const char * GDCMImageIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
 
-const char *
-GDCMImageIOFactory::GetDescription() const
+const char * GDCMImageIOFactory::GetDescription() const
 {
   return "GDCM ImageIO Factory, allows the loading of DICOM images into Insight";
 }
@@ -46,14 +48,13 @@ GDCMImageIOFactory::GetDescription() const
 
 static bool GDCMImageIOFactoryHasBeenRegistered;
 
-void ITKIOGDCM_EXPORT
-     GDCMImageIOFactoryRegister__Private()
+void ITKIOGDCM_EXPORT GDCMImageIOFactoryRegister__Private(void)
 {
-  if (!GDCMImageIOFactoryHasBeenRegistered)
-  {
+  if( ! GDCMImageIOFactoryHasBeenRegistered )
+    {
     GDCMImageIOFactoryHasBeenRegistered = true;
     GDCMImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

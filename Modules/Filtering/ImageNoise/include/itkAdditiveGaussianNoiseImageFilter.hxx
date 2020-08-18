@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,40 +20,34 @@
 
 #include "itkAdditiveGaussianNoiseImageFilter.h"
 #include "itkImageScanlineIterator.h"
-#include "itkTotalProgressReporter.h"
+#include "itkProgressReporter.h"
 #include "itkNormalVariateGenerator.h"
 
 namespace itk
 {
 
 template <class TInputImage, class TOutputImage>
-AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>::AdditiveGaussianNoiseImageFilter()
-
+AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>
+::AdditiveGaussianNoiseImageFilter() :
+  m_Mean( 0.0 ),
+  m_StandardDeviation( 1.0 )
 {
-  this->DynamicMultiThreadingOn();
-  this->ThreaderUpdateProgressOff();
 }
 
 template <class TInputImage, class TOutputImage>
 void
-AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>
+::ThreadedGenerateData( const OutputImageRegionType &outputRegionForThread,
+                        ThreadIdType threadId)
 {
-  const InputImageType * inputPtr = this->GetInput();
-  OutputImageType *      outputPtr = this->GetOutput(0);
-
-  TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
+  const InputImageType*  inputPtr = this->GetInput();
+  OutputImageType*       outputPtr = this->GetOutput(0);
 
   // Create a random generator per thread
-  IndexValueType indSeed = 0;
-  for (unsigned d = 0; d < TOutputImage::ImageDimension; d++)
-  {
-    indSeed += outputRegionForThread.GetIndex(d);
-  }
   typename Statistics::NormalVariateGenerator::Pointer randn = Statistics::NormalVariateGenerator::New();
-  const uint32_t                                       seed = Self::Hash(this->GetSeed(), uint32_t(indSeed));
+  const uint32_t seed = Self::Hash( this->GetSeed(), threadId );
   // Convert the seed bit for bit to int32
-  randn->Initialize(*reinterpret_cast<const int32_t *>(&seed));
+  randn->Initialize(*reinterpret_cast<const int32_t*>( &seed ));
 
   // Define the portion of the input to walk for this thread, using
   // the CallCopyOutputRegionToInputRegion method allows for the input
@@ -65,32 +59,38 @@ AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
   ImageScanlineConstIterator<TInputImage> inputIt(inputPtr, inputRegionForThread);
   ImageScanlineIterator<TOutputImage>     outputIt(outputPtr, outputRegionForThread);
 
+  ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels() );
+
   inputIt.GoToBegin();
   outputIt.GoToBegin();
 
-  while (!inputIt.IsAtEnd())
-  {
-    while (!inputIt.IsAtEndOfLine())
+  while ( !inputIt.IsAtEnd() )
     {
+    while ( !inputIt.IsAtEndOfLine() )
+      {
       const double out = inputIt.Get() + m_Mean + m_StandardDeviation * randn->GetVariate();
-      outputIt.Set(Self::ClampCast(out));
+      outputIt.Set( Self::ClampCast(out) );
       ++inputIt;
       ++outputIt;
-    }
+      }
     inputIt.NextLine();
     outputIt.NextLine();
-    progress.Completed(outputRegionForThread.GetSize()[0]);
-  }
+    progress.CompletedPixel();  // potential exception thrown here
+    }
 }
 
 template <class TInputImage, class TOutputImage>
 void
-AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+AdditiveGaussianNoiseImageFilter<TInputImage, TOutputImage>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Mean: " << static_cast<typename NumericTraits<double>::PrintType>(m_Mean) << std::endl;
-  os << indent << "StandardDeviation: " << static_cast<typename NumericTraits<double>::PrintType>(m_StandardDeviation)
+  os << indent << "Mean: "
+     << static_cast<typename NumericTraits<double>::PrintType>( m_Mean )
+     << std::endl;
+  os << indent << "StandardDeviation: "
+     << static_cast<typename NumericTraits<double>::PrintType>( m_StandardDeviation )
      << std::endl;
 }
 } // end namespace itk

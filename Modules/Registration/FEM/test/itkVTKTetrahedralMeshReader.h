@@ -39,13 +39,11 @@ template <typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT VTKTetrahedralMeshReader : public MeshSource<TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VTKTetrahedralMeshReader);
-
-  /** Standard "Self" type alias. */
-  using Self = VTKTetrahedralMeshReader;
-  using Superclass = MeshSource<TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef VTKTetrahedralMeshReader  Self;
+  typedef MeshSource<TOutputMesh>   Superclass;
+  typedef SmartPointer<Self>        Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,28 +52,31 @@ public:
   itkTypeMacro(VTKTetrahedralMeshReader, MeshSource);
 
   /** Hold on to the type information specified by the template parameters. */
-  using OutputMeshType = TOutputMesh;
-  using MeshTraits = typename OutputMeshType::MeshTraits;
-  using PointType = typename OutputMeshType::PointType;
-  using PixelType = typename MeshTraits::PixelType;
+  typedef TOutputMesh                          OutputMeshType;
+  typedef typename OutputMeshType::MeshTraits  MeshTraits;
+  typedef typename OutputMeshType::PointType   PointType;
+  typedef typename MeshTraits::PixelType       PixelType;
 
-  /** Some convenient type alias. */
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using CellTraits = typename OutputMeshType::CellTraits;
-  using CellIdentifier = typename OutputMeshType::CellIdentifier;
-  using CellType = typename OutputMeshType::CellType;
-  using CellAutoPointer = typename OutputMeshType::CellAutoPointer;
-  using PointIdentifier = typename OutputMeshType::PointIdentifier;
-  using PointIdIterator = typename CellTraits::PointIdIterator;
+  /** Some convenient typedefs. */
+  typedef typename OutputMeshType::Pointer         OutputMeshPointer;
+  typedef typename OutputMeshType::CellTraits      CellTraits;
+  typedef typename OutputMeshType::CellIdentifier  CellIdentifier;
+  typedef typename OutputMeshType::CellType        CellType;
+  typedef typename OutputMeshType::CellAutoPointer CellAutoPointer;
+  typedef typename OutputMeshType::PointIdentifier PointIdentifier;
+  typedef typename CellTraits::PointIdIterator     PointIdIterator;
 
-  using PointsContainerPointer = typename OutputMeshType::PointsContainerPointer;
+  typedef typename OutputMeshType::PointsContainerPointer
+    PointsContainerPointer;
 
-  using PointsContainer = typename OutputMeshType::PointsContainer;
+  typedef typename OutputMeshType::PointsContainer
+    PointsContainer;
 
   /** Define the tetrahedron cell types which form the volume  */
-  using TetrahedronCellType = TetrahedronCell<CellType>;
+  typedef TetrahedronCell<CellType>   TetrahedronCellType;
 
-  using TetrahedronCellAutoPointer = typename TetrahedronCellType::SelfAutoPointer;
+  typedef typename TetrahedronCellType::SelfAutoPointer
+    TetrahedronCellAutoPointer;
 
 
   /** Set the resolution level to be used for generating cells in the
@@ -93,25 +94,26 @@ public:
 
 protected:
   VTKTetrahedralMeshReader();
-  ~VTKTetrahedralMeshReader() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~VTKTetrahedralMeshReader() ITK_OVERRIDE;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /** Reads the file */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VTKTetrahedralMeshReader);
+
   /** Filename to read */
   std::string m_FileName;
   std::string m_Header;
   std::string m_Version;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVTKTetrahedralMeshReader.hxx"
+#include "itkVTKTetrahedralMeshReader.hxx"
 #endif
 
 #endif //_itkVTKTetrahedralMeshReader_h

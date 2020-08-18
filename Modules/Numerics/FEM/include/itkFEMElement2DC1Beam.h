@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ namespace fem
 class ITKFEM_EXPORT Element2DC1Beam : public ElementStd<2, 2>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element2DC1Beam;
-  using TemplatedParentClass = ElementStd<2, 2>;
-  using Superclass = TemplatedParentClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element2DC1Beam          Self;
+  typedef ElementStd<2, 2>         TemplatedParentClass;
+  typedef TemplatedParentClass     Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
@@ -54,8 +54,7 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
 
   /**
@@ -74,39 +73,32 @@ public:
    */
 
   /** Get the Stiffness matrix */
-  void
-  GetStiffnessMatrix(MatrixType & Ke) const override;
+  virtual void GetStiffnessMatrix(MatrixType & Ke) const ITK_OVERRIDE;
 
   /** Get the Mass matrix */
-  void
-  GetMassMatrix(MatrixType & Me) const override;
+  virtual void GetMassMatrix(MatrixType & Me) const ITK_OVERRIDE;
 
   /** Get the Strain Displacement matrix */
-  void
-  GetStrainDisplacementMatrix(MatrixType &, const MatrixType &) const override
-  {}
+  virtual void GetStrainDisplacementMatrix(MatrixType &, const MatrixType &) const ITK_OVERRIDE
+  {
+  }
 
   /** Get the Material matrix */
-  void
-  GetMaterialMatrix(MatrixType &) const override
-  {}
+  virtual void GetMaterialMatrix(MatrixType &) const ITK_OVERRIDE
+  {
+  }
 
   // ////////////////////////////////////////////////////////////////////////
   /**
    * Methods related to numeric integration
    */
 
-  enum
-  {
-    DefaultIntegrationOrder = 1
-  };
+  enum { DefaultIntegrationOrder = 1 };
 
   /** Get the Integration point and weight */
-  void
-  GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order = 0) const override;
+  virtual void GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order = 0) const ITK_OVERRIDE;
 
-  unsigned int
-  GetNumberOfIntegrationPoints(unsigned int order) const override;
+  virtual unsigned int GetNumberOfIntegrationPoints(unsigned int order) const ITK_OVERRIDE;
 
   // ////////////////////////////////////////////////////////////////////////
   /**
@@ -114,27 +106,22 @@ public:
    */
 
   /** Return the shape functions used to interpolate across the element */
-  VectorType
-  ShapeFunctions(const VectorType & pt) const override;
+  virtual VectorType ShapeFunctions(const VectorType & pt) const ITK_OVERRIDE;
 
   /** Return the shape functions derivatives in the shapeD matrix */
-  void
-  ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const override;
+  virtual void ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const ITK_OVERRIDE;
 
   /** Convert from global to local coordinates */
-  bool
-  GetLocalFromGlobalCoordinates(const VectorType &, VectorType &) const override
+  virtual bool GetLocalFromGlobalCoordinates(const VectorType &, VectorType &) const ITK_OVERRIDE
   {
     return false;
   }
 
   /** Return the determinate of the Jacobian */
-  Float
-  JacobianDeterminant(const VectorType & pt, const MatrixType * pJ) const override;
+  virtual Float JacobianDeterminant(const VectorType & pt, const MatrixType *pJ) const ITK_OVERRIDE;
 
   /** Get the degrees of freedom for each node */
-  unsigned int
-  GetNumberOfDegreesOfFreedomPerNode() const override
+  virtual unsigned int GetNumberOfDegreesOfFreedomPerNode(void) const ITK_OVERRIDE
   {
     return 3;
   }
@@ -142,35 +129,33 @@ public:
   /**
    * Get/Set the material properties for the element
    */
-  Material::ConstPointer
-  GetMaterial() const override
+  virtual Material::ConstPointer GetMaterial(void) const ITK_OVERRIDE
   {
     return dynamic_cast<const Material *>(m_mat);
   }
 
-  void
-  SetMaterial(Material::ConstPointer mat_) override
+  virtual void SetMaterial(Material::ConstPointer mat_) ITK_OVERRIDE
   {
-    m_mat = dynamic_cast<const MaterialLinearElasticity *>(mat_.GetPointer());
+    m_mat =
+      dynamic_cast<const MaterialLinearElasticity *>( mat_.GetPointer() );
   }
 
   /** No edges to populate in this class */
-  void
-  PopulateEdgeIds() override
-  { /* empty */
-  }
+  virtual void PopulateEdgeIds(void) ITK_OVERRIDE { /* empty */ }
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   /**
    * Pointer to material properties of the element
    */
-  const MaterialLinearElasticity * m_mat{ nullptr };
-};
-} // end namespace fem
-} // end namespace itk
+  const MaterialLinearElasticity *m_mat;
 
-#endif // itkFEMElement2DC1Beam_h
+};
+
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMElement2DC1Beam_h

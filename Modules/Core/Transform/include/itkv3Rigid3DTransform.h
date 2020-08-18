@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "itkRigid3DTransform.h"
 #include "itkVersor.h"
 
-namespace itk
-{
-namespace v3
+namespace itkv3
 {
 /** \class Rigid3DTransform
  * \brief ITK3.x compatible Rigid3DTransform of a vector space (e.g. space coordinates)
@@ -32,12 +30,12 @@ namespace v3
  * NOTE: In ITK4, the itkNewMacro() was removed from
  * itk::Rigid3DTransform. This class, itkv3::Rigid3DTransform provides
  * the ITK3.x functionality. The purpose of the class is provide ITKv3
- * functionality with backward compatibility after ITK 5.0 removal of
- * ITKV3_COMPATIBILITY support.
+ * functionality while allowing the user to turn off
+ * ITKV3_COMPATIBILITY.
  *
  * Even though the name Rigid3DTransform is conceptually closer to
  * what a user may expect, the VersorRigid3DTransform is often a
- * much better transform to use during optimization procedures from
+ * much better transform to use during optimization proceedures from
  * both a speed perspective (lower dimensional parameter space), and
  * stability standpoint (versors do not suffer from rotational gimble
  * lock).
@@ -59,83 +57,77 @@ namespace v3
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT Rigid3DTransform : public itk::Rigid3DTransform<TParametersValueType>
+template<typename TParametersValueType=double>
+class Rigid3DTransform:
+    public itk::Rigid3DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid3DTransform);
-
-  /** Standard class type aliases. */
-  using Self = Rigid3DTransform;
-  using Superclass = itk::Rigid3DTransform<TParametersValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Rigid3DTransform                            Self;
+  typedef itk::Rigid3DTransform<TParametersValueType> Superclass;
+  typedef itk::SmartPointer<Self>                     Pointer;
+  typedef itk::SmartPointer<const Self>               ConstPointer;
 
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Rigid3DTransform, Rigid3DTransform);
+  itkTypeMacro(Rigid3DTransform, itk::Rigid3DTransform);
 
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
   /** Dimension of the space. */
-  static constexpr unsigned int SpaceDimension = 3;
-  static constexpr unsigned int InputSpaceDimension = 3;
-  static constexpr unsigned int OutputSpaceDimension = 3;
-  static constexpr unsigned int ParametersDimension = 12;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 12);
 
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using ScalarType = typename Superclass::ScalarType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputVectorValueType = typename Superclass::OutputVectorValueType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using MatrixType = typename Superclass::MatrixType;
-  using InverseMatrixType = typename Superclass::InverseMatrixType;
-  using MatrixValueType = typename Superclass::MatrixValueType;
-  using CenterType = typename Superclass::CenterType;
-  using TranslationType = typename Superclass::TranslationType;
-  using OffsetType = typename Superclass::OffsetType;
+  typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::ParametersValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType  FixedParametersValueType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::ScalarType                ScalarType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::OutputVectorValueType     OutputVectorValueType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
+  typedef typename Superclass::InputVnlVectorType        InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType       OutputVnlVectorType;
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::MatrixType                MatrixType;
+  typedef typename Superclass::InverseMatrixType         InverseMatrixType;
+  typedef typename Superclass::MatrixValueType           MatrixValueType;
+  typedef typename Superclass::CenterType                CenterType;
+  typedef typename Superclass::TranslationType           TranslationType;
+  typedef typename Superclass::OffsetType                OffsetType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
-  using InverseTransformBaseType = typename Superclass::InverseTransformBaseType;
-  using InverseTransformBasePointer = typename InverseTransformBaseType::Pointer;
+  typedef typename Superclass::InverseTransformBaseType InverseTransformBaseType;
+  typedef typename InverseTransformBaseType::Pointer    InverseTransformBasePointer;
 
-  /** Get an inverse of this transform. */
-  bool
-  GetInverse(Self * inverse) const
+/** Get an inverse of this transform. */
+  bool GetInverse(Self *inverse) const
   {
-    return this->Superclass::GetInverse(inverse);
+  return this->Superclass::GetInverse(inverse);
   }
 
-  /** Return an inverse of this transform. */
-  InverseTransformBasePointer
-  GetInverseTransform() const override
+/** Return an inverse of this transform. */
+virtual InverseTransformBasePointer GetInverseTransform() const ITK_OVERRIDE
   {
-    Pointer inv = New();
-    return this->GetInverse(inv) ? inv.GetPointer() : nullptr;
+  Pointer inv = New();
+  return this->GetInverse(inv) ? inv.GetPointer() : ITK_NULLPTR;
   }
 
 protected:
-  Rigid3DTransform() = default;
-}; // class Rigid3DTransform
-} // namespace v3
-} // namespace itk
+  Rigid3DTransform()
+  {
+  }
 
-#if !defined(ITK_LEGACY_REMOVE)
-#  define itkv3 itk::v3
-#endif
-
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid3DTransform);
+};                                //class Rigid3DTransform
+}  // namespace itkv3
 #endif /* itkv3Rigid3DTransform_h */

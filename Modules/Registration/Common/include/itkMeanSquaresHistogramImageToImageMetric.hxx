@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,26 +22,29 @@
 
 namespace itk
 {
-template <typename TFixedImage, typename TMovingImage>
-typename MeanSquaresHistogramImageToImageMetric<TFixedImage, TMovingImage>::MeasureType
-MeanSquaresHistogramImageToImageMetric<TFixedImage, TMovingImage>::EvaluateMeasure(HistogramType & histogram) const
+template< typename TFixedImage, typename TMovingImage >
+typename MeanSquaresHistogramImageToImageMetric< TFixedImage, TMovingImage >
+::MeasureType
+MeanSquaresHistogramImageToImageMetric< TFixedImage, TMovingImage >
+::EvaluateMeasure(HistogramType & histogram) const
 {
-  MeasureType            measure = NumericTraits<MeasureType>::ZeroValue();
+  MeasureType            measure = NumericTraits< MeasureType >::ZeroValue();
   HistogramIteratorType  it = histogram.Begin();
   HistogramIteratorType  end = histogram.End();
-  HistogramFrequencyType totalNumberOfSamples = NumericTraits<HistogramFrequencyType>::ZeroValue();
+  HistogramFrequencyType totalNumberOfSamples =
+    NumericTraits< HistogramFrequencyType >::ZeroValue();
 
-  while (it != end)
-  {
-    HistogramFrequencyType freq = it.GetFrequency();
-    if (freq > 0)
+  while ( it != end )
     {
+    HistogramFrequencyType freq = it.GetFrequency();
+    if ( freq > 0 )
+      {
       HistogramMeasurementVectorType value = it.GetMeasurementVector();
-      measure += (value[0] - value[1]) * (value[0] - value[1]) * freq;
+      measure += ( value[0] - value[1] ) * ( value[0] - value[1] ) * freq;
       totalNumberOfSamples += freq;
-    }
+      }
     ++it;
-  }
+    }
 
   measure /= totalNumberOfSamples;
 

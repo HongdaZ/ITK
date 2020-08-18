@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class ImageToPathFilter
+/** \class ImageToPathFilter
  * \brief Base class for filters that take an image as input and produce an path as output.
  *
  * ImageToPathFilter is the base class for all process objects that output
@@ -40,56 +39,53 @@ namespace itk
  * \ingroup ImageFilters
  * \ingroup ITKPath
  */
-template <typename TInputImage, typename TOutputPath>
-class ITK_TEMPLATE_EXPORT ImageToPathFilter : public PathSource<TOutputPath>
+template< typename TInputImage, typename TOutputPath >
+class ITK_TEMPLATE_EXPORT ImageToPathFilter:public PathSource< TOutputPath >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToPathFilter);
-
-  /** Standard class type aliases. */
-  using Self = ImageToPathFilter;
-  using Superclass = PathSource<TOutputPath>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageToPathFilter          Self;
+  typedef PathSource< TOutputPath >  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToPathFilter, PathSource);
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
-  virtual void
-  SetInput(const InputImageType * image);
+  virtual void SetInput(const InputImageType *image);
 
-  virtual void
-  SetInput(unsigned int, const TInputImage * image);
+  virtual void SetInput(unsigned int, const TInputImage *image);
 
-  const InputImageType *
-  GetInput();
+  const InputImageType * GetInput();
 
-  const InputImageType *
-  GetInput(unsigned int idx);
+  const InputImageType * GetInput(unsigned int idx);
 
 protected:
   ImageToPathFilter();
-  ~ImageToPathFilter() override = default;
+  virtual ~ImageToPathFilter();
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToPathFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageToPathFilter.hxx"
+#include "itkImageToPathFilter.hxx"
 #endif
 
 #endif

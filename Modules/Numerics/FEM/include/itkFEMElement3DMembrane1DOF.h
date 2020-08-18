@@ -1,20 +1,20 @@
 /*=========================================================================
- *
- * Copyright NumFOCUS
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- *=========================================================================*/
+*
+* Copyright Insight Software Consortium
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+*=========================================================================*/
 
 #ifndef itkFEMElement3DMembrane1DOF_h
 #define itkFEMElement3DMembrane1DOF_h
@@ -45,19 +45,19 @@ template <typename TBaseClass = Element>
 class ITK_TEMPLATE_EXPORT Element3DMembrane1DOF : public TBaseClass
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element3DMembrane1DOF;
-  using Superclass = TBaseClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element3DMembrane1DOF    Self;
+  typedef TBaseClass               Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Element3DMembrane1DOF, TBaseClass);
 
-  // Repeat the required type alias and enums from parent class
-  using Float = typename Superclass::Float;
-  using MatrixType = typename Superclass::MatrixType;
-  using VectorType = typename Superclass::VectorType;
+  // Repeat the required typedefs and enums from parent class
+  typedef typename Superclass::Float      Float;
+  typedef typename Superclass::MatrixType MatrixType;
+  typedef typename Superclass::VectorType VectorType;
 
   /**
    * Default constructor only clears the internal storage
@@ -72,64 +72,59 @@ public:
   /**
    * Compute the B matrix.
    */
-  void
-  GetStrainDisplacementMatrix(MatrixType & B, const MatrixType & shapeDgl) const override;
+  virtual void GetStrainDisplacementMatrix(MatrixType & B, const MatrixType & shapeDgl) const ITK_OVERRIDE;
 
   /**
    * Compute the D matrix.
    */
-  void
-  GetMaterialMatrix(MatrixType & D) const override;
+  virtual void GetMaterialMatrix(MatrixType & D) const ITK_OVERRIDE;
 
   /**
    * Compute the mass matrix specific for 3D membrane problems.
    */
-  void
-  GetMassMatrix(MatrixType & Me) const override;
+  void GetMassMatrix(MatrixType & Me) const ITK_OVERRIDE;
 
   /**
    * 3D membrane elements have 3 DOFs per node.
    */
-  unsigned int
-  GetNumberOfDegreesOfFreedomPerNode() const override
+  virtual unsigned int GetNumberOfDegreesOfFreedomPerNode(void) const ITK_OVERRIDE
   {
     return 3;
   }
 
   /** Get the Stiffness matrix */
-  void
-  GetStiffnessMatrix(MatrixType & Ke) const override;
+  virtual void GetStiffnessMatrix(MatrixType & Ke) const ITK_OVERRIDE;
 
   /**
    * Get/Set the material properties for the element
    */
-  Material::ConstPointer
-  GetMaterial() const override
+  virtual Material::ConstPointer GetMaterial(void) const ITK_OVERRIDE
   {
     return dynamic_cast<const Material *>(m_Mat.GetPointer());
   }
 
-  void
-  SetMaterial(Material::ConstPointer mat_) override
+  virtual void SetMaterial(Material::ConstPointer mat_) ITK_OVERRIDE
   {
-    m_Mat = dynamic_cast<const MaterialLinearElasticity *>(mat_.GetPointer());
+    m_Mat =
+      dynamic_cast<const MaterialLinearElasticity *>( mat_.GetPointer() );
   }
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /**
    * Pointer to material properties of the element
    */
   MaterialLinearElasticity::ConstPointer m_Mat;
-};
 
-} // end namespace fem
-} // end namespace itk
+};  // class Element3DMembrane1DOF
+
+}
+}  // end namespace itk::fem
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFEMElement3DMembrane1DOF.hxx"
+#include "itkFEMElement3DMembrane1DOF.hxx"
 #endif
 
-#endif // itkFEMElement3DMembrane1DOF_h
+#endif  // #ifndef itkFEMElement3DMembrane1DOF_h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,62 +24,66 @@ namespace itk
 {
 namespace fem
 {
-FEMException::FEMException(const char * file, unsigned int lineNumber, std::string location)
-  : ExceptionObject(file, lineNumber)
+FEMException::FEMException(const char *file, unsigned int lineNumber, std::string location) :
+  ExceptionObject(file, lineNumber)
 {
   SetDescription("Unhandled exception in FEM class!");
   SetLocation(location);
 }
 
-FEMException::~FEMException() noexcept = default;
+FEMException::~FEMException() ITK_NOEXCEPT
+{
+}
 
-FEMExceptionIO::FEMExceptionIO(const char * file,
-                               unsigned int lineNumber,
-                               std::string  location,
-                               std::string  moreDescription)
-  : FEMException(file, lineNumber)
+FEMExceptionIO::FEMExceptionIO(const char *file, unsigned int lineNumber, std::string location,
+                               std::string moreDescription) :
+  FEMException(file, lineNumber)
 {
   SetDescription("IO error in FEM class: " + moreDescription);
   SetLocation(location);
 }
 
-FEMExceptionIO::~FEMExceptionIO() noexcept = default;
+FEMExceptionIO::~FEMExceptionIO() ITK_NOEXCEPT
+{
+}
 
-FEMExceptionWrongClass::FEMExceptionWrongClass(const char * file, unsigned int lineNumber, std::string location)
-  : FEMException(file, lineNumber, location)
+FEMExceptionWrongClass::FEMExceptionWrongClass(const char *file, unsigned int lineNumber, std::string location) :
+  FEMException(file, lineNumber, location)
 {
   SetDescription("Object was of wrong class!");
 }
 
-FEMExceptionWrongClass::~FEMExceptionWrongClass() noexcept = default;
+FEMExceptionWrongClass::~FEMExceptionWrongClass() ITK_NOEXCEPT
+{
+}
 
-FEMExceptionObjectNotFound::FEMExceptionObjectNotFound(const char * file,
-                                                       unsigned int lineNumber,
-                                                       std::string  location,
-                                                       std::string  baseClassName,
-                                                       int          GN)
-  : FEMException(file, lineNumber, location)
+FEMExceptionObjectNotFound::FEMExceptionObjectNotFound(const char *file, unsigned int lineNumber, std::string location,
+                                                       std::string baseClassName,
+                                                       int GN) :
+  FEMException(file, lineNumber, location)
 {
   m_baseClassName = baseClassName;
   m_GlobalNumber = GN;
   std::ostringstream buf;
   buf << "Object not found (" << m_baseClassName << ", GlobalNumber=" << m_GlobalNumber << ")!";
-  SetDescription(buf.str().c_str());
+  SetDescription( buf.str().c_str() );
 }
 
-FEMExceptionObjectNotFound::~FEMExceptionObjectNotFound() noexcept = default;
+FEMExceptionObjectNotFound::~FEMExceptionObjectNotFound() ITK_NOEXCEPT
+{
+}
 
-FEMExceptionSolution::FEMExceptionSolution(const char * file,
-                                           unsigned int lineNumber,
-                                           std::string  location,
-                                           std::string  moreDescription)
-  : FEMException(file, lineNumber)
+FEMExceptionSolution::FEMExceptionSolution(const char *file, unsigned int lineNumber, std::string location,
+                                           std::string moreDescription) :
+  FEMException(file, lineNumber)
 {
   SetDescription("Error when solving FEM problem: " + moreDescription);
   SetLocation(location);
 }
 
-FEMExceptionSolution::~FEMExceptionSolution() noexcept = default;
+FEMExceptionSolution::~FEMExceptionSolution() ITK_NOEXCEPT
+{
+}
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem

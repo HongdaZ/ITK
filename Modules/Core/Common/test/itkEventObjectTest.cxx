@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,16 +19,14 @@
 #include "itkEventObject.h"
 #include <iostream>
 
-namespace itk
-{
-itkEventMacro(TestEvent, UserEvent);
-itkEventMacro(TestDerivedEvent, TestEvent);
-itkEventMacro(TestOtherEvent, AnyEvent);
-} // namespace itk
+namespace itk{
+  itkEventMacro( TestEvent,        UserEvent );
+  itkEventMacro( TestDerivedEvent, TestEvent );
+  itkEventMacro( TestOtherEvent,   AnyEvent  );
+  }
 
 
-int
-itkEventObjectTest(int, char *[])
+int itkEventObjectTest(int, char* [] )
 {
 
   // test constructor
@@ -38,32 +36,32 @@ itkEventObjectTest(int, char *[])
 
 
   // test if the event derives
-  if (!event.CheckEvent(&derivedEvent))
-  {
+  if( !event.CheckEvent( &derivedEvent ) )
+    {
     std::cerr << "Derivation test failed " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   itk::TestEvent event2;
   // test if the event matches itself
-  if (!event.CheckEvent(&event2))
-  {
+  if( !event.CheckEvent( &event2 ) )
+    {
     std::cerr << "Same class test failed " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   itk::TestOtherEvent otherEvent;
-  // test that it doesn't match and unrelated event
-  if (event.CheckEvent(&otherEvent))
-  {
+   // test that it doesn't match and unrelated event
+  if( event.CheckEvent( &otherEvent ) )
+    {
     std::cerr << "Error: matched unrelated event" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // exercise the PrintSelf() method by calling Print()
-  event.Print(std::cout);
+  event.Print( std::cout );
 
   // exercise the GetEventName() method
   std::cout << event.GetEventName() << std::endl;
@@ -72,4 +70,5 @@ itkEventObjectTest(int, char *[])
   std::cout << event << std::endl;
 
   return EXIT_SUCCESS;
+
 }

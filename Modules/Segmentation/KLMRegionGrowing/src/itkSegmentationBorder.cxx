@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,15 +19,21 @@
 
 namespace itk
 {
-SegmentationBorder ::SegmentationBorder() = default;
+SegmentationBorder
+::SegmentationBorder(void):
+  m_BorderLength(0)
+{}
 
-SegmentationBorder ::~SegmentationBorder() = default;
+SegmentationBorder
+::~SegmentationBorder()
+{}
 
 /**
  * PrintSelf
  */
 void
-SegmentationBorder ::PrintSelf(std::ostream & os, Indent indent) const
+SegmentationBorder
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Segmentation border object" << std::endl;

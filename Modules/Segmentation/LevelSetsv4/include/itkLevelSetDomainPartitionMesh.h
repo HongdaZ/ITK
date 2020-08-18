@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,65 +23,65 @@
 
 namespace itk
 {
-/**
- *\class LevelSetDomainPartitionMesh
+/** \class LevelSetDomainPartitionMesh
  *
  * \brief Helper class used to partition domain and efficiently compute overlap.
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TMesh>
-class ITK_TEMPLATE_EXPORT LevelSetDomainPartitionMesh : public LevelSetDomainPartitionBase<TMesh>
+template< typename TMesh >
+class ITK_TEMPLATE_EXPORT LevelSetDomainPartitionMesh :
+  public LevelSetDomainPartitionBase< TMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionMesh);
 
-  using Self = LevelSetDomainPartitionMesh;
-  using Superclass = LevelSetDomainPartitionBase<TMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef LevelSetDomainPartitionMesh           Self;
+  typedef LevelSetDomainPartitionBase< TMesh >  Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
 
-  static constexpr unsigned int PointDimension = TMesh::PointDimension;
+  itkStaticConstMacro( PointDimension, unsigned int, TMesh::PointDimension);
 
-  itkTypeMacro(LevelSetDomainPartitionMesh, LevelSetDomainPartitionBase);
+  itkTypeMacro( LevelSetDomainPartitionMesh,
+                LevelSetDomainPartitionBase );
 
-  using MeshType = TMesh;
-  using MeshPointer = typename MeshType::Pointer;
-  using MeshConstPointer = typename MeshType::ConstPointer;
-  using PointType = typename MeshType::PointType;
-  using PointIdentifierType = typename MeshType::PointIdentifierType;
+  typedef TMesh                                     MeshType;
+  typedef typename MeshType::Pointer                MeshPointer;
+  typedef typename MeshType::ConstPointer           MeshConstPointer;
+  typedef typename MeshType::PointType              PointType;
+  typedef typename MeshType::PointIdentifierType    PointIdentifierType;
 
-  using PointsContainerConstPointer = typename MeshType::PointsContainerConstPointer;
-  using PointsContainerConstIterator = typename MeshType::PointsContainerConstIterator;
+  typedef typename MeshType::PointsContainerConstPointer  PointsContainerConstPointer;
+  typedef typename MeshType::PointsContainerConstIterator PointsContainerConstIterator;
 
-  using IdentifierListType = typename Superclass::IdentifierListType;
+  typedef typename Superclass::IdentifierListType IdentifierListType;
 
-  using ListMeshType = std::map<PointIdentifierType, IdentifierListType>;
+  typedef std::map< PointIdentifierType, IdentifierListType > ListMeshType;
 
-  itkSetObjectMacro(Mesh, MeshType);
+  itkSetObjectMacro( Mesh, MeshType );
 
 protected:
-  LevelSetDomainPartitionMesh() = default;
-  virtual ~LevelSetDomainPartitionMesh() = default;
+  LevelSetDomainPartitionMesh();
+  virtual ~LevelSetDomainPartitionMesh();
 
   /** Populate a list mesh with each node being a list of overlapping
    *  level set support at that pixel */
-  virtual void
-  PopulateListDomain();
+  virtual void PopulateListDomain();
 
   /** Allocate a list mesh with each node being a list of overlapping
    *  level set support at that pixel */
-  void
-  AllocateListDomain();
+  void AllocateListDomain();
 
 private:
-  MeshPointer  m_Mesh;
-  ListMeshType m_ListDomain;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionMesh);
+
+  MeshPointer     m_Mesh;
+  ListMeshType    m_ListDomain;
 };
 
-} // end namespace itk
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetDomainPartitionMesh.hxx"
+#include "itkLevelSetDomainPartitionMesh.hxx"
 #endif
 
 #endif

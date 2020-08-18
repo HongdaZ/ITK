@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,34 +25,30 @@ namespace itk
 {
 
 
-namespace Functor
-{
+namespace Functor {
 
-template <typename TLabelObject>
+template< typename TLabelObject >
 class AttributeLabelObjectAccessor
 {
 public:
-  using LabelObjectType = TLabelObject;
-  using AttributeValueType = typename LabelObjectType::AttributeValueType;
+  typedef TLabelObject                                 LabelObjectType;
+  typedef typename LabelObjectType::AttributeValueType AttributeValueType;
 
-  inline const AttributeValueType
-  operator()(const LabelObjectType * labelObject)
-  {
+  inline const AttributeValueType operator()( const LabelObjectType * labelObject )
+    {
     return labelObject->GetAttribute();
-  }
+    }
 
-  inline void
-  operator()(LabelObjectType * labelObject, AttributeValueType value)
-  {
-    labelObject->SetAttribute(value);
-  }
+  inline void operator()( LabelObjectType * labelObject, AttributeValueType value )
+    {
+    labelObject->SetAttribute( value );
+    }
 };
 
-} // namespace Functor
+}
 
 
-/**
- *\class AttributeLabelObject
+/** \class AttributeLabelObject
  *  \brief A LabelObject with a generic attribute
  *
  * The attribute type is defined in the third template parameter.
@@ -70,19 +66,17 @@ public:
  * \ingroup DataRepresentation
  * \ingroup ITKLabelMap
  */
-template <typename TLabel, unsigned int VImageDimension, typename TAttributeValue>
-class AttributeLabelObject : public LabelObject<TLabel, VImageDimension>
+template < typename TLabel, unsigned int VImageDimension, typename TAttributeValue >
+class AttributeLabelObject : public LabelObject< TLabel, VImageDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AttributeLabelObject);
-
-  /** Standard class type aliases */
-  using Self = AttributeLabelObject;
-  using Superclass = LabelObject<TLabel, VImageDimension>;
-  using Pointer = SmartPointer<Self>;
-  using LabelObjectType = typename Superclass::LabelObjectType;
-  using ConstPointer = SmartPointer<const Self>;
-  using ConstWeakPointer = WeakPointer<const Self>;
+  /** Standard class typedefs */
+  typedef AttributeLabelObject                   Self;
+  typedef LabelObject< TLabel, VImageDimension > Superclass;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef typename Superclass::LabelObjectType   LabelObjectType;
+  typedef SmartPointer< const Self >             ConstPointer;
+  typedef WeakPointer< const Self >              ConstWeakPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -90,74 +84,72 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(AttributeLabelObject, LabelObject);
 
-  using LabelMapType = LabelMap<Self>;
+  typedef LabelMap< Self > LabelMapType;
 
-  static constexpr unsigned int ImageDimension = VImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
 
-  using IndexType = typename Superclass::IndexType;
+  typedef typename Superclass::IndexType IndexType;
 
-  using LabelType = TLabel;
+  typedef TLabel LabelType;
 
-  using LineType = typename Superclass::LineType;
+  typedef typename Superclass::LineType LineType;
 
-  using LengthType = typename Superclass::LengthType;
+  typedef typename Superclass::LengthType LengthType;
 
-  using AttributeValueType = TAttributeValue;
+  typedef TAttributeValue AttributeValueType;
 
-  void
-  SetAttribute(const AttributeValueType & v)
-  {
+  void SetAttribute( const AttributeValueType & v )
+    {
     m_Attribute = v;
-  }
+    }
 
-  const AttributeValueType &
-  GetAttribute() const
-  {
+  const AttributeValueType & GetAttribute() const
+    {
     return m_Attribute;
-  }
+    }
 
-  AttributeValueType
-  GetAttribute()
-  {
+  AttributeValueType GetAttribute()
+    {
     return m_Attribute;
-  }
+    }
 
-  template <typename TSourceLabelObject>
-  void
-  CopyAttributesFrom(const TSourceLabelObject * src)
-  {
-    itkAssertOrThrowMacro((src != nullptr), "Null Pointer");
-    Superclass::template CopyAttributesFrom<TSourceLabelObject>(src);
+  template< typename TSourceLabelObject >
+  void CopyAttributesFrom( const TSourceLabelObject * src )
+    {
+    itkAssertOrThrowMacro ( ( src != ITK_NULLPTR ), "Null Pointer" );
+    Superclass::template CopyAttributesFrom<TSourceLabelObject>( src );
 
     m_Attribute = src->GetAttribute();
-  }
+    }
 
-  template <typename TSourceLabelObject>
-  void
-  CopyAllFrom(const TSourceLabelObject * src)
-  {
-    itkAssertOrThrowMacro((src != nullptr), "Null Pointer");
-    this->template CopyLinesFrom<TSourceLabelObject>(src);
-    this->template CopyAttributesFrom<TSourceLabelObject>(src);
-  }
+  template< typename TSourceLabelObject >
+  void CopyAllFrom(const TSourceLabelObject *src)
+    {
+    itkAssertOrThrowMacro ( ( src != ITK_NULLPTR ), "Null Pointer" );
+    this->template CopyLinesFrom<TSourceLabelObject>( src );
+    this->template CopyAttributesFrom<TSourceLabelObject>( src );
+    }
 
 protected:
   AttributeLabelObject()
-  {
+    {
     // how to initialize the attribute ?
-  }
+    }
 
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE
+    {
+    Superclass::PrintSelf( os, indent );
 
     os << indent << "Attribute: " << m_Attribute << std::endl;
-  }
+    }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AttributeLabelObject);
+
   AttributeValueType m_Attribute;
+
+
 };
 
 } // end namespace itk

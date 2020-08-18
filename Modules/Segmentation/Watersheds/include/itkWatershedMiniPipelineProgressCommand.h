@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,36 +31,28 @@ namespace itk
  * implementing the mini-pipeline).
  * \ingroup ITKWatersheds
  */
-class ITKWatersheds_EXPORT WatershedMiniPipelineProgressCommand : public Command
+class ITKWatersheds_EXPORT WatershedMiniPipelineProgressCommand:public Command
 {
 public:
   /** Smart pointer declaration methods */
-  using Self = WatershedMiniPipelineProgressCommand;
-  using Superclass = Command;
-  using Pointer = itk::SmartPointer<Self>;
-  using ConstPointer = itk::SmartPointer<const Self>;
+  typedef WatershedMiniPipelineProgressCommand Self;
+  typedef Command                              Superclass;
+  typedef itk::SmartPointer< Self >            Pointer;
+  typedef itk::SmartPointer< const Self >      ConstPointer;
   itkTypeMacro(WatershedMiniPipelineProgressCommand, Command);
   itkNewMacro(Self);
 
   /** Standard Command virtual methods */
-  void
-  Execute(Object * caller, const EventObject & event) override;
+  virtual void Execute(Object *caller, const EventObject & event) ITK_OVERRIDE;
 
-  void
-  Execute(const Object * caller, const EventObject & event) override;
+  virtual void Execute(const Object *caller, const EventObject & event) ITK_OVERRIDE;
 
   /** Set/Get the filter whose UpdateProgress will be set by this
    * command object */
-  void
-  SetFilter(ProcessObject * p)
-  {
-    m_Filter = p;
-  }
-  const ProcessObject *
-  GetFilter()
-  {
-    return m_Filter;
-  }
+  void SetFilter(ProcessObject *p)
+  { m_Filter = p; }
+  const ProcessObject * GetFilter()
+  { return m_Filter; }
 
   /** Set/Get the base count for stepping through filter progress values */
   itkSetMacro(Count, double);
@@ -72,15 +64,15 @@ public:
   itkGetConstMacro(NumberOfFilters, unsigned int);
 
 protected:
-  WatershedMiniPipelineProgressCommand() = default;
-  ~WatershedMiniPipelineProgressCommand() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  WatershedMiniPipelineProgressCommand():m_Count(0.0), m_Filter(ITK_NULLPTR),
+    m_NumberOfFilters(1) {}
+  virtual ~WatershedMiniPipelineProgressCommand() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  double          m_Count{ 0.0 };
-  ProcessObject * m_Filter{ nullptr };
-  unsigned int    m_NumberOfFilters{ 1 };
+  double         m_Count;
+  ProcessObject *m_Filter;
+  unsigned int   m_NumberOfFilters;
 };
 } // end namespace itk
 

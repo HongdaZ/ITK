@@ -37,8 +37,9 @@ class ParseException : public Exception
 {
 public:
   ParseException()
-  = default;
-  ~ParseException() throw() override {};
+  {
+  }
+  virtual ~ParseException() throw() {}
 
   /** Assignment operator. */
   ParseException &operator= ( const ParseException &orig )

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -71,20 +71,18 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT SolverCrankNicolson : public Solver<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SolverCrankNicolson);
-
-  using Self = SolverCrankNicolson;
-  using Superclass = Solver<TDimension>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SolverCrankNicolson      Self;
+  typedef Solver<TDimension>       Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(SolverCrankNicolson, Solver<TDimension>);
+  itkTypeMacro(SolverCrankNicolson, Solver<TDimension> );
 
-  using Float = Element::Float;
+  typedef Element::Float Float;
 
   /** Get/Set the use of the Mass Matrix for the solution. */
   itkSetMacro(UseMassMatrix, bool);
@@ -99,8 +97,7 @@ public:
    * and mass matrix again. This is only generated before the
    * first iteration.
    */
-  void
-  ResetIterations()
+  void ResetIterations(void)
   {
     m_Iterations = 0;
   }
@@ -109,20 +106,15 @@ public:
    * Add solution vector u to the corresponding nodal values, which are
    * stored in node objects. This is standard post processing of the solution
    */
-  void
-  AddToDisplacements(Float optimum = 1.0);
+  void AddToDisplacements(Float optimum = 1.0);
 
-  void
-  AverageLastTwoDisplacements(Float t = 0.5);
+  void AverageLastTwoDisplacements(Float t = 0.5);
 
-  void
-  ZeroVector(int which = 0);
+  void ZeroVector(int which = 0);
 
-  void
-  PrintDisplacements();
+  void PrintDisplacements();
 
-  void
-  PrintForce();
+  void PrintForce();
 
   /** Get the index for the current solution. */
   itkGetMacro(TotalSolutionIndex, unsigned int);
@@ -139,8 +131,7 @@ public:
   itkGetMacro(Rho, Float);
 
   /** Returns the time step used for dynamic problems. */
-  Float
-  GetTimeStep() const override
+  virtual Float GetTimeStep(void) const ITK_OVERRIDE
   {
     return m_TimeStep;
   }
@@ -150,8 +141,7 @@ public:
    *
    * \param dt New time step.
    */
-  void
-  SetTimeStep(Float dt) override
+  virtual void SetTimeStep(Float dt) ITK_OVERRIDE
   {
     m_TimeStep = dt;
   }
@@ -159,93 +149,78 @@ public:
   /** Compute the current state of the right hand side and store the current force
    * for the next iteration.
    */
-  void
-  RecomputeForceVector(unsigned int index);
+  void RecomputeForceVector(unsigned int index);
 
   /** Finds a triplet that brackets the energy minimum. From Numerical
-   * Recipes.*/
-  void
-  FindBracketingTriplet(Float * a, Float * b, Float * c);
+  * Recipes.*/
+  void FindBracketingTriplet(Float *a, Float *b, Float *c);
 
   /** Finds the optimum value between the last two solutions
    * and sets the current solution to that value.  Uses Evaluate Residual;
    */
-  Float
-  GoldenSection(Float tol = 0.01, unsigned int MaxIters = 25);
+  Float GoldenSection(Float tol = 0.01, unsigned int MaxIters = 25);
 
   /* Brents method from Numerical Recipes. */
-  Float
-  BrentsMethod(Float tol = 0.01, unsigned int MaxIters = 25);
+  Float BrentsMethod(Float tol = 0.01, unsigned int MaxIters = 25);
 
-  Float
-  EvaluateResidual(Float t = 1.0);
+  Float EvaluateResidual(Float t = 1.0);
 
-  Float
-  GetDeformationEnergy(Float t = 1.0);
+  Float GetDeformationEnergy(Float t = 1.0);
 
-  inline Float
-  GSSign(Float a, Float b)
+  inline Float GSSign(Float a, Float b)
   {
     return b > 0.0 ? std::fabs(a) : -1. * std::fabs(a);
   }
-  inline Float
-  GSMax(Float a, Float b)
+  inline Float GSMax(Float a, Float b)
   {
     return a > b ? a : b;
   }
 
-  void
-  SetEnergyToMin(Float xmin);
+  void SetEnergyToMin(Float xmin);
 
-  inline LinearSystemWrapper *
-  GetLinearSystem()
+  inline LinearSystemWrapper * GetLinearSystem()
   {
     return this->m_LinearSystem;
   }
 
-  Float
-  GetCurrentMaxSolution()
+  Float GetCurrentMaxSolution()
   {
     return m_CurrentMaxSolution;
   }
 
   /** Compute and print the minimum and maximum of the total solution
    * and the last solution values. */
-  void
-  PrintMinMaxOfSolution();
+  void PrintMinMaxOfSolution();
 
 protected:
+
   /**
-   * Default constructor. Sets the indices for the matrix and vector storage.
-   * Time step and other parameters are also initialized.
-   */
+  * Default constructor. Sets the indices for the matrix and vector storage.
+  * Time step and other parameters are also initialized.
+  */
   SolverCrankNicolson();
-  ~SolverCrankNicolson() override = default;
+  ~SolverCrankNicolson() ITK_OVERRIDE {}
 
   /** Method invoked by the pipeline in order to trigger the computation of
    * the registration. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /**
    * Solve for the displacement vector u at a given time.  Update the total solution as well.
    */
-  void
-  RunSolver() override;
+  virtual void RunSolver(void) ITK_OVERRIDE;
 
   /**
    * Helper initialization function before assembly but after generate GFN.
    */
-  void
-  InitializeForSolution();
+  void InitializeForSolution();
 
   /**
    * Assemble the master stiffness and mass matrix. We actually assemble
    * the right hand side and left hand side of the implicit scheme equation.
    * MFCs are applied to K.
    */
-  void
-  AssembleKandM();
+  void AssembleKandM();
 
   /**
    * Assemble the master force vector at a given time.
@@ -254,8 +229,7 @@ protected:
                 normally used with isotropic elements to specify the
                 dimension for which the master force vector should be assembled.
    */
-  void
-  AssembleFforTimeStep(int dim = 0);
+  void AssembleFforTimeStep(int dim = 0);
 
   Float m_TimeStep;
   Float m_Rho;
@@ -275,12 +249,16 @@ protected:
   unsigned int m_DifferenceMatrixIndex;
   unsigned int m_SumMatrixIndex;
   unsigned int m_DiffMatrixBySolutionTMinus1Index;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SolverCrankNicolson);
+
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFEMSolverCrankNicolson.hxx"
+#include "itkFEMSolverCrankNicolson.hxx"
 #endif
 
-#endif // itkFEMSolverCrankNicolson_h
+#endif // #ifndef itkFEMSolverCrankNicolson_h

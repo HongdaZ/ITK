@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class ApproximateSignedDistanceMapImageFilter
+/** \class ApproximateSignedDistanceMapImageFilter
  * \brief Create a map of the approximate signed distance from the boundaries of
  * a binary image.
  *
@@ -67,22 +66,20 @@ namespace itk
  * \author Zach Pincus
  * \ingroup ITKDistanceMap
  *
- * \sphinx
- * \sphinxexample{Filtering/DistanceMap/ApproxDistanceMapOfBinary, Approximate Distance Map Of Binary Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/ApproximateSignedDistanceMapImageFilter, Compute a distance map from objects in a binary image}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ApproximateSignedDistanceMapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT ApproximateSignedDistanceMapImageFilter:public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ApproximateSignedDistanceMapImageFilter);
-
-  /** Standard type alias */
-  using Self = ApproximateSignedDistanceMapImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs */
+  typedef ApproximateSignedDistanceMapImageFilter         Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ApproximateSignedDistanceMapImageFilter, ImageToImageFilter);
@@ -91,31 +88,32 @@ public:
   itkNewMacro(Self);
 
   /** Type for input image. */
-  using InputImageType = TInputImage;
+  typedef TInputImage InputImageType;
 
   /** Type for the output image. */
-  using OutputImageType = TOutputImage;
+  typedef TOutputImage OutputImageType;
 
   /** Type for the pixels of the input image. */
-  using InputPixelType = typename InputImageType::PixelType;
+  typedef typename InputImageType::PixelType InputPixelType;
 
   /** Type for the pixels of the output image. */
-  using OutputPixelType = typename OutputImageType::PixelType;
+  typedef typename OutputImageType::PixelType OutputPixelType;
 
   /** Type of input image size and size value */
-  using OutputSizeType = typename OutputImageType::SizeType;
-  using OutputSizeValueType = typename OutputSizeType::SizeValueType;
+  typedef typename OutputImageType::SizeType     OutputSizeType;
+  typedef typename OutputSizeType::SizeValueType OutputSizeValueType;
   /** The dimension of the input image. */
-  static constexpr unsigned int InputImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Pointer Type for input image. */
-  using InputImagePointer = typename InputImageType::ConstPointer;
+  typedef typename InputImageType::ConstPointer InputImagePointer;
 
   /** Pointer Type for the output image. */
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  typedef typename OutputImageType::Pointer OutputImagePointer;
 
   /** Set/Get intensity value representing the interior of objects in the mask.
-   */
+    */
   itkSetMacro(InsideValue, InputPixelType);
   itkGetConstMacro(InsideValue, InputPixelType);
 
@@ -125,22 +123,23 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputEqualityComparableCheck, (Concept::EqualityComparable<typename InputImageType::PixelType>));
+  itkConceptMacro( InputEqualityComparableCheck,
+                   ( Concept::EqualityComparable< typename InputImageType::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   ApproximateSignedDistanceMapImageFilter();
-  ~ApproximateSignedDistanceMapImageFilter() override = default;
-  void
-  GenerateData() override;
+  virtual ~ApproximateSignedDistanceMapImageFilter() ITK_OVERRIDE {}
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  using IsoContourType = IsoContourDistanceImageFilter<InputImageType, OutputImageType>;
-  using ChamferType = FastChamferDistanceImageFilter<OutputImageType, OutputImageType>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ApproximateSignedDistanceMapImageFilter);
+
+  typedef IsoContourDistanceImageFilter< InputImageType, OutputImageType >   IsoContourType;
+  typedef FastChamferDistanceImageFilter< OutputImageType, OutputImageType > ChamferType;
   typename IsoContourType::Pointer m_IsoContourFilter;
 
   typename ChamferType::Pointer m_ChamferFilter;
@@ -151,7 +150,7 @@ private:
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkApproximateSignedDistanceMapImageFilter.hxx"
+#include "itkApproximateSignedDistanceMapImageFilter.hxx"
 #endif
 
 #endif

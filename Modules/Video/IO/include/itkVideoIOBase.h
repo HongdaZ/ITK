@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #define itkVideoIOBase_h
 
 #include "itkImageIOBase.h"
+#include "itkExceptionObject.h"
 #include "ITKVideoIOExport.h"
 #include "vnl/vnl_vector.h"
 
@@ -26,28 +27,7 @@
 
 namespace itk
 {
-/**\class VideoIOBaseEnums
- * \brief This contains all enum classes used from VideoIOBase class.
- * \ingroup ITKVideoIO
- */
-class VideoIOBaseEnums
-{
-public:
-  /**
-   *\class ReadFrom
-   * \ingroup ITKVideoIO
-   * Enum used to define weather to read from a file or a camera */
-  enum class ReadFrom : uint8_t
-  {
-    ReadFromFile,
-    ReadFromCamera
-  };
-};
-// Define how to print enumeration
-extern ITKVideoIO_EXPORT std::ostream &
-                         operator<<(std::ostream & out, const VideoIOBaseEnums::ReadFrom value);
-/**
- *\class VideoIOBase
+/** \class VideoIOBase
  * \brief Abstract superclass defines video IO interface.
  *
  * VideoIOBase is a class that reads and/or writes video data
@@ -69,107 +49,91 @@ extern ITKVideoIO_EXPORT std::ostream &
 class ITKVideoIO_EXPORT VideoIOBase : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoIOBase);
+  /** Standard class typedefs. */
+  typedef VideoIOBase          Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
+  typedef ::itk::SizeValueType SizeValueType;
 
-  /** Standard class type aliases. */
-  using Self = VideoIOBase;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
-  using SizeValueType = ::itk::SizeValueType;
+  /** Frame offset typedefs */
+  typedef double               TemporalOffsetType;
+  typedef SizeValueType        FrameOffsetType;
+  typedef double               TemporalRatioType;
 
-  /** Frame offset type alias */
-  using TemporalOffsetType = double;
-  using FrameOffsetType = SizeValueType;
-  using TemporalRatioType = double;
-
-  /** Video-specific type alias */
-  using CameraIDType = SizeValueType;
+  /** Video-specific typedefs */
+  typedef SizeValueType CameraIDType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VideoIOBase, Superclass);
 
   /** Close the reader and writer and reset members */
-  virtual void
-  FinishReadingOrWriting() = 0;
+  virtual void FinishReadingOrWriting() = 0;
 
   /*-------- This part of the interface deals with reading data. ------ */
 
-  using ReadFromEnum = VideoIOBaseEnums::ReadFrom;
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr ReadFromEnum ReadFromFile = ReadFromEnum::ReadFromFile;
-  static constexpr ReadFromEnum ReadFromCamera = ReadFromEnum::ReadFromCamera;
-#endif
+  /** Enum used to define weather to read from a file or a camera */
+  typedef enum {ReadFromFile, ReadFromCamera} ReadType;
 
   /** Set to reading from file */
-  virtual void
-  SetReadFromFile() = 0;
+  virtual void SetReadFromFile() = 0;
 
   /** Set to reading from a camera */
-  virtual void
-  SetReadFromCamera() = 0;
+  virtual void SetReadFromCamera() = 0;
 
   /** Get the current read type */
-  ReadFromEnum
-  GetReadFrom()
-  {
-    return this->m_ReadFrom;
+  ReadType GetReadType() {
+    return this->m_ReadType;
   }
 
   /** Return whether or not the VideoIO can read from a camera. The cameraID
    * can be a camera number for OpenCV or a guid for VXL */
-  virtual bool
-  CanReadCamera(CameraIDType cameraID) const = 0;
+  virtual bool CanReadCamera( CameraIDType cameraID ) const = 0;
 
   /** Set the next frame that should be read. Return true if you operation
    * successful */
-  virtual bool
-  SetNextFrameToRead(FrameOffsetType frameNumber) = 0;
+  virtual bool SetNextFrameToRead( FrameOffsetType frameNumber ) = 0;
 
   /** Virtual accessor functions to be implemented in each derived class */
-  virtual TemporalOffsetType
-  GetPositionInMSec() const = 0;
-  virtual TemporalRatioType
-  GetRatio() const = 0;
-  virtual FrameOffsetType
-  GetFrameTotal() const = 0;
-  virtual TemporalRatioType
-  GetFramesPerSecond() const = 0;
-  virtual FrameOffsetType
-  GetCurrentFrame() const = 0;
-  virtual FrameOffsetType
-  GetLastIFrame() const = 0;
+  virtual TemporalOffsetType GetPositionInMSec() const = 0;
+  virtual TemporalRatioType GetRatio() const = 0;
+  virtual FrameOffsetType GetFrameTotal() const = 0;
+  virtual TemporalRatioType GetFramesPerSecond() const = 0;
+  virtual FrameOffsetType GetCurrentFrame() const = 0;
+  virtual FrameOffsetType GetLastIFrame() const = 0;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Set Writer Parameters */
-  virtual void
-  SetWriterParameters(TemporalRatioType                  framesPerSecond,
-                      const std::vector<SizeValueType> & dim,
-                      const char *                       fourCC,
-                      unsigned int                       nChannels,
-                      IOComponentEnum                    componentType) = 0;
+  virtual void SetWriterParameters( TemporalRatioType framesPerSecond,
+                                    const std::vector<SizeValueType>& dim,
+                                    const char* fourCC,
+                                    unsigned int nChannels,
+                                    IOComponentType componentType) = 0;
 
 protected:
-  VideoIOBase();
-  ~VideoIOBase() override;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  VideoIOBase();
+  virtual ~VideoIOBase() ITK_OVERRIDE;
+
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Member Variables */
-  ReadFromEnum       m_ReadFrom{ ReadFromEnum::ReadFromFile };
-  TemporalRatioType  m_FramesPerSecond{ 0.0 };
+  ReadType           m_ReadType;
+  TemporalRatioType  m_FramesPerSecond;
   FrameOffsetType    m_FrameTotal;
   FrameOffsetType    m_CurrentFrame;
   FrameOffsetType    m_IFrameInterval;
   FrameOffsetType    m_LastIFrame;
-  TemporalRatioType  m_Ratio{ 0.0 };
-  TemporalOffsetType m_PositionInMSec{ 0.0 };
-  bool               m_WriterOpen{ false };
-  bool               m_ReaderOpen{ false };
+  TemporalRatioType  m_Ratio;
+  TemporalOffsetType m_PositionInMSec;
+  bool               m_WriterOpen;
+  bool               m_ReaderOpen;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VideoIOBase);
+
 };
+
 } // end namespace itk
 
 #endif // itkVideoIOBase_h

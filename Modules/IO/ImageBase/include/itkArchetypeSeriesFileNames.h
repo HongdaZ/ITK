@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -65,15 +65,13 @@ namespace itk
  * \ingroup ITKIOImageBase
  */
 
-class ITKIOImageBase_EXPORT ArchetypeSeriesFileNames : public Object
+class ITKIOImageBase_EXPORT ArchetypeSeriesFileNames:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ArchetypeSeriesFileNames);
-
-  /** Standard class type aliases. */
-  using Self = ArchetypeSeriesFileNames;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef ArchetypeSeriesFileNames Self;
+  typedef Object                   Superclass;
+  typedef SmartPointer< Self >     Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -85,48 +83,45 @@ public:
 
   // The archetypical filename from which to generate the regular
   // expressions
-  void
-  SetArchetype(const std::string & archetype);
+  void SetArchetype(const std::string & archetype);
 
   itkGetStringMacro(Archetype);
 
-  using VectorSizeType = size_t;
+  typedef  size_t VectorSizeType;
 
   /** Get the number of groupings that match the Archetype */
-  VectorSizeType
-  GetNumberOfGroupings();
+  VectorSizeType GetNumberOfGroupings();
 
   /** Helper types for managing the groups of filenames and their sizes */
-  using IntVectorType = std::vector<int>;
-  using StringVectorType = std::vector<std::string>;
+  typedef std::vector< int >         IntVectorType;
+  typedef std::vector< std::string > StringVectorType;
 
   /** Returns a vector containing the series' file names. The file
-   * names are ordered by Index. Defaults to returning the filenames
-   * to the rightmost grouping. */
-  const StringVectorType &
-  GetFileNames(VectorSizeType group = 0);
+    * names are ordered by Index. Defaults to returning the filenames
+    * to the rightmost grouping. */
+  const StringVectorType & GetFileNames(VectorSizeType group = 0);
 
 protected:
   ArchetypeSeriesFileNames();
-  ~ArchetypeSeriesFileNames() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ArchetypeSeriesFileNames() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Method that actually does the archetype matching/grouping */
-  void
-  Scan();
+  void Scan();
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ArchetypeSeriesFileNames);
+
   /** A string for formatting the names of files in the series. */
   std::string m_Archetype;
 
-  std::vector<StringVectorType> m_Groupings;
-  StringVectorType              m_FileNames; // ivar for returning by
-                                             // reference
+  std::vector< StringVectorType > m_Groupings;
+  StringVectorType                m_FileNames; // ivar for returning by
+                                               // reference
 
   TimeStamp m_ArchetypeMTime;
   TimeStamp m_ScanTime;
 };
-} // namespace itk
+} //namespace ITK
 
 #endif // itkArchetypeSeriesFileNames_h

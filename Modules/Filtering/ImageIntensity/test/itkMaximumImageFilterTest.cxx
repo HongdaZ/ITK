@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,29 +21,29 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkMaximumImageFilterTest(int, char *[])
+int itkMaximumImageFilterTest( int, char*[] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
   // Declare the types of the images
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<Dimension>;
+  typedef itk::Index< Dimension >             IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<Dimension>;
+  typedef itk::Size< Dimension >              SizeType;
 
   // Declare the type of the region
-  using RegionType = itk::ImageRegion<Dimension>;
+  typedef itk::ImageRegion< Dimension >       RegionType;
 
   // Declare the type for the filter
-  using MaximumImageFilterType = itk::MaximumImageFilter<ImageType, ImageType, ImageType>;
+  typedef itk::MaximumImageFilter< ImageType, ImageType,
+    ImageType > MaximumImageFilterType;
 
   // Create two images
   ImageType::Pointer inputImageA = ImageType::New();
@@ -61,19 +61,19 @@ itkMaximumImageFilterTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetLargestPossibleRegion( region );
+  inputImageA->SetBufferedRegion( region );
+  inputImageA->SetRequestedRegion( region );
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetLargestPossibleRegion( region );
+  inputImageB->SetBufferedRegion( region );
+  inputImageB->SetRequestedRegion( region );
   inputImageB->Allocate();
 
   // Define the pixel values for each image
@@ -81,40 +81,42 @@ itkMaximumImageFilterTest(int, char *[])
   PixelType smallPixelValue = 2;
 
   // Declare Iterator types apropriated for each image
-  using IteratorType = itk::ImageRegionIteratorWithIndex<ImageType>;
+  typedef itk::ImageRegionIteratorWithIndex< ImageType > IteratorType;
 
   // Create one iterator for Image A (this is a light object)
-  IteratorType it1(inputImageA, inputImageA->GetBufferedRegion());
+  IteratorType it1( inputImageA, inputImageA->GetBufferedRegion() );
 
   // Initialize the content of Image A
-  while (!it1.IsAtEnd())
+  while( !it1.IsAtEnd() )
   {
-    it1.Set(smallPixelValue);
+    it1.Set( smallPixelValue );
     ++it1;
   }
 
   // Create one iterator for Image B (this is a light object)
-  IteratorType it2(inputImageB, inputImageB->GetBufferedRegion());
+  IteratorType it2( inputImageB, inputImageB->GetBufferedRegion() );
 
   // Initialize the content of Image B
-  while (!it2.IsAtEnd())
+  while( !it2.IsAtEnd() )
   {
-    it2.Set(largePixelValue);
+    it2.Set( largePixelValue );
     ++it2;
   }
 
   // Create the filter
   MaximumImageFilterType::Pointer maximumImageFilter = MaximumImageFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(maximumImageFilter, MaximumImageFilter, BinaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( maximumImageFilter, MaximumImageFilter,
+    BinaryFunctorImageFilter);
 
   // Connect the input images
-  maximumImageFilter->SetInput1(inputImageA);
-  maximumImageFilter->SetInput2(inputImageB);
+  maximumImageFilter->SetInput1( inputImageA );
+  maximumImageFilter->SetInput2( inputImageB );
 
   // Get the Smart Pointer to the filter output
   ImageType::Pointer outputImage = maximumImageFilter->GetOutput();
 
+  maximumImageFilter->SetFunctor( maximumImageFilter->GetFunctor() );
 
   // Execute the filter
   maximumImageFilter->Update();
@@ -123,11 +125,12 @@ itkMaximumImageFilterTest(int, char *[])
   // Note that we are not comparing the entirety of the filter output in order
   // to keep compile time as small as possible
 
-  ImageType::IndexType pixelIndex = { { 0, 1, 1 } };
+  ImageType::IndexType pixelIndex = {{0, 1, 1}};
 
-  ITK_TEST_EXPECT_EQUAL(outputImage->GetPixel(start), largePixelValue);
-  ITK_TEST_EXPECT_EQUAL(outputImage->GetPixel(pixelIndex), largePixelValue);
+  TEST_EXPECT_EQUAL( outputImage->GetPixel( start ), largePixelValue );
+  TEST_EXPECT_EQUAL( outputImage->GetPixel( pixelIndex ), largePixelValue );
 
   // All objects should be automatically destroyed at this point
   return EXIT_SUCCESS;
+
 }

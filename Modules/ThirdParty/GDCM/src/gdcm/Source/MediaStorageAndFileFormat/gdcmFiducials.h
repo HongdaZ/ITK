@@ -24,7 +24,7 @@ namespace gdcm
 class GDCM_EXPORT Fiducials
 {
 public:
-  Fiducials() = default;
+  Fiducials() {}
 
 private:
 };

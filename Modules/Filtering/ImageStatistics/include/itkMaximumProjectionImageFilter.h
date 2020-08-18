@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,53 +45,47 @@ namespace itk
 
 namespace Functor
 {
-template <typename TInputPixel>
+template< typename TInputPixel >
 class MaximumAccumulator
 {
 public:
-  MaximumAccumulator(SizeValueType) {}
-  ~MaximumAccumulator() = default;
+  MaximumAccumulator( SizeValueType ) {}
+  ~MaximumAccumulator(){}
 
-  inline void
-  Initialize()
+  inline void Initialize()
   {
-    m_Maximum = NumericTraits<TInputPixel>::NonpositiveMin();
+    m_Maximum = NumericTraits< TInputPixel >::NonpositiveMin();
   }
 
-  inline void
-  operator()(const TInputPixel & input)
+  inline void operator()(const TInputPixel & input)
   {
     m_Maximum = std::max(m_Maximum, input);
   }
 
-  inline TInputPixel
-  GetValue()
+  inline TInputPixel GetValue()
   {
     return m_Maximum;
   }
 
   TInputPixel m_Maximum;
 };
-} // namespace Functor
+} // end namespace Function
 
-template <typename TInputImage, typename TOutputImage>
-class MaximumProjectionImageFilter
-  : public ProjectionImageFilter<TInputImage,
-                                 TOutputImage,
-                                 Functor::MaximumAccumulator<typename TInputImage::PixelType>>
+template< typename TInputImage, typename TOutputImage >
+class MaximumProjectionImageFilter:
+  public ProjectionImageFilter< TInputImage, TOutputImage,
+                                Functor::MaximumAccumulator< typename TInputImage::PixelType > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumProjectionImageFilter);
+  typedef MaximumProjectionImageFilter Self;
+  typedef ProjectionImageFilter< TInputImage, TOutputImage,
+                                 Functor::MaximumAccumulator< typename TInputImage::PixelType > > Superclass;
 
-  using Self = MaximumProjectionImageFilter;
-  using Superclass =
-    ProjectionImageFilter<TInputImage, TOutputImage, Functor::MaximumAccumulator<typename TInputImage::PixelType>>;
+  typedef TInputImage                        InputImageType;
+  typedef typename InputImageType::PixelType InputPixelType;
 
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Runtime information support. */
   itkTypeMacro(MaximumProjectionImageFilter, ProjectionImageFilter);
@@ -101,16 +95,21 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputPixelTypeGreaterThanComparable, (Concept::GreaterThanComparable<InputPixelType>));
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputPixelTypeGreaterThanComparable,
+                   ( Concept::GreaterThanComparable< InputPixelType > ) );
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  MaximumProjectionImageFilter() = default;
-  ~MaximumProjectionImageFilter() override = default;
-}; // end
-   // MaximumProjectionImageFilter
-} // end namespace itk
+  MaximumProjectionImageFilter() {}
+  virtual ~MaximumProjectionImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumProjectionImageFilter);
+};                                            // end
+                                              // MaximumProjectionImageFilter
+} //end namespace itk
 
 #endif

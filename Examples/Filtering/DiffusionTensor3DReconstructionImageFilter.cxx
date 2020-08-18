@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 //        ftp://public.kitware.com/pub/namic/DTI/Data/dwi.nhdr
 //        ftp://public.kitware.com/pub/namic/DTI/Data/dwi.img.gz (gunzip this)
 //     These datasets contain a reference T1 image and 30 diffusion weighted
-//     images. See the nrrd header for details such as B value etc.
+//     images. See the nrrd header for details such as B value etc..
 //
 //  2. Run the example with the following args
 //       dwi.nhdr 80 Tensors.mhd FractionalAnisotropy.mhd RelativeAnisotropy.mhd 1
@@ -60,30 +60,29 @@
 #include "itkImageRegionIterator.h"
 #include <iostream>
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc < 3)
-  {
+  if(argc < 3)
+    {
     std::cerr << "Usage: " << argv[0] << " NrrdFileName(.nhdr) threshold(on B0)"
-              << " FAImageFileName RelativeAnisotropyFileName "
-              << "[ExtractGradientAndReferenceImage from the NRRD file and "
-              << "write them as images]" << std::endl;
+     << " FAImageFileName RelativeAnisotropyFileName " <<
+     "[ExtractGradientAndReferenceImage from the NRRD file and "
+     << "write them as images]" << std::endl;
     std::cerr << "\tExample args: xt_dwi.nhdr 80 FA.mhd 1" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 3;
-  unsigned int           numberOfImages = 0;
-  unsigned int           numberOfGradientImages = 0;
-  bool                   readb0 = false;
-  double                 b0 = 0;
+  const unsigned int Dimension = 3;
+  unsigned int numberOfImages = 0;
+  unsigned int numberOfGradientImages = 0;
+  bool readb0 = false;
+  double b0 = 0;
 
-  using PixelType = unsigned short;
-  using ImageType = itk::VectorImage<unsigned short, 3>;
+  typedef unsigned short                      PixelType;
+  typedef itk::VectorImage<unsigned short, 3> ImageType;
 
-  itk::ImageFileReader<ImageType>::Pointer reader =
-    itk::ImageFileReader<ImageType>::New();
+  itk::ImageFileReader<ImageType>::Pointer reader
+    = itk::ImageFileReader<ImageType>::New();
 
   ImageType::Pointer img;
 
@@ -93,15 +92,15 @@ main(int argc, char * argv[])
   // Read in the nrrd data. The file contains the reference image and the gradient
   // images.
   try
-  {
+    {
     reader->Update();
     img = reader->GetOutput();
-  }
-  catch (const itk::ExceptionObject & ex)
-  {
+    }
+  catch (itk::ExceptionObject &ex)
+    {
     std::cout << ex << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Here we instantiate the DiffusionTensor3DReconstructionImageFilter class.
   // The class is templated over the pixel types of the reference, gradient
@@ -110,8 +109,8 @@ main(int argc, char * argv[])
   // sensitizing gradients), 'n' Gradient images and their directions and produces
   // as output an image of tensors with pixel-type DiffusionTensor3D.
   //
-  using TensorReconstructionImageFilterType =
-    itk::DiffusionTensor3DReconstructionImageFilter<PixelType, PixelType, double>;
+  typedef itk::DiffusionTensor3DReconstructionImageFilter<
+    PixelType, PixelType, double > TensorReconstructionImageFilterType;
 
 
   // -------------------------------------------------------------------------
@@ -129,53 +128,55 @@ main(int argc, char * argv[])
   // DWMRI_gradient_0003:=0.110000        0.664000        0.740000
   // ...
   //
-  itk::MetaDataDictionary  imgMetaDictionary = img->GetMetaDataDictionary();
+  itk::MetaDataDictionary imgMetaDictionary = img->GetMetaDataDictionary();
   std::vector<std::string> imgMetaKeys = imgMetaDictionary.GetKeys();
   std::vector<std::string>::const_iterator itKey = imgMetaKeys.begin();
-  std::string                              metaString;
+  std::string metaString;
 
   TensorReconstructionImageFilterType::GradientDirectionType vect3d;
   TensorReconstructionImageFilterType::GradientDirectionContainerType::Pointer
     DiffusionVectors =
-      TensorReconstructionImageFilterType::GradientDirectionContainerType::New();
+    TensorReconstructionImageFilterType::GradientDirectionContainerType::New();
 
 
   for (; itKey != imgMetaKeys.end(); ++itKey)
-  {
-    double x, y, z;
-
-    itk::ExposeMetaData<std::string>(imgMetaDictionary, *itKey, metaString);
-    if (itKey->find("DWMRI_gradient") != std::string::npos)
     {
+    double x,y,z;
+
+    itk::ExposeMetaData<std::string> (imgMetaDictionary, *itKey, metaString);
+    if (itKey->find("DWMRI_gradient") != std::string::npos)
+      {
       std::cout << *itKey << " ---> " << metaString << std::endl;
       sscanf(metaString.c_str(), "%lf %lf %lf\n", &x, &y, &z);
-      vect3d[0] = x;
-      vect3d[1] = y;
-      vect3d[2] = z;
-      DiffusionVectors->InsertElement(numberOfImages, vect3d);
+      vect3d[0] = x; vect3d[1] = y; vect3d[2] = z;
+      DiffusionVectors->InsertElement( numberOfImages, vect3d );
       ++numberOfImages;
       // If the direction is 0.0, this is a reference image
-      if (vect3d[0] == 0.0 && vect3d[1] == 0.0 && vect3d[2] == 0.0)
-      {
+      if (vect3d[0] == 0.0 &&
+          vect3d[1] == 0.0 &&
+          vect3d[2] == 0.0)
+        {
         continue;
-      }
+        }
       ++numberOfGradientImages;
-    }
+      }
     else if (itKey->find("DWMRI_b-value") != std::string::npos)
-    {
+      {
       std::cout << *itKey << " ---> " << metaString << std::endl;
       readb0 = true;
-      b0 = std::stod(metaString.c_str());
+      b0 = atof(metaString.c_str());
+      }
     }
-  }
-  std::cout << "Number of gradient images: " << numberOfGradientImages
+  std::cout << "Number of gradient images: "
+            << numberOfGradientImages
             << " and Number of reference images: "
-            << numberOfImages - numberOfGradientImages << std::endl;
-  if (!readb0)
-  {
+            << numberOfImages - numberOfGradientImages
+            << std::endl;
+  if(!readb0)
+    {
     std::cerr << "BValue not specified in header file" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // -------------------------------------------------------------------------
@@ -191,70 +192,70 @@ main(int argc, char * argv[])
   // gradient and reference images in separate images and writing them out to
   // files, so they can be fired up in you favourite volume viewer.
   //
-  using ReferenceImageType = itk::Image<PixelType, Dimension>;
-  using GradientImageType = ReferenceImageType;
+  typedef itk::Image< PixelType, Dimension > ReferenceImageType;
+  typedef ReferenceImageType                 GradientImageType;
 
   // A container of smart pointers to images. This container will hold
   // the 'numberOfGradientImages' gradient images and the reference image.
   //
-  std::vector<GradientImageType::Pointer> imageContainer;
+  std::vector< GradientImageType::Pointer > imageContainer;
 
   // iterator to iterate over the DWI Vector image just read in.
-  using DWIIteratorType = itk::ImageRegionConstIterator<ImageType>;
-  DWIIteratorType dwiit(img, img->GetBufferedRegion());
-  using IteratorType = itk::ImageRegionIterator<GradientImageType>;
+  typedef itk::ImageRegionConstIterator< ImageType >         DWIIteratorType;
+  DWIIteratorType dwiit( img, img->GetBufferedRegion() );
+  typedef itk::ImageRegionIterator< GradientImageType > IteratorType;
 
   // In this for loop, we will extract the 'n' gradient images + 1 reference
   // image from the DWI Vector image.
   //
-  for (unsigned int i = 0; i < numberOfImages; i++)
-  {
+  for( unsigned int i = 0; i<numberOfImages; i++ )
+    {
     GradientImageType::Pointer image = GradientImageType::New();
-    image->CopyInformation(img);
-    image->SetBufferedRegion(img->GetBufferedRegion());
-    image->SetRequestedRegion(img->GetRequestedRegion());
+    image->CopyInformation( img );
+    image->SetBufferedRegion( img->GetBufferedRegion() );
+    image->SetRequestedRegion( img->GetRequestedRegion() );
     image->Allocate();
 
-    IteratorType it(image, image->GetBufferedRegion());
+    IteratorType it( image, image->GetBufferedRegion() );
     dwiit.GoToBegin();
     it.GoToBegin();
 
     while (!it.IsAtEnd())
-    {
+      {
       it.Set(dwiit.Get()[i]);
       ++it;
       ++dwiit;
+      }
+    imageContainer.push_back( image );
     }
-    imageContainer.push_back(image);
-  }
 
   // If we need to write out the reference and gradient images to a file..
   // Easier viewing them with a viewer than if they were in a single NRRD
   // file
-  if ((argc > 4) && (std::stoi(argv[6])))
-  {
-    unsigned int referenceImageIndex = 0;
-    using GradientWriterType = itk::ImageFileWriter<GradientImageType>;
-    for (unsigned int i = 0; i < numberOfImages; i++)
+  if( (argc > 4) && (atoi(argv[6])) )
     {
+    unsigned int referenceImageIndex = 0;
+    typedef itk::ImageFileWriter< GradientImageType > GradientWriterType;
+    for( unsigned int i = 0; i<numberOfImages; i++ )
+      {
       GradientWriterType::Pointer gradientWriter = GradientWriterType::New();
-      gradientWriter->SetInput(imageContainer[i]);
+      gradientWriter->SetInput( imageContainer[i] );
       char filename[100];
       if (DiffusionVectors->ElementAt(i).two_norm() <= 0.0) // this is a reference image
-      {
+        {
         std::string fn("ReferenceImage%d.mhd");
-        sprintf(filename, fn.c_str(), referenceImageIndex);
+        sprintf(filename, fn.c_str(), referenceImageIndex );
         ++referenceImageIndex;
-      }
+        }
       else
-      {
+        {
         std::string fn("Gradient%d.mhd");
-        sprintf(filename, fn.c_str(), i);
-      }
-      gradientWriter->SetFileName(filename);
+        sprintf(filename, fn.c_str(), i );
+        }
+      gradientWriter->SetFileName( filename );
       gradientWriter->Update();
+      }
     }
-  }
 
 
   // -------------------------------------------------------------------------
@@ -277,15 +278,15 @@ main(int argc, char * argv[])
   //   tensorReconstructionFilter->AddGradientImage( direction1, image1 );
   //   tensorReconstructionFilter->AddGradientImage( direction2, image2 );
   //
-  tensorReconstructionFilter->SetGradientImage(DiffusionVectors, reader->GetOutput());
+  tensorReconstructionFilter->SetGradientImage( DiffusionVectors, reader->GetOutput() );
 
   // This is necessary until we fix netlib/dsvdc.c
-  tensorReconstructionFilter->SetNumberOfWorkUnits(1);
+  tensorReconstructionFilter->SetNumberOfThreads( 1 );
 
   tensorReconstructionFilter->SetBValue(b0);
-  tensorReconstructionFilter->SetThreshold(
-    static_cast<TensorReconstructionImageFilterType::ReferencePixelType>(
-      std::stod(argv[2])));
+  tensorReconstructionFilter->SetThreshold( static_cast<
+      TensorReconstructionImageFilterType::ReferencePixelType >(
+                                                    atof(argv[2])));
   tensorReconstructionFilter->Update();
 
 
@@ -293,11 +294,11 @@ main(int argc, char * argv[])
   // Write out the image of tensors. This code snippet goes to show that you
   // can use itk::ImageFileWriter to write an image of tensors.
   //
-  using TensorWriterType =
-    itk::ImageFileWriter<TensorReconstructionImageFilterType::OutputImageType>;
+  typedef itk::ImageFileWriter<
+    TensorReconstructionImageFilterType::OutputImageType > TensorWriterType;
   TensorWriterType::Pointer tensorWriter = TensorWriterType::New();
-  tensorWriter->SetFileName(argv[3]);
-  tensorWriter->SetInput(tensorReconstructionFilter->GetOutput());
+  tensorWriter->SetFileName( argv[3] );
+  tensorWriter->SetInput( tensorReconstructionFilter->GetOutput() );
   tensorWriter->Update();
 
 
@@ -306,39 +307,39 @@ main(int argc, char * argv[])
   // filters in ITK. Below, we use the TensorFractionalAnisotropyImageFilter to
   // compute the FA.
   //
-  using TensorPixelType = TensorReconstructionImageFilterType::TensorPixelType;
-  using RealValueType = TensorPixelType::RealValueType;
-  using FAImageType = itk::Image<RealValueType, Dimension>;
-  using FAFilterType = itk::TensorFractionalAnisotropyImageFilter<
-    TensorReconstructionImageFilterType::OutputImageType,
-    FAImageType>;
+  typedef TensorReconstructionImageFilterType::TensorPixelType TensorPixelType;
+  typedef TensorPixelType::RealValueType                       RealValueType;
+  typedef itk::Image< RealValueType, Dimension >               FAImageType;
+  typedef itk::TensorFractionalAnisotropyImageFilter<
+      TensorReconstructionImageFilterType::OutputImageType, FAImageType >
+                                                               FAFilterType;
 
   FAFilterType::Pointer fractionalAnisotropyFilter = FAFilterType::New();
-  fractionalAnisotropyFilter->SetInput(tensorReconstructionFilter->GetOutput());
+  fractionalAnisotropyFilter->SetInput( tensorReconstructionFilter->GetOutput() );
 
   // Write the FA image
   //
-  using FAWriterType = itk::ImageFileWriter<FAFilterType::OutputImageType>;
+  typedef itk::ImageFileWriter< FAFilterType::OutputImageType >  FAWriterType;
   FAWriterType::Pointer faWriter = FAWriterType::New();
-  faWriter->SetInput(fractionalAnisotropyFilter->GetOutput());
+  faWriter->SetInput( fractionalAnisotropyFilter->GetOutput() );
   faWriter->SetFileName(argv[4]);
   faWriter->Update();
 
   // Compute and write the Relative Anisotropy
   //
-  using TensorPixelType = TensorReconstructionImageFilterType::TensorPixelType;
-  using RealValueType = TensorPixelType::RealValueType;
-  using RAImageType = itk::Image<RealValueType, Dimension>;
-  using RAFilterType = itk::TensorRelativeAnisotropyImageFilter<
-    TensorReconstructionImageFilterType::OutputImageType,
-    RAImageType>;
+  typedef TensorReconstructionImageFilterType::TensorPixelType TensorPixelType;
+  typedef TensorPixelType::RealValueType                       RealValueType;
+  typedef itk::Image< RealValueType, Dimension >               RAImageType;
+  typedef itk::TensorRelativeAnisotropyImageFilter<
+      TensorReconstructionImageFilterType::OutputImageType, RAImageType >
+                                                               RAFilterType;
 
   RAFilterType::Pointer relativeAnisotropyFilter = RAFilterType::New();
-  relativeAnisotropyFilter->SetInput(tensorReconstructionFilter->GetOutput());
+  relativeAnisotropyFilter->SetInput( tensorReconstructionFilter->GetOutput() );
 
-  using RAWriterType = itk::ImageFileWriter<RAFilterType::OutputImageType>;
+  typedef itk::ImageFileWriter< RAFilterType::OutputImageType >  RAWriterType;
   RAWriterType::Pointer raWriter = RAWriterType::New();
-  raWriter->SetInput(relativeAnisotropyFilter->GetOutput());
+  raWriter->SetInput( relativeAnisotropyFilter->GetOutput() );
   raWriter->SetFileName(argv[5]);
   raWriter->Update();
 

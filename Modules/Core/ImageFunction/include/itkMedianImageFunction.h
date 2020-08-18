@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@
 #define itkMedianImageFunction_h
 
 #include "itkImageFunction.h"
-#include "itkImageNeighborhoodOffsets.h"
 #include "itkNumericTraits.h"
-#include "itkOffset.h"
 
 namespace itk
 {
@@ -41,23 +39,23 @@ namespace itk
  * \ingroup ImageFunctions
  * \ingroup ITKImageFunction
  *
- * \sphinx
- * \sphinxexample{Core/ImageFunction/ComputeMedianOfImageAtPixel,Compute Median Of Image At Pixel}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Functions/MedianImageFunction,Compute the median of an image at a pixels (in a regular neighborhood)}
+ * \endwiki
  */
-template <typename TInputImage, typename TCoordRep = float>
-class ITK_TEMPLATE_EXPORT MedianImageFunction
-  : public ImageFunction<TInputImage, typename TInputImage::PixelType, TCoordRep>
+template< typename TInputImage, typename TCoordRep = float >
+class ITK_TEMPLATE_EXPORT MedianImageFunction:
+  public ImageFunction< TInputImage, typename TInputImage::PixelType,
+                        TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MedianImageFunction);
+  /** Standard class typedefs. */
+  typedef MedianImageFunction Self;
+  typedef ImageFunction< TInputImage, typename TInputImage::PixelType,
+                         TCoordRep >                     Superclass;
 
-  /** Standard class type aliases. */
-  using Self = MedianImageFunction;
-  using Superclass = ImageFunction<TInputImage, typename TInputImage::PixelType, TCoordRep>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(MedianImageFunction, ImageFunction);
@@ -65,35 +63,31 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename Superclass::InputPixelType;
+  /** InputImageType typedef support. */
+  typedef TInputImage                         InputImageType;
+  typedef typename Superclass::InputPixelType InputPixelType;
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
-
-  /** Size type of the underlying image. */
-  using ImageSizeType = typename InputImageType::SizeType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Evalulate the function at specified index */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at non-integer positions */
-  OutputType
-  Evaluate(const PointType & point) const override
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -101,8 +95,8 @@ public:
     return this->EvaluateAtIndex(index);
   }
 
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & cindex) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -112,26 +106,24 @@ public:
 
   /** Get/Set the radius of the neighborhood over which the
       statistics are evaluated */
-  void
-  SetNeighborhoodRadius(unsigned int);
-  itkGetConstReferenceMacro(NeighborhoodRadius, unsigned int);
+  itkSetMacro( NeighborhoodRadius, unsigned int );
+  itkGetConstReferenceMacro( NeighborhoodRadius, unsigned int );
 
 protected:
   MedianImageFunction();
-  ~MedianImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MedianImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  unsigned int m_NeighborhoodRadius{ 1 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(MedianImageFunction);
 
-  std::vector<Offset<ImageDimension>> m_NeighborhoodOffsets{ Experimental::GenerateRectangularImageNeighborhoodOffsets(
-    ImageSizeType::Filled(1)) };
+  unsigned int m_NeighborhoodRadius;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMedianImageFunction.hxx"
+#include "itkMedianImageFunction.hxx"
 #endif
 
 #endif

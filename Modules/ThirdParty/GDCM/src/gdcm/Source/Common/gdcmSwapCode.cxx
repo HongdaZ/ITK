@@ -23,7 +23,7 @@ static const char *SwapCodeStrings[] = {
   "BigEndian",
   "BadLittleEndian",
   "BadBigEndian",
-   nullptr
+   0
 };
 
 int SwapCode::GetIndex(SwapCode const & sc)

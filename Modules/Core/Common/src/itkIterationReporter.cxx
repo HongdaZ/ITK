@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@
 namespace itk
 {
 //----------------------------------------------------------------------------
-IterationReporter::IterationReporter(ProcessObject * filter, ThreadIdType threadId, unsigned long stepsPerUpdate)
-  : m_Filter(filter)
-  , m_ThreadId(threadId)
-  , m_StepsPerUpdate(stepsPerUpdate)
+IterationReporter::IterationReporter(ProcessObject *filter, ThreadIdType threadId,
+                                     unsigned long stepsPerUpdate):
+  m_Filter(filter),
+  m_ThreadId(threadId),
+  m_StepsPerUpdate(stepsPerUpdate)
 {
   // Only thread 0 should update progress.
   m_StepsBeforeUpdate = m_StepsPerUpdate;

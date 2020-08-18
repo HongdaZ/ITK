@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,193 +59,179 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double,
-          unsigned int NDimensions = 3,
-          unsigned int NSubDimensions = NDimensions>
-class ITK_TEMPLATE_EXPORT MultiTransform : public Transform<TParametersValueType, NDimensions, NSubDimensions>
+template
+<typename TParametersValueType=double, unsigned int NDimensions=3, unsigned int NSubDimensions=NDimensions>
+class ITK_TEMPLATE_EXPORT MultiTransform :
+  public Transform<TParametersValueType, NDimensions, NSubDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiTransform);
-
-  /** Standard class type aliases. */
-  using Self = MultiTransform;
-  using Superclass = Transform<TParametersValueType, NDimensions, NSubDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultiTransform                                               Self;
+  typedef Transform<TParametersValueType, NDimensions, NSubDimensions> Superclass;
+  typedef SmartPointer<Self>                                           Pointer;
+  typedef SmartPointer<const Self>                                     ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MultiTransform, Transform);
+  itkTypeMacro( MultiTransform, Transform );
 
   /** Sub transform type **/
-  using TransformType = Transform<TParametersValueType, NSubDimensions, NSubDimensions>;
-  using TransformTypePointer = typename TransformType::Pointer;
+  typedef Transform<TParametersValueType, NSubDimensions, NSubDimensions > TransformType;
+  typedef typename TransformType::Pointer                     TransformTypePointer;
 
   /* Types common to both container and sub transforms */
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using ScalarType = ParametersValueType;
+  typedef typename Superclass::ParametersType           ParametersType;
+  typedef typename Superclass::ParametersValueType      ParametersValueType;
+  typedef typename Superclass::FixedParametersType      FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType FixedParametersValueType;
+  typedef ParametersValueType                           ScalarType;
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType           DerivativeType;
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType             JacobianType;
   /** Transform category type. */
-  using TransformCategoryEnum = typename Superclass::TransformCategoryEnum;
+  typedef typename Superclass::TransformCategoryType    TransformCategoryType;
 
   /* Types relative to the container transform. */
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  typedef typename Superclass::InverseTransformBasePointer InverseTransformBasePointer;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::InputPointType             InputPointType;
+  typedef typename Superclass::OutputPointType            OutputPointType;
   /** Standard vector type for this class. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  typedef typename Superclass::InputVectorType            InputVectorType;
+  typedef typename Superclass::OutputVectorType           OutputVectorType;
   /** Standard covariant vector type for this class */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::InputCovariantVectorType   InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType  OutputCovariantVectorType;
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  typedef typename Superclass::InputVnlVectorType         InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType        OutputVnlVectorType;
   /** Standard Vectorpixel type for this class */
-  using InputVectorPixelType = typename Superclass::InputVectorPixelType;
-  using OutputVectorPixelType = typename Superclass::OutputVectorPixelType;
-  /** Standard DiffusionTensor3D type alias for this class */
-  using InputDiffusionTensor3DType = typename Superclass::InputDiffusionTensor3DType;
-  using OutputDiffusionTensor3DType = typename Superclass::OutputDiffusionTensor3DType;
-  /** Standard SymmetricSecondRankTensor type alias for this class */
-  using InputSymmetricSecondRankTensorType = typename Superclass::InputSymmetricSecondRankTensorType;
-  using OutputSymmetricSecondRankTensorType = typename Superclass::OutputSymmetricSecondRankTensorType;
+  typedef typename Superclass::InputVectorPixelType       InputVectorPixelType;
+  typedef typename Superclass::OutputVectorPixelType      OutputVectorPixelType;
+  /** Standard DiffusionTensor3D typedef for this class */
+  typedef typename Superclass::InputDiffusionTensor3DType  InputDiffusionTensor3DType;
+  typedef typename Superclass::OutputDiffusionTensor3DType OutputDiffusionTensor3DType;
+  /** Standard SymmetricSecondRankTensor typedef for this class */
+  typedef typename Superclass::InputSymmetricSecondRankTensorType InputSymmetricSecondRankTensorType;
+  typedef typename Superclass::OutputSymmetricSecondRankTensorType  OutputSymmetricSecondRankTensorType;
 
   /* Types relative to the sub transform type. */
 
   /** InverseTransform type. */
-  using SubTransformInverseTransformBasePointer = typename TransformType::InverseTransformBasePointer;
+  typedef typename TransformType::InverseTransformBasePointer    SubTransformInverseTransformBasePointer;
 
   /** Transform queue type */
-  using TransformQueueType = std::deque<TransformTypePointer>;
+  typedef std::deque<TransformTypePointer>  TransformQueueType;
 
-  /** The number of parameters defining this transform. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  /** The number of parameters defininig this transform. */
+  typedef typename Superclass::NumberOfParametersType NumberOfParametersType;
 
   /** Dimension of the domain spaces. */
-  static constexpr unsigned int InputDimension = NDimensions;
-  static constexpr unsigned int OutputDimension = NDimensions;
+  itkStaticConstMacro( InputDimension, unsigned int, NDimensions );
+  itkStaticConstMacro( OutputDimension, unsigned int, NDimensions );
 
-  static constexpr unsigned int SubInputDimension = NSubDimensions;
-  static constexpr unsigned int SubOutputDimension = NSubDimensions;
+  itkStaticConstMacro( SubInputDimension, unsigned int, NSubDimensions );
+  itkStaticConstMacro( SubOutputDimension, unsigned int, NSubDimensions );
 
   /** Functionality for sub transforms */
 
   /** Add transforms to the queue, as stack.
    *  Most-recently added transform is always at back of queue, index N-1.
    */
-  virtual void
-  AddTransform(TransformType * t)
+  virtual void AddTransform( TransformType *t  )
   {
-    this->PushBackTransform(t);
+    this->PushBackTransform( t );
   }
 
   /** Same as AddTransform */
-  virtual void
-  AppendTransform(TransformType * t)
+  virtual void AppendTransform( TransformType *t  )
   {
-    this->AddTransform(t);
+    this->AddTransform( t );
   }
 
   /** Add transform to the front of the stack */
-  virtual void
-  PrependTransform(TransformType * t)
+  virtual void PrependTransform( TransformType *t  )
   {
-    this->PushFrontTransform(t);
+    this->PushFrontTransform( t );
   }
 
   /** Remove transform from the back of the queue, index N-1 */
-  virtual void
-  RemoveTransform()
+  virtual void RemoveTransform()
   {
     this->PopBackTransform();
   }
 
   /** Get transforms at the front and the back of the queue */
-  virtual const TransformType *
-  GetFrontTransform() const
+  virtual const
+  TransformType * GetFrontTransform() const
   {
     return this->m_TransformQueue.front().GetPointer();
   }
 
-  virtual const TransformType *
-  GetBackTransform() const
+  virtual const
+  TransformType * GetBackTransform() const
   {
     return this->m_TransformQueue.back().GetPointer();
   }
 
-  virtual const TransformTypePointer
-  GetNthTransform(SizeValueType n) const
+  virtual const
+  TransformTypePointer GetNthTransform( SizeValueType n ) const
   {
-    // NOTE: By returning a smart pointer type, the use of this function can
+    //NOTE: By returning a smart pointer type, the use of this function can
     //      be a significant bottleneck in multithreaded applications.
     return this->m_TransformQueue[n];
   }
 
   /** Get the Nth transform.
    * \warning No bounds checking is performed. */
-  virtual TransformType *
-  GetNthTransformModifiablePointer(const SizeValueType n) const
+  virtual
+  TransformType * GetNthTransformModifiablePointer( const SizeValueType n ) const
   {
     return this->m_TransformQueue[n].GetPointer();
   }
 
-  virtual const TransformType *
-  GetNthTransformConstPointer(const SizeValueType n) const
+  virtual const
+  TransformType * GetNthTransformConstPointer( const SizeValueType n ) const
   {
     return this->m_TransformQueue[n].GetPointer();
   }
 
   /** Access transform queue */
-  virtual const TransformQueueType &
-  GetTransformQueue() const
+  virtual const TransformQueueType & GetTransformQueue() const
   {
     return this->m_TransformQueue;
   }
 
   /** Misc. functionality */
-  virtual bool
-  IsTransformQueueEmpty() const
+  virtual bool IsTransformQueueEmpty() const
   {
     return this->m_TransformQueue.empty();
   }
 
   /** Return the number of sub-transforms. */
-  virtual SizeValueType
-  GetNumberOfTransforms() const
+  virtual SizeValueType GetNumberOfTransforms() const
   {
     return static_cast<SizeValueType>(this->m_TransformQueue.size());
   }
 
   /** Clear the transform queue. */
-  virtual void
-  ClearTransformQueue()
+  virtual void ClearTransformQueue()
   {
     this->m_TransformQueue.clear();
     this->Modified();
   }
 
   /** If all sub-transforms are linear, then the multi-transform is linear. */
-  bool
-  IsLinear() const override;
+  virtual bool IsLinear() const ITK_OVERRIDE;
 
   /** If all sub-transforms are of the same category, return that category.
    * Otherwise return UnknownTransformCategory. */
-  TransformCategoryEnum
-  GetTransformCategory() const override;
+  virtual TransformCategoryType GetTransformCategory() const ITK_OVERRIDE;
 
   /** Get/Set Parameter functions work on all sub-transforms.
       The parameter data from each sub-transform is
@@ -254,82 +240,68 @@ public:
       so the returned array is ordered in the same way. That is,
       first sub-transform to be added is returned first in the
       parameter array.*/
-  const ParametersType &
-  GetParameters() const override;
+  virtual const ParametersType & GetParameters() const ITK_OVERRIDE;
 
   /* SetParameters for all sub-transforms.
    * See GetParameters() for parameter ordering. */
-  void
-  SetParameters(const ParametersType & p) override;
+  virtual void  SetParameters(const ParametersType & p) ITK_OVERRIDE;
 
   /* GetFixedParameters for all sub-transforms.
    * See GetParameters() for parameter ordering. */
-  const FixedParametersType &
-  GetFixedParameters() const override;
+  virtual const FixedParametersType & GetFixedParameters() const ITK_OVERRIDE;
 
   /* SetFixedParameters for all sub-transforms.
    * See GetParameters() for parameter ordering. */
-  void
-  SetFixedParameters(const FixedParametersType & fixedParameters) override;
+  virtual void SetFixedParameters(const FixedParametersType & fixedParameters) ITK_OVERRIDE;
 
   /* Get total number of parameters. Sum of all sub-transforms. */
-  NumberOfParametersType
-  GetNumberOfParameters() const override;
+  virtual NumberOfParametersType GetNumberOfParameters() const ITK_OVERRIDE;
 
   /* Get total number of local parameters, the sum of all sub-transforms. */
-  NumberOfParametersType
-  GetNumberOfLocalParameters() const override;
+  virtual NumberOfParametersType GetNumberOfLocalParameters() const ITK_OVERRIDE;
 
   /* Get total number of fixed parameters, the sum of all sub-transforms. */
-  NumberOfParametersType
-  GetNumberOfFixedParameters() const override;
+  virtual NumberOfParametersType GetNumberOfFixedParameters() const ITK_OVERRIDE;
 
   /** Update the transform's parameters by the values in \c update.
    * See GetParameters() for parameter ordering. */
-  void
-  UpdateTransformParameters(const DerivativeType & update, ScalarType factor = 1.0) override;
+  virtual void UpdateTransformParameters( const DerivativeType & update, ScalarType  factor = 1.0 ) ITK_OVERRIDE;
 
   /** Returns a boolean indicating whether it is possible or not to compute the
    * inverse of this current Transform. If it is possible, then the inverse of
    * the transform is returned in the inverseTransform variable passed by the user.
    * The inverse consists of the inverse of each sub-transform, in the same order
    * as the forward transforms. */
-  bool
-  GetInverse(Self * inverse) const;
+  bool GetInverse( Self *inverse ) const;
 
   /** Flatten the transform queue such that there are no nested composite transforms. */
-  // TODO - what do we need here?
-  //  virtual void FlattenTransformQueue();
+//TODO - what do we need here?
+//  virtual void FlattenTransformQueue();
 
 protected:
   MultiTransform();
-  ~MultiTransform() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MultiTransform() ITK_OVERRIDE;
+  virtual void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
-  virtual void
-  PushFrontTransform(TransformTypePointer t)
+  virtual void PushFrontTransform( TransformTypePointer t  )
   {
-    this->m_TransformQueue.push_front(t);
+    this->m_TransformQueue.push_front( t );
     this->Modified();
   }
 
-  virtual void
-  PushBackTransform(TransformTypePointer t)
+  virtual void PushBackTransform( TransformTypePointer t  )
   {
-    this->m_TransformQueue.push_back(t);
+    this->m_TransformQueue.push_back( t );
     this->Modified();
   }
 
-  virtual void
-  PopFrontTransform()
+  virtual void PopFrontTransform()
   {
     this->m_TransformQueue.pop_front();
     this->Modified();
   }
 
-  virtual void
-  PopBackTransform()
+  virtual void PopBackTransform()
   {
     this->m_TransformQueue.pop_back();
     this->Modified();
@@ -339,14 +311,18 @@ protected:
   mutable TransformQueueType m_TransformQueue;
 
   /** Cache to save time returning the number of local parameters */
-  mutable NumberOfParametersType m_NumberOfLocalParameters;
-  mutable ModifiedTimeType       m_LocalParametersUpdateTime;
+  mutable NumberOfParametersType  m_NumberOfLocalParameters;
+  mutable ModifiedTimeType        m_LocalParametersUpdateTime;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultiTransform);
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMultiTransform.hxx"
+#include "itkMultiTransform.hxx"
 #endif
 
 #endif // itkMultiTransform_h

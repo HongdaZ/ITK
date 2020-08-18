@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,14 +48,15 @@ namespace itk
  * \ingroup ITKOptimizers
  */
 
-class ITKOptimizers_EXPORT CumulativeGaussianCostFunction : public MultipleValuedCostFunction
+class ITKOptimizers_EXPORT CumulativeGaussianCostFunction:public MultipleValuedCostFunction
 {
 public:
-  /** Standard type alias. */
-  using Self = CumulativeGaussianCostFunction;
-  using Superclass = MultipleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+
+  /** Standard typedefs. */
+  typedef CumulativeGaussianCostFunction Self;
+  typedef MultipleValuedCostFunction     Superclass;
+  typedef SmartPointer< Self >           Pointer;
+  typedef SmartPointer< const Self >     ConstPointer;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(CumulativeGaussianCostFunction, MultipleValuedCostFunction);
@@ -64,64 +65,52 @@ public:
   itkNewMacro(Self);
 
   /** Array Typedefs. */
-  using ParametersType = Superclass::ParametersType;
-  using MeasureType = Superclass::MeasureType;
-  using DerivativeType = Superclass::DerivativeType;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::MeasureType    MeasureType;
+  typedef Superclass::DerivativeType DerivativeType;
 
   /** The dimensions of parameter space; mean, standard deviation, lower and
     upper asymptotes. */
-  enum
-  {
-    SpaceDimension = 4
-  };
+  enum { SpaceDimension = 4 };
 
   /** Not necessary for this optimizer. */
-  void
-  GetDerivative(const ParametersType & itkNotUsed(parameters), DerivativeType & itkNotUsed(derivative)) const override
-  {}
+  void GetDerivative( const ParametersType & itkNotUsed(parameters),
+                      DerivativeType & itkNotUsed(derivative) ) const ITK_OVERRIDE {}
 
   /** Return the values evaluated for the given parameters. */
-  MeasureType
-  GetValue(const ParametersType & parameters) const override;
+  virtual MeasureType GetValue(const ParametersType & parameters) const ITK_OVERRIDE;
 
   /** Return a pointer of values evaluated for the given parameters. */
-  MeasureType *
-  GetValuePointer(ParametersType & parameters);
+  MeasureType * GetValuePointer(ParametersType & parameters);
 
   /** Calculate a fit error between the data and the fit curve. */
-  double
-  CalculateFitError(MeasureType * setTestArray);
+  double CalculateFitError(MeasureType *setTestArray);
 
   /** Given the argument of a Cumulative Gaussian, return its value. */
-  double
-  EvaluateCumulativeGaussian(double argument) const;
+  double EvaluateCumulativeGaussian(double argument) const;
 
   /** Get the SpaceDimension. */
-  unsigned int
-  GetNumberOfParameters() const override;
+  virtual unsigned int GetNumberOfParameters() const ITK_OVERRIDE;
 
   /** Get the number Range Dimension. */
-  unsigned int
-  GetNumberOfValues() const override;
+  virtual unsigned int GetNumberOfValues() const ITK_OVERRIDE;
 
   /** Initialize the arrays. */
-  void
-  Initialize(unsigned int rangeDimension);
+  void Initialize(unsigned int rangeDimension);
 
   /** Set the original data array. */
-  void
-  SetOriginalDataArray(MeasureType * setOriginalDataArray);
+  void SetOriginalDataArray(MeasureType *setOriginalDataArray);
 
 protected:
   CumulativeGaussianCostFunction();
-  ~CumulativeGaussianCostFunction() override;
+  virtual ~CumulativeGaussianCostFunction() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   /** Pointer to the original data array. */
-  MeasureType * m_OriginalDataArray;
+  MeasureType *m_OriginalDataArray;
 
   /** Number of data samples. */
   unsigned int m_RangeDimension;

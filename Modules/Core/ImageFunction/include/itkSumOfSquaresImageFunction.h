@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,11 +19,8 @@
 #define itkSumOfSquaresImageFunction_h
 
 #include "itkImageFunction.h"
-#include "itkImageNeighborhoodOffsets.h"
 #include "itkNumericTraits.h"
-#include "itkOffset.h"
-
-#include <vector>
+#include "itkNeighborhood.h"
 
 namespace itk
 {
@@ -43,20 +40,19 @@ namespace itk
  * \ingroup ImageFunctions
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = float>
-class ITK_TEMPLATE_EXPORT SumOfSquaresImageFunction
-  : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
+template< typename TInputImage, typename TCoordRep = float >
+class ITK_TEMPLATE_EXPORT SumOfSquaresImageFunction:
+  public ImageFunction< TInputImage, typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                        TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SumOfSquaresImageFunction);
+  /** Standard class typedefs. */
+  typedef SumOfSquaresImageFunction Self;
+  typedef ImageFunction< TInputImage, typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                         TCoordRep >                     Superclass;
 
-  /** Standard class type aliases. */
-  using Self = SumOfSquaresImageFunction;
-  using Superclass =
-    ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SumOfSquaresImageFunction, ImageFunction);
@@ -64,40 +60,34 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
-
-  /** InputPixel type alias support */
-  using typename Superclass::InputPixelType;
+  /** InputImageType typedef support. */
+  typedef TInputImage InputImageType;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
-
-  /** Size type of the underlying image. */
-  using ImageSizeType = typename InputImageType::SizeType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Datatype used for the variance */
-  using RealType = typename NumericTraits<typename InputImageType::PixelType>::RealType;
+  typedef typename NumericTraits< typename InputImageType::PixelType >::RealType
+  RealType;
 
   /** Evalulate the function at specified index */
-  RealType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual RealType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at non-integer positions */
-  RealType
-  Evaluate(const PointType & point) const override
+  virtual RealType Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -105,8 +95,8 @@ public:
     return this->EvaluateAtIndex(index);
   }
 
-  RealType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override
+  virtual RealType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & cindex) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -118,33 +108,35 @@ public:
       statistics are evaluated */
   itkGetConstReferenceMacro(NeighborhoodRadius, unsigned int);
 
-  void
-  SetNeighborhoodRadius(unsigned int radius)
+  void SetNeighborhoodRadius(unsigned int radius)
   {
-    m_NeighborhoodOffsets = Experimental::GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
     m_NeighborhoodRadius = radius;
-    m_NeighborhoodSize = m_NeighborhoodOffsets.size();
+
+    m_NeighborhoodSize = 1;
+    long twoRPlus1 = 2 * m_NeighborhoodRadius + 1;
+    for ( unsigned int i = 0; i < ImageDimension; i++ )
+      {
+      m_NeighborhoodSize *= twoRPlus1;
+      }
   }
 
   itkGetConstReferenceMacro(NeighborhoodSize, unsigned int);
 
 protected:
   SumOfSquaresImageFunction();
-  ~SumOfSquaresImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~SumOfSquaresImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SumOfSquaresImageFunction);
+
   unsigned int m_NeighborhoodRadius;
   unsigned int m_NeighborhoodSize;
-
-  std::vector<Offset<ImageDimension>> m_NeighborhoodOffsets{ Experimental::GenerateRectangularImageNeighborhoodOffsets(
-    ImageSizeType::Filled(1)) };
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSumOfSquaresImageFunction.hxx"
+#include "itkSumOfSquaresImageFunction.hxx"
 #endif
 
 #endif

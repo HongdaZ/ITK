@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,60 +16,64 @@
  *
  *=========================================================================*/
 
-#ifndef vtkCaptureScreen_h
-#define vtkCaptureScreen_h
+#ifndef __vtkCaptureScreen_h
+#define __vtkCaptureScreen_h
 
 #include <string>
 #include "vtkSmartPointer.h"
 #include "vtkWindowToImageFilter.h"
 #include "vtkRenderWindow.h"
 
-template <typename TImageWriter>
+template < typename TImageWriter >
 class vtkCaptureScreen
-{
+  {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(vtkCaptureScreen);
+  typedef TImageWriter ImageWriterType;
 
-  using ImageWriterType = TImageWriter;
+  vtkCaptureScreen( vtkRenderWindow* iRenderer ) : m_Renderer ( iRenderer )
+    {}
 
-  vtkCaptureScreen(vtkRenderWindow * iRenderer)
-    : m_Renderer(iRenderer)
-  {}
+  vtkCaptureScreen() : m_Renderer( ITK_NULLPTR )
+    {}
 
-  vtkCaptureScreen() = default;
-  ~vtkCaptureScreen() = default;
+  ~vtkCaptureScreen( )
+    {}
 
-  void
-  operator()(const std::string & iFileName) const
-  {
-    Capture(m_Renderer, iFileName);
-  }
-
-  void
-  operator()(vtkRenderWindow * iRenderer, const std::string & iFileName)
-  {
-    m_Renderer = iRenderer;
-    Capture(m_Renderer, iFileName);
-  }
-
-private:
-  vtkRenderWindow * m_Renderer{ nullptr };
-
-  void
-  Capture(vtkRenderWindow * iRenderer, const std::string & iFileName) const
-  {
-    if (iRenderer)
+  void operator( ) ( const std::string& iFileName ) const
     {
-      vtkSmartPointer<vtkWindowToImageFilter> Dumper = vtkSmartPointer<vtkWindowToImageFilter>::New();
-      Dumper->SetInput(iRenderer);
-      Dumper->Update();
-
-      vtkSmartPointer<ImageWriterType> writer = vtkSmartPointer<ImageWriterType>::New();
-      writer->SetFileName(iFileName.c_str());
-      writer->SetInputConnection(Dumper->GetOutputPort());
-      writer->Write();
+    Capture( m_Renderer, iFileName );
     }
-  }
-};
+
+  void operator( ) ( vtkRenderWindow* iRenderer,
+                     const std::string& iFileName ) const
+    {
+    m_Renderer = iRenderer;
+    Capture( m_Renderer, iFileName );
+    }
+
+  private:
+    vtkCaptureScreen ( const vtkCaptureScreen& );
+    void operator = ( const vtkCaptureScreen& );
+
+    vtkRenderWindow* m_Renderer;
+
+    void Capture( vtkRenderWindow* iRenderer,
+                  const std::string& iFileName ) const
+      {
+      if( iRenderer )
+        {
+        vtkSmartPointer< vtkWindowToImageFilter > Dumper =
+            vtkSmartPointer< vtkWindowToImageFilter >::New( );
+        Dumper->SetInput( iRenderer );
+        Dumper->Update( );
+
+        vtkSmartPointer< ImageWriterType > writer =
+            vtkSmartPointer< ImageWriterType >::New( );
+        writer->SetFileName ( iFileName.c_str( ) );
+        writer->SetInputConnection ( Dumper->GetOutputPort( ) );
+        writer->Write( );
+        }
+      }
+  };
 
 #endif

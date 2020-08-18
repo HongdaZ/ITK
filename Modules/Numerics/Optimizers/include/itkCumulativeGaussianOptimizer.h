@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,21 +45,23 @@ namespace itk
  * \ingroup ITKOptimizers
  */
 
-class ITKOptimizers_EXPORT CumulativeGaussianOptimizer : public MultipleValuedNonLinearOptimizer
+class ITKOptimizers_EXPORT CumulativeGaussianOptimizer:
+  public MultipleValuedNonLinearOptimizer
 {
 public:
-  /** Standard type alias. */
-  using Self = CumulativeGaussianOptimizer;
-  using Superclass = MultipleValuedNonLinearOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
 
-  /** Cost function type alias. NOTE: This optimizer is specific to fitting a
+  /** Standard typedefs. */
+  typedef CumulativeGaussianOptimizer      Self;
+  typedef MultipleValuedNonLinearOptimizer Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
+
+  /** Cost function typedef. NOTE: This optimizer is specific to fitting a
     Cumulative Gaussian. */
-  using CostFunctionType = CumulativeGaussianCostFunction;
+  typedef CumulativeGaussianCostFunction CostFunctionType;
 
-  /** Data array type alias. */
-  using MeasureType = CostFunctionType::MeasureType;
+  /** Data array typedef. */
+  typedef CostFunctionType::MeasureType MeasureType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -79,28 +81,24 @@ public:
   itkGetMacro(FinalSampledArray, MeasureType *);
   itkGetMacro(FitError, double);
 
-  void
-  SetDataArray(MeasureType * dataArray);
+  void SetDataArray(MeasureType *dataArray);
 
   /** Start the optimizer. */
-  void
-  StartOptimization() override;
+  virtual void StartOptimization() ITK_OVERRIDE;
 
   /** Print an array. */
-  void
-  PrintArray(MeasureType * array);
+  void PrintArray(MeasureType *array);
 
   /** Report the reason for stopping. */
-  const std::string
-  GetStopConditionDescription() const override;
+  virtual const std::string GetStopConditionDescription() const ITK_OVERRIDE;
 
 protected:
   CumulativeGaussianOptimizer();
-  ~CumulativeGaussianOptimizer() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~CumulativeGaussianOptimizer() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   /** When to stop the iteration for the Gaussian extension loop. */
   double m_DifferenceTolerance;
 
@@ -134,45 +132,37 @@ private:
 
   /** Array of values computed from the final parameters of the
    * Cumulative Gaussian. */
-  MeasureType * m_FinalSampledArray;
+  MeasureType *m_FinalSampledArray;
 
   /** Original data array. */
-  MeasureType * m_CumulativeGaussianArray;
+  MeasureType *m_CumulativeGaussianArray;
 
   /** Extend the tails of the Gaussian. */
-  MeasureType *
-  ExtendGaussian(MeasureType * originalArray, MeasureType * extendedArray, int startingPointForInsertion);
+  MeasureType * ExtendGaussian(MeasureType *originalArray, MeasureType *extendedArray, int startingPointForInsertion);
 
   /** Recalulate the parameters of the extended Gaussian array. */
-  MeasureType *
-  RecalculateExtendedArrayFromGaussianParameters(MeasureType * originalArray,
-                                                 MeasureType * extendedArray,
-                                                 int           startingPointForInsertion) const;
+  MeasureType * RecalculateExtendedArrayFromGaussianParameters(MeasureType *originalArray,
+                                                               MeasureType *extendedArray,
+                                                               int startingPointForInsertion);
 
   /** Calculates the squared difference error between each Gaussian
    * iteration loop. */
-  double
-  FindAverageSumOfSquaredDifferences(MeasureType * array1, MeasureType * array2);
+  double FindAverageSumOfSquaredDifferences(MeasureType *array1, MeasureType *array2);
 
   /** Given an array sampled from a Gaussin, compute the final parameters. */
-  void
-  FindParametersOfGaussian(MeasureType * sampledGaussianArray);
+  void FindParametersOfGaussian(MeasureType *sampledGaussianArray);
 
   /** Measure the parameters of a Gaussian sampled array. */
-  void
-  MeasureGaussianParameters(MeasureType * array);
+  void MeasureGaussianParameters(MeasureType *array);
 
   /** Print the header for output table. */
-  void
-  PrintComputedParameterHeader();
+  void PrintComputedParameterHeader();
 
   /** Print the computed parameters. */
-  void
-  PrintComputedParameters() const;
+  void PrintComputedParameters();
 
   /** Find the constant of the integrated sample. */
-  double
-  VerticalBestShift(MeasureType * originalArray, MeasureType * newArray);
+  double VerticalBestShift(MeasureType *originalArray, MeasureType *newArray);
 
   /** Describe the stop condition */
   std::ostringstream m_StopConditionDescription;

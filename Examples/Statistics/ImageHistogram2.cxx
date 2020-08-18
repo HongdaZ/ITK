@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,16 +46,15 @@
 
 #include "itkImageFileReader.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
 
-  if (argc < 2)
-  {
+  if( argc < 2 )
+    {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  ImageHistogram1  inputImageFileName " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -67,29 +66,29 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 2;
+  typedef unsigned char       PixelType;
+  const unsigned int          Dimension = 2;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image<PixelType, Dimension > ImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Problem reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -103,10 +102,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramGeneratorType =
-    itk::Statistics::ScalarImageToHistogramGenerator<ImageType>;
+  typedef itk::Statistics::ScalarImageToHistogramGenerator<
+                                 ImageType >   HistogramGeneratorType;
 
-  HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();
+  HistogramGeneratorType::Pointer histogramGenerator =
+                                        HistogramGeneratorType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -118,7 +118,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramGenerator->SetInput(reader->GetOutput());
+  histogramGenerator->SetInput(  reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -130,11 +130,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramGenerator->SetNumberOfBins(256);
-  histogramGenerator->SetMarginalScale(10.0);
+  histogramGenerator->SetNumberOfBins( 256 );
+  histogramGenerator->SetMarginalScale( 10.0 );
 
-  histogramGenerator->SetHistogramMin(-0.5);
-  histogramGenerator->SetHistogramMax(255.5);
+  histogramGenerator->SetHistogramMin(  -0.5 );
+  histogramGenerator->SetHistogramMax( 255.5 );
   // Software Guide : EndCodeSnippet
 
 
@@ -163,7 +163,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramType = HistogramGeneratorType::HistogramType;
+  typedef HistogramGeneratorType::HistogramType  HistogramType;
 
   const HistogramType * histogram = histogramGenerator->GetOutput();
   // Software Guide : EndCodeSnippet
@@ -174,11 +174,11 @@ main(int argc, char * argv[])
   std::cout << "Histogram size " << histogramSize << std::endl;
 
   unsigned int bin;
-  for (bin = 0; bin < histogramSize; bin++)
-  {
+  for( bin=0; bin < histogramSize; bin++ )
+    {
     std::cout << "bin = " << bin << " frequency = ";
-    std::cout << histogram->GetFrequency(bin, 0) << std::endl;
-  }
+    std::cout << histogram->GetFrequency( bin, 0 ) << std::endl;
+    }
 
 
   // Software Guide : BeginLatex
@@ -195,15 +195,16 @@ main(int argc, char * argv[])
   HistogramType::ConstIterator end = histogram->End();
 
   unsigned int binNumber = 0;
-  while (itr != end)
-  {
+  while( itr != end )
+    {
     std::cout << "bin = " << binNumber << " frequency = ";
     std::cout << itr.GetFrequency() << std::endl;
     ++itr;
     ++binNumber;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
   return EXIT_SUCCESS;
+
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@
 #include "itkDenseFrequencyContainer2.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -64,16 +63,16 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeasurementType = float;
-  using FrequencyContainerType = itk::Statistics::DenseFrequencyContainer2;
-  using FrequencyType = FrequencyContainerType::AbsoluteFrequencyType;
+  typedef float                                         MeasurementType;
+  typedef itk::Statistics::DenseFrequencyContainer2     FrequencyContainerType;
+  typedef FrequencyContainerType::AbsoluteFrequencyType FrequencyType;
 
-  constexpr unsigned int numberOfComponents = 2;
-  using HistogramType =
-    itk::Statistics::Histogram<MeasurementType, FrequencyContainerType>;
+  const unsigned int numberOfComponents = 2;
+  typedef itk::Statistics::Histogram< MeasurementType,
+    FrequencyContainerType > HistogramType;
 
   HistogramType::Pointer histogram = HistogramType::New();
-  histogram->SetMeasurementVectorSize(numberOfComponents);
+  histogram->SetMeasurementVectorSize( numberOfComponents );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -83,16 +82,16 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  HistogramType::SizeType size(numberOfComponents);
+  HistogramType::SizeType size( numberOfComponents );
   size.Fill(3);
-  HistogramType::MeasurementVectorType lowerBound(numberOfComponents);
-  HistogramType::MeasurementVectorType upperBound(numberOfComponents);
+  HistogramType::MeasurementVectorType lowerBound( numberOfComponents );
+  HistogramType::MeasurementVectorType upperBound( numberOfComponents );
   lowerBound[0] = 1.1;
   lowerBound[1] = 2.6;
   upperBound[0] = 7.1;
   upperBound[1] = 8.6;
 
-  histogram->Initialize(size, lowerBound, upperBound);
+  histogram->Initialize(size, lowerBound, upperBound );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -133,11 +132,11 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  HistogramType::IndexType index(numberOfComponents);
+  HistogramType::IndexType index( numberOfComponents );
   index[0] = 0;
   index[1] = 2;
-  std::cout << "Frequency of the bin at index  " << index << " is "
-            << histogram->GetFrequency(index)
+  std::cout << "Frequency of the bin at index  " << index
+            << " is " << histogram->GetFrequency(index)
             << ", and the bin's instance identifier is "
             << histogram->GetInstanceIdentifier(index) << std::endl;
   // Software Guide : EndCodeSnippet
@@ -150,7 +149,7 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  HistogramType::MeasurementVectorType mv(numberOfComponents);
+  HistogramType::MeasurementVectorType mv( numberOfComponents );
   mv[0] = 4.1;
   mv[1] = 5.6;
   index.Fill(1);
@@ -177,9 +176,9 @@ main()
 
   // Software Guide : BeginCodeSnippet
   HistogramType::IndexType resultingIndex;
-  histogram->GetIndex(mv, resultingIndex);
-  std::cout << "Index of the measurement vector " << mv << " is " << resultingIndex
-            << std::endl;
+  histogram->GetIndex(mv,resultingIndex);
+  std::cout << "Index of the measurement vector " << mv
+            << " is " << resultingIndex << std::endl;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -189,8 +188,9 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  std::cout << "Instance identifier of index " << index << " is "
-            << histogram->GetInstanceIdentifier(index) << std::endl;
+  std::cout << "Instance identifier of index " << index
+            << " is " << histogram->GetInstanceIdentifier(index)
+            << std::endl;
   // Software Guide : EndCodeSnippet
 
 
@@ -204,10 +204,10 @@ main()
 
   // Software Guide : BeginCodeSnippet
   index.Fill(100);
-  if (histogram->IsIndexOutOfBounds(index))
-  {
+  if ( histogram->IsIndexOutOfBounds(index) )
+    {
     std::cout << "Index " << index << " is out of bounds." << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 

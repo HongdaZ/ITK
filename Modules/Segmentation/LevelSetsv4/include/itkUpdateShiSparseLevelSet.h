@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,119 +38,116 @@ namespace itk
  *  \tparam TEquationContainer Container of the system of levelset equations
  *  \ingroup ITKLevelSetsv4
  */
-template <unsigned int VDimension, typename TEquationContainer>
+template< unsigned int VDimension,
+          typename TEquationContainer >
 class ITK_TEMPLATE_EXPORT UpdateShiSparseLevelSet : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UpdateShiSparseLevelSet);
-
-  using Self = UpdateShiSparseLevelSet;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = Object;
+  typedef UpdateShiSparseLevelSet       Self;
+  typedef SmartPointer< Self >          Pointer;
+  typedef SmartPointer< const Self >    ConstPointer;
+  typedef Object                        Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(UpdateShiSparseLevelSet, Object);
+  itkTypeMacro( UpdateShiSparseLevelSet, Object );
 
-  static constexpr unsigned int ImageDimension = VDimension;
+  itkStaticConstMacro( ImageDimension, unsigned int, VDimension );
 
-  using LevelSetType = ShiSparseLevelSetImage<ImageDimension>;
-  using LevelSetPointer = typename LevelSetType::Pointer;
-  using LevelSetInputType = typename LevelSetType::InputType;
-  using LevelSetOutputType = typename LevelSetType::OutputType;
-  using LevelSetOffsetType = typename LevelSetType::OffsetType;
+  typedef ShiSparseLevelSetImage< ImageDimension >     LevelSetType;
+  typedef typename LevelSetType::Pointer               LevelSetPointer;
+  typedef typename LevelSetType::InputType             LevelSetInputType;
+  typedef typename LevelSetType::OutputType            LevelSetOutputType;
+  typedef typename LevelSetType::OffsetType            LevelSetOffsetType;
 
-  using LevelSetLabelMapType = typename LevelSetType::LabelMapType;
-  using LevelSetLabelMapPointer = typename LevelSetType::LabelMapPointer;
+  typedef typename LevelSetType::LabelMapType          LevelSetLabelMapType;
+  typedef typename LevelSetType::LabelMapPointer       LevelSetLabelMapPointer;
 
-  using LevelSetLabelObjectType = typename LevelSetType::LabelObjectType;
-  using LevelSetLabelObjectPointer = typename LevelSetType::LabelObjectPointer;
-  using LevelSetLabelObjectLengthType = typename LevelSetType::LabelObjectLengthType;
-  using LevelSetLabelObjectLineType = typename LevelSetType::LabelObjectLineType;
+  typedef typename LevelSetType::LabelObjectType       LevelSetLabelObjectType;
+  typedef typename LevelSetType::LabelObjectPointer    LevelSetLabelObjectPointer;
+  typedef typename LevelSetType::LabelObjectLengthType LevelSetLabelObjectLengthType;
+  typedef typename LevelSetType::LabelObjectLineType   LevelSetLabelObjectLineType;
 
-  using LevelSetLayerType = typename LevelSetType::LayerType;
-  using LevelSetLayerIterator = typename LevelSetType::LayerIterator;
-  using LevelSetLayerConstIterator = typename LevelSetType::LayerConstIterator;
-  using LevelSetOutputRealType = typename LevelSetType::OutputRealType;
+  typedef typename LevelSetType::LayerType             LevelSetLayerType;
+  typedef typename LevelSetType::LayerIterator         LevelSetLayerIterator;
+  typedef typename LevelSetType::LayerConstIterator    LevelSetLayerConstIterator;
+  typedef typename LevelSetType::OutputRealType        LevelSetOutputRealType;
 
-  using LevelSetLayerMapType = typename LevelSetType::LayerMapType;
-  using LevelSetLayerMapIterator = typename LevelSetType::LayerMapIterator;
-  using LevelSetLayerMapConstIterator = typename LevelSetType::LayerMapConstIterator;
+  typedef typename LevelSetType::LayerMapType           LevelSetLayerMapType;
+  typedef typename LevelSetType::LayerMapIterator       LevelSetLayerMapIterator;
+  typedef typename LevelSetType::LayerMapConstIterator  LevelSetLayerMapConstIterator;
 
-  using EquationContainerType = TEquationContainer;
-  using EquationContainerPointer = typename EquationContainerType::Pointer;
-  using TermContainerPointer = typename EquationContainerType::TermContainerPointer;
+  typedef TEquationContainer                                    EquationContainerType;
+  typedef typename EquationContainerType::Pointer               EquationContainerPointer;
+  typedef typename EquationContainerType::TermContainerPointer  TermContainerPointer;
 
-  itkGetModifiableObjectMacro(OutputLevelSet, LevelSetType);
+  itkGetModifiableObjectMacro(OutputLevelSet, LevelSetType );
 
   /** Update function for initializing and computing the output level set */
-  void
-  Update();
+  void Update();
 
   /** Set/Get the sparse levet set image */
-  itkSetObjectMacro(InputLevelSet, LevelSetType);
-  itkGetModifiableObjectMacro(InputLevelSet, LevelSetType);
+  itkSetObjectMacro( InputLevelSet, LevelSetType );
+  itkGetModifiableObjectMacro(InputLevelSet, LevelSetType );
 
   /** Set/Get the RMS change for the update */
-  itkGetMacro(RMSChangeAccumulator, LevelSetOutputRealType);
+  itkGetMacro( RMSChangeAccumulator, LevelSetOutputRealType );
 
   /** Set/Get the Equation container for computing the update */
-  itkSetObjectMacro(EquationContainer, EquationContainerType);
-  itkGetModifiableObjectMacro(EquationContainer, EquationContainerType);
+  itkSetObjectMacro( EquationContainer, EquationContainerType );
+  itkGetModifiableObjectMacro(EquationContainer, EquationContainerType );
 
   /** Set/Get the current level set id */
-  itkSetMacro(CurrentLevelSetId, IdentifierType);
-  itkGetMacro(CurrentLevelSetId, IdentifierType);
+  itkSetMacro( CurrentLevelSetId, IdentifierType );
+  itkGetMacro( CurrentLevelSetId, IdentifierType );
 
 protected:
   UpdateShiSparseLevelSet();
-  ~UpdateShiSparseLevelSet() override = default;
+  virtual ~UpdateShiSparseLevelSet() ITK_OVERRIDE;
 
   // output
-  LevelSetPointer m_OutputLevelSet;
+  LevelSetPointer   m_OutputLevelSet;
 
   IdentifierType           m_CurrentLevelSetId;
   LevelSetOutputRealType   m_RMSChangeAccumulator;
   EquationContainerPointer m_EquationContainer;
 
-  using LabelImageType = Image<int8_t, ImageDimension>;
-  using LabelImagePointer = typename LabelImageType::Pointer;
+  typedef Image< int8_t, ImageDimension >   LabelImageType;
+  typedef typename LabelImageType::Pointer  LabelImagePointer;
 
   LabelImagePointer m_InternalImage;
 
-  using NeighborhoodIteratorType = ShapedNeighborhoodIterator<LabelImageType>;
+  typedef ShapedNeighborhoodIterator< LabelImageType > NeighborhoodIteratorType;
 
   /** Update +1 level set layers by checking the direction of the movement towards -1 */
   // this is the same as Procedure 2
   // Input is a update image point m_UpdateImage
   // Input is also ShiSparseLevelSetImagePointer
-  void
-  UpdateLayerPlusOne();
+  void UpdateLayerPlusOne();
 
   /** Update -1 level set layers by checking the direction of the movement towards +1 */
-  void
-  UpdateLayerMinusOne();
+  void UpdateLayerMinusOne();
 
   /** Return true if there is a pixel from the opposite layer (+1 or -1) moving in the same direction */
-  bool
-  Con(const LevelSetInputType &      idx,
-      const LevelSetOutputType &     currentStatus,
-      const LevelSetOutputRealType & currentUpdate) const;
+  bool Con( const LevelSetInputType& idx,
+            const LevelSetOutputType& currentStatus,
+            const LevelSetOutputRealType& currentUpdate ) const;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(UpdateShiSparseLevelSet);
+
   // input
   LevelSetPointer    m_InputLevelSet;
   LevelSetOffsetType m_Offset;
 
-  using NodePairType = std::pair<LevelSetInputType, LevelSetOutputType>;
+  typedef std::pair< LevelSetInputType, LevelSetOutputType > NodePairType;
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkUpdateShiSparseLevelSet.hxx"
+#include "itkUpdateShiSparseLevelSet.hxx"
 #endif
 
 #endif // itkUpdateShiSparseLevelSet_h

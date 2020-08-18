@@ -37,7 +37,7 @@ class GDCM_EXPORT FilenameGenerator
 {
 public:
   FilenameGenerator():Pattern(),Prefix(),Filenames() {}
-  ~FilenameGenerator() = default;
+  ~FilenameGenerator() {}
   // FIXME: already defines in gdcm::Directory
   typedef std::string FilenameType;
   typedef std::vector<FilenameType> FilenamesType;

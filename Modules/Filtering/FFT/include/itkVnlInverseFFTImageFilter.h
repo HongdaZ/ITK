@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,89 +15,93 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+#ifndef itkVnlInverseFFTImageFilter_h
+#define itkVnlInverseFFTImageFilter_h
+
 #include "itkInverseFFTImageFilter.h"
 
-#ifndef itkVnlInverseFFTImageFilter_h
-#  define itkVnlInverseFFTImageFilter_h
-
-#  include "itkImage.h"
-#  include "vnl/algo/vnl_fft_base.h"
+#include "itkImage.h"
+#include "vnl/algo/vnl_fft_base.h"
 
 namespace itk
 {
-/**
- *\class VnlInverseFFTImageFilter
+/** \class VnlInverseFFTImageFilter
  *
  * \brief VNL-based reverse Fast Fourier Transform.
  *
  * The input image size must be a multiple of combinations of 2s, 3s,
- * and/or 5s in all dimensions (2, 3, and 5 should be the only prime
- * factors of the image size along each dimension).
+ * and/or 5s in all dimensions.
  *
  * \ingroup FourierTransform
  *
  * \sa InverseFFTImageFilter
  * \ingroup ITKFFT
  *
- *
+ * \wiki
+ * \wikiexample{SpectralAnalysis/CrossCorrelationInFourierDomain,Compute the cross-correlation of two images in the Fourier domain}
+ * \endwiki
  */
-template <typename TInputImage,
-          typename TOutputImage = Image<typename TInputImage::PixelType::value_type, TInputImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT VnlInverseFFTImageFilter : public InverseFFTImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage=Image< typename TInputImage::PixelType::value_type, TInputImage::ImageDimension> >
+class ITK_TEMPLATE_EXPORT VnlInverseFFTImageFilter:
+  public InverseFFTImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VnlInverseFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef TInputImage                            InputImageType;
+  typedef typename InputImageType::PixelType     InputPixelType;
+  typedef typename InputImageType::SizeType      InputSizeType;
+  typedef typename InputImageType::SizeValueType InputSizeValueType;
+  typedef TOutputImage                           OutputImageType;
+  typedef typename OutputImageType::PixelType    OutputPixelType;
+  typedef typename OutputImageType::SizeType     OutputSizeType;
 
-  /** Standard class type aliases. */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputSizeValueType = typename InputImageType::SizeValueType;
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using OutputSizeType = typename OutputImageType::SizeType;
-
-  using Self = VnlInverseFFTImageFilter;
-  using Superclass = InverseFFTImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef VnlInverseFFTImageFilter                           Self;
+  typedef InverseFFTImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                               Pointer;
+  typedef SmartPointer< const Self >                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VnlInverseFFTImageFilter, InverseFFTImageFilter);
+  itkTypeMacro(VnlInverseFFTImageFilter,
+               InverseFFTImageFilter);
 
   /** Extract the dimensionality of the images. They must be the
    * same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  SizeValueType
-  GetSizeGreatestPrimeFactor() const override;
+  SizeValueType GetSizeGreatestPrimeFactor() const ITK_OVERRIDE;
 
-#  ifdef ITK_USE_CONCEPT_CHECKING
+#ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(PixelUnsignedIntDivisionOperatorsCheck, (Concept::DivisionOperators<OutputPixelType, unsigned int>));
-  itkConceptMacro(ImageDimensionsMatchCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
+  itkConceptMacro( PixelUnsignedIntDivisionOperatorsCheck,
+                   ( Concept::DivisionOperators< OutputPixelType, unsigned int > ) );
+  itkConceptMacro( ImageDimensionsMatchCheck,
+                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
   // End concept checking
-#  endif
+#endif
 
 protected:
-  VnlInverseFFTImageFilter() = default;
-  ~VnlInverseFFTImageFilter() override = default;
+  VnlInverseFFTImageFilter()  {}
+  virtual ~VnlInverseFFTImageFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override; // generates output from input
+  virtual void GenerateData() ITK_OVERRIDE;  // generates output from input
 
 private:
-  using SignalVectorType = vnl_vector<InputPixelType>;
-};
-} // namespace itk
+  ITK_DISALLOW_COPY_AND_ASSIGN(VnlInverseFFTImageFilter);
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkVnlInverseFFTImageFilter.hxx"
-#  endif
+  typedef vnl_vector< InputPixelType  > SignalVectorType;
+};
+}
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkVnlInverseFFTImageFilter.hxx"
+#endif
 
 #endif

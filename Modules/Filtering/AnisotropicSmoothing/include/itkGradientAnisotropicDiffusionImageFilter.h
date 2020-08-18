@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,12 +24,11 @@
 namespace itk
 {
 /** \class GradientAnisotropicDiffusionImageFilter
- * \brief This filter performs anisotropic diffusion on a scalar
- * itk::Image using the classic Perona-Malik, gradient magnitude based
- * equation.
  *
- * For detailed information on anisotropic diffusion, see
- * itkAnisotropicDiffusionFunction and
+ * This filter performs anisotropic diffusion on a scalar itk::Image using the
+ * classic Perona-Malik, gradient magnitude based equation implemented in
+ * itkGradientNDAnisotropicDiffusionFunction.  For detailed information on
+ * anisotropic diffusion, see itkAnisotropicDiffusionFunction and
  * itkGradientNDAnisotropicDiffusionFunction.
  *
  * \par Inputs and Outputs
@@ -47,47 +46,51 @@ namespace itk
  * \ingroup ImageFilters
  * \ingroup ITKAnisotropicSmoothing
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GradientAnisotropicDiffusionImageFilter
-  : public AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT GradientAnisotropicDiffusionImageFilter:
+  public AnisotropicDiffusionImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientAnisotropicDiffusionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = GradientAnisotropicDiffusionImageFilter;
-  using Superclass = AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GradientAnisotropicDiffusionImageFilter Self;
+  typedef AnisotropicDiffusionImageFilter< TInputImage, TOutputImage >
+  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Standard method for creation through object factory. */
   itkNewMacro(Self);
 
   /** Run-time class information. */
-  itkTypeMacro(GradientAnisotropicDiffusionImageFilter, AnisotropicDiffusionImageFilter);
+  itkTypeMacro(GradientAnisotropicDiffusionImageFilter,
+               AnisotropicDiffusionImageFilter);
 
   /** Extract information from the superclass. */
-  using UpdateBufferType = typename Superclass::UpdateBufferType;
+  typedef typename Superclass::UpdateBufferType UpdateBufferType;
 
   /** Extract information from the superclass. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(UpdateBufferHasNumericTraitsCheck, (Concept::HasNumericTraits<typename UpdateBufferType::PixelType>));
+  itkConceptMacro( UpdateBufferHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename UpdateBufferType::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   GradientAnisotropicDiffusionImageFilter()
   {
-    typename GradientNDAnisotropicDiffusionFunction<UpdateBufferType>::Pointer p =
-      GradientNDAnisotropicDiffusionFunction<UpdateBufferType>::New();
+    typename GradientNDAnisotropicDiffusionFunction< UpdateBufferType >::Pointer p =
+      GradientNDAnisotropicDiffusionFunction< UpdateBufferType >::New();
     this->SetDifferenceFunction(p);
   }
 
-  ~GradientAnisotropicDiffusionImageFilter() override = default;
+  ~GradientAnisotropicDiffusionImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GradientAnisotropicDiffusionImageFilter);
 };
-} // namespace itk
+} // end namspace itk
 
 #endif

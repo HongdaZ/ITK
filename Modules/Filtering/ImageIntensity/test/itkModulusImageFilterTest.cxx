@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,59 +24,60 @@
 #include "itkSimpleFilterWatcher.h"
 #include "itkTestingMacros.h"
 
-int
-itkModulusImageFilterTest(int argc, char * argv[])
+int itkModulusImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 3)
+  if( argc < 3 )
   {
     std::cerr << "Missing Arguments" << std::endl;
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImage outputImage " << std::endl;
+    std::cerr << argv[0] << " inputImage outputImage " << std::endl;
     return EXIT_FAILURE;
   }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   // get the distance map inside the spots
   // spot are already black so there is no need to invert the image
-  using DistanceFilter = itk::DanielssonDistanceMapImageFilter<ImageType, ImageType>;
+  typedef itk::DanielssonDistanceMapImageFilter< ImageType, ImageType > DistanceFilter;
   DistanceFilter::Pointer distance = DistanceFilter::New();
-  distance->SetInput(reader->GetOutput());
+  distance->SetInput( reader->GetOutput() );
 
-  using FilterType = itk::ModulusImageFilter<ImageType, ImageType>;
+  typedef itk::ModulusImageFilter< ImageType, ImageType > FilterType;
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ModulusImageFilter, BinaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, ModulusImageFilter,
+    BinaryFunctorImageFilter );
 
-  filter->SetInput(distance->GetOutput());
+  filter->SetInput( distance->GetOutput() );
 
   FilterType::InputPixelType dividend = 8;
-  filter->SetDividend(dividend);
-  ITK_TEST_SET_GET_VALUE(dividend, filter->GetDividend())
+  filter->SetDividend( dividend );
+  TEST_SET_GET_VALUE( dividend, filter->GetDividend() )
 
   filter->InPlaceOn();
+  filter->SetFunctor( filter->GetFunctor() );
 
   itk::SimpleFilterWatcher watcher(filter);
 
-  using ThresholdType = itk::RescaleIntensityImageFilter<ImageType, ImageType>;
+  typedef itk::RescaleIntensityImageFilter< ImageType, ImageType > ThresholdType;
   ThresholdType::Pointer rescale = ThresholdType::New();
-  rescale->SetInput(filter->GetOutput());
-  rescale->SetOutputMaximum(itk::NumericTraits<PixelType>::max());
-  rescale->SetOutputMinimum(itk::NumericTraits<PixelType>::NonpositiveMin());
+  rescale->SetInput( filter->GetOutput() );
+  rescale->SetOutputMaximum( itk::NumericTraits< PixelType >::max() );
+  rescale->SetOutputMinimum( itk::NumericTraits< PixelType >::NonpositiveMin() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(rescale->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( rescale->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

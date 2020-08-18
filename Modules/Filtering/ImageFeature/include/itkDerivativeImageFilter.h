@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class DerivativeImageFilter
+/** \class DerivativeImageFilter
  * \brief Computes the directional derivative of an image.
  * The directional derivative at each pixel location is computed by convolution
  * with a derivative operator of user-specified order.
@@ -41,37 +40,36 @@ namespace itk
  * \ingroup ImageFeatureExtraction
  * \ingroup ITKImageFeature
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/DerivativeImage,Apply A Filter Only To A Specified Region Of An Image}
- * \sphinxexample{Filtering/ImageFeature/RequesterRegion, Apply A Filter Only To A Specified Region Of An Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{EdgesAndGradients/DerivativeImageFilter,Compute the derivative of an image in a particular direction}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT DerivativeImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT DerivativeImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DerivativeImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = DerivativeImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DerivativeImageFilter                           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename TInputImage::PixelType          InputPixelType;
+  typedef typename TInputImage::InternalPixelType  InputInternalPixelType;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Image type alias support */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Image typedef support. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -82,7 +80,8 @@ public:
   /** The output pixel type must be signed. */
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SignedOutputPixelType, (Concept::Signed<OutputPixelType>));
+  itkConceptMacro( SignedOutputPixelType,
+                   ( Concept::Signed< OutputPixelType > ) );
   // End concept checking
 #endif
 
@@ -94,19 +93,13 @@ public:
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
-  void
-  SetUseImageSpacingOn()
-  {
-    this->SetUseImageSpacing(true);
-  }
+  void SetUseImageSpacingOn()
+  { this->SetUseImageSpacing(true); }
 
   /** Ignore the image spacing. Use this option if you want derivatives in
       isotropic pixel space.  Default is UseImageSpacingOn. */
-  void
-  SetUseImageSpacingOff()
-  {
-    this->SetUseImageSpacing(false);
-  }
+  void SetUseImageSpacingOff()
+  { this->SetUseImageSpacing(false); }
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -120,8 +113,7 @@ public:
    * inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 protected:
   DerivativeImageFilter()
@@ -131,19 +123,19 @@ protected:
     m_UseImageSpacing = true;
   }
 
-  ~DerivativeImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~DerivativeImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Standard pipeline method. While this class does not implement a
    * ThreadedGenerateData(), its GenerateData() delegates all
    * calculations to an NeighborhoodOperatorImageFilter.  Since the
    * NeighborhoodOperatorImageFilter is multithreaded, this filter is
    * multithreaded by default. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DerivativeImageFilter);
+
   /** The order of the derivative. */
   unsigned int m_Order;
 
@@ -155,7 +147,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDerivativeImageFilter.hxx"
+#include "itkDerivativeImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class AddImageAdaptor
+/** \class AddImageAdaptor
  * \brief Presents an image as being the addition of a constant value to all pixels
  *
  * Additional casting is performed according to the input and output image
@@ -33,20 +32,22 @@ namespace itk
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TImage>
-class AddImageAdaptor : public ImageAdaptor<TImage, Accessor::AddPixelAccessor<typename TImage::PixelType>>
+template< typename TImage >
+class AddImageAdaptor:public
+  ImageAdaptor< TImage,
+                Accessor::AddPixelAccessor< typename TImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AddImageAdaptor);
+  /** Standard class typedefs. */
+  typedef AddImageAdaptor Self;
+  typedef ImageAdaptor< TImage,
+                        Accessor::AddPixelAccessor<
+                          typename TImage::PixelType > >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = AddImageAdaptor;
-  using Superclass = ImageAdaptor<TImage, Accessor::AddPixelAccessor<typename TImage::PixelType>>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using PixelType = typename TImage::PixelType;
+  typedef typename TImage::PixelType PixelType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(AddImageAdaptor, ImageAdaptor);
@@ -55,22 +56,19 @@ public:
   itkNewMacro(Self);
 
   /** Set the value to be added to image pixels */
-  void
-  SetValue(const PixelType newvalue)
-  {
-    this->GetPixelAccessor().SetValue(newvalue);
-  }
+  void SetValue(const PixelType newvalue)
+  { this->GetPixelAccessor().SetValue(newvalue); }
 
   /** Get the value to be added to image pixels */
-  PixelType
-  GetValue() const
-  {
-    return this->GetPixelAccessor().GetValue();
-  }
+  PixelType GetValue() const
+  { return this->GetPixelAccessor().GetValue(); }
 
 protected:
-  AddImageAdaptor() = default;
-  ~AddImageAdaptor() override = default;
+  AddImageAdaptor() {}
+  virtual ~AddImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AddImageAdaptor);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,140 +44,119 @@ namespace itk
  *
  *   \ingroup ITKLevelSetsv4
  */
-template <typename TEquationContainer, typename TLevelSet>
+template< typename TEquationContainer, typename TLevelSet >
 class ITK_TEMPLATE_EXPORT LevelSetEvolution
 {};
 
-template <typename TEquationContainer, typename TImage>
-class ITK_TEMPLATE_EXPORT LevelSetEvolution<TEquationContainer, LevelSetDenseImage<TImage>>
-  : public LevelSetEvolutionBase<TEquationContainer, LevelSetDenseImage<TImage>>
+template< typename TEquationContainer, typename TImage >
+class ITK_TEMPLATE_EXPORT LevelSetEvolution<  TEquationContainer,
+                          LevelSetDenseImage< TImage > > :
+  public LevelSetEvolutionBase< TEquationContainer, LevelSetDenseImage< TImage > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolution);
+  typedef LevelSetDenseImage< TImage > LevelSetType;
 
-  using LevelSetType = LevelSetDenseImage<TImage>;
-
-  using Self = LevelSetEvolution;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEvolutionBase<TEquationContainer, LevelSetType>;
+  typedef LevelSetEvolution                                         Self;
+  typedef SmartPointer< Self >                                      Pointer;
+  typedef SmartPointer< const Self >                                ConstPointer;
+  typedef LevelSetEvolutionBase< TEquationContainer, LevelSetType > Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetEvolution, LevelSetEvolutionBase);
+  itkTypeMacro( LevelSetEvolution, LevelSetEvolutionBase );
 
-  using EquationContainerType = typename Superclass::EquationContainerType;
-  using EquationContainerPointer = typename Superclass::EquationContainerPointer;
-  using TermContainerType = typename Superclass::TermContainerType;
-  using TermContainerPointer = typename Superclass::TermContainerPointer;
+  typedef typename Superclass::EquationContainerType    EquationContainerType;
+  typedef typename Superclass::EquationContainerPointer EquationContainerPointer;
+  typedef typename Superclass::TermContainerType        TermContainerType;
+  typedef typename Superclass::TermContainerPointer     TermContainerPointer;
 
-  using TermType = typename Superclass::TermType;
-  using TermPointer = typename Superclass::TermPointer;
+  typedef typename Superclass::TermType     TermType;
+  typedef typename Superclass::TermPointer  TermPointer;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::InputImagePixelType    InputImagePixelType;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
+  typedef typename Superclass::InputImageRegionType   InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType     InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int, Superclass::ImageDimension );
 
-  using LevelSetContainerType = typename Superclass::LevelSetContainerType;
+  typedef typename Superclass::LevelSetContainerType    LevelSetContainerType;
 
-  using LevelSetIdentifierType = typename Superclass::LevelSetIdentifierType;
+  typedef typename Superclass::LevelSetIdentifierType   LevelSetIdentifierType;
 
-  using LevelSetImageType = typename LevelSetType::ImageType;
+  typedef typename LevelSetType::ImageType        LevelSetImageType;
 
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
-  using LevelSetOutputRealType = typename Superclass::LevelSetOutputRealType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::LevelSetOutputType     LevelSetOutputType;
+  typedef typename Superclass::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename Superclass::LevelSetDataType       LevelSetDataType;
 
-  using IdListType = typename Superclass::IdListType;
-  using IdListIterator = typename Superclass::IdListIterator;
-  using IdListConstIterator = typename Superclass::IdListConstIterator;
-  using IdListImageType = typename Superclass::IdListImageType;
-  using CacheImageType = typename Superclass::CacheImageType;
-  using DomainMapImageFilterType = typename Superclass::DomainMapImageFilterType;
+  typedef typename Superclass::IdListType                   IdListType;
+  typedef typename Superclass::IdListIterator               IdListIterator;
+  typedef typename Superclass::IdListConstIterator          IdListConstIterator;
+  typedef typename Superclass::IdListImageType              IdListImageType;
+  typedef typename Superclass::CacheImageType               CacheImageType;
+  typedef typename Superclass::DomainMapImageFilterType     DomainMapImageFilterType;
 
-  using StoppingCriterionType = typename Superclass::StoppingCriterionType;
-  using StoppingCriterionPointer = typename Superclass::StoppingCriterionPointer;
+  typedef typename Superclass::StoppingCriterionType    StoppingCriterionType;
+  typedef typename Superclass::StoppingCriterionPointer StoppingCriterionPointer;
 
-  using ThresholdFilterType = BinaryThresholdImageFilter<LevelSetImageType, LevelSetImageType>;
-  using ThresholdFilterPointer = typename ThresholdFilterType::Pointer;
+  typedef BinaryThresholdImageFilter< LevelSetImageType, LevelSetImageType >  ThresholdFilterType;
+  typedef typename ThresholdFilterType::Pointer                               ThresholdFilterPointer;
 
-  using MaurerType = SignedMaurerDistanceMapImageFilter<LevelSetImageType, LevelSetImageType>;
-  using MaurerPointer = typename MaurerType::Pointer;
+  typedef SignedMaurerDistanceMapImageFilter< LevelSetImageType, LevelSetImageType >  MaurerType;
+  typedef typename MaurerType::Pointer                                                MaurerPointer;
 
-  using LevelSetImageIteratorType = ImageRegionIteratorWithIndex<LevelSetImageType>;
+  typedef ImageRegionIteratorWithIndex< LevelSetImageType > LevelSetImageIteratorType;
 
-  using LevelSetImageConstIteratorType = ImageRegionConstIteratorWithIndex<LevelSetImageType>;
+  typedef ImageRegionConstIteratorWithIndex< LevelSetImageType > LevelSetImageConstIteratorType;
 
-  using InputImageConstIteratorType = ImageRegionConstIteratorWithIndex<InputImageType>;
+  typedef ImageRegionConstIteratorWithIndex< InputImageType > InputImageConstIteratorType;
 
   /** Set the maximum number of threads to be used. */
-  void
-  SetNumberOfWorkUnits(const ThreadIdType threads);
+  void SetNumberOfThreads( const ThreadIdType threads );
   /** Set the maximum number of threads to be used. */
-  ThreadIdType
-  GetNumberOfWorkUnits() const;
-
-  ~LevelSetEvolution() override = default;
+  ThreadIdType GetNumberOfThreads() const;
 
 protected:
   LevelSetEvolution();
+  ~LevelSetEvolution() ITK_OVERRIDE;
 
   /** Initialize the update buffers for all level sets to hold the updates of
    *  equations in each iteration */
-  void
-  AllocateUpdateBuffer() override;
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE;
 
   /** Computer the update at each pixel and store in the update buffer */
-  void
-  ComputeIteration() override;
+  virtual void ComputeIteration() ITK_OVERRIDE;
 
   /** Compute the time-step for the next iteration */
-  void
-  ComputeTimeStepForNextIteration() override;
+  virtual void ComputeTimeStepForNextIteration() ITK_OVERRIDE;
 
   /** Update the levelset by 1 iteration from the computed updates */
-  void
-  UpdateLevelSets() override;
+  virtual void UpdateLevelSets() ITK_OVERRIDE;
 
   /** Update the equations at the end of 1 iteration */
-  void
-  UpdateEquations() override;
+  virtual void UpdateEquations() ITK_OVERRIDE;
 
   /** Reinitialize the level set functions to a signed distance function */
-  void
-  ReinitializeToSignedDistance();
+  void ReinitializeToSignedDistance();
 
-  typename LevelSetContainerType::Pointer m_UpdateBuffer;
+  typename LevelSetContainerType::Pointer    m_UpdateBuffer;
 
-  friend class LevelSetEvolutionComputeIterationThreader<LevelSetType,
-                                                         ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                                         Self>;
-  using SplitLevelSetComputeIterationThreaderType =
-    LevelSetEvolutionComputeIterationThreader<LevelSetType,
-                                              ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                              Self>;
+  friend class LevelSetEvolutionComputeIterationThreader< LevelSetType, ThreadedImageRegionPartitioner< TImage::ImageDimension >, Self >;
+  typedef LevelSetEvolutionComputeIterationThreader< LevelSetType, ThreadedImageRegionPartitioner< TImage::ImageDimension >, Self > SplitLevelSetComputeIterationThreaderType;
   typename SplitLevelSetComputeIterationThreaderType::Pointer m_SplitLevelSetComputeIterationThreader;
 
-  using DomainMapConstIteratorType = typename DomainMapImageFilterType::DomainMapType::const_iterator;
-  using ThreadedDomainMapPartitionerType = ThreadedIteratorRangePartitioner<DomainMapConstIteratorType>;
-  friend class LevelSetEvolutionComputeIterationThreader<LevelSetType, ThreadedDomainMapPartitionerType, Self>;
-  using SplitDomainMapComputeIterationThreaderType =
-    LevelSetEvolutionComputeIterationThreader<LevelSetType, ThreadedDomainMapPartitionerType, Self>;
+  typedef typename DomainMapImageFilterType::DomainMapType::const_iterator DomainMapConstIteratorType;
+  typedef ThreadedIteratorRangePartitioner< DomainMapConstIteratorType > ThreadedDomainMapPartitionerType;
+  friend class LevelSetEvolutionComputeIterationThreader< LevelSetType, ThreadedDomainMapPartitionerType, Self >;
+  typedef LevelSetEvolutionComputeIterationThreader< LevelSetType, ThreadedDomainMapPartitionerType, Self > SplitDomainMapComputeIterationThreaderType;
   typename SplitDomainMapComputeIterationThreaderType::Pointer m_SplitDomainMapComputeIterationThreader;
 
-  friend class LevelSetEvolutionUpdateLevelSetsThreader<LevelSetType,
-                                                        ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                                        Self>;
-  using SplitLevelSetUpdateLevelSetsThreaderType =
-    LevelSetEvolutionUpdateLevelSetsThreader<LevelSetType,
-                                             ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                             Self>;
+  friend class LevelSetEvolutionUpdateLevelSetsThreader< LevelSetType, ThreadedImageRegionPartitioner< TImage::ImageDimension >, Self >;
+  typedef LevelSetEvolutionUpdateLevelSetsThreader< LevelSetType, ThreadedImageRegionPartitioner< TImage::ImageDimension >, Self > SplitLevelSetUpdateLevelSetsThreaderType;
   typename SplitLevelSetUpdateLevelSetsThreaderType::Pointer m_SplitLevelSetUpdateLevelSetsThreader;
 
   /** Helper variable for threading. */
@@ -185,273 +164,269 @@ protected:
 };
 
 
-template <typename TEquationContainer, typename TOutput, unsigned int VDimension>
-class ITK_TEMPLATE_EXPORT LevelSetEvolution<TEquationContainer, WhitakerSparseLevelSetImage<TOutput, VDimension>>
-  : public LevelSetEvolutionBase<TEquationContainer, WhitakerSparseLevelSetImage<TOutput, VDimension>>
+template< typename TEquationContainer, typename TOutput, unsigned int VDimension >
+class ITK_TEMPLATE_EXPORT LevelSetEvolution< TEquationContainer, WhitakerSparseLevelSetImage< TOutput, VDimension > > :
+  public LevelSetEvolutionBase< TEquationContainer, WhitakerSparseLevelSetImage< TOutput, VDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolution);
+  typedef WhitakerSparseLevelSetImage< TOutput, VDimension > LevelSetType;
 
-  using LevelSetType = WhitakerSparseLevelSetImage<TOutput, VDimension>;
-
-  using Self = LevelSetEvolution;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEvolutionBase<TEquationContainer, LevelSetType>;
+  typedef LevelSetEvolution                                         Self;
+  typedef SmartPointer< Self >                                      Pointer;
+  typedef SmartPointer< const Self >                                ConstPointer;
+  typedef LevelSetEvolutionBase< TEquationContainer, LevelSetType > Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetEvolution, LevelSetEvolutionBase);
+  itkTypeMacro( LevelSetEvolution, LevelSetEvolutionBase );
 
-  using EquationContainerType = typename Superclass::EquationContainerType;
-  using EquationContainerPointer = typename Superclass::EquationContainerPointer;
-  using TermContainerType = typename Superclass::TermContainerType;
-  using TermContainerPointer = typename Superclass::TermContainerPointer;
+  typedef typename Superclass::EquationContainerType    EquationContainerType;
+  typedef typename Superclass::EquationContainerPointer EquationContainerPointer;
+  typedef typename Superclass::TermContainerType        TermContainerType;
+  typedef typename Superclass::TermContainerPointer     TermContainerPointer;
 
-  using TermType = typename Superclass::TermType;
-  using TermPointer = typename Superclass::TermPointer;
+  typedef typename Superclass::TermType     TermType;
+  typedef typename Superclass::TermPointer  TermPointer;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::InputImagePixelType    InputImagePixelType;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
+  typedef typename Superclass::InputImageRegionType   InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType     InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int, Superclass::ImageDimension );
 
-  using LevelSetContainerType = typename Superclass::LevelSetContainerType;
-  using LevelSetIdentifierType = typename Superclass::LevelSetIdentifierType;
+  typedef typename Superclass::LevelSetContainerType              LevelSetContainerType;
+  typedef typename Superclass::LevelSetIdentifierType             LevelSetIdentifierType;
 
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
-  using LevelSetOutputRealType = typename Superclass::LevelSetOutputRealType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::LevelSetInputType      LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType     LevelSetOutputType;
+  typedef typename Superclass::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename Superclass::LevelSetDataType       LevelSetDataType;
 
-  using LevelSetLayerType = typename LevelSetType::LayerType;
+  typedef typename LevelSetType::LayerType             LevelSetLayerType;
 
-  using LevelSetLabelMapType = typename LevelSetType::LabelMapType;
-  using LevelSetLabelMapPointer = typename LevelSetType::LabelMapPointer;
+  typedef typename LevelSetType::LabelMapType          LevelSetLabelMapType;
+  typedef typename LevelSetType::LabelMapPointer       LevelSetLabelMapPointer;
 
 
-  using IdListType = typename Superclass::IdListType;
-  using IdListIterator = typename Superclass::IdListIterator;
-  using IdListImageType = typename Superclass::IdListImageType;
-  using CacheImageType = typename Superclass::CacheImageType;
-  using DomainMapImageFilterType = typename Superclass::DomainMapImageFilterType;
+  typedef typename Superclass::IdListType                   IdListType;
+  typedef typename Superclass::IdListIterator               IdListIterator;
+  typedef typename Superclass::IdListImageType              IdListImageType;
+  typedef typename Superclass::CacheImageType               CacheImageType;
+  typedef typename Superclass::DomainMapImageFilterType     DomainMapImageFilterType;
 
-  using StoppingCriterionType = typename Superclass::StoppingCriterionType;
-  using StoppingCriterionPointer = typename Superclass::StoppingCriterionPointer;
+  typedef typename Superclass::StoppingCriterionType    StoppingCriterionType;
+  typedef typename Superclass::StoppingCriterionPointer StoppingCriterionPointer;
 
-  using InputImageConstIteratorType = ImageRegionConstIteratorWithIndex<InputImageType>;
+  typedef ImageRegionConstIteratorWithIndex< InputImageType > InputImageConstIteratorType;
 
-  using UpdateLevelSetFilterType =
-    UpdateWhitakerSparseLevelSet<ImageDimension, LevelSetOutputType, EquationContainerType>;
-  using UpdateLevelSetFilterPointer = typename UpdateLevelSetFilterType::Pointer;
+  typedef UpdateWhitakerSparseLevelSet< ImageDimension, LevelSetOutputType, EquationContainerType > UpdateLevelSetFilterType;
+  typedef typename UpdateLevelSetFilterType::Pointer                                                UpdateLevelSetFilterPointer;
 
   /** Set the maximum number of threads to be used. */
-  void
-  SetNumberOfWorkUnits(const ThreadIdType threads);
+  void SetNumberOfThreads( const ThreadIdType threads );
   /** Set the maximum number of threads to be used. */
-  ThreadIdType
-  GetNumberOfWorkUnits() const;
+  ThreadIdType GetNumberOfThreads() const;
 
 protected:
   LevelSetEvolution();
-  ~LevelSetEvolution() override;
+  ~LevelSetEvolution() ITK_OVERRIDE;
 
-  using NodePairType = std::pair<LevelSetInputType, LevelSetOutputType>;
+  typedef std::pair< LevelSetInputType, LevelSetOutputType > NodePairType;
 
   // For sparse case, the update buffer needs to be the size of the active layer
-  std::map<IdentifierType, LevelSetLayerType *> m_UpdateBuffer;
+  std::map< IdentifierType, LevelSetLayerType* >  m_UpdateBuffer;
 
   /** Initialize the update buffers for all level sets to hold the updates of
    *  equations in each iteration */
-  void
-  AllocateUpdateBuffer() override;
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE;
 
   /** Compute the update at each pixel and store in the update buffer */
-  void
-  ComputeIteration() override;
+  virtual void ComputeIteration() ITK_OVERRIDE;
 
   /** Compute the time-step for the next iteration */
-  void
-  ComputeTimeStepForNextIteration() override;
+  virtual void ComputeTimeStepForNextIteration() ITK_OVERRIDE;
 
   /** Update the levelset by 1 iteration from the computed updates */
-  void
-  UpdateLevelSets() override;
+  virtual void UpdateLevelSets() ITK_OVERRIDE;
 
   /** Update the equations at the end of 1 iteration */
-  void
-  UpdateEquations() override;
+  virtual void UpdateEquations() ITK_OVERRIDE;
 
-  using SplitLevelSetPartitionerType = ThreadedIteratorRangePartitioner<typename LevelSetType::LayerConstIterator>;
-  friend class LevelSetEvolutionComputeIterationThreader<LevelSetType, SplitLevelSetPartitionerType, Self>;
-  using SplitLevelSetComputeIterationThreaderType =
-    LevelSetEvolutionComputeIterationThreader<LevelSetType, SplitLevelSetPartitionerType, Self>;
+  typedef ThreadedIteratorRangePartitioner< typename LevelSetType::LayerConstIterator > SplitLevelSetPartitionerType;
+  friend class LevelSetEvolutionComputeIterationThreader< LevelSetType, SplitLevelSetPartitionerType, Self >;
+  typedef LevelSetEvolutionComputeIterationThreader< LevelSetType, SplitLevelSetPartitionerType, Self > SplitLevelSetComputeIterationThreaderType;
   typename SplitLevelSetComputeIterationThreaderType::Pointer m_SplitLevelSetComputeIterationThreader;
+
+private:
+  LevelSetEvolution( const Self& );
+  void operator = ( const Self& );
 };
 
 
 // Shi
-template <typename TEquationContainer, unsigned int VDimension>
-class ITK_TEMPLATE_EXPORT LevelSetEvolution<TEquationContainer, ShiSparseLevelSetImage<VDimension>>
-  : public LevelSetEvolutionBase<TEquationContainer, ShiSparseLevelSetImage<VDimension>>
+template< typename TEquationContainer, unsigned int VDimension >
+class ITK_TEMPLATE_EXPORT LevelSetEvolution<
+    TEquationContainer,
+    ShiSparseLevelSetImage< VDimension > > :
+public LevelSetEvolutionBase< TEquationContainer, ShiSparseLevelSetImage< VDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolution);
+  typedef ShiSparseLevelSetImage< VDimension > LevelSetType;
 
-  using LevelSetType = ShiSparseLevelSetImage<VDimension>;
-
-  using Self = LevelSetEvolution;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEvolutionBase<TEquationContainer, LevelSetType>;
+  typedef LevelSetEvolution                                         Self;
+  typedef SmartPointer< Self >                                      Pointer;
+  typedef SmartPointer< const Self >                                ConstPointer;
+  typedef LevelSetEvolutionBase< TEquationContainer, LevelSetType > Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetEvolution, LevelSetEvolutionBase);
+  itkTypeMacro( LevelSetEvolution, LevelSetEvolutionBase );
 
-  using EquationContainerType = typename Superclass::EquationContainerType;
-  using EquationContainerPointer = typename Superclass::EquationContainerPointer;
-  using TermContainerType = typename Superclass::TermContainerType;
-  using TermContainerPointer = typename Superclass::TermContainerPointer;
+  typedef typename Superclass::EquationContainerType    EquationContainerType;
+  typedef typename Superclass::EquationContainerPointer EquationContainerPointer;
+  typedef typename Superclass::TermContainerType        TermContainerType;
+  typedef typename Superclass::TermContainerPointer     TermContainerPointer;
 
-  using TermType = typename Superclass::TermType;
-  using TermPointer = typename Superclass::TermPointer;
+  typedef typename Superclass::TermType     TermType;
+  typedef typename Superclass::TermPointer  TermPointer;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::InputImagePixelType    InputImagePixelType;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
+  typedef typename Superclass::InputImageRegionType   InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType     InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int, Superclass::ImageDimension );
 
-  using LevelSetContainerType = typename Superclass::LevelSetContainerType;
-  using LevelSetIdentifierType = typename Superclass::LevelSetIdentifierType;
+  typedef typename Superclass::LevelSetContainerType    LevelSetContainerType;
+  typedef typename Superclass::LevelSetIdentifierType   LevelSetIdentifierType;
 
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
-  using LevelSetOutputRealType = typename Superclass::LevelSetOutputRealType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::LevelSetInputType      LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType     LevelSetOutputType;
+  typedef typename Superclass::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename Superclass::LevelSetDataType       LevelSetDataType;
 
-  using LevelSetLayerType = typename LevelSetType::LayerType;
+  typedef typename LevelSetType::LayerType             LevelSetLayerType;
 
-  using LevelSetLabelMapType = typename LevelSetType::LabelMapType;
-  using LevelSetLabelMapPointer = typename LevelSetType::LabelMapPointer;
+  typedef typename LevelSetType::LabelMapType          LevelSetLabelMapType;
+  typedef typename LevelSetType::LabelMapPointer       LevelSetLabelMapPointer;
 
 
-  using IdListType = typename Superclass::IdListType;
-  using IdListIterator = typename Superclass::IdListIterator;
-  using IdListImageType = typename Superclass::IdListImageType;
-  using CacheImageType = typename Superclass::CacheImageType;
-  using DomainMapImageFilterType = typename Superclass::DomainMapImageFilterType;
+  typedef typename Superclass::IdListType                   IdListType;
+  typedef typename Superclass::IdListIterator               IdListIterator;
+  typedef typename Superclass::IdListImageType              IdListImageType;
+  typedef typename Superclass::CacheImageType               CacheImageType;
+  typedef typename Superclass::DomainMapImageFilterType     DomainMapImageFilterType;
 
-  using StoppingCriterionType = typename Superclass::StoppingCriterionType;
-  using StoppingCriterionPointer = typename Superclass::StoppingCriterionPointer;
+  typedef typename Superclass::StoppingCriterionType    StoppingCriterionType;
+  typedef typename Superclass::StoppingCriterionPointer StoppingCriterionPointer;
 
-  using InputImageConstIteratorType = ImageRegionConstIteratorWithIndex<InputImageType>;
+  typedef ImageRegionConstIteratorWithIndex< InputImageType > InputImageConstIteratorType;
 
-  using UpdateLevelSetFilterType = UpdateShiSparseLevelSet<ImageDimension, EquationContainerType>;
-  using UpdateLevelSetFilterPointer = typename UpdateLevelSetFilterType::Pointer;
-
-  LevelSetEvolution() = default;
-  ~LevelSetEvolution() override = default;
+  typedef UpdateShiSparseLevelSet< ImageDimension, EquationContainerType >  UpdateLevelSetFilterType;
+  typedef typename UpdateLevelSetFilterType::Pointer                        UpdateLevelSetFilterPointer;
 
 protected:
+  LevelSetEvolution();
+  ~LevelSetEvolution() ITK_OVERRIDE;
+
   /** Update the levelset by 1 iteration from the computed updates */
-  void
-  UpdateLevelSets() override;
+  virtual void UpdateLevelSets() ITK_OVERRIDE;
 
   /** Update the equations at the end of 1 iteration */
-  void
-  UpdateEquations() override;
+  virtual void UpdateEquations() ITK_OVERRIDE;
+
+private:
+  LevelSetEvolution( const Self& );
+  void operator = ( const Self& );
 };
 
 // Malcolm
-template <typename TEquationContainer, unsigned int VDimension>
-class ITK_TEMPLATE_EXPORT LevelSetEvolution<TEquationContainer, MalcolmSparseLevelSetImage<VDimension>>
-  : public LevelSetEvolutionBase<TEquationContainer, MalcolmSparseLevelSetImage<VDimension>>
+template< typename TEquationContainer, unsigned int VDimension >
+class ITK_TEMPLATE_EXPORT LevelSetEvolution< TEquationContainer,
+    MalcolmSparseLevelSetImage< VDimension > > :
+public LevelSetEvolutionBase< TEquationContainer, MalcolmSparseLevelSetImage< VDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolution);
+  typedef MalcolmSparseLevelSetImage< VDimension > LevelSetType;
 
-  using LevelSetType = MalcolmSparseLevelSetImage<VDimension>;
-
-  using Self = LevelSetEvolution;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEvolutionBase<TEquationContainer, LevelSetType>;
+  typedef LevelSetEvolution                                         Self;
+  typedef SmartPointer< Self >                                      Pointer;
+  typedef SmartPointer< const Self >                                ConstPointer;
+  typedef LevelSetEvolutionBase< TEquationContainer, LevelSetType > Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetEvolution, LevelSetEvolutionBase);
+  itkTypeMacro( LevelSetEvolution, LevelSetEvolutionBase );
 
-  using EquationContainerType = typename Superclass::EquationContainerType;
-  using EquationContainerPointer = typename Superclass::EquationContainerPointer;
-  using TermContainerType = typename Superclass::TermContainerType;
-  using TermContainerPointer = typename Superclass::TermContainerPointer;
+  typedef typename Superclass::EquationContainerType    EquationContainerType;
+  typedef typename Superclass::EquationContainerPointer EquationContainerPointer;
+  typedef typename Superclass::TermContainerType        TermContainerType;
+  typedef typename Superclass::TermContainerPointer     TermContainerPointer;
 
-  using TermType = typename Superclass::TermType;
-  using TermPointer = typename Superclass::TermPointer;
+  typedef typename Superclass::TermType     TermType;
+  typedef typename Superclass::TermPointer  TermPointer;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::InputImagePixelType    InputImagePixelType;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
+  typedef typename Superclass::InputImageRegionType   InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType     InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int, Superclass::ImageDimension );
 
-  using LevelSetContainerType = typename Superclass::LevelSetContainerType;
-  using LevelSetIdentifierType = typename Superclass::LevelSetIdentifierType;
+  typedef typename Superclass::LevelSetContainerType    LevelSetContainerType;
+  typedef typename Superclass::LevelSetIdentifierType   LevelSetIdentifierType;
 
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
-  using LevelSetOutputRealType = typename Superclass::LevelSetOutputRealType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::LevelSetInputType      LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType     LevelSetOutputType;
+  typedef typename Superclass::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename Superclass::LevelSetDataType       LevelSetDataType;
 
-  using LevelSetLayerType = typename LevelSetType::LayerType;
-  using LevelSetLayerIterator = typename LevelSetType::LayerIterator;
+  typedef typename LevelSetType::LayerType             LevelSetLayerType;
+  typedef typename LevelSetType::LayerIterator         LevelSetLayerIterator;
 
-  using LevelSetLabelMapType = typename LevelSetType::LabelMapType;
-  using LevelSetLabelMapPointer = typename LevelSetType::LabelMapPointer;
+  typedef typename LevelSetType::LabelMapType          LevelSetLabelMapType;
+  typedef typename LevelSetType::LabelMapPointer       LevelSetLabelMapPointer;
 
 
-  using IdListType = typename Superclass::IdListType;
-  using IdListIterator = typename Superclass::IdListIterator;
-  using IdListImageType = typename Superclass::IdListImageType;
-  using CacheImageType = typename Superclass::CacheImageType;
-  using DomainMapImageFilterType = typename Superclass::DomainMapImageFilterType;
+  typedef typename Superclass::IdListType                   IdListType;
+  typedef typename Superclass::IdListIterator               IdListIterator;
+  typedef typename Superclass::IdListImageType              IdListImageType;
+  typedef typename Superclass::CacheImageType               CacheImageType;
+  typedef typename Superclass::DomainMapImageFilterType     DomainMapImageFilterType;
 
-  using StoppingCriterionType = typename Superclass::StoppingCriterionType;
-  using StoppingCriterionPointer = typename Superclass::StoppingCriterionPointer;
+  typedef typename Superclass::StoppingCriterionType    StoppingCriterionType;
+  typedef typename Superclass::StoppingCriterionPointer StoppingCriterionPointer;
 
-  using InputImageConstIteratorType = ImageRegionConstIteratorWithIndex<InputImageType>;
+  typedef ImageRegionConstIteratorWithIndex< InputImageType > InputImageConstIteratorType;
 
-  using UpdateLevelSetFilterType = UpdateMalcolmSparseLevelSet<ImageDimension, EquationContainerType>;
-  using UpdateLevelSetFilterPointer = typename UpdateLevelSetFilterType::Pointer;
-
-  LevelSetEvolution() = default;
-  ~LevelSetEvolution() override = default;
+  typedef UpdateMalcolmSparseLevelSet< ImageDimension, EquationContainerType > UpdateLevelSetFilterType;
+  typedef typename UpdateLevelSetFilterType::Pointer UpdateLevelSetFilterPointer;
 
 protected:
-  void
-  UpdateLevelSets() override;
-  void
-  UpdateEquations() override;
+  LevelSetEvolution();
+  virtual ~LevelSetEvolution() ITK_OVERRIDE;
+
+  virtual void UpdateLevelSets() ITK_OVERRIDE;
+
+  virtual void UpdateEquations() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolution);
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetEvolution.hxx"
+#include "itkLevelSetEvolution.hxx"
 #endif
 
 #endif // itkLevelSetEvolution_h

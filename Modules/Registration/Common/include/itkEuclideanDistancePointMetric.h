@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace itk
  * \brief Computes the minimum distance between a moving point-set
  *  and a fixed point-set. A vector of minimum closest point distance is
  *  created for each point in the moving point-set.
- *  No correspondence is needed.
+ *  No correspondance is needed.
  *  For speed consideration, the point-set with the minimum number of points
  *  should be used as the moving point-set.
  *  If the number of points is high, the possibility of setting a distance map
@@ -41,21 +41,20 @@ namespace itk
  * \ingroup RegistrationMetrics
  * \ingroup ITKRegistrationCommon
  */
-template <typename TFixedPointSet,
-          typename TMovingPointSet,
-          typename TDistanceMap = ::itk::Image<unsigned short, TMovingPointSet::PointDimension>>
-class ITK_TEMPLATE_EXPORT EuclideanDistancePointMetric
-  : public PointSetToPointSetMetric<TFixedPointSet, TMovingPointSet>
+template< typename TFixedPointSet, typename TMovingPointSet,
+          typename TDistanceMap =
+            ::itk::Image< unsigned short, TMovingPointSet::PointDimension > >
+class ITK_TEMPLATE_EXPORT EuclideanDistancePointMetric:
+  public PointSetToPointSetMetric< TFixedPointSet, TMovingPointSet >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EuclideanDistancePointMetric);
 
-  /** Standard class type aliases. */
-  using Self = EuclideanDistancePointMetric;
-  using Superclass = PointSetToPointSetMetric<TFixedPointSet, TMovingPointSet>;
+  /** Standard class typedefs. */
+  typedef EuclideanDistancePointMetric                                Self;
+  typedef PointSetToPointSetMetric< TFixedPointSet, TMovingPointSet > Superclass;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,44 +63,40 @@ public:
   itkTypeMacro(EuclideanDistancePointMetric, Object);
 
   /** Types transferred from the base class. */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformParametersType = typename Superclass::TransformParametersType;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
+  typedef typename Superclass::TransformType           TransformType;
+  typedef typename Superclass::TransformPointer        TransformPointer;
+  typedef typename Superclass::TransformParametersType TransformParametersType;
+  typedef typename Superclass::TransformJacobianType   TransformJacobianType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using FixedPointSetType = typename Superclass::FixedPointSetType;
-  using MovingPointSetType = typename Superclass::MovingPointSetType;
-  using FixedPointSetConstPointer = typename Superclass::FixedPointSetConstPointer;
-  using MovingPointSetConstPointer = typename Superclass::MovingPointSetConstPointer;
+  typedef typename Superclass::MeasureType                MeasureType;
+  typedef typename Superclass::DerivativeType             DerivativeType;
+  typedef typename Superclass::FixedPointSetType          FixedPointSetType;
+  typedef typename Superclass::MovingPointSetType         MovingPointSetType;
+  typedef typename Superclass::FixedPointSetConstPointer  FixedPointSetConstPointer;
+  typedef typename Superclass::MovingPointSetConstPointer MovingPointSetConstPointer;
 
-  using FixedPointIterator = typename Superclass::FixedPointIterator;
-  using FixedPointDataIterator = typename Superclass::FixedPointDataIterator;
+  typedef typename Superclass::FixedPointIterator     FixedPointIterator;
+  typedef typename Superclass::FixedPointDataIterator FixedPointDataIterator;
 
-  using MovingPointIterator = typename Superclass::MovingPointIterator;
-  using MovingPointDataIterator = typename Superclass::MovingPointDataIterator;
+  typedef typename Superclass::MovingPointIterator     MovingPointIterator;
+  typedef typename Superclass::MovingPointDataIterator MovingPointDataIterator;
 
-  using DistanceMapType = TDistanceMap;
-  using DistanceMapPointer = typename DistanceMapType::ConstPointer;
+  typedef TDistanceMap                           DistanceMapType;
+  typedef typename DistanceMapType::ConstPointer DistanceMapPointer;
 
   /** Get the number of values, i.e. the number of points in the moving set. */
-  unsigned int
-  GetNumberOfValues() const override;
+  unsigned int GetNumberOfValues() const ITK_OVERRIDE;
 
   /** Get the derivatives of the match measure. */
-  void
-  GetDerivative(const TransformParametersType & parameters, DerivativeType & Derivative) const override;
+  void GetDerivative(const TransformParametersType & parameters,
+                     DerivativeType & Derivative) const ITK_OVERRIDE;
 
   /**  Get the match measure, i.e. the value for single valued optimizers. */
-  MeasureType
-  GetValue(const TransformParametersType & parameters) const override;
+  MeasureType GetValue(const TransformParametersType & parameters) const ITK_OVERRIDE;
 
   /**  Get value and derivatives for multiple valued optimizers. */
-  void
-  GetValueAndDerivative(const TransformParametersType & parameters,
-                        MeasureType &                   Value,
-                        DerivativeType &                Derivative) const;
+  void GetValueAndDerivative(const TransformParametersType & parameters,
+                             MeasureType & Value, DerivativeType & Derivative) const;
 
   /** Set/Get the distance map. */
   itkSetConstObjectMacro(DistanceMap, DistanceMapType);
@@ -117,19 +112,20 @@ public:
 
 protected:
   EuclideanDistancePointMetric();
-  ~EuclideanDistancePointMetric() override = default;
+  virtual ~EuclideanDistancePointMetric() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EuclideanDistancePointMetric);
+
   DistanceMapPointer m_DistanceMap;
-  bool               m_ComputeSquaredDistance{ false };
+  bool               m_ComputeSquaredDistance;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEuclideanDistancePointMetric.hxx"
+#include "itkEuclideanDistancePointMetric.hxx"
 #endif
 
 #endif

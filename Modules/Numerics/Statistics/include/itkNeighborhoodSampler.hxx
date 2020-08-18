@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,24 +24,35 @@ namespace itk
 {
 namespace Statistics
 {
+template< typename TSample >
+NeighborhoodSampler< TSample >
+::NeighborhoodSampler()
+{}
 
-template <typename TSample>
+template< typename TSample >
+NeighborhoodSampler< TSample >
+::~NeighborhoodSampler()
+{}
+
+template< typename TSample >
 void
-NeighborhoodSampler<TSample>::GenerateData()
+NeighborhoodSampler< TSample >
+::GenerateData()
 {
-  const SampleType * inputSample = this->GetInput();
+  const SampleType *inputSample = this->GetInput();
 
-  auto * outputSubSample = static_cast<SubsampleType *>(this->ProcessObject::GetOutput(0));
+  SubsampleType *outputSubSample =
+    static_cast< SubsampleType * >( this->ProcessObject::GetOutput(0) );
 
   outputSubSample->SetSample(inputSample);
   outputSubSample->Clear();
 
-  const InputRadiusObjectType * radiusObject = this->GetRadiusInput();
+  const InputRadiusObjectType *radiusObject = this->GetRadiusInput();
 
-  if (radiusObject == nullptr)
-  {
+  if ( radiusObject == ITK_NULLPTR )
+    {
     itkExceptionMacro("Radius input is missing");
-  }
+    }
 
   // FIXME : What should follow here ?
   //
@@ -49,9 +60,10 @@ NeighborhoodSampler<TSample>::GenerateData()
   //
 }
 
-template <typename TSample>
+template< typename TSample >
 void
-NeighborhoodSampler<TSample>::PrintSelf(std::ostream & os, Indent indent) const
+NeighborhoodSampler< TSample >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
   // m_Radius

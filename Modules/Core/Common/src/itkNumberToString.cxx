@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,37 +24,35 @@
 namespace itk
 {
 
-template <>
-std::string
-NumberToString<double>::operator()(double val)
+template<>
+std::string NumberToString<double>::operator() (double val)
 {
-  char                                               buf[256];
-  const double_conversion::DoubleToStringConverter & converter =
-    double_conversion::DoubleToStringConverter::EcmaScriptConverter();
-  double_conversion::StringBuilder builder(buf, sizeof(buf));
+  char buf[256];
+  const double_conversion::DoubleToStringConverter& converter =
+          double_conversion::DoubleToStringConverter::EcmaScriptConverter();
+  double_conversion::StringBuilder builder(buf,sizeof(buf));
   builder.Reset();
-  if (!converter.ToShortest(val, &builder))
-  {
+  if(!converter.ToShortest(val,&builder))
+    {
     itkGenericExceptionMacro(<< "Conversion failed for " << val);
-  }
+    }
   return std::string(builder.Finalize());
 }
 
-template <>
-std::string
-NumberToString<float>::operator()(float val)
+template<>
+std::string NumberToString<float>::operator() (float val)
 {
-  char                                               buf[256];
-  const double_conversion::DoubleToStringConverter & converter =
-    double_conversion::DoubleToStringConverter::EcmaScriptConverter();
+  char buf[256];
+  const double_conversion::DoubleToStringConverter& converter =
+          double_conversion::DoubleToStringConverter::EcmaScriptConverter();
 
-  double_conversion::StringBuilder builder(buf, sizeof(buf));
+  double_conversion::StringBuilder builder(buf,sizeof(buf));
   builder.Reset();
-  if (!converter.ToShortestSingle(val, &builder))
-  {
+  if(!converter.ToShortestSingle(val,&builder))
+    {
     itkGenericExceptionMacro(<< "Conversion failed for " << val);
-  }
+    }
   return std::string(builder.Finalize());
 }
 
-} // namespace itk
+}

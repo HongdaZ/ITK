@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,11 +33,15 @@ namespace itk
 {
 LSMImageIOFactory::LSMImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkLSMImageIO", "LSM Image IO", true, CreateObjectFunction<LSMImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkLSMImageIO",
+                          "LSM Image IO",
+                          1,
+                          CreateObjectFunction< LSMImageIO >::New() );
 }
 
-LSMImageIOFactory::~LSMImageIOFactory() = default;
+LSMImageIOFactory::~LSMImageIOFactory()
+{}
 
 const char *
 LSMImageIOFactory::GetITKSourceVersion() const
@@ -56,14 +60,13 @@ LSMImageIOFactory::GetDescription() const
 
 static bool LSMImageIOFactoryHasBeenRegistered;
 
-void ITKIOLSM_EXPORT
-     LSMImageIOFactoryRegister__Private()
+void ITKIOLSM_EXPORT LSMImageIOFactoryRegister__Private(void)
 {
-  if (!LSMImageIOFactoryHasBeenRegistered)
-  {
+  if( ! LSMImageIOFactoryHasBeenRegistered )
+    {
     LSMImageIOFactoryHasBeenRegistered = true;
     LSMImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

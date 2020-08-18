@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class DecisionRule
+/** \class DecisionRule
  *  \brief Base class for decision rules that return a class label
  *  based on a set of discriminant scores.
  *
@@ -48,36 +47,36 @@ namespace Statistics
 class ITKStatistics_EXPORT DecisionRule : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DecisionRule);
-
-  /** Standard class type aliases */
-  using Self = DecisionRule;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef DecisionRule               Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(DecisionRule, Object);
 
   /** Types for discriminant values and vectors. */
-  using MembershipValueType = double;
-  using MembershipVectorType = std::vector<MembershipValueType>;
+  typedef double                             MembershipValueType;
+  typedef std::vector< MembershipValueType > MembershipVectorType;
 
   /** Types for class identifiers. */
-  using ClassIdentifierType = MembershipVectorType::size_type;
+  typedef MembershipVectorType::size_type ClassIdentifierType;
 
   /**
    * Evaluate the decision rule. The return value of this function is
    * a class label.  Functions returns the best label given the
    * discriminant scores using its internal logic.
    */
-  virtual ClassIdentifierType
-  Evaluate(const MembershipVectorType & discriminantScores) const = 0;
+  virtual ClassIdentifierType Evaluate(const MembershipVectorType & discriminantScores) const = 0;
 
 protected:
   DecisionRule();
-  ~DecisionRule() override;
-}; // end of class
+  virtual ~DecisionRule() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DecisionRule);
+};                              // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 

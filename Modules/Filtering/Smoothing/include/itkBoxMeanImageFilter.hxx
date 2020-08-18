@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,63 +35,47 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage>
-BoxMeanImageFilter<TInputImage, TOutputImage>::BoxMeanImageFilter()
-{
-  this->DynamicMultiThreadingOn();
-}
+template< typename TInputImage, typename TOutputImage >
+BoxMeanImageFilter< TInputImage, TOutputImage >
+::BoxMeanImageFilter()
+{}
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-BoxMeanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+BoxMeanImageFilter< TInputImage, TOutputImage >
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId)
 {
   // Accumulate type is too small
-  using AccPixType = typename NumericTraits<PixelType>::RealType;
-  using AccumImageType = Image<AccPixType, TInputImage::ImageDimension>;
+  typedef typename NumericTraits< PixelType >::RealType    AccPixType;
+  typedef Image< AccPixType, TInputImage::ImageDimension > AccumImageType;
 
   typename TInputImage::SizeType internalRadius;
-  for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
-  {
+  for ( unsigned int i = 0; i < TInputImage::ImageDimension; i++ )
+    {
     internalRadius[i] = this->GetRadius()[i] + 1;
-  }
+    }
 
-  const InputImageType * inputImage = this->GetInput();
-  OutputImageType *      outputImage = this->GetOutput();
-  RegionType             accumRegion = outputRegionForThread;
+  const InputImageType *inputImage = this->GetInput();
+  OutputImageType *     outputImage = this->GetOutput();
+  RegionType            accumRegion = outputRegionForThread;
   accumRegion.PadByRadius(internalRadius);
-  accumRegion.Crop(inputImage->GetRequestedRegion());
+  accumRegion.Crop( inputImage->GetRequestedRegion() );
+
+  ProgressReporter progress( this, threadId, 2 * accumRegion.GetNumberOfPixels() );
 
   typename AccumImageType::Pointer accImage = AccumImageType::New();
   accImage->SetRegions(accumRegion);
   accImage->Allocate();
 
-#if defined(ITKV4_COMPATIBILITY)
-  // Dummy reporter for compatibility
-  ProgressReporter progress(this, 1, 2 * accumRegion.GetNumberOfPixels());
-#endif
-
-  BoxAccumulateFunction<TInputImage, AccumImageType>(inputImage,
-                                                     accImage,
-                                                     accumRegion,
-                                                     accumRegion
-#if defined(ITKV4_COMPATIBILITY)
-                                                     ,
-                                                     progress);
-#else
-  );
-#endif
-  BoxMeanCalculatorFunction<AccumImageType, TOutputImage>(accImage.GetPointer(),
-                                                          outputImage,
-                                                          accumRegion,
-                                                          outputRegionForThread,
-                                                          this->GetRadius()
-#if defined(ITKV4_COMPATIBILITY)
-                                                            ,
-                                                          progress);
-#else
-  );
-#endif
+  BoxAccumulateFunction< TInputImage, AccumImageType >(inputImage, accImage,
+                                                       accumRegion,
+                                                       accumRegion,
+                                                       progress);
+  BoxMeanCalculatorFunction< AccumImageType, TOutputImage >(accImage.GetPointer(), outputImage,
+                                                            accumRegion,
+                                                            outputRegionForThread,
+                                                            this->GetRadius(),
+                                                            progress);
 }
 } // end namespace itk
 #endif

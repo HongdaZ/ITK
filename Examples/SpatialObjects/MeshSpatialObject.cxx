@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,74 +39,72 @@
 #include "itkSpatialObjectWriter.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int, char *[])
+int main(int, char * [] )
 {
   // Software Guide : BeginLatex
   //
-  // The \code{MeshSpatialObject} wraps an \doxygen{Mesh}, therefore we first
+  // The MeshSpatialObject wraps an \doxygen{Mesh}, therefore we first
   // create a mesh.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeshTrait = itk::DefaultDynamicMeshTraits<float, 3, 3>;
-  using MeshType = itk::Mesh<float, 3, MeshTrait>;
-  using CellTraits = MeshType::CellTraits;
-  using CellInterfaceType = itk::CellInterface<float, CellTraits>;
-  using TetraCellType = itk::TetrahedronCell<CellInterfaceType>;
-  using PointType = MeshType::PointType;
-  using CellType = MeshType::CellType;
-  using CellAutoPointer = CellType::CellAutoPointer;
+  typedef itk::DefaultDynamicMeshTraits< float, 3, 3 > MeshTrait;
+  typedef itk::Mesh< float, 3, MeshTrait >             MeshType;
+  typedef MeshType::CellTraits                         CellTraits;
+  typedef itk::CellInterface< float, CellTraits >      CellInterfaceType;
+  typedef itk::TetrahedronCell< CellInterfaceType >    TetraCellType;
+  typedef MeshType::PointType                          PointType;
+  typedef MeshType::CellType                           CellType;
+  typedef CellType::CellAutoPointer                    CellAutoPointer;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginCodeSnippet
   MeshType::Pointer myMesh = MeshType::New();
 
-  MeshType::CoordRepType testPointCoords[4][3] = {
-    { 0, 0, 0 }, { 9, 0, 0 }, { 9, 9, 0 }, { 0, 0, 9 }
-  };
+  MeshType::CoordRepType testPointCoords[4][3]
+    = { {0,0,0}, {9,0,0}, {9,9,0}, {0,0,9} };
 
-  MeshType::PointIdentifier tetraPoints[4] = { 0, 1, 2, 4 };
+  MeshType::PointIdentifier tetraPoints[4] = {0,1,2,4};
 
   int i;
-  for (i = 0; i < 4; ++i)
-  {
+  for(i=0; i < 4; ++i)
+    {
     myMesh->SetPoint(i, PointType(testPointCoords[i]));
-  }
+    }
 
-  myMesh->SetCellsAllocationMethod(itk::MeshEnums::MeshClassCellsAllocationMethod::
-                                     CellsAllocatedDynamicallyCellByCell);
+  myMesh->SetCellsAllocationMethod(
+      MeshType::CellsAllocatedDynamicallyCellByCell );
   CellAutoPointer testCell1;
-  testCell1.TakeOwnership(new TetraCellType);
+  testCell1.TakeOwnership(  new TetraCellType );
   testCell1->SetPointIds(tetraPoints);
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginCodeSnippet
-  myMesh->SetCell(0, testCell1);
+  myMesh->SetCell(0, testCell1 );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // We then create a \code{MeshSpatialObject} which is templated over the type of mesh
+  // We then create a MeshSpatialObject which is templated over the type of mesh
   // previously defined...
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeshSpatialObjectType = itk::MeshSpatialObject<MeshType>;
-  MeshSpatialObjectType::Pointer myMeshSpatialObject = MeshSpatialObjectType::New();
+  typedef itk::MeshSpatialObject< MeshType > MeshSpatialObjectType;
+  MeshSpatialObjectType::Pointer myMeshSpatialObject =
+                                        MeshSpatialObjectType::New();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // ... and pass the Mesh pointer to the \code{MeshSpatialObject}
+  // ... and pass the Mesh pointer to the MeshSpatialObject
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   myMeshSpatialObject->SetMesh(myMesh);
-  myMeshSpatialObject->Update();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -122,32 +120,30 @@ main(int, char *[])
 
   // Software Guide : BeginLatex
   //
-  // The \code{GetBoundingBoxInWorldSpace()}, \code{ValueAtInWorldSpace()},
-  // \code{IsInsideInWorldSpace()}, and related functions in ObjectSpace
-  // can be used to access important information.
+  // The \code{GetBoundingBox()}, \code{ValueAt()}, \code{IsInside()}
+  // functions can be used to access important information.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  std::cout << "Mesh bounds : "
-            << myMeshSpatialObject->GetMyBoundingBoxInWorldSpace()->GetBounds()
-            << std::endl;
+  std::cout << "Mesh bounds : " <<
+    myMeshSpatialObject->GetBoundingBox()->GetBounds() << std::endl;
   MeshSpatialObjectType::PointType myPhysicalPoint;
   myPhysicalPoint.Fill(1);
-  std::cout << "Is my physical point inside? : "
-            << myMeshSpatialObject->IsInsideInWorldSpace(myPhysicalPoint) << std::endl;
+  std::cout << "Is my physical point inside? : " <<
+    myMeshSpatialObject->IsInside(myPhysicalPoint) << std::endl;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // Now that we have defined the \code{MeshSpatialObject}, we can save the actual mesh
+  // Now that we have defined the MeshSpatialObject, we can save the actual mesh
   // using the \doxygen{SpatialObjectWriter}. In order to do so,
   // we need to specify the type of Mesh we are writing.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::SpatialObjectWriter<3, float, MeshTrait>;
+  typedef itk::SpatialObjectWriter< 3, float, MeshTrait > WriterType;
   WriterType::Pointer writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -172,7 +168,7 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::SpatialObjectReader<3, float, MeshTrait>;
+  typedef itk::SpatialObjectReader< 3, float, MeshTrait > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   // Software Guide : EndCodeSnippet
 
@@ -189,7 +185,7 @@ main(int, char *[])
 
   // Software Guide : BeginLatex
   //
-  // Next, we show how to create a binary image of a \code{MeshSpatialObject}
+  // Next, we show how to create a binary image of a MeshSpatialObject
   // using the \doxygen{SpatialObjectToImageFilter}. The resulting image
   // will have ones inside and zeros outside the mesh.
   // First we define and instantiate the SpatialObjectToImageFilter.
@@ -197,23 +193,23 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ImageType = itk::Image<unsigned char, 3>;
-  using GroupType = itk::GroupSpatialObject<3>;
-  using SpatialObjectToImageFilterType =
-    itk::SpatialObjectToImageFilter<GroupType, ImageType>;
+  typedef itk::Image< unsigned char, 3 > ImageType;
+  typedef itk::GroupSpatialObject< 3 >   GroupType;
+  typedef itk::SpatialObjectToImageFilter< GroupType, ImageType >
+                                         SpatialObjectToImageFilterType;
   SpatialObjectToImageFilterType::Pointer imageFilter =
     SpatialObjectToImageFilterType::New();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
   //
-  // Then we pass the output of the reader, i.e the \code{MeshSpatialObject}, to the
+  // Then we pass the output of the reader, i.e the MeshSpatialObject, to the
   // filter.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  imageFilter->SetInput(reader->GetGroup());
+  imageFilter->SetInput(  reader->GetGroup()  );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex

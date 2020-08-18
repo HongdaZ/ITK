@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,60 +28,58 @@
 #include "itkFlatStructuringElement.h"
 
 
-int
-itkAttributeUniqueLabelMapFilterTest1(int argc, char * argv[])
+int itkAttributeUniqueLabelMapFilterTest1(int argc, char * argv[])
 {
 
-  if (argc != 4)
-  {
+  if( argc != 4 )
+    {
     std::cerr << "usage: " << argv[0] << " input output reverse" << std::endl;
     // std::cerr << "  : " << std::endl;
     exit(1);
-  }
+    }
 
-  constexpr int dim = 2;
+  const int dim = 2;
 
-  using ImageType = itk::Image<unsigned char, dim>;
+  typedef itk::Image< unsigned char, dim > ImageType;
 
-  using LabelObjectType = itk::ShapeLabelObject<unsigned char, dim>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::ShapeLabelObject< unsigned char, dim > LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >            LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using I2LType = itk::LabelImageToShapeLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToShapeLabelMapFilter< ImageType, LabelMapType> I2LType;
   I2LType::Pointer i2l = I2LType::New();
-  i2l->SetInput(reader->GetOutput());
+  i2l->SetInput( reader->GetOutput() );
 
-  using KernelType = itk::FlatStructuringElement<dim>;
-  using DilateType = itk::BinaryDilateImageFilter<ImageType, ImageType, KernelType>;
-  DilateType::Pointer  dilate = DilateType::New();
+  typedef itk::FlatStructuringElement< dim > KernelType;
+  typedef itk::BinaryDilateImageFilter< ImageType, ImageType, KernelType > DilateType;
+  DilateType::Pointer dilate = DilateType::New();
   KernelType::SizeType rad;
-  rad.Fill(15);
-  dilate->SetKernel(KernelType::Ball(rad));
+  rad.Fill( 15 );
+  dilate->SetKernel( KernelType::Ball( rad ) );
 
-  using OIType = itk::ObjectByObjectLabelMapFilter<LabelMapType, LabelMapType, DilateType>;
+  typedef itk::ObjectByObjectLabelMapFilter< LabelMapType, LabelMapType, DilateType > OIType;
   OIType::Pointer oi = OIType::New();
-  oi->SetInput(i2l->GetOutput());
-  oi->SetFilter(dilate);
-  oi->SetPadSize(rad);
+  oi->SetInput( i2l->GetOutput() );
+  oi->SetFilter( dilate );
+  oi->SetPadSize( rad );
 
-  using UniqueType =
-    itk::AttributeUniqueLabelMapFilter<LabelMapType, itk::Functor::NumberOfPixelsLabelObjectAccessor<LabelObjectType>>;
+  typedef itk::AttributeUniqueLabelMapFilter< LabelMapType, itk::Functor::NumberOfPixelsLabelObjectAccessor< LabelObjectType > > UniqueType;
   UniqueType::Pointer unique = UniqueType::New();
-  unique->SetInput(oi->GetOutput());
-  unique->SetReverseOrdering(std::stoi(argv[3]));
+  unique->SetInput( oi->GetOutput() );
+  unique->SetReverseOrdering( atoi(argv[3]) );
   itk::SimpleFilterWatcher watcher(unique, "filter");
 
-  using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> L2IType;
   L2IType::Pointer l2i = L2IType::New();
-  l2i->SetInput(unique->GetOutput());
+  l2i->SetInput( unique->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(l2i->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( l2i->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->Update();
 
   return 0;

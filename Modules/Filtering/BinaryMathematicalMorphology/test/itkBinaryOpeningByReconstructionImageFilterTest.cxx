@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,49 +21,47 @@
 
 #include "itkBinaryBallStructuringElement.h"
 #include "itkBinaryOpeningByReconstructionImageFilter.h"
-#include "itkTestingMacros.h"
 
 
-int
-itkBinaryOpeningByReconstructionImageFilterTest(int argc, char * argv[])
+int itkBinaryOpeningByReconstructionImageFilterTest(int argc, char * argv[])
 {
 
-  if (argc != 6)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " input output conn fg kernelSize" << std::endl;
+  if( argc != 6 )
+    {
+    std::cerr << "usage: " << argv[0] << " input output conn fg kernelSize" << std::endl;
     // std::cerr << "  : " << std::endl;
     exit(1);
-  }
+    }
 
-  constexpr int dim = 2;
+  const int dim = 2;
 
-  using IType = itk::Image<unsigned char, dim>;
+  typedef itk::Image< unsigned char, dim > IType;
 
-  using ReaderType = itk::ImageFileReader<IType>;
+  typedef itk::ImageFileReader< IType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
   reader->Update();
 
-  using KernelType = itk::BinaryBallStructuringElement<bool, dim>;
-  KernelType           ball;
+  typedef itk::BinaryBallStructuringElement< bool, dim> KernelType;
+  KernelType ball;
   KernelType::SizeType ballSize;
-  ballSize.Fill(std::stoi(argv[5]));
+  ballSize.Fill( atoi(argv[5]) );
   ball.SetRadius(ballSize);
   ball.CreateStructuringElement();
 
-  using I2LType = itk::BinaryOpeningByReconstructionImageFilter<IType, KernelType>;
+ typedef itk::BinaryOpeningByReconstructionImageFilter< IType, KernelType > I2LType;
   I2LType::Pointer reconstruction = I2LType::New();
-  reconstruction->SetInput(reader->GetOutput());
-  reconstruction->SetKernel(ball);
-  reconstruction->SetFullyConnected(std::stoi(argv[3]));
-  reconstruction->SetForegroundValue(std::stoi(argv[4]));
-  //   reconstruction->SetBackgroundValue( std::stoi(argv[6]) );
+  reconstruction->SetInput( reader->GetOutput() );
+  reconstruction->SetKernel( ball );
+  reconstruction->SetFullyConnected( atoi(argv[3]) );
+  reconstruction->SetForegroundValue( atoi(argv[4]) );
+//   reconstruction->SetBackgroundValue( atoi(argv[6]) );
   itk::SimpleFilterWatcher watcher(reconstruction, "filter");
 
-  using WriterType = itk::ImageFileWriter<IType>;
+  typedef itk::ImageFileWriter< IType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(reconstruction->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( reconstruction->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->Update();
   return 0;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,51 +22,48 @@
 namespace itk
 {
 
-template <typename TDomain>
-class LevelSetDomainPartitionBaseHelper : public LevelSetDomainPartitionBase<TDomain>
+template < typename TDomain >
+class LevelSetDomainPartitionBaseHelper
+  : public LevelSetDomainPartitionBase< TDomain >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LevelSetDomainPartitionBaseHelper;
-  using Superclass = LevelSetDomainPartitionBase<TDomain>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LevelSetDomainPartitionBaseHelper      Self;
+  typedef LevelSetDomainPartitionBase< TDomain > Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(LevelSetDomainPartitionBaseHelper, LevelSetDomainPartitionBase);
+  itkTypeMacro( LevelSetDomainPartitionBaseHelper, LevelSetDomainPartitionBase );
 
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
 protected:
-  void
-  AllocateListDomain() override
-  {}
-  void
-  PopulateListDomain() override
-  {}
+  void AllocateListDomain() ITK_OVERRIDE {}
+  void PopulateListDomain() ITK_OVERRIDE {}
 };
 
-} // namespace itk
+}
 
 
-int
-itkLevelSetDomainPartitionBaseTest(int, char *[])
+int itkLevelSetDomainPartitionBaseTest( int, char* [] )
 {
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
-  using ImageType = itk::Image<double, Dimension>;
+  typedef itk::Image< double, Dimension >         ImageType;
 
-  using DomainPartitionBaseHelperType = itk::LevelSetDomainPartitionBaseHelper<ImageType>;
+  typedef itk::LevelSetDomainPartitionBaseHelper< ImageType >
+    DomainPartitionBaseHelperType;
 
   itk::IdentifierType count = 2;
 
   DomainPartitionBaseHelperType::Pointer function = DomainPartitionBaseHelperType::New();
-  function->SetNumberOfLevelSetFunctions(count);
+  function->SetNumberOfLevelSetFunctions( count );
 
-  if (function->GetNumberOfLevelSetFunctions() != count)
-  {
+  if( function->GetNumberOfLevelSetFunctions() != count )
+    {
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

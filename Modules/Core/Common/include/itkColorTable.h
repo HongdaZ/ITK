@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,17 +36,15 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TPixel>
-class ITK_TEMPLATE_EXPORT ColorTable : public Object
+template< typename TPixel >
+class ITK_TEMPLATE_EXPORT ColorTable:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ColorTable);
-
-  /** Standard class type aliases. */
-  using Self = ColorTable;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ColorTable                 Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,88 +53,80 @@ public:
   itkTypeMacro(ColorTable, Object);
 
   /** Generate a lookup table of 8 discrete colors. The colors are Red,
-   * Purple, Aqua, Yellow, Green, Blue, Grey0.70, White. For integral
-   * pixel types, the color range is between NonpositiveMin() and max(). For
-   * continuous types, the range is 0.0 to 1.0.
-   */
-  void
-  UseDiscreteColors();
+    * Purple, Aqua, Yellow, Green, Blue, Grey0.70, White. For integral
+    * pixel types, the color range is between NonpositiveMin() and max(). For
+    * continuous types, the range is 0.0 to 1.0.
+    */
+  void    UseDiscreteColors();
 
   /** Generate a lookuptable of n grayscale values. For integral pixel
-   * types, a ramp is generated from NonpositiveMin() to max() of the
-   * pixel type. For continuous pixel types, the range is 0.0 to 1.0.
-   */
-  void
-  UseGrayColors(unsigned int n = 256);
+    * types, a ramp is generated from NonpositiveMin() to max() of the
+    * pixel type. For continuous pixel types, the range is 0.0 to 1.0.
+    */
+  void    UseGrayColors(unsigned int n = 256);
 
   /** Generate a lookup table of n values good for showing
-   * "temperatures".  For integral pixel types, the color range is
-   * between NonpositiveMin() and max(). For continuous types, the
-   * range is 0.0 to 1.0.
-   */
-  void
-  UseHeatColors(unsigned int n = 256);
+    * "temperatures".  For integral pixel types, the color range is
+    * between NonpositiveMin() and max(). For continuous types, the
+    * range is 0.0 to 1.0.
+    */
+  void    UseHeatColors(unsigned int n = 256);
 
   /** Generate a lookup table of n random values. For integral pixel
-   * types, the color range is between NonpositiveMin() and
-   * max(). For continuous types, the range is 0.0 to 1.0.
-   */
-  void
-  UseRandomColors(unsigned int n = 256);
+    * types, the color range is between NonpositiveMin() and
+    * max(). For continuous types, the range is 0.0 to 1.0.
+    */
+  void    UseRandomColors(unsigned int n = 256);
 
   /** Get the number of colors in the lookup table. */
   itkGetConstMacro(NumberOfColors, unsigned int);
 
   /** Get the color stored at a given index. */
-  RGBPixel<TPixel>
-  GetColor(unsigned int colorId);
+  RGBPixel< TPixel > GetColor(unsigned int colorId);
 
   /** Set the color at a given index. Optionally provide a name for
-   * the color. If a name is not provided, the name "UserDefined" is
-   * used.
-   */
-  bool
-  SetColor(unsigned int c, TPixel r, TPixel g, TPixel b, const char * name = "UserDefined");
-  bool
-  SetColor(unsigned int c, RGBPixel<TPixel> pixel, const char * name = "UserDefined");
+    * the color. If a name is not provided, the name "UserDefined" is
+    * used.
+    */
+  bool    SetColor(unsigned int c, TPixel r, TPixel g, TPixel b,
+                   const char *name = "UserDefined");
+  bool    SetColor(unsigned int c, RGBPixel<TPixel> pixel,
+                   const char *name = "UserDefined");
 
   /** Given the position in the table and the color
-   * returns the value.
-   */
-  TPixel
-  GetColorComponent(unsigned int colorId, char rgb);
+    * returns the value.
+    */
+  TPixel  GetColorComponent(unsigned int colorId, char rgb);
 
   /** Get the name of the color at a given index. */
-  std::string
-  GetColorName(unsigned int colorId);
+  std::string  GetColorName(unsigned int colorId);
 
   /** Find the color closest to a given pixel. Uses a L2 distance
-   * metric.
-   */
-  unsigned int
-  GetClosestColorTableId(TPixel r, TPixel g, TPixel b);
+    * metric.
+     */
+  unsigned int GetClosestColorTableId(TPixel r, TPixel g, TPixel b);
 
 protected:
-  ColorTable() = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ColorTable();
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  using ColorNameVectorType = std::vector<std::string>;
-  using ColorVectorType = std::vector<RGBPixel<TPixel>>;
+  typedef std::vector< std::string >        ColorNameVectorType;
+  typedef std::vector< RGBPixel< TPixel > > ColorVectorType;
 
-  void
-  DeleteColors();
+  ITK_DISALLOW_COPY_AND_ASSIGN(ColorTable);
 
-  unsigned int m_NumberOfColors{ 0 };
+  void DeleteColors();
 
-  ColorNameVectorType m_ColorName;
-  ColorVectorType     m_Color;
+  unsigned int m_NumberOfColors;
+
+  ColorNameVectorType         m_ColorName;
+  ColorVectorType             m_Color;
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkColorTable.hxx"
+#include "itkColorTable.hxx"
 #endif
 
 #endif

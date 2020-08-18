@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class QuasiNewtonOptimizerv4Template
+/** \class QuasiNewtonOptimizerv4Template
  * \brief Implement a Quasi-Newton optimizer with BFGS Hessian estimation.
  *
  * Second order approximation of the cost function is usually more efficient
@@ -56,18 +55,16 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-template <typename TInternalComputationValueType>
-class ITK_TEMPLATE_EXPORT QuasiNewtonOptimizerv4Template
-  : public GradientDescentOptimizerv4Template<TInternalComputationValueType>
+template<typename TInternalComputationValueType>
+class ITK_TEMPLATE_EXPORT QuasiNewtonOptimizerv4Template :
+  public         GradientDescentOptimizerv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuasiNewtonOptimizerv4Template);
-
-  /** Standard class type aliases. */
-  using Self = QuasiNewtonOptimizerv4Template;
-  using Superclass = GradientDescentOptimizerv4Template<TInternalComputationValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef QuasiNewtonOptimizerv4Template                                 Self;
+  typedef GradientDescentOptimizerv4Template<TInternalComputationValueType>    Superclass;
+  typedef SmartPointer< Self >                                           Pointer;
+  typedef SmartPointer< const Self >                                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,22 +73,22 @@ public:
   itkTypeMacro(QuasiNewtonOptimizerv4Template, Superclass);
 
   /** It should be possible to derive the internal computation type from the class object. */
-  using InternalComputationValueType = TInternalComputationValueType;
+  typedef TInternalComputationValueType          InternalComputationValueType;
 
-  using ParametersType = typename Superclass::ParametersType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using IndexRangeType = typename Superclass::IndexRangeType;
+  typedef typename Superclass::ParametersType    ParametersType;
+  typedef typename Superclass::MeasureType       MeasureType;
+  typedef typename Superclass::DerivativeType    DerivativeType;
+  typedef typename Superclass::IndexRangeType    IndexRangeType;
+  typedef typename Superclass::StopConditionType StopConditionType;
 
   /** Type for Hessian matrix in the Quasi-Newton method */
-  using HessianType = itk::Array2D<TInternalComputationValueType>;
+  typedef itk::Array2D<TInternalComputationValueType> HessianType;
 
   /** Type for an array of Hessian matrix for local support */
-  using HessianArrayType = std::vector<HessianType>;
+  typedef std::vector<HessianType> HessianArrayType;
 
   /** Start and run the optimization */
-  void
-  StartOptimization(bool doOnlyInitialization = false) override;
+  virtual void StartOptimization( bool doOnlyInitialization = false ) ITK_OVERRIDE;
 
   /** Set the maximum tolerable number of iteration without any progress */
   itkSetMacro(MaximumIterationsWithoutProgress, SizeValueType);
@@ -113,18 +110,18 @@ public:
   itkSetMacro(MaximumNewtonStepSizeInPhysicalUnits, TInternalComputationValueType);
 
   /** Get the most recent Newton step. */
-  itkGetConstReferenceMacro(NewtonStep, DerivativeType);
+  itkGetConstReferenceMacro( NewtonStep, DerivativeType );
 
   /**
    * Estimate the quasi-newton step over a given index range.
      This function is used in QuasiNewtonOptimizerv4EstimateNewtonStepThreaderTemplate class.
    */
-  virtual void
-  EstimateNewtonStepOverSubRange(const IndexRangeType & subrange);
+  virtual void EstimateNewtonStepOverSubRange( const IndexRangeType& subrange );
 
 protected:
+
   /** The maximum tolerable number of iteration without any progress */
-  SizeValueType m_MaximumIterationsWithoutProgress{ 30 };
+  SizeValueType m_MaximumIterationsWithoutProgress;
 
   /** The information about the current step */
   ParametersType m_CurrentPosition;
@@ -137,7 +134,7 @@ protected:
   /** The best value so far and relevant information */
   MeasureType    m_BestValue;
   ParametersType m_BestPosition;
-  SizeValueType  m_BestIteration{ 0 };
+  SizeValueType  m_BestIteration;
 
   /** The Quasi-Newton step */
   DerivativeType m_NewtonStep;
@@ -155,26 +152,22 @@ protected:
   std::vector<bool> m_NewtonStepValidFlags;
 
   /** Estimate a Newton step */
-  virtual void
-  EstimateNewtonStep();
+  virtual void EstimateNewtonStep();
 
   /** Estimate the next Hessian and step with BFGS method.
    *  The details of the method are described at
    *  http://en.wikipedia.org/wiki/BFGS_method .
    */
-  virtual bool
-  ComputeHessianAndStepWithBFGS(IndexValueType location);
+  virtual bool ComputeHessianAndStepWithBFGS(IndexValueType location);
 
   /** Reset the Hessian to identity matrix and the Newton step to zeros. */
-  virtual void
-  ResetNewtonStep(IndexValueType location);
+  virtual void ResetNewtonStep(IndexValueType location);
 
   /**
    * Combine a gradient step with a Newton step. The Newton step will be used
    * when it is valid. Otherwise the gradient step will be used.
    */
-  void
-  CombineGradientNewtonStep();
+  void CombineGradientNewtonStep();
 
   /**
    *  Estimate and apply the learning rate(s) for a combined Newton step.
@@ -184,34 +177,33 @@ protected:
    *  The learning rate is less than 1.0 and is restricted by
    *  m_MaximumNewtonStepSizeInPhysicalUnits.
    */
-  void
-  ModifyCombinedNewtonStep();
+  void ModifyCombinedNewtonStep();
 
   /**
    * Advance one step using the Quasi-Newton step. When the Newton step
    * is invalid, the gradient step will be used.
    */
-  void
-  AdvanceOneStep() override;
+  virtual void AdvanceOneStep(void) ITK_OVERRIDE;
 
   QuasiNewtonOptimizerv4Template();
-  ~QuasiNewtonOptimizerv4Template() override = default;
+  virtual ~QuasiNewtonOptimizerv4Template() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuasiNewtonOptimizerv4Template);
+
   /** Threader for Newton step estimation. */
   typename DomainThreader<ThreadedIndexedContainerPartitioner, Self>::Pointer m_EstimateNewtonStepThreader;
 };
 
 /** This helps to meet backward compatibility */
-using QuasiNewtonOptimizerv4 = QuasiNewtonOptimizerv4Template<double>;
+typedef QuasiNewtonOptimizerv4Template<double> QuasiNewtonOptimizerv4;
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkQuasiNewtonOptimizerv4.hxx"
+#include "itkQuasiNewtonOptimizerv4.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,17 +60,17 @@ class Subject;
  *
  */
 class ULAction {
+    private:
+      //cannot copy a ULAction
+      ULAction(const ULAction& inAction);
 
     protected:
 
 
     public:
-      ULAction() = default;
+      ULAction() {};
       //make sure destructors are virtual to avoid memory leaks
-      virtual ~ULAction() = default;
-      //cannot copy a ULAction
-      ULAction(const ULAction& inAction) = delete;
-      void operator=(const ULAction&) = delete;
+      virtual ~ULAction() {};
 
       virtual EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
         bool& outWaitingForEvent, EEventID& outRaisedEvent) = 0;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class WeightedCovarianceSampleFilter
+/** \class WeightedCovarianceSampleFilter
  * \brief Calculates the covariance matrix of the target sample data.
  *  where each measurement vector has an associated weight value
  *
@@ -40,87 +39,86 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TSample>
-class ITK_TEMPLATE_EXPORT WeightedCovarianceSampleFilter : public CovarianceSampleFilter<TSample>
+template< typename TSample >
+class ITK_TEMPLATE_EXPORT WeightedCovarianceSampleFilter:
+  public CovarianceSampleFilter< TSample >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedCovarianceSampleFilter);
-
-  /** Standard class type aliases. */
-  using Self = WeightedCovarianceSampleFilter;
-  using Superclass = CovarianceSampleFilter<TSample>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef WeightedCovarianceSampleFilter    Self;
+  typedef CovarianceSampleFilter< TSample > Superclass;
+  typedef SmartPointer< Self >              Pointer;
+  typedef SmartPointer< const Self >        ConstPointer;
 
   /** Standard Macros */
   itkTypeMacro(WeightedCovarianceSampleFilter, CovarianceSampleFilter);
   itkNewMacro(Self);
 
   /** Types derived from the base class */
-  using SampleType = typename Superclass::SampleType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using MeasurementType = typename Superclass::MeasurementType;
+  typedef typename Superclass::SampleType                     SampleType;
+  typedef typename Superclass::MeasurementVectorType          MeasurementVectorType;
+  typedef typename Superclass::MeasurementVectorSizeType      MeasurementVectorSizeType;
+  typedef typename Superclass::MeasurementType                MeasurementType;
 
   /** Types derived from the base class */
-  using MeasurementVectorRealType = typename Superclass::MeasurementVectorRealType;
-  using MeasurementRealType = typename Superclass::MeasurementRealType;
+  typedef typename Superclass::MeasurementVectorRealType      MeasurementVectorRealType;
+  typedef typename Superclass::MeasurementRealType            MeasurementRealType;
 
 
   /** Type of weight values */
-  using WeightValueType = double;
+  typedef double WeightValueType;
 
 
   /** Array type for weights */
-  using WeightArrayType = Array<WeightValueType>;
+  typedef Array< WeightValueType > WeightArrayType;
 
   /** Type of DataObjects to use for the weight array type */
-  using InputWeightArrayObjectType = SimpleDataObjectDecorator<WeightArrayType>;
+  typedef SimpleDataObjectDecorator< WeightArrayType > InputWeightArrayObjectType;
 
   /** Method to set the input value of the weight array */
   itkSetGetDecoratedInputMacro(Weights, WeightArrayType);
 
 
   /** Weight calculation function type */
-  using WeightingFunctionType = FunctionBase<MeasurementVectorType, WeightValueType>;
+  typedef FunctionBase< MeasurementVectorType, WeightValueType > WeightingFunctionType;
 
   /** Type of DataObjects to use for Weight function */
-  using InputWeightingFunctionObjectType = DataObjectDecorator<WeightingFunctionType>;
+  typedef DataObjectDecorator< WeightingFunctionType > InputWeightingFunctionObjectType;
 
   /** Method to set/get the weighting function */
   itkSetGetDecoratedObjectInputMacro(WeightingFunction, WeightingFunctionType);
 
 
   /** Types derived from the base class */
-  using MatrixType = typename Superclass::MatrixType;
-  using MatrixDecoratedType = typename Superclass::MatrixDecoratedType;
+  typedef typename Superclass::MatrixType          MatrixType;
+  typedef typename Superclass::MatrixDecoratedType MatrixDecoratedType;
 
   /** Types derived from the base class */
-  using MeasurementVectorDecoratedType = typename Superclass::MeasurementVectorDecoratedType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::MeasurementVectorDecoratedType MeasurementVectorDecoratedType;
+  typedef typename Superclass::OutputType                     OutputType;
 
 protected:
   WeightedCovarianceSampleFilter();
-  ~WeightedCovarianceSampleFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~WeightedCovarianceSampleFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** Compute covariance matrix with weights computed from a function */
-  void
-  ComputeCovarianceMatrixWithWeightingFunction();
+  void ComputeCovarianceMatrixWithWeightingFunction();
 
   /** Compute covariance matrix with weights specified in an array */
-  void
-  ComputeCovarianceMatrixWithWeights();
-}; // end of class
+  void ComputeCovarianceMatrixWithWeights();
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedCovarianceSampleFilter);
+
+};  // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWeightedCovarianceSampleFilter.hxx"
+#include "itkWeightedCovarianceSampleFilter.hxx"
 #endif
 
 #endif

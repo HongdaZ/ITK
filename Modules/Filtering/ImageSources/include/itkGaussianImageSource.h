@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class GaussianImageSource
+/** \class GaussianImageSource
  * \brief Generate an n-dimensional image of a Gaussian.
  *
  * GaussianImageSource generates an image of a Gaussian.
@@ -41,52 +40,51 @@ namespace itk
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GaussianImageSource : public ParametricImageSource<TOutputImage>
+template< typename TOutputImage >
+class ITK_TEMPLATE_EXPORT GaussianImageSource :
+  public ParametricImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianImageSource);
-
-  /** Standard class type aliases. */
-  using Self = GaussianImageSource;
-  using Superclass = ParametricImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GaussianImageSource                   Self;
+  typedef ParametricImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
 
   /** Typedef for the output image type. */
-  using OutputImageType = TOutputImage;
+  typedef TOutputImage                     OutputImageType;
 
   /** Typedef for the output image PixelType. */
-  using OutputImagePixelType = typename TOutputImage::PixelType;
+  typedef typename TOutputImage::PixelType OutputImagePixelType;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
-  /** Spacing type alias support  Spacing holds the size of a pixel.  The
+  /** Spacing typedef support.  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename TOutputImage::SpacingType;
+  typedef typename TOutputImage::SpacingType SpacingType;
 
-  /** Origin type alias support  The origin is the geometric coordinates
+  /** Origin typedef support.  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename TOutputImage::PointType;
+  typedef typename TOutputImage::PointType PointType;
 
-  /** Direction type alias support  The direction is the direction
+  /** Direction typedef support.  The direction is the direction
    * cosines of the image. */
-  using DirectionType = typename TOutputImage::DirectionType;
+  typedef typename TOutputImage::DirectionType DirectionType;
 
   /** Dimensionality of the output image */
-  static constexpr unsigned int NDimensions = TOutputImage::ImageDimension;
+  itkStaticConstMacro(NDimensions, unsigned int, TOutputImage::ImageDimension);
 
   /** Type used to store Gaussian parameters. */
-  using ArrayType = FixedArray<double, Self::NDimensions>;
+  typedef FixedArray< double, itkGetStaticConstMacro(NDimensions) > ArrayType;
 
   /** Size type matches that used for images */
-  using SizeType = typename TOutputImage::SizeType;
-  using SizeValueType = typename TOutputImage::SizeValueType;
+  typedef typename TOutputImage::SizeType      SizeType;
+  typedef typename TOutputImage::SizeValueType SizeValueType;
 
   /** Types for parameters. */
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
+  typedef typename Superclass::ParametersValueType ParametersValueType;
+  typedef typename Superclass::ParametersType      ParametersType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GaussianImageSource, ParametricImageSource);
@@ -118,39 +116,36 @@ public:
    * values in the parameter array are the Sigma parameters in each
    * dimension, the next N values are the Mean parameters in each
    * dimension, and the last value is the Scale. */
-  void
-  SetParameters(const ParametersType & parameters) override;
-  ParametersType
-  GetParameters() const override;
+  virtual void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
+  virtual ParametersType GetParameters() const ITK_OVERRIDE;
 
   /** Get the number of parameters for this image source. When this
    * source is templated over an N-dimensional output image type, the
    * number of parameters is 2*N+1. */
-  unsigned int
-  GetNumberOfParameters() const override;
+  virtual unsigned int GetNumberOfParameters() const ITK_OVERRIDE;
 
 protected:
   GaussianImageSource();
-  ~GaussianImageSource() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  // ~GaussianImageSource(); default implementation ok
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianImageSource);
+
   ArrayType m_Sigma;
 
   ArrayType m_Mean;
 
-  double m_Scale{ 255.0 };
+  double m_Scale;
 
-  bool m_Normalized{ false };
+  bool m_Normalized;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGaussianImageSource.hxx"
+#include "itkGaussianImageSource.hxx"
 #endif
 
 #endif

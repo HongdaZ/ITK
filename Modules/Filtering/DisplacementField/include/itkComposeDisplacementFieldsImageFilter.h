@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,122 +37,118 @@ namespace itk
  */
 
 template <typename TInputImage, typename TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT ComposeDisplacementFieldsImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ComposeDisplacementFieldsImageFilter
+  : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ComposeDisplacementFieldsImageFilter);
-
-  using Self = ComposeDisplacementFieldsImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef ComposeDisplacementFieldsImageFilter          Self;
+  typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
+  typedef SmartPointer<Self>                            Pointer;
+  typedef SmartPointer<const Self>                      ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Extract dimension from input image. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro( ImageDimension, unsigned int,
+    TInputImage::ImageDimension );
 
-  using InputFieldType = TInputImage;
-  using OutputFieldType = TOutputImage;
+  typedef TInputImage                          InputFieldType;
+  typedef TOutputImage                         OutputFieldType;
 
-  /** Image type alias support */
-  using PixelType = typename OutputFieldType::PixelType;
-  using VectorType = typename OutputFieldType::PixelType;
-  using RegionType = typename OutputFieldType::RegionType;
-  using IndexType = typename OutputFieldType::IndexType;
+  /** Image typedef support. */
+  typedef typename OutputFieldType::PixelType     PixelType;
+  typedef typename OutputFieldType::PixelType     VectorType;
+  typedef typename OutputFieldType::RegionType    RegionType;
+  typedef typename OutputFieldType::IndexType     IndexType;
 
-  using PointType = typename OutputFieldType::PointType;
-  using SpacingType = typename OutputFieldType::SpacingType;
-  using OriginType = typename OutputFieldType::PointType;
-  using SizeType = typename OutputFieldType::SizeType;
-  using DirectionType = typename OutputFieldType::DirectionType;
+  typedef typename OutputFieldType::PointType     PointType;
+  typedef typename OutputFieldType::SpacingType   SpacingType;
+  typedef typename OutputFieldType::PointType     OriginType;
+  typedef typename OutputFieldType::SizeType      SizeType;
+  typedef typename OutputFieldType::DirectionType DirectionType;
 
-  /** Other type alias */
-  using RealType = typename VectorType::ComponentType;
-  using InterpolatorType = VectorInterpolateImageFunction<InputFieldType, RealType>;
+  /** Other typedef */
+  typedef typename VectorType::ComponentType      RealType;
+  typedef VectorInterpolateImageFunction
+    <InputFieldType, RealType>                    InterpolatorType;
 
   /** Get the interpolator. */
-  itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
+  itkGetModifiableObjectMacro( Interpolator, InterpolatorType );
 
   /** Set the deformation field */
-  void
-  SetDisplacementField(const InputFieldType * field)
-  {
-    itkDebugMacro("setting displacement field to " << field);
-    if (field != this->GetInput(0))
+  void SetDisplacementField( const InputFieldType *field )
     {
-      this->SetInput(0, field);
-      this->Modified();
-      if (!this->m_Interpolator.IsNull())
+    itkDebugMacro( "setting displacement field to " << field );
+    if ( field != this->GetInput( 0 ) )
       {
-        this->m_Interpolator->SetInputImage(field);
+      this->SetInput( 0, field );
+      this->Modified();
+      if( !this->m_Interpolator.IsNull() )
+        {
+        this->m_Interpolator->SetInputImage( field );
+        }
       }
     }
-  }
 
   /**
    * Get the deformation field.
    */
-  const InputFieldType *
-  GetDisplacementField() const
-  {
-    return this->GetInput(0);
-  }
+  const InputFieldType* GetDisplacementField() const
+    {
+    return this->GetInput( 0 );
+    }
 
   /** Set the warping field */
-  void
-  SetWarpingField(const InputFieldType * field)
-  {
-    itkDebugMacro("setting warping field to " << field);
-    if (field != this->GetInput(1))
+  void SetWarpingField( const InputFieldType *field )
     {
-      this->SetInput(1, field);
+    itkDebugMacro( "setting warping field to " << field );
+    if ( field != this->GetInput( 1 ) )
+      {
+      this->SetInput( 1, field );
+      }
     }
-  }
 
   /**
    * Get the warping field.
    */
-  const InputFieldType *
-  GetWarpingField() const
-  {
-    return this->GetInput(1);
-  }
+  const InputFieldType* GetWarpingField() const
+    {
+    return this->GetInput( 1 );
+    }
 
   /* Set the interpolator. */
-  virtual void
-  SetInterpolator(InterpolatorType * interpolator);
+  virtual void SetInterpolator( InterpolatorType* interpolator );
 
 protected:
+
   /** Constructor */
   ComposeDisplacementFieldsImageFilter();
 
   /** Deconstructor */
-  ~ComposeDisplacementFieldsImageFilter() override = default;
+  virtual ~ComposeDisplacementFieldsImageFilter() ITK_OVERRIDE;
 
   /** Standard print self function **/
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
   /** preprocessing function */
-  void
-  BeforeThreadedGenerateData() override;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Multithreaded function which generates the output field. */
-  void
-  DynamicThreadedGenerateData(const RegionType &) override;
-
+  void ThreadedGenerateData( const RegionType &, ThreadIdType ) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ComposeDisplacementFieldsImageFilter);
+
   /** The interpolator. */
-  typename InterpolatorType::Pointer m_Interpolator;
+  typename InterpolatorType::Pointer             m_Interpolator;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkComposeDisplacementFieldsImageFilter.hxx"
+#include "itkComposeDisplacementFieldsImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace itk
  *  one image.
  *
  *  This representation is a "dense" level-set function, i.e. it defines
- *  a level-set function on a grid (more precisely the underlying structure
+ *  a level-set function on a grid (more precesily the underlying structure
  *  is an Image).
  *
  *  \tparam TImage Input image type of the level set function
@@ -37,77 +37,70 @@ namespace itk
  *
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT LevelSetDenseImage
-  : public DiscreteLevelSetImage<typename TImage::PixelType, TImage::ImageDimension>
-{
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT LevelSetDenseImage :
+  public DiscreteLevelSetImage< typename TImage::PixelType, TImage::ImageDimension >
+  {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDenseImage);
+  typedef TImage                         ImageType;
+  typedef typename ImageType::Pointer    ImagePointer;
+  typedef typename ImageType::IndexType  IndexType;
+  typedef typename ImageType::PixelType  PixelType;
+  typedef typename ImageType::RegionType RegionType;
 
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using IndexType = typename ImageType::IndexType;
-  using PixelType = typename ImageType::PixelType;
-  using RegionType = typename ImageType::RegionType;
-
-  using Self = LevelSetDenseImage;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = DiscreteLevelSetImage<PixelType, ImageType::ImageDimension>;
+  typedef LevelSetDenseImage                                            Self;
+  typedef SmartPointer< Self >                                          Pointer;
+  typedef SmartPointer< const Self >                                    ConstPointer;
+  typedef DiscreteLevelSetImage< PixelType, ImageType::ImageDimension > Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro ( Self );
 
   /** Run-time type information */
-  itkTypeMacro(LevelSetDenseImage, DiscreteLevelSetImage);
+  itkTypeMacro ( LevelSetDenseImage, DiscreteLevelSetImage );
 
-  static constexpr unsigned int Dimension = Superclass::Dimension;
+  itkStaticConstMacro ( Dimension, unsigned int, Superclass::Dimension );
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
-  using OutputRealType = typename Superclass::OutputRealType;
-  using GradientType = typename Superclass::GradientType;
-  using HessianType = typename Superclass::HessianType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::InputType        InputType;
+  typedef typename Superclass::OutputType       OutputType;
+  typedef typename Superclass::OutputRealType   OutputRealType;
+  typedef typename Superclass::GradientType     GradientType;
+  typedef typename Superclass::HessianType      HessianType;
+  typedef typename Superclass::LevelSetDataType LevelSetDataType;
 
-  virtual void
-  SetImage(ImageType * iImage);
-  itkGetModifiableObjectMacro(Image, ImageType);
+  virtual void SetImage( ImageType* iImage );
+  itkGetModifiableObjectMacro(Image, ImageType );
 
   /** Returns the value of the level set function at a given location inputIndex */
-  OutputType
-  Evaluate(const InputType & inputIndex) const override;
-  void
-  Evaluate(const InputType & inputIndex, LevelSetDataType & data) const override;
+  virtual OutputType Evaluate( const InputType& inputIndex ) const ITK_OVERRIDE;
+  virtual void Evaluate( const InputType& inputIndex, LevelSetDataType& data ) const ITK_OVERRIDE;
 
 protected:
-  LevelSetDenseImage() = default;
+  LevelSetDenseImage();
 
-  ~LevelSetDenseImage() override = default;
+  virtual ~LevelSetDenseImage() ITK_OVERRIDE;
 
   ImagePointer m_Image;
 
-  bool
-  IsInsideDomain(const InputType & inputIndex) const override;
+  virtual bool IsInsideDomain( const InputType& inputIndex ) const ITK_OVERRIDE;
 
   /** Initial the level set pointer */
-  void
-  Initialize() override;
+  virtual void Initialize() ITK_OVERRIDE;
 
   /** Copy level set information from data object */
-  void
-  CopyInformation(const DataObject * data) override;
+  virtual void CopyInformation(const DataObject *data) ITK_OVERRIDE;
 
   /** Graft data object as level set object */
-  void
-  Graft(const DataObject * data) override;
+  virtual void Graft( const DataObject* data ) ITK_OVERRIDE;
 
 private:
-};
-} // namespace itk
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDenseImage);
+  };
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetDenseImage.hxx"
+#include "itkLevelSetDenseImage.hxx"
 #endif
 
 #endif // itkLevelSetDenseImage_h

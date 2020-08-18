@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,15 +43,15 @@ namespace itk
  * \sa DefaultVectorPixelAccessorFunctor
  * \ingroup ITKCommon
  */
-template <typename TImageType>
+template< typename TImageType >
 class DefaultPixelAccessorFunctor
 {
 public:
-  using ImageType = TImageType;
-  using InternalPixelType = typename ImageType::InternalPixelType;
-  using ExternalPixelType = typename ImageType::PixelType;
-  using PixelAccessorType = typename ImageType::AccessorType;
-  using VectorLengthType = unsigned int;
+  typedef TImageType                            ImageType;
+  typedef typename ImageType::InternalPixelType InternalPixelType;
+  typedef typename ImageType::PixelType         ExternalPixelType;
+  typedef typename ImageType::AccessorType      PixelAccessorType;
+  typedef unsigned int                          VectorLengthType;
 
   /**
    * example usage:
@@ -60,17 +60,15 @@ public:
    */
   template <typename UImageType>
   struct Rebind
-  {
-    using Type = DefaultPixelAccessorFunctor<UImageType>;
-  };
+    {
+      typedef DefaultPixelAccessorFunctor<UImageType>  Type;
+    };
 
 
-  static void
-  SetVectorLength(ImageType *, VectorLengthType)
+  static void SetVectorLength(ImageType *, VectorLengthType)
   {}
 
-  static VectorLengthType
-  GetVectorLength(const ImageType *)
+  static VectorLengthType GetVectorLength(const ImageType *)
   {
     return 1;
   }
@@ -79,8 +77,7 @@ public:
    * The type PixelAccessorType is obtained from the ImageType over which the iterators
    * are templated.
    * */
-  inline void
-  SetPixelAccessor(const PixelAccessorType & accessor)
+  inline void SetPixelAccessor(PixelAccessorType & accessor)
   {
     m_PixelAccessor = accessor;
   }
@@ -88,27 +85,22 @@ public:
   /** Set the pointer index to the start of the buffer.
    * The method exists to maintain consistency in the API of the
    * DefaultPixelAccessorFunctor and the DefaultVectorPixelAccessorFunctor. */
-  inline void
-  SetBegin(const InternalPixelType * itkNotUsed(begin))
-  {}
+  inline void SetBegin( const InternalPixelType *itkNotUsed(begin) ) {}
 
   /** Set output using the value in input */
-  inline void
-  Set(InternalPixelType & output, const ExternalPixelType & input) const
+  inline void Set(InternalPixelType & output, const ExternalPixelType & input) const
   {
     m_PixelAccessor.Set(output, input);
   }
 
   /** Get the value from input */
-  inline ExternalPixelType
-  Get(InternalPixelType & input) const
+  inline ExternalPixelType Get(InternalPixelType & input) const
   {
     return m_PixelAccessor.Get(input);
   }
 
   /** Get a const reference to the pixel. */
-  inline const ExternalPixelType
-  Get(const InternalPixelType & input) const
+  inline const ExternalPixelType Get(const InternalPixelType & input) const
   {
     return m_PixelAccessor.Get(input);
   }
@@ -116,6 +108,6 @@ public:
 private:
   PixelAccessorType m_PixelAccessor; // The pixel accessor
 };
-} // namespace itk
+}
 
 #endif

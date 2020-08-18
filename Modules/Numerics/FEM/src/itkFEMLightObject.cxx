@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,24 +27,21 @@ namespace fem
  * This should be the first function called when reading object data.
  */
 
-void
-FEMLightObject::SetGlobalNumber(int gn)
+void FEMLightObject::SetGlobalNumber(int gn)
 {
   this->m_GlobalNumber = gn;
 }
 
-int
-FEMLightObject::GetGlobalNumber() const
+int FEMLightObject::GetGlobalNumber() const
 {
   return this->m_GlobalNumber;
 }
 
-void
-FEMLightObject::PrintSelf(std::ostream & os, Indent indent) const
+void FEMLightObject::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Global Number: " << this->m_GlobalNumber << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem

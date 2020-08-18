@@ -8,9 +8,6 @@
 #include "util.h"
 #include "jpegsegment.h"
 #include <vector>
-#include <memory>
-
-enum class JpegMarkerCode : uint8_t;
 
 
 //
@@ -18,102 +15,100 @@ enum class JpegMarkerCode : uint8_t;
 //
 class JpegStreamWriter
 {
-    friend class JpegMarkerSegment;
-    friend class JpegImageDataSegment;
+	friend class JpegMarkerSegment;
+	friend class JpegImageDataSegment;
 
 public:
-    JpegStreamWriter();
+	JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
+	virtual ~JpegStreamWriter();
 
-    void AddSegment(std::unique_ptr<JpegSegment> segment)
-    {
-        _segments.push_back(std::move(segment));
-    }
+	void AddSegment(JpegSegment* segment)
+	{
+		_segments.push_back(segment);
+	}
 
-    void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
+	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
 
-    void AddColorTransform(charls::ColorTransformation transformation);
+	void AddLSE(const JlsCustomParameters* pcustom);
 
-    std::size_t GetBytesWritten() const
-    {
-        return _byteOffset;
-    }
+	void AddColorTransform(int i);
 
-    std::size_t GetLength() const
-    {
-        return _data.count - _byteOffset;
-    }
+	size_t GetBytesWritten()
+	{
+		return _byteOffset;
+	}
 
-    std::size_t Write(const ByteStreamInfo& info);
+	size_t GetLength()
+	{
+		return _data.count - _byteOffset;
+	}
 
-    void EnableCompare(bool bCompare)
-    {
-        _bCompare = bCompare;
-    }
+	size_t Write(ByteStreamInfo info);
+
+	void EnableCompare(bool bCompare)
+	{
+		_bCompare = bCompare;
+	}
 
 private:
-    uint8_t* GetPos() const
-    {
-        return _data.rawData + _byteOffset;
-    }
+	BYTE* GetPos() const
+	{
+		return _data.rawData + _byteOffset;
+	}
 
-    ByteStreamInfo OutputStream() const
-    {
-        ByteStreamInfo data = _data;
-        data.count -= _byteOffset;
-        data.rawData += _byteOffset;
-        return data;
-    }
+	ByteStreamInfo OutputStream() const
+	{
+		ByteStreamInfo data = _data;
+		data.count -= _byteOffset;
+		data.rawData += _byteOffset;
+		return data;
+	}
 
-    void WriteByte(uint8_t val)
-    {
-        ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
+	void WriteByte(BYTE val)
+	{
+		ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
 
-        if (_data.rawStream)
-        {
-            _data.rawStream->sputc(val);
-        }
-        else
-        {
-            if (_byteOffset >= _data.count)
-                throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+		if (_data.rawStream != NULL)
+		{
+			_data.rawStream->sputc(val);
+		}
+		else
+		{
+			if (_byteOffset >= _data.count)
+				throw JlsException(CompressedBufferTooSmall);
 
-            _data.rawData[_byteOffset++] = val;
-        }
-    }
+			_data.rawData[_byteOffset++] = val;
+		}
+	}
 
-    void WriteBytes(const std::vector<uint8_t>& bytes)
-    {
-        for (std::size_t i = 0; i < bytes.size(); ++i)
-        {
-            WriteByte(bytes[i]);
-        }
-    }
+	void WriteBytes(const std::vector<BYTE>& rgbyte)
+	{
+		for (size_t i = 0; i < rgbyte.size(); ++i)
+		{
+			WriteByte(rgbyte[i]);
+		}
+	}
 
-    void WriteWord(uint16_t value)
-    {
-        WriteByte(static_cast<uint8_t>(value / 0x100));
-        WriteByte(static_cast<uint8_t>(value % 0x100));
-    }
+	void WriteWord(USHORT val)
+	{
+		WriteByte(BYTE(val / 0x100));
+		WriteByte(BYTE(val % 0x100));
+	}
 
-    void WriteMarker(JpegMarkerCode marker)
-    {
-        WriteByte(0xFF);
-        WriteByte(static_cast<uint8_t>(marker));
-    }
+	void Seek(size_t byteCount)
+	{
+		if (_data.rawStream != NULL)
+			return;
 
-    void Seek(std::size_t byteCount)
-    {
-        if (_data.rawStream)
-            return;
+		_byteOffset += byteCount;
+	}
 
-        _byteOffset += byteCount;
-    }
-
-    bool _bCompare;
-    ByteStreamInfo _data;
-    std::size_t _byteOffset;
-    int32_t _lastCompenentIndex;
-    std::vector<std::unique_ptr<JpegSegment>> _segments;
+private:
+	bool _bCompare;
+	ByteStreamInfo _data;
+	size_t _byteOffset;
+	LONG _lastCompenentIndex;
+	std::vector<JpegSegment*> _segments;
 };
 
 #endif

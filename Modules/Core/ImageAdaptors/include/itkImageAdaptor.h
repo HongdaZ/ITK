@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 namespace itk
 {
 
-template <typename TPixelType, unsigned int VImageDimension>
-class VectorImage;
+template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
 
 /**
  * \class ImageAdaptor
@@ -48,100 +47,94 @@ class VectorImage;
  *
  * \ingroup ITKImageAdaptors
  *
- * \sphinx
- * \sphinxexample{Core/ImageAdaptors/PresentImageAfterOperation,Present Image After Operation}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/ImageAdaptorExtractVectorComponent,Present an image by first performing an operation}
+ * \endwiki
  */
-template <typename TImage, typename TAccessor>
-class ITK_TEMPLATE_EXPORT ImageAdaptor : public ImageBase<TImage::ImageDimension>
+template< typename TImage, typename TAccessor >
+class ITK_TEMPLATE_EXPORT ImageAdaptor:public ImageBase< TImage::ImageDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageAdaptor);
-
   /** Dimension of the image.  This constant is used by functions that are
    * templated over image type (as opposed to being templated over pixel
    * type and dimension) when they need compile time access to the dimension
    * of the image. */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
-  /** Standard class type aliases. */
-  using Self = ImageAdaptor;
-  using Superclass = ImageBase<Self::ImageDimension>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using ConstWeakPointer = WeakPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageAdaptor                                        Self;
+  typedef ImageBase< itkGetStaticConstMacro(ImageDimension) > Superclass;
+  typedef SmartPointer< Self >                                Pointer;
+  typedef SmartPointer< const Self >                          ConstPointer;
+  typedef WeakPointer< const Self >                           ConstWeakPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageAdaptor, ImageBase);
 
   /** Typedef of unadapted image */
-  using InternalImageType = TImage;
+  typedef TImage InternalImageType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** Pixel type alias support Used to declare pixel type in filters
+  /** Pixel typedef support. Used to declare pixel type in filters
    * or other operations. */
-  using PixelType = typename TAccessor::ExternalType;
+  typedef typename TAccessor::ExternalType PixelType;
 
-  /** Pixel type alias support Used to declare pixel type in filters
+  /** Pixel typedef support. Used to declare pixel type in filters
    * or other operations. */
-  using InternalPixelType = typename TAccessor::InternalType;
+  typedef typename TAccessor::InternalType InternalPixelType;
 
-  using IOPixelType = PixelType;
+  typedef PixelType IOPixelType;
 
   /**  Accessor type that convert data between internal and external
    *  representations. */
-  using AccessorType = TAccessor;
+  typedef   TAccessor AccessorType;
 
-  /** type alias of the functor that chooses the appropriate accessor
+  /** typedef of the functor that chooses the appropriate accessor
    * Image or VectorImage. */
-  using AccessorFunctorType = typename InternalImageType::AccessorFunctorType::template Rebind<Self>::Type;
+  typedef typename InternalImageType::AccessorFunctorType::template Rebind< Self >::Type AccessorFunctorType;
 
-  /** Index type alias support An index is used to access pixel values. */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename IndexType::IndexValueType;
+  /** Index typedef support. An index is used to access pixel values. */
+  typedef typename Superclass::IndexType     IndexType;
+  typedef typename IndexType::IndexValueType IndexValueType;
 
-  /** Size type alias support A size is used to define region bounds. */
-  using SizeType = typename Superclass::SizeType;
-  using SizeValueType = typename SizeType::SizeValueType;
+  /** Size typedef support. A size is used to define region bounds. */
+  typedef typename Superclass::SizeType    SizeType;
+  typedef typename SizeType::SizeValueType SizeValueType;
 
-  /** Offset type alias support */
-  using OffsetType = typename Superclass::OffsetType;
-  using OffsetValueType = typename OffsetType::OffsetValueType;
+  /** Offset typedef support. */
+  typedef typename Superclass::OffsetType      OffsetType;
+  typedef typename OffsetType::OffsetValueType OffsetValueType;
 
-  /** Region type alias support A region is used to specify a subset of
+  /** Region typedef support. A region is used to specify a subset of
    *  an image. */
-  using RegionType = typename Superclass::RegionType;
+  typedef typename Superclass::RegionType RegionType;
 
-  /** Spacing type alias support  Spacing holds the size of a pixel.  The
+  /** Spacing typedef support.  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename Superclass::SpacingType;
+  typedef typename Superclass::SpacingType SpacingType;
 
-  /** Origin type alias support  The origin is the geometric coordinates
+  /** Origin typedef support.  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename Superclass::PointType;
+  typedef typename Superclass::PointType PointType;
 
-  /** Direction type alias support  The Direction is a matix of
+  /** Direction typedef support.  The Direction is a matix of
    * direction cosines that specify the direction between samples.
    * */
-  using DirectionType = typename Superclass::DirectionType;
+  typedef typename Superclass::DirectionType DirectionType;
 
 
   /**
    * example usage:
-   * using OutputImageType = typename ImageAdaptorType::template Rebind< float >::Type;
+   * typedef typename ImageAdaptorType::template Rebind< float >::Type OutputImageType;
    *
-   * \deprecated Use RebindImageType instead
    */
-  template <typename UPixelType, unsigned int UImageDimension = TImage::ImageDimension>
+  template <typename UPixelType, unsigned int UImageDimension =  TImage::ImageDimension>
   struct Rebind
-  {
-    using Type = Image<UPixelType, UImageDimension>;
-  };
-
-  template <typename UPixelType, unsigned int NUImageDimension = TImage::ImageDimension>
-  using RebindImageType = itk::Image<UPixelType, NUImageDimension>;
+    {
+      typedef Image<UPixelType, UImageDimension>  Type;
+    };
 
 
   /** Set the region object that defines the size and starting index
@@ -150,27 +143,23 @@ public:
    * entire dataset.  It is also used to determine boundary
    * conditions.
    * \sa ImageRegion, SetBufferedRegion(), SetRequestedRegion() */
-  void
-  SetLargestPossibleRegion(const RegionType & region) override;
+  virtual void SetLargestPossibleRegion(const RegionType & region) ITK_OVERRIDE;
 
   /** Set the region object that defines the size and starting index
    * of the region of the image currently load in memory.
    * \sa ImageRegion, SetLargestPossibleRegion(), SetRequestedRegion() */
-  void
-  SetBufferedRegion(const RegionType & region) override;
+  virtual void SetBufferedRegion(const RegionType & region) ITK_OVERRIDE;
 
   /** Set the region object that defines the size and starting index
    * for the region of the image requested.
    * \sa ImageRegion, SetLargestPossibleRegion(), SetBufferedRegion() */
-  void
-  SetRequestedRegion(const RegionType & region) override;
+  virtual void SetRequestedRegion(const RegionType & region) ITK_OVERRIDE;
 
   /** Set the requested region from this data object to match the requested
    * region of the data object passed in as a parameter.  This method
    * implements the API from DataObject. The data object parameter must be
    * castable to an ImageBase. */
-  void
-  SetRequestedRegion(const DataObject * data) override;
+  virtual void SetRequestedRegion(const DataObject *data) ITK_OVERRIDE;
 
   /** Get the region object that defines the size and starting index
    * for the region of the image requested (i.e., the region of the
@@ -178,8 +167,7 @@ public:
    * This method overloads the one in ImageBase in order to delegate
    * to the adapted image.
    * \sa ImageRegion, SetLargestPossibleRegion(), SetBufferedRegion() */
-  const RegionType &
-  GetRequestedRegion() const override;
+  virtual const RegionType & GetRequestedRegion() const ITK_OVERRIDE;
 
   /** Get the region object that defines the size and starting index
    * for the largest possible region this image could represent.  This
@@ -189,74 +177,56 @@ public:
    * This method overloads the one in ImageBase in order to delegate
    * to the adapted image.
    * \sa ImageRegion, GetBufferedRegion(), GetRequestedRegion() */
-  const RegionType &
-  GetLargestPossibleRegion() const override;
+  virtual const RegionType & GetLargestPossibleRegion() const ITK_OVERRIDE;
 
   /** Get the region object that defines the size and starting index
    * of the region of the image currently loaded in memory.
    * This method overloads the one in ImageBase in order to delegate
    * to the adapted image.
    * \sa ImageRegion, SetLargestPossibleRegion(), SetRequestedRegion() */
-  const RegionType &
-  GetBufferedRegion() const override;
+  virtual const RegionType & GetBufferedRegion() const ITK_OVERRIDE;
 
   /** Allocate the image memory. Dimension and Size must be set a priori. */
-  void
-  Allocate(bool initialize = false) override;
+  virtual void Allocate(bool initialize = false) ITK_OVERRIDE;
 
   /** Restore the data object to its initial state. This means releasing
    * memory. */
-  void
-  Initialize() override;
+  virtual void Initialize() ITK_OVERRIDE;
 
   /** Set a pixel. */
-  void
-  SetPixel(const IndexType & index, const PixelType & value)
-  {
-    m_PixelAccessor.Set(m_Image->GetPixel(index), value);
-  }
+  void SetPixel(const IndexType & index, const PixelType & value)
+  { m_PixelAccessor.Set(m_Image->GetPixel(index), value); }
 
   /** Get a pixel (read only version)  */
-  PixelType
-  GetPixel(const IndexType & index) const
-  {
-    return m_PixelAccessor.Get(m_Image->GetPixel(index));
-  }
+  PixelType GetPixel(const IndexType & index) const
+  { return m_PixelAccessor.Get( m_Image->GetPixel(index) ); }
 
   /** Access a pixel. This version can only be an rvalue. */
-  PixelType operator[](const IndexType & index) const { return m_PixelAccessor.Get(m_Image->GetPixel(index)); }
+  PixelType operator[](const IndexType & index) const
+  { return m_PixelAccessor.Get( m_Image->GetPixel(index) ); }
 
   /** Get the OffsetTable from the adapted image */
-  const OffsetValueType *
-  GetOffsetTable() const;
+  const OffsetValueType * GetOffsetTable() const;
 
   /** Compute  Index given an Offset */
-  IndexType
-  ComputeIndex(OffsetValueType offset) const;
+  IndexType ComputeIndex(OffsetValueType offset) const;
 
-  /** PixelContainer type alias support Used to construct a container for
+  /** PixelContainer typedef support. Used to construct a container for
    * the pixel data. */
-  using PixelContainer = typename TImage::PixelContainer;
-  using PixelContainerPointer = typename TImage::PixelContainerPointer;
-  using PixelContainerConstPointer = typename TImage::PixelContainerConstPointer;
+  typedef typename TImage::PixelContainer             PixelContainer;
+  typedef typename TImage::PixelContainerPointer      PixelContainerPointer;
+  typedef typename TImage::PixelContainerConstPointer PixelContainerConstPointer;
 
   /** Return a pointer to the container. */
-  PixelContainerPointer
-  GetPixelContainer()
-  {
-    return m_Image->GetPixelContainer();
-  }
+  PixelContainerPointer GetPixelContainer()
+  { return m_Image->GetPixelContainer(); }
 
-  const PixelContainer *
-  GetPixelContainer() const
-  {
-    return m_Image->GetPixelContainer();
-  }
+  const PixelContainer * GetPixelContainer() const
+  { return m_Image->GetPixelContainer(); }
 
   /** Set the container to use. Note that this does not cause the
    * DataObject to be modified. */
-  void
-  SetPixelContainer(PixelContainer * container);
+  void SetPixelContainer(PixelContainer *container);
 
   /** Graft the data and information from one image to another. This
    * is a convenience method to setup a second image with all the meta
@@ -268,127 +238,97 @@ public:
    * simply calls CopyInformation() and copies the region ivars.
    * The implementation here refers to the superclass' implementation
    * and then copies over the pixel container. */
-  virtual void
-  Graft(const Self * imgData);
+  virtual void Graft(const Self *imgData);
 
-  /** Convenient type alias. */
-  using InternalPixelPointerType = InternalPixelType *;
+  /** Convenient typedef. */
+  typedef InternalPixelType *InternalPixelPointerType;
 
   /** Return a pointer to the beginning of the buffer.  This is used by
    * the image iterator class. */
-  InternalPixelType *
-  GetBufferPointer();
+  InternalPixelType * GetBufferPointer();
 
-  const InternalPixelType *
-  GetBufferPointer() const;
+  const InternalPixelType * GetBufferPointer() const;
 
   /** Set the spacing (size of a pixel) of the image. */
-  void
-  SetSpacing(const SpacingType & values) override;
+  virtual void SetSpacing(const SpacingType & values) ITK_OVERRIDE;
 
-  void
-  SetSpacing(const double * values /*[ImageDimension]*/) override;
+  virtual void SetSpacing(const double *values /*[ImageDimension]*/) ITK_OVERRIDE;
 
-  void
-  SetSpacing(const float * values /*[ImageDimension]*/) override;
+  virtual void SetSpacing(const float *values /*[ImageDimension]*/) ITK_OVERRIDE;
 
   /** Get the spacing (size of a pixel) of the image. The
    * spacing is the geometric distance between image samples.
    * \sa SetSpacing() */
-  const SpacingType &
-  GetSpacing() const override;
+  virtual const SpacingType & GetSpacing() const ITK_OVERRIDE;
 
   /** Get the origin of the image. The origin is the geometric
    * coordinates of the image origin.
    * \sa SetOrigin() */
-  const PointType &
-  GetOrigin() const override;
+  virtual const PointType & GetOrigin() const ITK_OVERRIDE;
 
   /** Set the origin of the image. */
-  void
-  SetOrigin(const PointType values) override;
+  virtual void SetOrigin(const PointType values) ITK_OVERRIDE;
 
-  void
-  SetOrigin(const double * values /*[ImageDimension]*/) override;
+  virtual void SetOrigin(const double *values /*[ImageDimension]*/) ITK_OVERRIDE;
 
-  void
-  SetOrigin(const float * values /*[ImageDimension]*/) override;
+  virtual void SetOrigin(const float *values /*[ImageDimension]*/) ITK_OVERRIDE;
 
   /** Set the direction of the image. */
-  void
-  SetDirection(const DirectionType & direction) override;
+  virtual void SetDirection(const DirectionType & direction) ITK_OVERRIDE;
 
   /** Get the direction cosines of the image. The direction cosines
    * are vectors that point from one pixel to the next.
    * For ImageBase and Image, the default direction is identity. */
-  const DirectionType &
-  GetDirection() const override;
+  virtual const DirectionType & GetDirection() const ITK_OVERRIDE;
 
   /** Set Internal Image */
-  virtual void
-  SetImage(TImage *);
+  virtual void SetImage(TImage *);
 
   /** Delegate Modified to the Internal Image */
-  void
-  Modified() const override;
+  virtual void Modified() const ITK_OVERRIDE;
 
   /** Delegate GetMTime to the Internal Image */
-  ModifiedTimeType
-  GetMTime() const override;
+  virtual ModifiedTimeType GetMTime() const ITK_OVERRIDE;
 
   /** Return the Data Accesor object */
-  AccessorType &
-  GetPixelAccessor()
-  {
-    return m_PixelAccessor;
-  }
+  AccessorType & GetPixelAccessor(void)
+  { return m_PixelAccessor; }
 
   /** Return the Data Accesor object */
-  const AccessorType &
-  GetPixelAccessor() const
-  {
-    return m_PixelAccessor;
-  }
+  const AccessorType & GetPixelAccessor(void) const
+  { return m_PixelAccessor; }
 
   /** Sets the Data Accesor object */
-  void
-  SetPixelAccessor(const AccessorType & accessor)
-  {
-    m_PixelAccessor = accessor;
-  }
+  void SetPixelAccessor(const AccessorType & accessor)
+  { m_PixelAccessor = accessor; }
 
   /** Return the Data Accesor object */
-  void
-  Update() override;
+  virtual void Update() ITK_OVERRIDE;
 
-  void
-  CopyInformation(const DataObject * data) override;
+  virtual void CopyInformation(const DataObject *data) ITK_OVERRIDE;
 
   /** Methods to update the pipeline. Called internally by the
    * pipeline mechanism. */
-  void
-  UpdateOutputInformation() override;
+  virtual void UpdateOutputInformation() ITK_OVERRIDE;
 
-  void
-  SetRequestedRegionToLargestPossibleRegion() override;
+  virtual void SetRequestedRegionToLargestPossibleRegion() ITK_OVERRIDE;
 
-  void
-  PropagateRequestedRegion() override;
+  virtual void PropagateRequestedRegion() ITK_OVERRIDE;
 
-  void
-  UpdateOutputData() override;
+  virtual void UpdateOutputData() ITK_OVERRIDE;
 
-  bool
-  VerifyRequestedRegion() override;
+  virtual bool VerifyRequestedRegion() ITK_OVERRIDE;
 
   /** \brief Get the continuous index from a physical point
    *
    * Returns true if the resulting index is within the image, false otherwise.
    * \sa Transform */
-  template <typename TCoordRep>
-  bool
-  TransformPhysicalPointToContinuousIndex(const Point<TCoordRep, Self::ImageDimension> &     point,
-                                          ContinuousIndex<TCoordRep, Self::ImageDimension> & index) const
+  template< typename TCoordRep >
+  bool TransformPhysicalPointToContinuousIndex(
+    const Point< TCoordRep,
+                 itkGetStaticConstMacro(ImageDimension) > & point,
+    ContinuousIndex< TCoordRep,
+                     itkGetStaticConstMacro(ImageDimension) > & index) const
   {
     return m_Image->TransformPhysicalPointToContinuousIndex(point, index);
   }
@@ -397,9 +337,11 @@ public:
    * Floating point index results are truncated to integers.
    * Returns true if the resulting index is within the image, false otherwise
    * \sa Transform */
-  template <typename TCoordRep>
-  bool
-  TransformPhysicalPointToIndex(const Point<TCoordRep, Self::ImageDimension> & point, IndexType & index) const
+  template< typename TCoordRep >
+  bool TransformPhysicalPointToIndex(
+    const Point< TCoordRep,
+                 itkGetStaticConstMacro(ImageDimension) > & point,
+    IndexType & index) const
   {
     return m_Image->TransformPhysicalPointToIndex(point, index);
   }
@@ -408,10 +350,12 @@ public:
    * the origin and spacing information comes from)
    * from a continuous index (in the index space)
    * \sa Transform */
-  template <typename TCoordRep>
-  void
-  TransformContinuousIndexToPhysicalPoint(const ContinuousIndex<TCoordRep, Self::ImageDimension> & index,
-                                          Point<TCoordRep, Self::ImageDimension> &                 point) const
+  template< typename TCoordRep >
+  void TransformContinuousIndexToPhysicalPoint(
+    const ContinuousIndex< TCoordRep,
+                           itkGetStaticConstMacro(ImageDimension) > & index,
+    Point< TCoordRep,
+           itkGetStaticConstMacro(ImageDimension) > & point) const
   {
     m_Image->TransformContinuousIndexToPhysicalPoint(index, point);
   }
@@ -421,71 +365,53 @@ public:
    * from a discrete index (in the index space)
    *
    * \sa Transform */
-  template <typename TCoordRep>
-  void
-  TransformIndexToPhysicalPoint(const IndexType & index, Point<TCoordRep, Self::ImageDimension> & point) const
+  template< typename TCoordRep >
+  void TransformIndexToPhysicalPoint(
+    const IndexType & index,
+    Point< TCoordRep,
+           itkGetStaticConstMacro(ImageDimension) > & point) const
   {
     m_Image->TransformIndexToPhysicalPoint(index, point);
   }
 
-  template <typename TCoordRep>
-  void
-  TransformLocalVectorToPhysicalVector(const FixedArray<TCoordRep, Self::ImageDimension> & inputGradient,
-                                       FixedArray<TCoordRep, Self::ImageDimension> &       outputGradient) const
+  template< typename TCoordRep >
+  void TransformLocalVectorToPhysicalVector(
+    const FixedArray< TCoordRep, itkGetStaticConstMacro(ImageDimension) > & inputGradient,
+    FixedArray< TCoordRep, itkGetStaticConstMacro(ImageDimension) > & outputGradient) const
   {
     m_Image->TransformLocalVectorToPhysicalVector(inputGradient, outputGradient);
   }
 
-  template <typename TVector>
-  TVector
-  TransformLocalVectorToPhysicalVector(const TVector & inputGradient) const
-  {
-    TVector outputGradient;
-    TransformLocalVectorToPhysicalVector(inputGradient, outputGradient);
-    return outputGradient;
-  }
-
-  template <typename TCoordRep>
-  void
-  TransformPhysicalVectorToLocalVector(const FixedArray<TCoordRep, Self::ImageDimension> & inputGradient,
-                                       FixedArray<TCoordRep, Self::ImageDimension> &       outputGradient) const
+  template< typename TCoordRep >
+  void TransformPhysicalVectorToLocalVector(
+    const FixedArray< TCoordRep, itkGetStaticConstMacro(ImageDimension) > & inputGradient,
+    FixedArray< TCoordRep, itkGetStaticConstMacro(ImageDimension) > & outputGradient) const
   {
     m_Image->TransformPhysicalVectorToLocalVector(inputGradient, outputGradient);
   }
 
-  template <typename TVector>
-  TVector
-  TransformPhysicalVectorToLocalVector(const TVector & inputGradient) const
-  {
-    TVector outputGradient;
-    TransformPhysicalVectorToLocalVector(inputGradient, outputGradient);
-    return outputGradient;
-  }
-
 protected:
+
   ImageAdaptor();
-  ~ImageAdaptor() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-  void
-  Graft(const DataObject * data) override;
+  virtual ~ImageAdaptor() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  virtual void Graft(const DataObject *data) ITK_OVERRIDE;
   using Superclass::Graft;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageAdaptor);
+
   // a specialized method to update PixelAccessors for VectorImages,
   // to have the correct vector length of the image.
-  template <typename TPixelType>
-  void
-  UpdateAccessor(typename ::itk::VectorImage<TPixelType, ImageDimension> * itkNotUsed(dummy))
+  template< typename TPixelType >
+    void UpdateAccessor( typename ::itk::VectorImage< TPixelType, ImageDimension > * itkNotUsed( dummy ) )
   {
-    this->m_PixelAccessor.SetVectorLength(this->m_Image->GetNumberOfComponentsPerPixel());
+    this->m_PixelAccessor.SetVectorLength( this->m_Image->GetNumberOfComponentsPerPixel() );
   }
 
   // The other image types don't expect an accessor which needs any updates
-  template <typename T>
-  void
-  UpdateAccessor(T * itkNotUsed(dummy))
-  {}
+  template< typename T > void UpdateAccessor( T  *itkNotUsed( dummy ) ) { }
 
   // Adapted image, most of the calls to ImageAdaptor
   // will be delegated to this image
@@ -498,7 +424,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageAdaptor.hxx"
+#include "itkImageAdaptor.hxx"
 #endif
 
 #endif

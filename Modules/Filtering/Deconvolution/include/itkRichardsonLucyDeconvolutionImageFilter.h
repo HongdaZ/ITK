@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class RichardsonLucyDeconvolutionImageFilter
+/** \class RichardsonLucyDeconvolutionImageFilter
  * \brief Deconvolve an image using the Richardson-Lucy deconvolution
  * algorithm.
  *
@@ -56,83 +55,84 @@ namespace itk
  * \sa ProjectedLandweberDeconvolutionImageFilter
  *
  */
-template <typename TInputImage,
-          typename TKernelImage = TInputImage,
-          typename TOutputImage = TInputImage,
-          typename TInternalPrecision = double>
-class ITK_TEMPLATE_EXPORT RichardsonLucyDeconvolutionImageFilter
-  : public IterativeDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
+template< typename TInputImage, typename TKernelImage=TInputImage, typename TOutputImage=TInputImage, typename TInternalPrecision=double >
+class ITK_TEMPLATE_EXPORT RichardsonLucyDeconvolutionImageFilter :
+    public IterativeDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RichardsonLucyDeconvolutionImageFilter);
+  /** Standard typedefs. */
+  typedef RichardsonLucyDeconvolutionImageFilter                  Self;
+  typedef IterativeDeconvolutionImageFilter< TInputImage,
+                                             TKernelImage,
+                                             TOutputImage,
+                                             TInternalPrecision > Superclass;
+  typedef SmartPointer< Self >                                    Pointer;
+  typedef SmartPointer< const Self >                              ConstPointer;
 
-  /** Standard type alias. */
-  using Self = RichardsonLucyDeconvolutionImageFilter;
-  using Superclass = IterativeDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Other useful type alias. */
-  using InputImageType = TInputImage;
-  using KernelImageType = TKernelImage;
-  using OutputImageType = TOutputImage;
+  /** Other useful typedefs. */
+  typedef TInputImage  InputImageType;
+  typedef TKernelImage KernelImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Internal types used by the FFT filters. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  typedef typename Superclass::InternalImageType               InternalImageType;
+  typedef typename Superclass::InternalImagePointerType        InternalImagePointerType;
+  typedef typename Superclass::InternalComplexType             InternalComplexType;
+  typedef typename Superclass::InternalComplexImageType        InternalComplexImageType;
+  typedef typename Superclass::InternalComplexImagePointerType InternalComplexImagePointerType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(RichardsonLucyDeconvolutionImageFilter, IterativeDeconvolutionImageFilter);
+  itkTypeMacro(RichardsonLucyDeconvolutionImageFilter,
+               IterativeDeconvolutionImageFilter);
 
 protected:
   RichardsonLucyDeconvolutionImageFilter();
-  ~RichardsonLucyDeconvolutionImageFilter() override;
+  virtual ~RichardsonLucyDeconvolutionImageFilter() ITK_OVERRIDE;
 
-  void
-  Initialize(ProgressAccumulator * progress, float progressWeight, float iterationProgressWeight) override;
+  virtual void Initialize(ProgressAccumulator * progress,
+                          float progressWeight,
+                          float iterationProgressWeight) ITK_OVERRIDE;
 
-  void
-  Iteration(ProgressAccumulator * progress, float iterationProgressWeight) override;
+  virtual void Iteration(ProgressAccumulator * progress,
+                         float iterationProgressWeight) ITK_OVERRIDE;
 
-  void
-  Finish(ProgressAccumulator * progress, float progressWeight) override;
+  virtual void Finish(ProgressAccumulator *progress, float progressWeight) ITK_OVERRIDE;
 
-  using FFTFilterType = typename Superclass::FFTFilterType;
-  using IFFTFilterType = typename Superclass::IFFTFilterType;
+  typedef typename Superclass::FFTFilterType  FFTFilterType;
+  typedef typename Superclass::IFFTFilterType IFFTFilterType;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RichardsonLucyDeconvolutionImageFilter);
+
   /** Filters to compute each iterative update step. */
-  using MultiplyFilterType = MultiplyImageFilter<InternalImageType>;
-  using ComplexMultiplyType = MultiplyImageFilter<InternalComplexImageType>;
-  using DivideFilterType = DivideOrZeroOutImageFilter<InternalImageType>;
-  using ConjugateAdaptorType = ComplexConjugateImageAdaptor<InternalComplexImageType>;
-  using ComplexConjugateMultiplyType =
-    MultiplyImageFilter<InternalComplexImageType, ConjugateAdaptorType, InternalComplexImageType>;
+  typedef MultiplyImageFilter< InternalImageType >                 MultiplyFilterType;
+  typedef MultiplyImageFilter< InternalComplexImageType >          ComplexMultiplyType;
+  typedef DivideOrZeroOutImageFilter< InternalImageType >          DivideFilterType;
+  typedef ComplexConjugateImageAdaptor< InternalComplexImageType > ConjugateAdaptorType;
+  typedef MultiplyImageFilter< InternalComplexImageType,
+                               ConjugateAdaptorType,
+                               InternalComplexImageType >          ComplexConjugateMultiplyType;
 
   InternalImagePointerType m_PaddedInput;
 
-  typename ComplexMultiplyType::Pointer          m_ComplexMultiplyFilter1;
-  typename IFFTFilterType::Pointer               m_IFFTFilter1;
-  typename DivideFilterType::Pointer             m_DivideFilter;
-  typename FFTFilterType::Pointer                m_FFTFilter;
-  typename ConjugateAdaptorType::Pointer         m_ConjugateAdaptor;
-  typename ComplexConjugateMultiplyType::Pointer m_ComplexMultiplyFilter2;
-  typename IFFTFilterType::Pointer               m_IFFTFilter2;
-  typename MultiplyFilterType::Pointer           m_MultiplyFilter;
+  typename ComplexMultiplyType::Pointer           m_ComplexMultiplyFilter1;
+  typename IFFTFilterType::Pointer                m_IFFTFilter1;
+  typename DivideFilterType::Pointer              m_DivideFilter;
+  typename FFTFilterType::Pointer                 m_FFTFilter;
+  typename ConjugateAdaptorType::Pointer          m_ConjugateAdaptor;
+  typename ComplexConjugateMultiplyType::Pointer  m_ComplexMultiplyFilter2;
+  typename IFFTFilterType::Pointer                m_IFFTFilter2;
+  typename MultiplyFilterType::Pointer            m_MultiplyFilter;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRichardsonLucyDeconvolutionImageFilter.hxx"
+#include "itkRichardsonLucyDeconvolutionImageFilter.hxx"
 #endif
 
 #endif

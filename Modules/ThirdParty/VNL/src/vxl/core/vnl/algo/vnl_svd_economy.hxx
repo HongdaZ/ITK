@@ -7,9 +7,7 @@
 #include <cmath>
 #include "vnl_svd_economy.h"
 
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 #include <vnl/vnl_fortran_copy.h>
 #include <vnl/algo/vnl_netlib.h> // dsvdc_()
@@ -43,11 +41,11 @@ vnl_svd_economy<real_t>::vnl_svd_economy( vnl_matrix<real_t> const& M ) :
   // Call Linpack SVD
   long ldu = 0;
   long info = 0;
-  constexpr long job = 01; // no U, n svs in V (i.e. super-economy size)
+  const long job = 01; // no U, n svs in V (i.e. super-economy size)
   vnl_linpack_svdc_economy((real_t*)X, &m_, &m_, &n_,
                            wspace.data_block(),
                            espace.data_block(),
-                           nullptr, &ldu,
+                           0, &ldu,
                            vspace.data_block(), &n_,
                            work.data_block(),
                            &job, &info);

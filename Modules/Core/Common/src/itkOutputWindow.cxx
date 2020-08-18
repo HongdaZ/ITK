@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,100 +25,117 @@
  *  please refer to the NOTICE file at the top of the ITK source tree.
  *
  *=========================================================================*/
-#include "itkOutputWindow.h"
-#include "itkObjectFactory.h"
+#ifdef _WIN32
+# include "itkWin32OutputWindow.h"
+#else
+# include "itkOutputWindow.h"
+# include "itkObjectFactory.h"
+#endif
 
 namespace itk
 {
-OutputWindow::Pointer OutputWindow::m_Instance = nullptr;
+OutputWindow::Pointer OutputWindow:: m_Instance = ITK_NULLPTR;
 
 /**
  * Prompting off by default
  */
-OutputWindow ::OutputWindow()
+OutputWindow
+::OutputWindow()
 {
-  m_PromptUser = false;
+  m_PromptUser = 0;
 }
 
-OutputWindow ::~OutputWindow() = default;
+OutputWindow
+::~OutputWindow()
+{}
 
 void
-OutputWindowDisplayText(const char * message)
+OutputWindowDisplayText(const char *message)
 {
   OutputWindow::GetInstance()->DisplayText(message);
 }
 
 void
-OutputWindowDisplayErrorText(const char * message)
+OutputWindowDisplayErrorText(const char *message)
 {
   OutputWindow::GetInstance()->DisplayErrorText(message);
 }
 
 void
-OutputWindowDisplayWarningText(const char * message)
+OutputWindowDisplayWarningText(const char *message)
 {
   OutputWindow::GetInstance()->DisplayWarningText(message);
 }
 
 void
-OutputWindowDisplayGenericOutputText(const char * message)
+OutputWindowDisplayGenericOutputText(const char *message)
 {
   OutputWindow::GetInstance()->DisplayGenericOutputText(message);
 }
 
 void
-OutputWindowDisplayDebugText(const char * message)
+OutputWindowDisplayDebugText(const char *message)
 {
   OutputWindow::GetInstance()->DisplayDebugText(message);
 }
 
 void
-OutputWindow ::PrintSelf(std::ostream & os, Indent indent) const
+OutputWindow
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "OutputWindow (single instance): " << (void *)OutputWindow::m_Instance << std::endl;
+  os << indent << "OutputWindow (single instance): "
+     << (void *)OutputWindow::m_Instance << std::endl;
 
-  os << indent << "Prompt User: " << (m_PromptUser ? "On\n" : "Off\n");
+  os << indent << "Prompt User: " << ( m_PromptUser ? "On\n" : "Off\n" );
 }
 
 /**
  * default implementation outputs to cerr only
  */
 void
-OutputWindow ::DisplayText(const char * txt)
+OutputWindow
+::DisplayText(const char *txt)
 {
   std::cerr << txt;
-  if (m_PromptUser)
-  {
-    char c = 'n';
-    std::cerr << "\nDo you want to suppress any further messages (y,n)?." << std::endl;
-    std::cin >> c;
-    if (c == 'y' || c == 'Y')
+  if ( m_PromptUser )
     {
+    char c = 'n';
+    std::cerr << "\nDo you want to suppress any further messages (y,n)?."
+              << std::endl;
+    std::cin >> c;
+    if ( c == 'y' || c == 'Y' )
+      {
       Object::GlobalWarningDisplayOff();
+      }
     }
-  }
 }
 
 /**
  * Return the single instance of the OutputWindow
  */
 OutputWindow::Pointer
-OutputWindow ::GetInstance()
+OutputWindow
+::GetInstance()
 {
-  if (!OutputWindow::m_Instance)
-  {
-    // Try the factory first
-    OutputWindow::m_Instance = ObjectFactory<Self>::Create();
-    // if the factory did not provide one, then create it here
-    if (!OutputWindow::m_Instance)
+  if ( !OutputWindow::m_Instance )
     {
+    // Try the factory first
+    OutputWindow::m_Instance  = ObjectFactory< Self >::Create();
+    // if the factory did not provide one, then create it here
+    if ( !OutputWindow::m_Instance )
+      {
+      // For the windows OS, use a special output window
+#ifdef _WIN32
+      OutputWindow::m_Instance = Win32OutputWindow::New();
+#else
       OutputWindow::m_Instance = new OutputWindow;
       // Remove extra reference from construction.
       OutputWindow::m_Instance->UnRegister();
+#endif
+      }
     }
-  }
   /**
    * return the instance
    */
@@ -126,12 +143,13 @@ OutputWindow ::GetInstance()
 }
 
 void
-OutputWindow ::SetInstance(OutputWindow * instance)
+OutputWindow
+::SetInstance(OutputWindow *instance)
 {
-  if (OutputWindow::m_Instance == instance)
-  {
+  if ( OutputWindow::m_Instance == instance )
+    {
     return;
-  }
+    }
   OutputWindow::m_Instance = instance;
 }
 
@@ -139,7 +157,8 @@ OutputWindow ::SetInstance(OutputWindow * instance)
  * This just calls GetInstance
  */
 OutputWindow::Pointer
-OutputWindow ::New()
+OutputWindow
+::New()
 {
   return GetInstance();
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,49 +47,47 @@ namespace itk
  * \ingroup ImageFilters
  * \ingroup ITKReview
  */
-template <typename TInputImage, typename TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT DirectFourierReconstructionImageToImageFilter
-  : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage=TInputImage >
+class ITK_TEMPLATE_EXPORT DirectFourierReconstructionImageToImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DirectFourierReconstructionImageToImageFilter);
+  /** Standard Self typedef */
+  typedef DirectFourierReconstructionImageToImageFilter Self;
 
-  /** Standard Self type alias */
-  using Self = DirectFourierReconstructionImageToImageFilter;
+  typedef TInputImage                          InputImageType;
+  typedef typename InputImageType::PixelType   InputPixelType;
+  typedef TOutputImage                         OutputImageType;
+  typedef typename OutputImageType::PixelType  OutputPixelType;
 
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
+  /** Standard Superclass typedef */
+  typedef ImageToImageFilter< InputImageType, OutputImageType > Superclass;
 
-  /** Standard Superclass type alias */
-  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
-
-  /** Standard Pointer type alias */
-  using Pointer = SmartPointer<Self>;
-  /** Standard ConstPointer type alias */
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard Pointer typedef */
+  typedef SmartPointer< Self > Pointer;
+  /** Standard ConstPointer typedef */
+  typedef SmartPointer< const Self > ConstPointer;
 
   itkNewMacro(Self);
   itkTypeMacro(DirectFourierReconstructionImageToImageFilter, ImageToImageFilter);
 
   /** Class RegionType */
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::RegionType RegionType;
   /** Class IndexType */
-  using IndexType = typename InputImageType::IndexType;
+  typedef typename InputImageType::IndexType IndexType;
   /** Class SizeType */
-  using SizeType = typename InputImageType::SizeType;
+  typedef typename InputImageType::SizeType SizeType;
   /** Class PointType */
-  using PointType = typename InputImageType::PointType;
+  typedef typename InputImageType::PointType PointType;
   /** Class SpacingType */
-  using SpacingType = typename InputImageType::SpacingType;
+  typedef typename InputImageType::SpacingType SpacingType;
 
   /** Standard (const) InputImagePointer */
-  using ConstInputImagePointer = typename InputImageType::ConstPointer;
+  typedef typename InputImageType::ConstPointer ConstInputImagePointer;
   /** Special (non-const) InputImagePointer */
-  using InputImagePointer = typename InputImageType::Pointer;
+  typedef typename InputImageType::Pointer InputImagePointer;
   /** OutputImagePointer */
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  typedef typename OutputImageType::Pointer OutputImagePointer;
 
   itkSetMacro(ZeroPadding, unsigned short int);
   itkGetConstMacro(ZeroPadding, unsigned short int);
@@ -119,64 +117,60 @@ protected:
   /** Constructor */
   DirectFourierReconstructionImageToImageFilter();
   /** Destructor */
-  ~DirectFourierReconstructionImageToImageFilter() override = default;
+  ~DirectFourierReconstructionImageToImageFilter() {}
 
   /** Output class information */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate metadata for output image */
-  void
-  GenerateOutputInformation() override;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Calculate the required input region */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Actual filter computation */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   /** Const slice iterator type of the input image */
-  using InputSliceIteratorType = ImageSliceConstIteratorWithIndex<InputImageType>;
+  typedef ImageSliceConstIteratorWithIndex< InputImageType > InputSliceIteratorType;
 
   /** 1D FFT filter type */
-  using LineImageType = Image<double, 1>;
-  using FFTLineFilterType = VnlForwardFFTImageFilter<LineImageType>;
+  typedef Image< double, 1 >                                       LineImageType;
+  typedef VnlForwardFFTImageFilter< LineImageType > FFTLineFilterType;
   /** Derived 1D FFT image type */
-  using FFTLineType = FFTLineFilterType::OutputImageType;
+  typedef FFTLineFilterType::OutputImageType FFTLineType;
   /** Derived 1D input image type */
-  using ProjectionLineType = FFTLineFilterType::InputImageType;
+  typedef FFTLineFilterType::InputImageType ProjectionLineType;
   /** 1D FFT line iterator */
-  using FFTLineIteratorType = ImageRegionIteratorWithIndex<FFTLineType>;
+  typedef ImageRegionIteratorWithIndex< FFTLineType > FFTLineIteratorType;
   /** 1D FFT line B-Spline interpolator */
-  using FFTLineInterpolatorType = ComplexBSplineInterpolateImageFunction<FFTLineType, double, double>;
+  typedef ComplexBSplineInterpolateImageFunction< FFTLineType, double, double > FFTLineInterpolatorType;
 
   /** 2D inverse FFT filter type */
-  using IFFTImageType = Image<std::complex<double>, 2>;
-  using IFFTSliceFilterType = VnlInverseFFTImageFilter<IFFTImageType>;
+  typedef Image< std::complex<double>, 2>                          IFFTImageType;
+  typedef VnlInverseFFTImageFilter< IFFTImageType > IFFTSliceFilterType;
   /** Derived 2D FFT image type */
-  using FFTSliceType = IFFTSliceFilterType::InputImageType;
+  typedef IFFTSliceFilterType::InputImageType FFTSliceType;
   /** Derived 2D output slice type */
-  using OutputSliceType = IFFTSliceFilterType::OutputImageType;
+  typedef IFFTSliceFilterType::OutputImageType OutputSliceType;
   /** 2D FFT slice iterator */
-  using FFTSliceIteratorType = ImageRegionIteratorWithIndex<FFTSliceType>;
+  typedef ImageRegionIteratorWithIndex< FFTSliceType > FFTSliceIteratorType;
   /** 2D output slice iterator */
-  using OutputSliceIteratorType = ImageRegionIteratorWithIndex<OutputSliceType>;
+  typedef ImageRegionIteratorWithIndex< OutputSliceType > OutputSliceIteratorType;
 
-  unsigned short int m_ZeroPadding;  /**< n-fold zero-padding */
-  unsigned short int m_OverSampling; /**< n-fold oversampling */
+  unsigned short int m_ZeroPadding;       /**< n-fold zero-padding */
+  unsigned short int m_OverSampling;      /**< n-fold oversampling */
 
-  double m_Cutoff;     /**< Radial lowpass cut-off frequency
-                        */
-  double m_AlphaRange; /**< Covered angular range */
+  double m_Cutoff;                        /**< Radial lowpass cut-off frequency
+                                            */
+  double m_AlphaRange;                    /**< Covered angular range */
 
   unsigned short int m_ZDirection;        /**< Axial index in the input image */
   unsigned short int m_AlphaDirection;    /**< Angular index in the input image
-                                           */
+                                            */
   unsigned short int m_RDirection;        /**< Radial index in the input image
-                                           */
+                                            */
   unsigned short int m_RadialSplineOrder; /**< Spline order for the radial
                                             BSpline interpolation  */
 
@@ -184,11 +178,13 @@ private:
 
   RegionType m_InputRequestedRegion; /**< The region requested from* the input
                                        image   */
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(DirectFourierReconstructionImageToImageFilter);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDirectFourierReconstructionImageToImageFilter.hxx"
+#include "itkDirectFourierReconstructionImageToImageFilter.hxx"
 #endif
 
 #endif /* itkDirectFourierReconstructionImageToImageFilter_h */

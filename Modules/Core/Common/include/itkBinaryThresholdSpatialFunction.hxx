@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,17 +22,24 @@
 
 namespace itk
 {
-template <typename TFunction>
-BinaryThresholdSpatialFunction<TFunction>::BinaryThresholdSpatialFunction()
+template< typename TFunction >
+BinaryThresholdSpatialFunction< TFunction >
+::BinaryThresholdSpatialFunction()
 {
-  m_LowerThreshold = NumericTraits<FunctionOutputType>::NonpositiveMin();
-  m_UpperThreshold = NumericTraits<FunctionOutputType>::max();
-  m_Function = nullptr;
+  m_LowerThreshold = NumericTraits< FunctionOutputType >::NonpositiveMin();
+  m_UpperThreshold = NumericTraits< FunctionOutputType >::max();
+  m_Function = ITK_NULLPTR;
 }
 
-template <typename TFunction>
+template< typename TFunction >
+BinaryThresholdSpatialFunction< TFunction >
+::~BinaryThresholdSpatialFunction()
+{}
+
+template< typename TFunction >
 void
-BinaryThresholdSpatialFunction<TFunction>::PrintSelf(std::ostream & os, Indent indent) const
+BinaryThresholdSpatialFunction< TFunction >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << " m_LowerThreshold: " << m_LowerThreshold << std::endl;
@@ -40,16 +47,18 @@ BinaryThresholdSpatialFunction<TFunction>::PrintSelf(std::ostream & os, Indent i
   os << indent << " m_Function: " << m_Function.GetPointer() << std::endl;
 }
 
-template <typename TFunction>
-typename BinaryThresholdSpatialFunction<TFunction>::OutputType
-BinaryThresholdSpatialFunction<TFunction>::Evaluate(const InputType & point) const
+template< typename TFunction >
+typename BinaryThresholdSpatialFunction< TFunction >
+::OutputType
+BinaryThresholdSpatialFunction< TFunction >
+::Evaluate(const InputType & point) const
 {
   FunctionOutputType value = m_Function->Evaluate(point);
 
-  if (m_LowerThreshold <= value && value <= m_UpperThreshold)
-  {
+  if ( m_LowerThreshold <= value && value <= m_UpperThreshold )
+    {
     return true;
-  }
+    }
   return false;
 }
 } // end namespace itk

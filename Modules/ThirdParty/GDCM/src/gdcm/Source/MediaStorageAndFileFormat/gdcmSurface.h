@@ -59,7 +59,7 @@ public:
 
   Surface();
 
-  ~Surface() override;
+  virtual ~Surface();
 
   //**    Common getters/setters      **//
   unsigned long GetSurfaceNumber() const;

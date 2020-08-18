@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,52 +27,58 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage>
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::ScalarImageKmeansImageFilter()
+template< typename TInputImage, typename TOutputImage >
+ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::ScalarImageKmeansImageFilter() :
+  m_UseNonContiguousLabels( false ),
+  m_ImageRegionDefined( false )
+{
+}
 
-  = default;
-
-template <typename TInputImage, typename TOutputImage>
-void
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::SetImageRegion(const ImageRegionType & region)
+template< typename TInputImage, typename TOutputImage >
+void ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::SetImageRegion(const ImageRegionType & region)
 {
   m_ImageRegion = region;
   m_ImageRegionDefined = true;
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::VerifyPreconditions()
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_InitialMeans.empty())
-  {
+  if ( this->m_InitialMeans.size() == 0 )
+    {
     itkExceptionMacro("Atleast One InialMean is required.");
-  }
+    }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
+ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::GenerateData()
 {
   typename AdaptorType::Pointer adaptor = AdaptorType::New();
 
   // Setup the regions here if a sub-region has been specified to restrict
   // classification on. Since this is not ThreadedGenenerateData, we are
   // safe...
-  if (m_ImageRegionDefined)
-  {
-    typename RegionOfInterestFilterType::Pointer regionOfInterestFilter = RegionOfInterestFilterType::New();
+  if ( m_ImageRegionDefined )
+    {
+    typename RegionOfInterestFilterType::Pointer regionOfInterestFilter =
+      RegionOfInterestFilterType::New();
     regionOfInterestFilter->SetRegionOfInterest(m_ImageRegion);
-    regionOfInterestFilter->SetInput(this->GetInput());
+    regionOfInterestFilter->SetInput( this->GetInput() );
     regionOfInterestFilter->Update();
-    adaptor->SetImage(regionOfInterestFilter->GetOutput());
-  }
+    adaptor->SetImage( regionOfInterestFilter->GetOutput() );
+    }
   else
-  {
-    adaptor->SetImage(this->GetInput());
-  }
+    {
+    adaptor->SetImage( this->GetInput() );
+    }
 
   typename TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
 
@@ -85,66 +91,66 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
   const size_t numberOfClasses = this->m_InitialMeans.size();
 
   ParametersType initialMeans(numberOfClasses);
-  for (unsigned int cl = 0; cl < numberOfClasses; cl++)
-  {
+  for ( unsigned int cl = 0; cl < numberOfClasses; cl++ )
+    {
     initialMeans[cl] = this->m_InitialMeans[cl];
-  }
+    }
 
   estimator->SetParameters(initialMeans);
 
-  estimator->SetKdTree(treeGenerator->GetOutput());
-  estimator->SetMaximumIteration(200);
-  estimator->SetCentroidPositionChangesThreshold(0.0);
+  estimator->SetKdTree( treeGenerator->GetOutput() );
+  estimator->SetMaximumIteration( 200 );
+  estimator->SetCentroidPositionChangesThreshold (0.0 );
   estimator->StartOptimization();
 
   this->m_FinalMeans = estimator->GetParameters();
 
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::RegionType RegionType;
 
   // Now classify the samples
-  DecisionRuleType::Pointer        decisionRule = DecisionRuleType::New();
+  DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
   typename ClassifierType::Pointer classifier = ClassifierType::New();
 
-  classifier->SetDecisionRule(decisionRule);
-  classifier->SetInput(adaptor);
+  classifier->SetDecisionRule( decisionRule.GetPointer() );
+  classifier->SetInput( adaptor );
 
-  classifier->SetNumberOfClasses(numberOfClasses);
+  classifier->SetNumberOfClasses (numberOfClasses );
 
   ClassLabelVectorType classLabels;
-  classLabels.resize(numberOfClasses);
+  classLabels.resize( numberOfClasses );
 
   // Spread the labels over the intensity range
   unsigned int labelInterval = 1;
-  if (m_UseNonContiguousLabels)
-  {
-    labelInterval = (NumericTraits<OutputPixelType>::max() / numberOfClasses) - 1;
-  }
+  if ( m_UseNonContiguousLabels )
+    {
+    labelInterval = ( NumericTraits< OutputPixelType >::max() / numberOfClasses ) - 1;
+    }
 
-  unsigned int                 label = 0;
+  unsigned int label = 0;
   MembershipFunctionVectorType membershipFunctions;
 
-  for (unsigned int k = 0; k < numberOfClasses; k++)
-  {
+  for ( unsigned int k = 0; k < numberOfClasses; k++ )
+    {
     classLabels[k] = label;
     label += labelInterval;
     MembershipFunctionPointer    membershipFunction = MembershipFunctionType::New();
-    MembershipFunctionOriginType origin(adaptor->GetMeasurementVectorSize());
+    MembershipFunctionOriginType origin( adaptor->GetMeasurementVectorSize() );
     origin[0] = this->m_FinalMeans[k]; // A scalar image has a MeasurementVector
                                        // of dimension 1
     membershipFunction->SetCentroid(origin);
-    const MembershipFunctionType * constMembershipFunction = membershipFunction;
+    const MembershipFunctionType *constMembershipFunction = membershipFunction;
     membershipFunctions.push_back(constMembershipFunction);
-  }
+    }
 
   typename ClassifierType::MembershipFunctionVectorObjectPointer membershipFunctionsObject =
     ClassifierType::MembershipFunctionVectorObjectType::New();
   membershipFunctionsObject->Set(membershipFunctions);
   classifier->SetMembershipFunctions(membershipFunctionsObject);
 
-  using ClassLabelVectorObjectType = typename ClassifierType::ClassLabelVectorObjectType;
+  typedef typename ClassifierType::ClassLabelVectorObjectType ClassLabelVectorObjectType;
   typename ClassLabelVectorObjectType::Pointer classLabelsObject = ClassLabelVectorObjectType::New();
-  classLabelsObject->Set(classLabels);
-  classifier->SetClassLabels(classLabelsObject);
+  classLabelsObject->Set( classLabels );
+  classifier->SetClassLabels( classLabelsObject );
 
   // Execute the actual classification
   classifier->Update();
@@ -152,76 +158,79 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Now classify the pixels
   typename OutputImageType::Pointer outputPtr = this->GetOutput();
 
-  using ImageIterator = ImageRegionIterator<OutputImageType>;
+  typedef ImageRegionIterator< OutputImageType > ImageIterator;
 
-  outputPtr->SetBufferedRegion(outputPtr->GetRequestedRegion());
+  outputPtr->SetBufferedRegion( outputPtr->GetRequestedRegion() );
   outputPtr->Allocate();
 
   RegionType region = outputPtr->GetBufferedRegion();
 
   // If we constrained the classification to a region, label only pixels within
   // the region. Label outside pixels as numberOfClasses + 1
-  if (m_ImageRegionDefined)
-  {
+  if ( m_ImageRegionDefined )
+    {
     region = m_ImageRegion;
-  }
+    }
 
-  ImageIterator pixel(outputPtr, region);
+  ImageIterator pixel( outputPtr, region );
   pixel.GoToBegin();
 
-  using ClassifierOutputType = typename ClassifierType::MembershipSampleType;
-  const ClassifierOutputType * membershipSample = classifier->GetOutput();
+  typedef typename ClassifierType::MembershipSampleType ClassifierOutputType;
+  const ClassifierOutputType *membershipSample = classifier->GetOutput();
 
-  using LabelIterator = typename ClassifierOutputType::ConstIterator;
+  typedef typename ClassifierOutputType::ConstIterator LabelIterator;
 
   LabelIterator iter = membershipSample->Begin();
-  LabelIterator end = membershipSample->End();
+  LabelIterator end  = membershipSample->End();
 
-  while (iter != end)
-  {
-    pixel.Set(iter.GetClassLabel());
+  while ( iter != end )
+    {
+    pixel.Set( iter.GetClassLabel() );
     ++iter;
     ++pixel;
-  }
+    }
 
-  if (m_ImageRegionDefined)
-  {
+  if ( m_ImageRegionDefined )
+    {
     // If a region is defined to constrain classification to, we need to label
     // pixels outside with numberOfClasses + 1.
-    using ExclusionImageIteratorType = ImageRegionExclusionIteratorWithIndex<OutputImageType>;
-    ExclusionImageIteratorType exIt(outputPtr, outputPtr->GetBufferedRegion());
-    exIt.SetExclusionRegion(region);
+    typedef ImageRegionExclusionIteratorWithIndex< OutputImageType >
+    ExclusionImageIteratorType;
+    ExclusionImageIteratorType exIt( outputPtr, outputPtr->GetBufferedRegion() );
+    exIt.SetExclusionRegion( region );
     exIt.GoToBegin();
-    if (m_UseNonContiguousLabels)
-    {
-      OutputPixelType outsideLabel = labelInterval * numberOfClasses;
-      while (!exIt.IsAtEnd())
+    if ( m_UseNonContiguousLabels )
       {
+      OutputPixelType outsideLabel = labelInterval * numberOfClasses;
+      while ( !exIt.IsAtEnd() )
+        {
         exIt.Set(outsideLabel);
         ++exIt;
+        }
       }
-    }
     else
-    {
-      while (!exIt.IsAtEnd())
       {
+      while ( !exIt.IsAtEnd() )
+        {
         exIt.Set(numberOfClasses);
         ++exIt;
+        }
       }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::AddClassWithInitialMean(RealPixelType mean)
+ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::AddClassWithInitialMean(RealPixelType mean)
 {
   this->m_InitialMeans.push_back(mean);
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+ScalarImageKmeansImageFilter< TInputImage, TOutputImage >
+::PrintSelf( std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

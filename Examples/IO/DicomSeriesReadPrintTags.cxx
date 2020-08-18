@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,14 +40,13 @@
 #include "itkGDCMSeriesFileNames.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int argc, char * argv[])
+int main( int argc, char* argv[] )
 {
-  if (argc < 2)
-  {
+  if( argc < 2 )
+    {
     std::cerr << "Usage: " << argv[0] << " DicomDirectory " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -57,10 +56,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = signed short;
-  constexpr unsigned int Dimension = 3;
+  typedef signed short       PixelType;
+  const unsigned int         Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >      ImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -71,7 +70,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageSeriesReader<ImageType>;
+  typedef itk::ImageSeriesReader< ImageType >     ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
   // Software Guide : EndCodeSnippet
@@ -83,11 +82,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ImageIOType = itk::GDCMImageIO;
+  typedef itk::GDCMImageIO       ImageIOType;
 
   ImageIOType::Pointer dicomIO = ImageIOType::New();
 
-  reader->SetImageIO(dicomIO);
+  reader->SetImageIO( dicomIO );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -100,11 +99,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using NamesGeneratorType = itk::GDCMSeriesFileNames;
+  typedef itk::GDCMSeriesFileNames     NamesGeneratorType;
 
   NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
 
-  nameGenerator->SetInputDirectory(argv[1]);
+  nameGenerator->SetInputDirectory( argv[1] );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -117,10 +116,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FileNamesContainer = std::vector<std::string>;
+  typedef std::vector<std::string>    FileNamesContainer;
   FileNamesContainer fileNames = nameGenerator->GetInputFileNames();
 
-  reader->SetFileNames(fileNames);
+  reader->SetFileNames( fileNames );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -132,16 +131,16 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   try
-  {
+    {
     // Software Guide : BeginCodeSnippet
     reader->Update();
     // Software Guide : EndCodeSnippet
-  }
-  catch (const itk::ExceptionObject & ex)
-  {
+    }
+  catch (itk::ExceptionObject &ex)
+    {
     std::cout << ex << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -157,9 +156,9 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using DictionaryType = itk::MetaDataDictionary;
+  typedef itk::MetaDataDictionary   DictionaryType;
 
-  const DictionaryType & dictionary = dicomIO->GetMetaDataDictionary();
+  const  DictionaryType & dictionary = dicomIO->GetMetaDataDictionary();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -175,7 +174,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MetaDataStringType = itk::MetaDataObject<std::string>;
+  typedef itk::MetaDataObject< std::string > MetaDataStringType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -192,8 +191,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  auto itr = dictionary.Begin();
-  auto end = dictionary.End();
+  DictionaryType::ConstIterator itr = dictionary.Begin();
+  DictionaryType::ConstIterator end = dictionary.End();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -209,22 +208,22 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  while (itr != end)
-  {
-    itk::MetaDataObjectBase::Pointer entry = itr->second;
+  while( itr != end )
+    {
+    itk::MetaDataObjectBase::Pointer  entry = itr->second;
 
     MetaDataStringType::Pointer entryvalue =
-      dynamic_cast<MetaDataStringType *>(entry.GetPointer());
+      dynamic_cast<MetaDataStringType *>( entry.GetPointer() );
 
-    if (entryvalue)
-    {
-      std::string tagkey = itr->first;
+    if( entryvalue )
+      {
+      std::string tagkey   = itr->first;
       std::string tagvalue = entryvalue->GetMetaDataObjectValue();
-      std::cout << tagkey << " = " << tagvalue << std::endl;
-    }
+      std::cout << tagkey <<  " = " << tagvalue << std::endl;
+      }
 
     ++itr;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -239,14 +238,14 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   std::string entryId = "0010|0010";
 
-  auto tagItr = dictionary.Find(entryId);
+  DictionaryType::ConstIterator tagItr = dictionary.Find( entryId );
 
-  if (tagItr == end)
-  {
+  if( tagItr == end )
+    {
     std::cerr << "Tag " << entryId;
     std::cerr << " not found in the DICOM header" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -259,19 +258,19 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   MetaDataStringType::ConstPointer entryvalue =
-    dynamic_cast<const MetaDataStringType *>(tagItr->second.GetPointer());
+    dynamic_cast<const MetaDataStringType *>( tagItr->second.GetPointer() );
 
-  if (entryvalue)
-  {
+  if( entryvalue )
+    {
     std::string tagvalue = entryvalue->GetMetaDataObjectValue();
-    std::cout << "Patient's Name (" << entryId << ") ";
+    std::cout << "Patient's Name (" << entryId <<  ") ";
     std::cout << " is: " << tagvalue << std::endl;
-  }
+    }
   else
-  {
+    {
     std::cerr << "Entry was not of string type" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -285,4 +284,5 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   return EXIT_SUCCESS;
+
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,20 +33,24 @@ namespace itk
 {
 StimulateImageIOFactory::StimulateImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkStimulateImageIO", "Stimulate Image IO", true, CreateObjectFunction<StimulateImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkStimulateImageIO",
+                          "Stimulate Image IO",
+                          1,
+                          CreateObjectFunction< StimulateImageIO >::New() );
 }
 
-StimulateImageIOFactory::~StimulateImageIOFactory() = default;
+StimulateImageIOFactory::~StimulateImageIOFactory()
+{}
 
 const char *
-StimulateImageIOFactory::GetITKSourceVersion() const
+StimulateImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-StimulateImageIOFactory::GetDescription() const
+StimulateImageIOFactory::GetDescription(void) const
 {
   return "Stimulate ImageIO Factory, allows the loading of Stimulate images into ITK";
 }
@@ -56,14 +60,13 @@ StimulateImageIOFactory::GetDescription() const
 
 static bool StimulateImageIOFactoryHasBeenRegistered;
 
-void ITKIOStimulate_EXPORT
-     StimulateImageIOFactoryRegister__Private()
+void ITKIOStimulate_EXPORT StimulateImageIOFactoryRegister__Private(void)
 {
-  if (!StimulateImageIOFactoryHasBeenRegistered)
-  {
+  if( ! StimulateImageIOFactoryHasBeenRegistered )
+    {
     StimulateImageIOFactoryHasBeenRegistered = true;
     StimulateImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

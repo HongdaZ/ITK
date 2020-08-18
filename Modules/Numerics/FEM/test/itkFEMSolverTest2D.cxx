@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,75 +25,74 @@
 #include "itkFEMSpatialObjectReader.h"
 #include "itkFEMSpatialObjectWriter.h"
 
-int
-itkFEMSolverTest2D(int argc, char * argv[])
+int itkFEMSolverTest2D(int argc, char *argv[])
 {
-  // Need to register default FEM object types,
-  // and setup SpatialReader to recognize FEM types
-  // which is all currently done as a HACK in
-  // the initialization of the itk::FEMFactoryBase::GetFactory()
+  //Need to register default FEM object types,
+  //and setup SpatialReader to recognize FEM types
+  //which is all currently done as a HACK in
+  //the initializaiton of the itk::FEMFactoryBase::GetFactory()
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
-  using Solver2DType = itk::fem::Solver<2>;
+  typedef itk::fem::Solver<2> Solver2DType;
   Solver2DType::Pointer solver = Solver2DType::New();
 
-  using SpatialObjectType = itk::SpatialObject<2>;
-  using SpatialObjectPointer = SpatialObjectType::Pointer;
+  typedef itk::SpatialObject<2>      SpatialObjectType;
+  typedef SpatialObjectType::Pointer SpatialObjectPointer;
   SpatialObjectPointer Spatial = SpatialObjectType::New();
 
-  using FEMSpatialObjectReaderType = itk::FEMSpatialObjectReader<2>;
-  using FEMSpatialObjectReaderPointer = FEMSpatialObjectReaderType::Pointer;
+  typedef itk::FEMSpatialObjectReader<2>      FEMSpatialObjectReaderType;
+  typedef FEMSpatialObjectReaderType::Pointer FEMSpatialObjectReaderPointer;
   FEMSpatialObjectReaderPointer SpatialReader = FEMSpatialObjectReaderType::New();
-  SpatialReader->SetFileName(argv[1]);
+  SpatialReader->SetFileName( argv[1] );
   SpatialReader->Update();
 
   FEMSpatialObjectReaderType::ScenePointer myScene = SpatialReader->GetScene();
-  if (!myScene)
-  {
+  if( !myScene )
+    {
     std::cout << "No Scene : [FAILED]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   std::cout << " [PASSED]" << std::endl;
 
   // Testing the FE mesh validity
-  using FEMObjectSpatialObjectType = itk::FEMObjectSpatialObject<2>;
-  using FEMObjectSpatialObjectPointer = FEMObjectSpatialObjectType::Pointer;
+  typedef itk::FEMObjectSpatialObject<2>      FEMObjectSpatialObjectType;
+  typedef FEMObjectSpatialObjectType::Pointer FEMObjectSpatialObjectPointer;
 
-  FEMObjectSpatialObjectType::ChildrenListType * children = SpatialReader->GetGroup()->GetChildren();
-  if (strcmp((*(children->begin()))->GetTypeName(), "FEMObjectSpatialObject"))
-  {
+  FEMObjectSpatialObjectType::ChildrenListType* children = SpatialReader->GetGroup()->GetChildren();
+  if( strcmp( (*(children->begin() ) )->GetTypeName(), "FEMObjectSpatialObject") )
+    {
     std::cout << " [FAILED]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   FEMObjectSpatialObjectType::Pointer femSO =
-    dynamic_cast<FEMObjectSpatialObjectType *>((*(children->begin())).GetPointer());
+    dynamic_cast<FEMObjectSpatialObjectType *>( (*(children->begin() ) ).GetPointer() );
   if (!femSO)
-  {
+    {
     std::cout << " dynamic_cast [FAILED]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   delete children;
 
   femSO->GetFEMObject()->Solve();
 
-  solver->SetInput(femSO->GetFEMObject());
+  solver->SetInput( femSO->GetFEMObject() );
   solver->Update();
 
   int               numDOF = femSO->GetFEMObject()->GetNumberOfDegreesOfFreedom();
   vnl_vector<float> soln(numDOF);
-  for (int i = 0; i < numDOF; i++)
-  {
+  for( int i = 0; i < numDOF; i++ )
+    {
     soln[i] = femSO->GetFEMObject()->GetSolution(i);
     std::cout << "Solution[" << i << "]:" << soln[i] << std::endl;
-  }
+    }
 
-  using FEMSpatialObjectWriterType = itk::FEMSpatialObjectWriter<2>;
-  using FEMSpatialObjectWriterPointer = FEMSpatialObjectWriterType::Pointer;
+  typedef itk::FEMSpatialObjectWriter<2>      FEMSpatialObjectWriterType;
+  typedef FEMSpatialObjectWriterType::Pointer FEMSpatialObjectWriterPointer;
   FEMSpatialObjectWriterPointer SpatialWriter = FEMSpatialObjectWriterType::New();
-  SpatialWriter->SetInput(SpatialReader->GetScene());
-  SpatialWriter->SetFileName(argv[2]);
+  SpatialWriter->SetInput(SpatialReader->GetScene() );
+  SpatialWriter->SetFileName( argv[2] );
   SpatialWriter->Update();
 
   std::cout << "Test PASSED!" << std::endl;

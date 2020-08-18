@@ -26,10 +26,10 @@ class GDCM_EXPORT AudioCodec : public Codec
 {
 public:
   AudioCodec();
-  ~AudioCodec() override;
-  bool CanCode(TransferSyntax const &) const override { return false; }
-  bool CanDecode(TransferSyntax const &) const override { return false; }
-  bool Decode(DataElement const &is, DataElement &os) override;
+  ~AudioCodec();
+  bool CanCode(TransferSyntax const &) const { return false; }
+  bool CanDecode(TransferSyntax const &) const { return false; }
+  bool Decode(DataElement const &is, DataElement &os);
 };
 
 } // end namespace gdcm

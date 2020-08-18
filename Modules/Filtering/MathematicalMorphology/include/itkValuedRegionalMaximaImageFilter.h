@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,32 +51,29 @@ namespace itk
  * \ingroup MathematicalMorphologyImageFilters
  * \ingroup ITKITKMathematicalMorphology
  *
- * \sphinx
- * \sphinxexample{Filtering/MathematicalMorphology/ValuedRegionalMaximaImage,Valued Regional Maxima Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/ValuedRegionalMaximaImageFilter,ValuedRegionalMaximaImageFilter}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ValuedRegionalMaximaImageFilter
-  : public ValuedRegionalExtremaImageFilter<TInputImage,
-                                            TOutputImage,
-                                            std::greater<typename TInputImage::PixelType>,
-                                            std::greater<typename TOutputImage::PixelType>>
+template< typename TInputImage, typename TOutputImage >
+class ValuedRegionalMaximaImageFilter:
+  public
+  ValuedRegionalExtremaImageFilter< TInputImage, TOutputImage,
+                                    std::greater< typename TInputImage::PixelType >,
+                                    std::greater< typename TOutputImage::PixelType >  >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ValuedRegionalMaximaImageFilter);
+  typedef ValuedRegionalMaximaImageFilter Self;
 
-  using Self = ValuedRegionalMaximaImageFilter;
+  typedef ValuedRegionalExtremaImageFilter< TInputImage, TOutputImage,
+                                            std::greater< typename TInputImage::PixelType >,
+                                            std::greater< typename TOutputImage::PixelType > > Superclass;
 
-  using Superclass = ValuedRegionalExtremaImageFilter<TInputImage,
-                                                      TOutputImage,
-                                                      std::greater<typename TInputImage::PixelType>,
-                                                      std::greater<typename TOutputImage::PixelType>>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using InputImageType = TInputImage;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  typedef TInputImage                        InputImageType;
+  typedef typename InputImageType::PixelType InputImagePixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -86,21 +83,28 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputPixelTypeComparable, (Concept::GreaterThanComparable<InputImagePixelType>));
-  itkConceptMacro(InputHasPixelTraitsCheck, (Concept::HasPixelTraits<InputImagePixelType>));
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputImagePixelType>));
+  itkConceptMacro( InputPixelTypeComparable,
+                   ( Concept::GreaterThanComparable< InputImagePixelType > ) );
+  itkConceptMacro( InputHasPixelTraitsCheck,
+                   ( Concept::HasPixelTraits< InputImagePixelType > ) );
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputImagePixelType > ) );
   // End concept checking
 #endif
 
 protected:
   ValuedRegionalMaximaImageFilter()
   {
-    this->SetMarkerValue(NumericTraits<typename TOutputImage::PixelType>::NonpositiveMin());
+    this->SetMarkerValue(
+      NumericTraits< typename TOutputImage::PixelType >::NonpositiveMin() );
   }
 
-  ~ValuedRegionalMaximaImageFilter() override = default;
-}; // end
-   // ValuedRegionalMaximaImageFilter
-} // end namespace itk
+  virtual ~ValuedRegionalMaximaImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ValuedRegionalMaximaImageFilter);
+};                                               // end
+                                                 // ValuedRegionalMaximaImageFilter
+} //end namespace itk
 
 #endif

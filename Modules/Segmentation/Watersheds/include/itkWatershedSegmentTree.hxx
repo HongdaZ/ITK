@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ namespace watershed
 {
 
 
-template <typename TScalar>
+template< typename TScalar >
 void
-SegmentTree<TScalar>::Initialize()
+SegmentTree< TScalar >
+::Initialize()
 {
   //
   // We don't modify ourselves because the "ReleaseData" methods depend upon
@@ -42,9 +43,10 @@ SegmentTree<TScalar>::Initialize()
   this->Clear();
 }
 
-template <typename TScalar>
+template< typename TScalar >
 void
-SegmentTree<TScalar>::PrintSelf(std::ostream & os, Indent indent) const
+SegmentTree< TScalar >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

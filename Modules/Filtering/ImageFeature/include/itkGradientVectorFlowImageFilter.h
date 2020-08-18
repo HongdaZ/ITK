@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@
 
 namespace itk
 {
-/**
- *\class GradientVectorFlowImageFilter
+/** \class GradientVectorFlowImageFilter
  * \brief
  * This class computes a diffusion of the gradient vectors for graylevel or binary
  * edge map derive from the image. It enlarges the capture range of the gradient
@@ -46,21 +45,19 @@ namespace itk
  * \ingroup ImageSegmentation
  * \ingroup ITKImageFeature
  */
-template <typename TInputImage, typename TOutputImage, typename TInternalPixel = double>
-class ITK_TEMPLATE_EXPORT GradientVectorFlowImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage, typename TInternalPixel = double >
+class ITK_TEMPLATE_EXPORT GradientVectorFlowImageFilter:public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientVectorFlowImageFilter);
+  /** Standard "Self" typedef. */
+  typedef GradientVectorFlowImageFilter Self;
 
-  /** Standard "Self" type alias. */
-  using Self = GradientVectorFlowImageFilter;
+  /** Standard "Superclass" typedef. */
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
 
-  /** Standard "Superclass" type alias. */
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-
-  /** Smart pointer type alias support */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method of creation through the object factory. */
   itkNewMacro(Self);
@@ -68,33 +65,35 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(GradientVectorFlowImageFilter, ImageToImageFilter);
 
-  /** Some type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Some typedefs. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  using IndexType = typename TInputImage::IndexType;
-  using SizeType = typename TInputImage::SizeType;
-  using PixelType = typename TInputImage::PixelType;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using RegionType = typename OutputImageType::RegionType;
+  typedef typename TInputImage::IndexType      IndexType;
+  typedef typename TInputImage::SizeType       SizeType;
+  typedef typename TInputImage::PixelType      PixelType;
+  typedef typename OutputImageType::Pointer    OutputImagePointer;
+  typedef typename OutputImageType::RegionType RegionType;
 
   /** Image and Image iterator definition. */
-  using InputImageIterator = ImageRegionIterator<InputImageType>;
-  using InputImageConstIterator = ImageRegionConstIterator<InputImageType>;
-  using OutputImageIterator = ImageRegionIterator<OutputImageType>;
+  typedef ImageRegionIterator< InputImageType >               InputImageIterator;
+  typedef ImageRegionConstIterator< InputImageType >          InputImageConstIterator;
+  typedef ImageRegionIterator< OutputImageType >              OutputImageIterator;
 
   /** Image dimension. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  using InternalPixelType = TInternalPixel;
-  using InternalImageType = itk::Image<InternalPixelType, Self::ImageDimension>;
-  using InternalImagePointer = typename InternalImageType::Pointer;
-  using InternalImageIterator = ImageRegionIterator<InternalImageType>;
-  using InternalImageConstIterator = ImageRegionConstIterator<InternalImageType>;
+  typedef TInternalPixel                                                          InternalPixelType;
+  typedef itk::Image< InternalPixelType, itkGetStaticConstMacro(ImageDimension) > InternalImageType;
+  typedef typename InternalImageType::Pointer                                     InternalImagePointer;
+  typedef ImageRegionIterator< InternalImageType >                                InternalImageIterator;
+  typedef ImageRegionConstIterator< InternalImageType >                           InternalImageConstIterator;
 
-  using LaplacianFilterType = LaplacianImageFilter<InternalImageType, InternalImageType>;
-  using LaplacianFilterPointer = typename LaplacianFilterType::Pointer;
+  typedef LaplacianImageFilter< InternalImageType, InternalImageType > LaplacianFilterType;
+  typedef typename LaplacianFilterType::Pointer                        LaplacianFilterPointer;
 
   /** Routines. */
 
@@ -112,38 +111,37 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, OutputImageDimension>));
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename PixelType::ValueType>));
-  itkConceptMacro(OutputHasNumericTraitsCheck,
-                  (Concept::HasNumericTraits<typename TOutputImage::PixelType::ValueType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename PixelType::ValueType > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TOutputImage::PixelType::ValueType > ) );
   // End concept checking
 #endif
 
 protected:
   GradientVectorFlowImageFilter();
-  ~GradientVectorFlowImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~GradientVectorFlowImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Precompute m_BImage and m_CImage[i] and allocate memory for all the various internal images */
-  void
-  InitInterImage();
+  void InitInterImage();
 
   /**
    *  Convenience function to split the m_IntermediateImage into its component
    *  images (m_InternalImages[i]
    */
-  void
-  UpdateInterImage();
+  void UpdateInterImage();
 
   /** Calculate the next timestep and update the appropriate images */
-  void
-  UpdatePixels();
+  void UpdatePixels();
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GradientVectorFlowImageFilter);
+
   // parameters;
   double m_TimeStep;                               // the timestep of each
                                                    // iteration
@@ -153,11 +151,11 @@ private:
                                                    // image
   int m_IterationNum;                              // the iteration number
 
-  LaplacianFilterPointer                 m_LaplacianFilter;
+  LaplacianFilterPointer m_LaplacianFilter;
   typename Superclass::InputImagePointer m_IntermediateImage;
 
   InternalImagePointer m_InternalImages[Superclass::InputImageDimension];
-  InternalImagePointer m_BImage; // store the "b" value for every pixel
+  InternalImagePointer m_BImage;  // store the "b" value for every pixel
 
   typename Superclass::InputImagePointer m_CImage; // store the $c_i$ value for
                                                    // every pixel
@@ -165,7 +163,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGradientVectorFlowImageFilter.hxx"
+#include "itkGradientVectorFlowImageFilter.hxx"
 #endif
 
 #endif

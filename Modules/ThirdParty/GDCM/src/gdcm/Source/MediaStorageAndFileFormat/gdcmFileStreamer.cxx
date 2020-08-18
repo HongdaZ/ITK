@@ -199,10 +199,10 @@ public:
   CheckTemplateFileName(false),
   InitializeCopy(false),
   CheckPixelDataElement(false),
-  pFile(nullptr),
+  pFile(NULL),
   ReservedDataLength(0),
   ReservedGroupDataElement(0),
-  Self(nullptr)
+  Self(NULL)
     {
     PrivateCreator.SetByteValue("",0);
     }
@@ -309,7 +309,7 @@ public:
           {
           // if you trigger this assertion, this means we have been allocating
           // memory for an element when not needed.
-          assert( (de.GetByteValue() && de.GetByteValue()->GetPointer() == nullptr) || de.GetSequenceOfFragments() );
+          assert( (de.GetByteValue() && de.GetByteValue()->GetPointer() == 0) || de.GetSequenceOfFragments() );
           }
         actualde = de.GetVL() + 2 * de.GetVR().GetLength() + 4;
         thepos -= actualde;
@@ -319,7 +319,7 @@ public:
         // no attribute found, easy case !
         }
       }
-    assert( pFile == nullptr );
+    assert( pFile == NULL );
     pFile = fopen(outfilename, "r+b");
     assert( pFile );
     CurrentDataLenth = 0;
@@ -414,7 +414,7 @@ public:
       }
     assert( ReservedDataLength == 0);
     fclose(pFile);
-    pFile = nullptr;
+    pFile = NULL;
     // Do some extra work:
     if( CheckPixelDataElement )
       {
@@ -546,7 +546,7 @@ public:
           }
         else
           {
-          return true;
+          return 1;
           }
         }
       else
@@ -586,7 +586,7 @@ public:
       }
 
     const size_t pclen = dicomdata.size();
-    assert( pFile == nullptr );
+    assert( pFile == NULL );
     pFile = fopen(outfilename, "r+b");
     assert( pFile );
 

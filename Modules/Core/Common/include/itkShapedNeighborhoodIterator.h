@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ namespace itk
  * neighborhood.  For example, to activate the center pixel in the neighborhood,
  * you would do the following:
  *
-   \code
-   using ImageType = Image<float, 3>;
-   ShapedNeighborhoodIterator<ImageType> it(radius, image, region);
-   ShapedNeighborhoodIterator<ImageType>::OffsetType offset = {{0,0,0}};
-   it.ActivateOffset(offset);
-   \endcode
+ * \code
+ * typedef Image<float, 3> ImageType;
+ * ShapedNeighborhoodIterator<ImageType> it(radius, image, region);
+ * ShapedNeighborhoodIterator<ImageType>::OffsetType offset = {{0,0,0}};
+ * it.ActivateOffset(offset);
+ * \endcode
  *
  * where radius, image, and region are as described in NeighborhoodIterator.
  *
@@ -73,37 +73,37 @@ namespace itk
  * ConstShapedNeighborhoodIterator::ConstIterator.  The following example
  * demonstrates the use of these iterators.
  *
-   \code
-   using ImageType = Image<float, 3>;
-   ShapedNeighborhoodIterator<ImageType> it(radius, image, region);
-   .
-   .
-   .
-   it.ActivateOffset(offset1);
-   it.ActivateOffset(offset2);
-   it.ActivateOffset(offset3);
-   etc..
-   .
-   .
-   .
-   ShapedNeighborhoodIterator<ImageType>::Iterator i;
-   for (i = it.Begin(); ! i.IsAtEnd(); i++)
-   { i.Set(i.Get() + 1.0); }
-   \\ you may also use i != i.End(), but IsAtEnd() may be slightly faster.
-   \endcode
+ * \code
+ * typedef Image<float, 3> ImageType;
+ * ShapedNeighborhoodIterator<ImageType> it(radius, image, region);
+ * .
+ * .
+ * .
+ * it.ActivateOffset(offset1);
+ * it.ActivateOffset(offset2);
+ * it.ActivateOffset(offset3);
+ * etc..
+ * .
+ * .
+ * .
+ * ShapedNeighborhoodIterator<ImageType>::Iterator i;
+ * for (i = it.Begin(); ! i.IsAtEnd(); i++)
+ * { i.Set(i.Get() + 1.0); }
+ * \\ you may also use i != i.End(), but IsAtEnd() may be slightly faster.
+ * \endcode
  *
- * You can also iterate backward through the neighborhood active list.
+ * You can also iterate backward through the neighbohood active list.
  *
-   \code
-   i = it.End();
-   i--;
-   while (i != it.Begin())
-   {
-     i.Set(i.Get() + 1.0);
-     i--;
-   }
-    i.Set(i.Get() + 1.0);
-   \endcode
+ * \code
+ * i = it.End();
+ * i--;
+ * while (i != it.Begin())
+ * {
+ *   i.Set(i.Get() + 1.0);
+ *   i--;
+ * }
+ *  i.Set(i.Get() + 1.0);
+ * \endcode
  *
  * The Get() Set() syntax was chosen versus defining operator* for these
  * iterators because lvalue vs. rvalue context information is needed to
@@ -142,90 +142,85 @@ namespace itk
  * \sa ImageConstIteratorWithIndex
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/IterateOverARegionWithAShapedNeighborhoodIterator,Iterate Over A Region With A Shaped
- Neighborhood Iterator Manually}
- * \sphinxexample{Core/Common/IterateOverARegionWithAShapedNeighborhoodIterator,Iterate Over A Region With A Shaped
- Neighborhood Iterator}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Iterators/ShapedNeighborhoodIterator_Manual,Iterate over a region of an image with a shaped neighborhood}
+ * \wikiexample{Iterators/ShapedNeighborhoodIterator,Iterate over a region of an image with a shaped neighborhood}
+ * \endwiki
  */
-template <typename TImage, typename TBoundaryCondition = ZeroFluxNeumannBoundaryCondition<TImage>>
-class ITK_TEMPLATE_EXPORT ShapedNeighborhoodIterator
-  : public ConstShapedNeighborhoodIterator<TImage, TBoundaryCondition>
+template< typename TImage,  typename TBoundaryCondition =
+            ZeroFluxNeumannBoundaryCondition< TImage > >
+class ITK_TEMPLATE_EXPORT ShapedNeighborhoodIterator:
+  public ConstShapedNeighborhoodIterator< TImage, TBoundaryCondition >
 {
 public:
   /** Extract image type information. */
-  using InternalPixelType = typename TImage::InternalPixelType;
-  using PixelType = typename TImage::PixelType;
+  typedef typename TImage::InternalPixelType InternalPixelType;
+  typedef typename TImage::PixelType         PixelType;
 
   /** Save the image dimension. */
-  static constexpr unsigned int Dimension = TImage::ImageDimension;
+  itkStaticConstMacro(Dimension, unsigned int, TImage::ImageDimension);
 
-  /** Standard class type aliases. */
-  using Self = ShapedNeighborhoodIterator;
-  using Superclass = ConstShapedNeighborhoodIterator<TImage, TBoundaryCondition>;
+  /** Standard class typedefs. */
+  typedef ShapedNeighborhoodIterator Self;
+  typedef ConstShapedNeighborhoodIterator< TImage, TBoundaryCondition >
+  Superclass;
 
-  /** Inherit type alias from superclass */
-  using OffsetType = typename Superclass::OffsetType;
-  using OffsetValueType = typename OffsetType::OffsetValueType;
-  using RadiusType = typename Superclass::RadiusType;
-  using SizeType = typename Superclass::SizeType;
-  using SizeValueType = typename Superclass::SizeValueType;
-  using ConstIterator = typename Superclass::ConstIterator;
-  using IndexListType = typename Superclass::IndexListType;
-  using BoundaryConditionType = typename Superclass::BoundaryConditionType;
-  using ImageBoundaryConditionPointerType = typename Superclass::ImageBoundaryConditionPointerType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using IndexType = typename Superclass::IndexType;
-  using ImageType = typename Superclass::ImageType;
-  using RegionType = typename Superclass::RegionType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  /** Inherit typedefs from superclass */
+  typedef typename Superclass::OffsetType                        OffsetType;
+  typedef typename OffsetType::OffsetValueType                   OffsetValueType;
+  typedef typename Superclass::RadiusType                        RadiusType;
+  typedef typename Superclass::SizeType                          SizeType;
+  typedef typename Superclass::SizeValueType                     SizeValueType;
+  typedef typename Superclass::ConstIterator                     ConstIterator;
+  typedef typename Superclass::IndexListType                     IndexListType;
+  typedef typename Superclass::BoundaryConditionType             BoundaryConditionType;
+  typedef typename Superclass::ImageBoundaryConditionPointerType ImageBoundaryConditionPointerType;
+  typedef typename Superclass::NeighborhoodType                  NeighborhoodType;
+  typedef typename Superclass::IndexType                         IndexType;
+  typedef typename Superclass::ImageType                         ImageType;
+  typedef typename Superclass::RegionType                        RegionType;
+  typedef typename Superclass::IndexValueType                    IndexValueType;
 
   /** An  iterator for the ShapedNeighborhood classes. */
-  struct Iterator : public ConstIterator
-  {
-    Iterator() = default;
-    Iterator(Self * s)
-      : ConstIterator(s)
-    {}
+  struct Iterator:public ConstIterator {
+    Iterator() {}
+    Iterator(Self *s):ConstIterator(s) {}
 
-    ~Iterator() ITK_ITERATOR_OVERRIDE = default;
-    Iterator &
-    operator=(const Iterator & o)
+    ~Iterator() {}
+    Iterator & operator=(const Iterator & o)
     {
       ConstIterator::operator=(o);
       return *this;
     }
 
     // Promote to public
-    void
-    Set(const PixelType & v) const
-    {
-      ConstIterator::ProtectedSet(v);
-    }
-
-  protected:
-    friend Self;
-
-    Iterator(const Self * s, const typename IndexListType::const_iterator & li)
-      : ConstIterator(s, li)
-    {}
+    void Set(const PixelType & v) const
+    { ConstIterator::ProtectedSet(v); }
   };
 
   /** Default constructor */
-  ShapedNeighborhoodIterator() = default;
+  ShapedNeighborhoodIterator()
+  {
+    m_BeginIterator = Iterator(this);
+    m_EndIterator = Iterator(this);
+    m_EndIterator.GoToEnd();
+  }
 
   /** Virtual destructor */
-  ~ShapedNeighborhoodIterator() override = default;
-
-  /** Copy constructor */
-  ShapedNeighborhoodIterator(const ShapedNeighborhoodIterator & o) = delete;
+  virtual ~ShapedNeighborhoodIterator() {}
 
   /** Constructor which establishes the region size, neighborhood, and image
    * over which to walk. */
-  ShapedNeighborhoodIterator(const SizeType & radius, const ImageType * ptr, const RegionType & region)
-    : Superclass(radius, const_cast<ImageType *>(ptr), region)
-  {}
+  ShapedNeighborhoodIterator(const SizeType & radius,
+                             const ImageType *ptr,
+                             const RegionType & region
+                             ):Superclass(radius, const_cast< ImageType * >( ptr ),
+                                          region)
+  {
+    m_BeginIterator = Iterator(this);
+    m_EndIterator = Iterator(this);
+    m_EndIterator.GoToEnd();
+  }
 
   // Expose the following methods from the superclass.  This is a restricted
   // subset of the methods available for NeighborhoodIterator.
@@ -234,42 +229,64 @@ public:
 
 
   /** Assignment operator */
-  Self &
-  operator=(const Self & orig)
+  Self & operator=(const Self & orig)
   {
     Superclass::operator=(orig);
+
+    // Reset begin and end pointer locations
+    m_BeginIterator.GoToBegin();
+    m_EndIterator.GoToEnd();
     return *this;
   }
 
   /** Standard itk print method */
-  void
-  PrintSelf(std::ostream &, Indent) const override;
+  virtual void PrintSelf(std::ostream &, Indent) const;
 
   /** Returns a const iterator for the neighborhood which points to the first
    * pixel in the neighborhood. */
-  Iterator
-  Begin()
-  {
-    return Iterator(this, this->m_ActiveIndexList.begin());
-  }
-  Iterator
-  End()
-  {
-    return Iterator(this, this->m_ActiveIndexList.end());
-  }
+  Iterator & Begin() {    return m_BeginIterator;  }
+  Iterator & End()   {   return m_EndIterator;     }
 
-  using Superclass::Begin;
-  using Superclass::End;
+  /** Returns a const iterator for the neighborhood which points to the last
+   * pixel in the neighborhood. */
+  const ConstIterator & End() const
+  { return this->m_ConstEndIterator; }
+
+  void ClearActiveList()
+  {
+    Superclass::ClearActiveList();
+    m_EndIterator.GoToEnd();
+    m_BeginIterator.GoToBegin();
+  }
 
 protected:
-  friend Superclass;
 
-  using NeighborIndexType = typename Superclass::NeighborIndexType;
+  /** Copy constructor */
+  ShapedNeighborhoodIterator(const ShapedNeighborhoodIterator & o) ITK_DELETED_FUNCTION;
+
+  typedef typename Superclass::NeighborIndexType NeighborIndexType;
+
+  void ActivateIndex(NeighborIndexType n)
+  {
+    Superclass::ActivateIndex(n);
+    m_EndIterator.GoToEnd();
+    m_BeginIterator.GoToBegin();
+  }
+
+  void DeactivateIndex(NeighborIndexType n)
+  {
+    Superclass::DeactivateIndex(n);
+    m_EndIterator.GoToEnd();
+    m_BeginIterator.GoToBegin();
+  }
+
+  Iterator m_EndIterator;
+  Iterator m_BeginIterator;
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShapedNeighborhoodIterator.hxx"
+#include "itkShapedNeighborhoodIterator.hxx"
 #endif
 
 #endif

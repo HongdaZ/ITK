@@ -67,3 +67,4 @@ bool VNL_ALGO_EXPORT vnl_solve_qp_non_neg_sum_one(const vnl_matrix<double>& H,
                                   bool verbose=true);
 
 #endif // vnl_solve_qp_h_
+

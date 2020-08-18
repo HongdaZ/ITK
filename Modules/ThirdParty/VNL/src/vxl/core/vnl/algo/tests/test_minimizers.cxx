@@ -1,25 +1,20 @@
 #include <iostream>
-#include "vnl/vnl_vector.h"
+#include <vcl_compiler.h>
+#include <vnl/vnl_vector.h>
 #include <vnl/algo/vnl_brent.h>
 
-#include "testlib/testlib_test.h"
+#include <testlib/testlib_test.h>
 
-struct cubic : public vnl_cost_function
-{
-  cubic()
-    : vnl_cost_function(1)
-  {}
+struct cubic : public vnl_cost_function {
+  cubic() : vnl_cost_function(1) {}
 
-  double
-  f(const vnl_vector<double> & x) override
-  {
+  double f(const vnl_vector<double>& x) {
     std::cout << ' ' << x[0];
     return (2 - x[0]) * (2 - x[0]) + 10;
   }
 };
 
-void
-test_minimizers()
+void test_minimizers()
 {
   cubic c;
   vnl_brent b(&c);

@@ -1,6 +1,4 @@
-if(NOT DEFINED CMAKE_MINIMUM_REQUIRED_VERSION)
-  cmake_minimum_required(VERSION 2.8.7)
-endif()
+cmake_minimum_required(VERSION 2.8.7)
 
 foreach(p
     CMP0022

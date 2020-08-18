@@ -30,8 +30,8 @@ class DataElement;
 class GDCM_EXPORT FileDecompressLookupTable : public Subject
 {
 public:
-  FileDecompressLookupTable() = default;
-  ~FileDecompressLookupTable() override = default;
+  FileDecompressLookupTable() {}
+  ~FileDecompressLookupTable() {}
 
   /// Decompress
   bool Change();

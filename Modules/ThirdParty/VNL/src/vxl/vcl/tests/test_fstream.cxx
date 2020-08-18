@@ -1,13 +1,9 @@
-#include <iostream>
-#include <fstream>
-#ifdef _MSC_VER
-#  include "vcl_msvc_warnings.h"
-#endif
+#include <vcl_fstream.h>
 
 int test_fstream_main(int /*argc*/,char* /*argv*/[])
 {
   if (false) {
-    std::fstream f("dont_worry_this_file_is_not_created", std::ios::out | std::ios::binary);
+    vcl_fstream f("dont_worry_this_file_is_not_created", vcl_ios_out | vcl_ios_binary);
 
     f.write("hello, file", 11);
 

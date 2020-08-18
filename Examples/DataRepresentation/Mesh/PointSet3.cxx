@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@
 
 #include "itkPointSet.h"
 
-int
-main(int, char *[])
+int main(int, char *[])
 {
   //  Software Guide : BeginLatex
   //
@@ -45,13 +44,13 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned short;
-  using PointSetType = itk::PointSet<PixelType, 3>;
+  typedef unsigned short                PixelType;
+  typedef itk::PointSet< PixelType, 3 > PointSetType;
   // Software Guide : EndCodeSnippet
 
 
   // A point set is instantiated here
-  PointSetType::Pointer pointSet = PointSetType::New();
+  PointSetType::Pointer  pointSet = PointSetType::New();
 
 
   //  Software Guide : BeginLatex
@@ -68,9 +67,9 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  unsigned int dataId = 0;
-  PixelType    value = 79;
-  pointSet->SetPointData(dataId++, value);
+  unsigned int dataId =  0;
+  PixelType value     = 79;
+  pointSet->SetPointData( dataId++, value );
   // Software Guide : EndCodeSnippet
 
 
@@ -91,11 +90,11 @@ main(int, char *[])
 
   // Software Guide : BeginCodeSnippet
 
-  const bool found = pointSet->GetPointData(dataId, &value);
-  if (found)
-  {
+  const bool found = pointSet->GetPointData( dataId, & value );
+  if( found )
+    {
     std::cout << "Pixel value = " << value << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -119,7 +118,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PointDataContainer = PointSetType::PointDataContainer;
+  typedef PointSetType::PointDataContainer      PointDataContainer;
   // Software Guide : EndCodeSnippet
 
 
@@ -159,8 +158,8 @@ main(int, char *[])
   PixelType value0 = 34;
   PixelType value1 = 67;
 
-  pointData->InsertElement(pointId++, value0);
-  pointData->InsertElement(pointId++, value1);
+  pointData->InsertElement( pointId++ , value0 );
+  pointData->InsertElement( pointId++ , value1 );
   // Software Guide : EndCodeSnippet
 
 
@@ -175,7 +174,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  pointSet->SetPointData(pointData);
+  pointSet->SetPointData( pointData );
   // Software Guide : EndCodeSnippet
 
 
@@ -190,7 +189,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointDataContainer::Pointer pointData2 = pointSet->GetPointData();
+  PointDataContainer::Pointer  pointData2 = pointSet->GetPointData();
   // Software Guide : EndCodeSnippet
 
 
@@ -207,7 +206,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PointDataIterator = PointDataContainer::Iterator;
+  typedef PointDataContainer::Iterator     PointDataIterator;
   // Software Guide : EndCodeSnippet
 
 
@@ -222,7 +221,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointDataIterator pointDataIterator = pointData2->Begin();
+  PointDataIterator  pointDataIterator = pointData2->Begin();
   // Software Guide : EndCodeSnippet
 
 
@@ -243,12 +242,12 @@ main(int, char *[])
 
   // Software Guide : BeginCodeSnippet
   PointDataIterator end = pointData2->End();
-  while (pointDataIterator != end)
-  {
-    PixelType p = pointDataIterator.Value(); // access the pixel data
-    std::cout << p << std::endl;             // print the pixel data
-    ++pointDataIterator;                     // advance to next pixel/point
-  }
+  while( pointDataIterator != end )
+    {
+    PixelType p = pointDataIterator.Value();  // access the pixel data
+    std::cout << p << std::endl;              // print the pixel data
+    ++pointDataIterator;                      // advance to next pixel/point
+    }
   // Software Guide : EndCodeSnippet
 
 

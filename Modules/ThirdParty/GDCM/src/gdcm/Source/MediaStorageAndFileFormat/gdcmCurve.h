@@ -41,8 +41,8 @@ class GDCM_EXPORT Curve : public Object
 {
 public:
   Curve();
-  ~Curve() override;
-  void Print(std::ostream &) const override;
+  ~Curve();
+  void Print(std::ostream &) const;
 
   void GetAsPoints(float *array) const;
 

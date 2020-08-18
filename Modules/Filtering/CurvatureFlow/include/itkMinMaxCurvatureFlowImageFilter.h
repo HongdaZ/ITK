@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class MinMaxCurvatureFlowImageFilter
+/** \class MinMaxCurvatureFlowImageFilter
  * \brief Denoise an image using min/max curvature flow.
  *
  * MinMaxCurvatureFlowImageFilter implements a curvature driven image denoising
@@ -35,7 +34,7 @@ namespace itk
  * \f[  I_t = F_{\mbox{minmax}} |\nabla I| \f]
  *
  * where \f$ F_{\mbox{minmax}} = \max(\kappa,0) \f$ if
- * \f$ \mbox{Avg}_{\mbox{stencil}}(x) \f$ is less than or equal to \f$ T_{threshold} \f$
+ * \f$ \mbox{Avg}_{\mbox{stencil}}(x) \f$ is less than or equal to \f$ T_{thresold} \f$
  * and \f$ \min(\kappa,0) \f$, otherwise.
  * \f$ \kappa \f$ is the mean curvature of the iso-brightness contour
  * at point \f$ x \f$.
@@ -73,23 +72,17 @@ namespace itk
  * \ingroup MultiThreaded
  *
  * \ingroup ITKCurvatureFlow
- *
- * \sphinx
- * \sphinxexample{Filtering/CurvatureFlow/SmoothImageUsingMinMaxCurvatureFlow,Smooth Image Using Min Max Curvature Flow}
- * \sphinxexample{Filtering/CurvatureFlow/SmoothRGBImageUsingMinMaxCurvatureFlow,SmoothRGBImageUsingMinMaxCurvatureFlow}
- * \endsphinx
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT MinMaxCurvatureFlowImageFilter : public CurvatureFlowImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT MinMaxCurvatureFlowImageFilter:
+  public CurvatureFlowImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MinMaxCurvatureFlowImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MinMaxCurvatureFlowImageFilter;
-  using Superclass = CurvatureFlowImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MinMaxCurvatureFlowImageFilter                        Self;
+  typedef CurvatureFlowImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -97,20 +90,22 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MinMaxCurvatureFlowImageFilter, CurvatureFlowImageFilter);
 
-  /** Inherit type alias from Superclass. */
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  /** Inherit typedefs from Superclass. */
+  typedef typename Superclass::FiniteDifferenceFunctionType FiniteDifferenceFunctionType;
+  typedef typename Superclass::OutputImageType              OutputImageType;
 
   /** MinMaxCurvatureFlowFunction type. */
-  using MinMaxCurvatureFlowFunctionType = MinMaxCurvatureFlowFunction<OutputImageType>;
+  typedef MinMaxCurvatureFlowFunction< OutputImageType >
+  MinMaxCurvatureFlowFunctionType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension);
 
   /** Typedef support for the neighbour radius. */
-  using RadiusType = typename FiniteDifferenceFunctionType::RadiusType;
-  using RadiusValueType = typename RadiusType::SizeValueType;
+  typedef typename FiniteDifferenceFunctionType::RadiusType RadiusType;
+  typedef typename RadiusType::SizeValueType                RadiusValueType;
 
   /** Set/Get the stencil radius. */
   itkSetMacro(StencilRadius, RadiusValueType);
@@ -118,38 +113,44 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(UnsignedLongConvertibleToOutputCheck,
-                  (Concept::Convertible<unsigned long, typename TOutputImage::PixelType>));
-  itkConceptMacro(OutputLessThanComparableCheck, (Concept::LessThanComparable<typename TOutputImage::PixelType>));
-  itkConceptMacro(LongConvertibleToOutputCheck, (Concept::Convertible<long, typename TOutputImage::PixelType>));
-  itkConceptMacro(OutputDoubleComparableCheck, (Concept::Comparable<typename TOutputImage::PixelType, double>));
-  itkConceptMacro(OutputDoubleMultiplyAndAssignOperatorCheck,
-                  (Concept::MultiplyAndAssignOperator<typename TOutputImage::PixelType, double>));
-  itkConceptMacro(OutputGreaterThanUnsignedLongCheck,
-                  (Concept::GreaterThanComparable<typename TOutputImage::PixelType, unsigned long>));
-  itkConceptMacro(UnsignedLongOutputAditiveOperatorsCheck,
-                  (Concept::AdditiveOperators<unsigned long, typename TOutputImage::PixelType>));
+  itkConceptMacro( UnsignedLongConvertibleToOutputCheck,
+                   ( Concept::Convertible< unsigned long, typename TOutputImage::PixelType > ) );
+  itkConceptMacro( OutputLessThanComparableCheck,
+                   ( Concept::LessThanComparable< typename TOutputImage::PixelType > ) );
+  itkConceptMacro( LongConvertibleToOutputCheck,
+                   ( Concept::Convertible< long, typename TOutputImage::PixelType > ) );
+  itkConceptMacro( OutputDoubleComparableCheck,
+                   ( Concept::Comparable< typename TOutputImage::PixelType, double > ) );
+  itkConceptMacro( OutputDoubleMultiplyAndAssignOperatorCheck,
+                   ( Concept::MultiplyAndAssignOperator< typename TOutputImage::PixelType,
+                                                         double > ) );
+  itkConceptMacro( OutputGreaterThanUnsignedLongCheck,
+                   ( Concept::GreaterThanComparable< typename TOutputImage::PixelType,
+                                                     unsigned long > ) );
+  itkConceptMacro( UnsignedLongOutputAditiveOperatorsCheck,
+                   ( Concept::AdditiveOperators< unsigned long,
+                                                 typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   MinMaxCurvatureFlowImageFilter();
-  ~MinMaxCurvatureFlowImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MinMaxCurvatureFlowImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Initialize the state of filter and equation before each iteration.
-   * Progress feedback is implemented as part of this method. */
-  void
-  InitializeIteration() override;
+   * Progress feeback is implemented as part of this method. */
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MinMaxCurvatureFlowImageFilter);
+
   RadiusValueType m_StencilRadius;
 };
-} // namespace itk
+} // end namspace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMinMaxCurvatureFlowImageFilter.hxx"
+#include "itkMinMaxCurvatureFlowImageFilter.hxx"
 #endif
 
 #endif

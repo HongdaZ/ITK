@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,11 +46,11 @@ namespace fem
 class ITKFEM_EXPORT Material : public FEMLightObject
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Material;
-  using Superclass = FEMLightObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Material                 Self;
+  typedef FEMLightObject           Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Material, FEMLightObject);
@@ -58,13 +58,15 @@ public:
   /**
    * Array class that holds special pointers to objects of all Material classes
    */
-  using ArrayType = FEMPArray<Self>;
+  typedef FEMPArray<Self> ArrayType;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-};
-} // end namespace fem
-} // end namespace itk
 
-#endif // itkFEMMaterialBase_h
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+
+};
+
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMMaterialBase_h

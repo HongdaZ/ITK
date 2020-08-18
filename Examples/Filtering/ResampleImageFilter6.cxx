@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,62 +16,74 @@
  *
  *=========================================================================*/
 
+//  Software Guide : BeginLatex
+//
+//  Resampling can also be performed in multi-component images.
+//
+//  \index{itk::VectorResampleImageFilter!Image internal transform}
+//
+//  Software Guide : EndLatex
+
+
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkResampleImageFilter.h"
+#include "itkVectorResampleImageFilter.h"
 #include "itkIdentityTransform.h"
+#include "itkVectorLinearInterpolateImageFunction.h"
 #include "itkRGBPixel.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
-  using PixelComponentType = unsigned char;
-  using PixelType = itk::RGBPixel<PixelComponentType>;
+  const unsigned int                          Dimension = 2;
+  typedef unsigned char                       PixelComponentType;
+  typedef itk::RGBPixel< PixelComponentType > PixelType;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType,  Dimension >   ImageType;
 
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader< ImageType >  ReaderType;
+  typedef itk::ImageFileWriter< ImageType >  WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
 
-  using FilterType = itk::ResampleImageFilter<ImageType, ImageType>;
+  typedef itk::VectorResampleImageFilter<
+                            ImageType, ImageType >  FilterType;
 
   FilterType::Pointer filter = FilterType::New();
 
-  using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
+  typedef itk::VectorLinearInterpolateImageFunction<
+                       ImageType, double >  InterpolatorType;
+
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
-  filter->SetInterpolator(interpolator);
+  filter->SetInterpolator( interpolator );
 
 
-  using TransformType = itk::IdentityTransform<double, Dimension>;
+  typedef itk::IdentityTransform< double, Dimension >  TransformType;
   TransformType::Pointer transform = TransformType::New();
 
-  filter->SetTransform(transform);
+  filter->SetTransform( transform );
 
 
   // Software Guide : BeginCodeSnippet
   PixelType defaultValue;
   defaultValue.Fill(50);
 
-  filter->SetDefaultPixelValue(defaultValue);
+  filter->SetDefaultPixelValue( defaultValue );
   // Software Guide : EndCodeSnippet
 
 
@@ -80,45 +92,46 @@ main(int argc, char * argv[])
   spacing[0] = .5; // pixel spacing in millimeters along X
   spacing[1] = .5; // pixel spacing in millimeters along Y
 
-  filter->SetOutputSpacing(spacing);
+  filter->SetOutputSpacing( spacing );
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginCodeSnippet
   ImageType::PointType origin;
-  origin[0] = 30.0; // X space coordinate of origin
-  origin[1] = 40.0; // Y space coordinate of origin
-  filter->SetOutputOrigin(origin);
+  origin[0] = 30.0;  // X space coordinate of origin
+  origin[1] = 40.0;  // Y space coordinate of origin
+  filter->SetOutputOrigin( origin );
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginCodeSnippet
   ImageType::DirectionType direction;
   direction.SetIdentity();
-  filter->SetOutputDirection(direction);
+  filter->SetOutputDirection( direction );
   // Software Guide : EndCodeSnippet
 
 
-  ImageType::SizeType size;
+  ImageType::SizeType   size;
 
-  size[0] = 300; // number of pixels along X
-  size[1] = 300; // number of pixels along Y
+  size[0] = 300;  // number of pixels along X
+  size[1] = 300;  // number of pixels along Y
 
-  filter->SetSize(size);
+  filter->SetSize( size );
 
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
 
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << std::endl;
     std::cerr << excp << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
+
 }

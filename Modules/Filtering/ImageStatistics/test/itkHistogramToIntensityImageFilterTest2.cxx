@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,70 +23,70 @@
 #include "itkJoinImageFilter.h"
 #include "itkHistogramToIntensityImageFilter.h"
 
-int
-itkHistogramToIntensityImageFilterTest2(int argc, char * argv[])
+int itkHistogramToIntensityImageFilterTest2( int argc, char * argv [] )
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  " << argv[0] << " inputScalarImageFileName outputImage" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  constexpr unsigned int Dimension = 2;
-  using PixelComponentType = unsigned char;
+  const unsigned int                Dimension = 2;
+  typedef unsigned char             PixelComponentType;
 
-  using ScalarImageType = itk::Image<PixelComponentType, Dimension>;
-  using ReaderType = itk::ImageFileReader<ScalarImageType>;
+  typedef itk::Image< PixelComponentType, Dimension > ScalarImageType;
+  typedef itk::ImageFileReader< ScalarImageType >     ReaderType;
 
   ReaderType::Pointer reader1 = ReaderType::New();
   ReaderType::Pointer reader2 = ReaderType::New();
 
-  reader1->SetFileName(argv[1]);
-  reader2->SetFileName(argv[2]);
+  reader1->SetFileName( argv[1] );
+  reader2->SetFileName( argv[2] );
 
   try
-  {
+    {
     reader1->Update();
     reader2->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Problem encoutered while reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using JoinFilterType = itk::JoinImageFilter<ScalarImageType, ScalarImageType>;
+  typedef itk::JoinImageFilter< ScalarImageType, ScalarImageType > JoinFilterType;
 
   JoinFilterType::Pointer joinFilter = JoinFilterType::New();
 
-  using ArrayImageType = JoinFilterType::OutputImageType;
+  typedef JoinFilterType::OutputImageType     ArrayImageType;
 
-  joinFilter->SetInput1(reader1->GetOutput());
-  joinFilter->SetInput2(reader2->GetOutput());
+  joinFilter->SetInput1( reader1->GetOutput() );
+  joinFilter->SetInput2( reader2->GetOutput() );
 
-  using HistogramFilterType = itk::Statistics::ImageToHistogramFilter<ArrayImageType>;
+  typedef itk::Statistics::ImageToHistogramFilter< ArrayImageType >
+    HistogramFilterType;
 
-  using HistogramMeasurementVectorType = HistogramFilterType::HistogramMeasurementVectorType;
+  typedef HistogramFilterType::HistogramMeasurementVectorType  HistogramMeasurementVectorType;
 
-  constexpr unsigned int NumberOfComponents = 2;
+  const unsigned int NumberOfComponents = 2;
 
-  itk::MinimumMaximumImageFilter<ScalarImageType>::Pointer minmaxFilter =
-    itk::MinimumMaximumImageFilter<ScalarImageType>::New();
+  itk::MinimumMaximumImageFilter<ScalarImageType>::Pointer minmaxFilter
+    = itk::MinimumMaximumImageFilter<ScalarImageType>::New();
 
-  HistogramMeasurementVectorType imageMin(NumberOfComponents);
-  HistogramMeasurementVectorType imageMax(NumberOfComponents);
+  HistogramMeasurementVectorType imageMin( NumberOfComponents );
+  HistogramMeasurementVectorType imageMax( NumberOfComponents );
 
-  minmaxFilter->SetInput(reader1->GetOutput());
+  minmaxFilter->SetInput( reader1->GetOutput() );
   minmaxFilter->Update();
 
   imageMin[0] = minmaxFilter->GetMinimum();
   imageMax[0] = minmaxFilter->GetMaximum();
 
-  minmaxFilter->SetInput(reader2->GetOutput());
+  minmaxFilter->SetInput( reader2->GetOutput() );
   minmaxFilter->Update();
 
   imageMin[1] = minmaxFilter->GetMinimum();
@@ -95,49 +95,49 @@ itkHistogramToIntensityImageFilterTest2(int argc, char * argv[])
 
   HistogramFilterType::Pointer histogramFilter = HistogramFilterType::New();
 
-  histogramFilter->SetInput(joinFilter->GetOutput());
+  histogramFilter->SetInput( joinFilter->GetOutput() );
 
-  HistogramFilterType::HistogramSizeType numberOfBins(NumberOfComponents);
+  HistogramFilterType::HistogramSizeType numberOfBins( NumberOfComponents );
 
-  numberOfBins[0] = static_cast<unsigned int>(imageMax[0] - imageMin[0] + 1);
-  numberOfBins[1] = static_cast<unsigned int>(imageMax[1] - imageMin[1] + 1);
+  numberOfBins[0] = static_cast<unsigned int>( imageMax[0] - imageMin[0] + 1 );
+  numberOfBins[1] = static_cast<unsigned int>( imageMax[1] - imageMin[1] + 1 );
 
-  histogramFilter->SetHistogramSize(numberOfBins);
+  histogramFilter->SetHistogramSize( numberOfBins );
 
   histogramFilter->SetMarginalScale(1.0);
 
-  histogramFilter->SetHistogramBinMinimum(imageMin);
-  histogramFilter->SetHistogramBinMaximum(imageMax);
+  histogramFilter->SetHistogramBinMinimum( imageMin );
+  histogramFilter->SetHistogramBinMaximum( imageMax );
 
   histogramFilter->Update();
 
 
-  using HistogramType = HistogramFilterType::HistogramType;
+  typedef HistogramFilterType::HistogramType  HistogramType;
   const HistogramType * histogram = histogramFilter->GetOutput();
 
-  using HistogramToImageFilterType = itk::HistogramToIntensityImageFilter<HistogramType>;
+  typedef itk::HistogramToIntensityImageFilter< HistogramType > HistogramToImageFilterType;
   HistogramToImageFilterType::Pointer histogramToImageFilter = HistogramToImageFilterType::New();
 
-  histogramToImageFilter->SetInput(histogram);
+  histogramToImageFilter->SetInput( histogram );
 
-  using OutputImageType = HistogramToImageFilterType::OutputImageType;
+  typedef HistogramToImageFilterType::OutputImageType OutputImageType;
 
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[3]);
+  writer->SetFileName( argv[3] );
 
-  writer->SetInput(histogramToImageFilter->GetOutput());
+  writer->SetInput( histogramToImageFilter->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

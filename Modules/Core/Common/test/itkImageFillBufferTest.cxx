@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,24 +18,22 @@
 
 #include <iostream>
 #include "itkImage.h"
-#include "itkTestingMacros.h"
 
-int
-itkImageFillBufferTest(int argc, char * argv[])
+int itkImageFillBufferTest(int argc, char * argv[])
 {
-  if (argc != 2)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+  if( argc != 2 )
+    {
+    std::cerr << "Usage: " << argv[0];
     std::cerr << " imageSize (GB). It can be a decimal value.";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using ImageType = itk::Image<unsigned char, 3>;
+  typedef itk::Image<unsigned char,3> ImageType;
   ImageType::Pointer image = ImageType::New();
 
   ImageType::SizeType size;
-  size[0] = (ImageType::SizeValueType)(std::stod(argv[1]) * 1024);
+  size[0] = (ImageType::SizeValueType) (atof(argv[1])*1024);
   size[1] = 1024;
   size[2] = 1024;
 
@@ -50,7 +48,7 @@ itkImageFillBufferTest(int argc, char * argv[])
   //    {
   //    image->SetRegions( size );
   //    }
-  //   catch(const itk::ExceptionObject & e)
+  //   catch(itk::ExceptionObject e)
   //     {
   //     std::cout << e << std::endl;
   //     std::cout << "Can't allocate memory - that's nice. Don't go further." << std::endl;
@@ -63,9 +61,9 @@ itkImageFillBufferTest(int argc, char * argv[])
   //   image->SetRegions( size );
   //   }
 
-  image->SetRegions(size);
+  image->SetRegions( size );
   image->Allocate();
-  image->FillBuffer(128);
+  image->FillBuffer( 128 );
   image->Print(std::cout);
 
   // try to access a value in the image
@@ -75,11 +73,11 @@ itkImageFillBufferTest(int argc, char * argv[])
   idx[2] = 100;
   std::cout << "ComputeOffset(): " << image->ComputeOffset(idx) << std::endl;
   // we may have a segfault here on 32 bit systems if 4 GB is requested and 0 effectively allocated
-  if (image->GetPixel(idx) != 128)
-  {
+  if( image->GetPixel( idx ) != 128 )
+    {
     std::cerr << "Value is not 128!" << std::endl;
     return (EXIT_FAILURE);
-  }
+    }
 
   return (EXIT_SUCCESS);
 }

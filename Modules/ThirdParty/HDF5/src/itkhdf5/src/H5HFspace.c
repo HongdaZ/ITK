@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*-------------------------------------------------------------------------
@@ -26,8 +28,7 @@
 /* Module Setup */
 /****************/
 
-#include "H5HFmodule.h"         /* This source code file is part of the H5HF module */
-
+#define H5HF_PACKAGE		/*suppress error about including H5HFpkg  */
 
 /***********/
 /* Headers */
@@ -78,7 +79,7 @@
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_start
+ * Function:	H5HF_space_start
  *
  * Purpose:	"Start up" free space for heap - open existing free space
  *              structure if one exists, otherwise create a new free space
@@ -92,10 +93,15 @@
  *		koziol@ncsa.uiuc.edu
  *		May  2 2006
  *
+ * Modifications:
+ *	Vailin Choi, July 29th, 2008
+ *	  Pass values of alignment and threshold to FS_create() and FS_open()
+ *	  for handling alignment.
+ *
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_start(H5HF_hdr_t *hdr, hbool_t may_create)
+H5HF_space_start(H5HF_hdr_t *hdr, hid_t dxpl_id, hbool_t may_create)
 {
     const H5FS_section_class_t *classes[] = { /* Free space section classes implemented for fractal heap */
         H5HF_FSPACE_SECT_CLS_SINGLE,
@@ -104,7 +110,7 @@ H5HF__space_start(H5HF_hdr_t *hdr, hbool_t may_create)
         H5HF_FSPACE_SECT_CLS_INDIRECT};
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -114,8 +120,8 @@ H5HF__space_start(H5HF_hdr_t *hdr, hbool_t may_create)
     /* Check for creating free space info for the heap */
     if(H5F_addr_defined(hdr->fs_addr)) {
         /* Open an existing free space structure for the heap */
-        if(NULL == (hdr->fspace = H5FS_open(hdr->f, hdr->fs_addr,
-                NELMTS(classes), classes, hdr, (hsize_t)H5HF_FSPACE_THRHD_DEF, (hsize_t)H5HF_FSPACE_ALIGN_DEF)))
+        if(NULL == (hdr->fspace = H5FS_open(hdr->f, dxpl_id, hdr->fs_addr,
+                NELMTS(classes), classes, hdr, H5HF_FSPACE_THRHD_DEF, H5HF_FSPACE_ALIGN_DEF)))
             HGOTO_ERROR(H5E_HEAP, H5E_CANTINIT, FAIL, "can't initialize free space info")
     } /* end if */
     else {
@@ -131,8 +137,8 @@ H5HF__space_start(H5HF_hdr_t *hdr, hbool_t may_create)
             fs_create.max_sect_addr = hdr->man_dtable.cparam.max_index;
 
             /* Create the free space structure for the heap */
-            if(NULL == (hdr->fspace = H5FS_create(hdr->f, &hdr->fs_addr,
-                    &fs_create, NELMTS(classes), classes, hdr, (hsize_t)H5HF_FSPACE_THRHD_DEF, (hsize_t)H5HF_FSPACE_ALIGN_DEF)))
+            if(NULL == (hdr->fspace = H5FS_create(hdr->f, dxpl_id, &hdr->fs_addr,
+                    &fs_create, NELMTS(classes), classes, hdr, H5HF_FSPACE_THRHD_DEF, H5HF_FSPACE_ALIGN_DEF)))
                 HGOTO_ERROR(H5E_HEAP, H5E_CANTINIT, FAIL, "can't initialize free space info")
             HDassert(H5F_addr_defined(hdr->fs_addr));
         } /* end if */
@@ -140,11 +146,11 @@ H5HF__space_start(H5HF_hdr_t *hdr, hbool_t may_create)
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_start() */
+} /* end H5HF_space_start() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_add
+ * Function:	H5HF_space_add
  *
  * Purpose:	Add a section to the free space for the heap
  *
@@ -159,12 +165,13 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_add(H5HF_hdr_t *hdr, H5HF_free_section_t *node, unsigned flags)
+H5HF_space_add(H5HF_hdr_t *hdr, hid_t dxpl_id, H5HF_free_section_t *node,
+    unsigned flags)
 {
     H5HF_sect_add_ud_t udata;          /* User data for free space manager 'add' */
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -174,27 +181,29 @@ H5HF__space_add(H5HF_hdr_t *hdr, H5HF_free_section_t *node, unsigned flags)
 
     /* Check if the free space for the heap has been initialized */
     if(!hdr->fspace)
-        if(H5HF__space_start(hdr, TRUE) < 0)
+        if(H5HF_space_start(hdr, dxpl_id, TRUE) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTINIT, FAIL, "can't initialize heap free space")
 
     /* Construct user data */
     udata.hdr = hdr;
+    udata.dxpl_id = dxpl_id;
 
     /* Add to the free space for the heap */
-    if(H5FS_sect_add(hdr->f, hdr->fspace, (H5FS_section_info_t *)node, flags, &udata) < 0)
+    if(H5FS_sect_add(hdr->f, dxpl_id, hdr->fspace, (H5FS_section_info_t *)node, flags, &udata) < 0)
         HGOTO_ERROR(H5E_HEAP, H5E_CANTINSERT, FAIL, "can't add section to heap free space")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_add() */
+} /* end H5HF_space_add() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_find
+ * Function:	H5HF_space_find
  *
  * Purpose:	Attempt to find space in a fractal heap
  *
  * Return:	Success:	non-negative
+ *
  *		Failure:	negative
  *
  * Programmer:	Quincey Koziol
@@ -204,12 +213,12 @@ done:
  *-------------------------------------------------------------------------
  */
 htri_t
-H5HF__space_find(H5HF_hdr_t *hdr, hsize_t request, H5HF_free_section_t **node)
+H5HF_space_find(H5HF_hdr_t *hdr, hid_t dxpl_id, hsize_t request, H5HF_free_section_t **node)
 {
     htri_t node_found = FALSE;  /* Whether an existing free list node was found */
-    htri_t ret_value = FAIL;    /* Return value */
+    htri_t ret_value;           /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -220,12 +229,12 @@ H5HF__space_find(H5HF_hdr_t *hdr, hsize_t request, H5HF_free_section_t **node)
 
     /* Check if the free space for the heap has been initialized */
     if(!hdr->fspace)
-        if(H5HF__space_start(hdr, FALSE) < 0)
+        if(H5HF_space_start(hdr, dxpl_id, FALSE) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTINIT, FAIL, "can't initialize heap free space")
 
     /* Search for free space in the heap */
     if(hdr->fspace)
-        if((node_found = H5FS_sect_find(hdr->f, hdr->fspace, request, (H5FS_section_info_t **)node)) < 0)
+        if((node_found = H5FS_sect_find(hdr->f, dxpl_id, hdr->fspace, request, (H5FS_section_info_t **)node)) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTALLOC, FAIL, "can't locate free space in fractal heap")
 
     /* Set return value */
@@ -233,7 +242,7 @@ H5HF__space_find(H5HF_hdr_t *hdr, hsize_t request, H5HF_free_section_t **node)
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_find() */
+} /* end H5HF_space_find() */
 
 
 /*-------------------------------------------------------------------------
@@ -269,7 +278,7 @@ H5HF_space_revert_root_cb(H5FS_section_info_t *_sect, void H5_ATTR_UNUSED *_udat
     if(sect->sect_info.type == H5HF_FSPACE_SECT_SINGLE && sect->sect_info.state == H5FS_SECT_LIVE) {
         /* Release hold on previous indirect block (we must have one) */
         HDassert(sect->u.single.parent);
-        if(H5HF__iblock_decr(sect->u.single.parent) < 0)
+        if(H5HF_iblock_decr(sect->u.single.parent) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTDEC, FAIL, "can't decrement reference count on section's indirect block")
 
         /* Reset parent information */
@@ -283,7 +292,7 @@ done:
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_revert_root
+ * Function:	H5HF_space_revert_root
  *
  * Purpose:	Reset 'parent' pointers in sections, when the heap is
  *		changing from having a root indirect block to a direct block.
@@ -298,11 +307,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_revert_root(const H5HF_hdr_t *hdr)
+H5HF_space_revert_root(const H5HF_hdr_t *hdr, hid_t dxpl_id)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -310,14 +319,15 @@ H5HF__space_revert_root(const H5HF_hdr_t *hdr)
     HDassert(hdr);
 
     /* Only need to scan the sections if the free space has been initialized */
-    if(hdr->fspace)
-	/* Iterate over all sections, resetting the parent pointers in 'single' sections */
-        if(H5FS_sect_iterate(hdr->f, hdr->fspace, H5HF_space_revert_root_cb, NULL) < 0)
+    if(hdr->fspace) {
+	/* Iterate over all sections, reseting the parent pointers in 'single' sections */
+        if(H5FS_sect_iterate(hdr->f, dxpl_id, hdr->fspace, H5HF_space_revert_root_cb, NULL) < 0)
             HGOTO_ERROR(H5E_FSPACE, H5E_BADITER, FAIL, "can't iterate over sections to reset parent pointers")
+    } /* end if */
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_revert_root() */
+} /* end H5HF_space_revert_root() */
 
 
 /*-------------------------------------------------------------------------
@@ -374,7 +384,7 @@ done:
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_create_root
+ * Function:	H5HF_space_create_root
  *
  * Purpose:	Set 'parent' pointers in sections to new indirect block, when
  *		the heap is changing from having a root direct block to a
@@ -390,11 +400,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_create_root(const H5HF_hdr_t *hdr, H5HF_indirect_t *root_iblock)
+H5HF_space_create_root(const H5HF_hdr_t *hdr, hid_t dxpl_id, H5HF_indirect_t *root_iblock)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -403,18 +413,19 @@ H5HF__space_create_root(const H5HF_hdr_t *hdr, H5HF_indirect_t *root_iblock)
     HDassert(root_iblock);
 
     /* Only need to scan the sections if the free space has been initialized */
-    if(hdr->fspace)
+    if(hdr->fspace) {
 	/* Iterate over all sections, seting the parent pointers in 'single' sections to the new indirect block */
-        if(H5FS_sect_iterate(hdr->f, hdr->fspace, H5HF_space_create_root_cb, root_iblock) < 0)
+        if(H5FS_sect_iterate(hdr->f, dxpl_id, hdr->fspace, H5HF_space_create_root_cb, root_iblock) < 0)
             HGOTO_ERROR(H5E_FSPACE, H5E_BADITER, FAIL, "can't iterate over sections to set parent pointers")
+    } /* end if */
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_create_root() */
+} /* end H5HF_space_create_root() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_size
+ * Function:	H5HF_space_size
  *
  * Purpose:	Query the size of the heap's free space info on disk
  *
@@ -428,11 +439,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_size(H5HF_hdr_t *hdr, hsize_t *fs_size)
+H5HF_space_size(H5HF_hdr_t *hdr, hid_t dxpl_id, hsize_t *fs_size)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -442,7 +453,7 @@ H5HF__space_size(H5HF_hdr_t *hdr, hsize_t *fs_size)
 
     /* Check if the free space for the heap has been initialized */
     if(!hdr->fspace)
-        if(H5HF__space_start(hdr, FALSE) < 0)
+        if(H5HF_space_start(hdr, dxpl_id, FALSE) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTINIT, FAIL, "can't initialize heap free space")
 
     /* Get free space metadata size */
@@ -455,11 +466,11 @@ H5HF__space_size(H5HF_hdr_t *hdr, hsize_t *fs_size)
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_size() */
+} /* end H5HF_space_size() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_remove
+ * Function:	H5HF_space_remove
  *
  * Purpose:	Remove a section from the free space for the heap
  *
@@ -473,11 +484,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_remove(H5HF_hdr_t *hdr, H5HF_free_section_t *node)
+H5HF_space_remove(H5HF_hdr_t *hdr, hid_t dxpl_id, H5HF_free_section_t *node)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -487,16 +498,16 @@ H5HF__space_remove(H5HF_hdr_t *hdr, H5HF_free_section_t *node)
     HDassert(node);
 
     /* Remove from the free space for the heap */
-    if(H5FS_sect_remove(hdr->f, hdr->fspace, (H5FS_section_info_t *)node) < 0)
+    if(H5FS_sect_remove(hdr->f, dxpl_id, hdr->fspace, (H5FS_section_info_t *)node) < 0)
         HGOTO_ERROR(H5E_HEAP, H5E_CANTREMOVE, FAIL, "can't remove section from heap free space")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_remove() */
+} /* end H5HF_space_remove() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_close
+ * Function:	H5HF_space_close
  *
  * Purpose:	Close the free space for the heap
  *
@@ -511,11 +522,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_close(H5HF_hdr_t *hdr)
+H5HF_space_close(H5HF_hdr_t *hdr, hid_t dxpl_id)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -534,13 +545,13 @@ HDfprintf(stderr, "%s: nsects = %Hu\n", FUNC, nsects);
 #endif /* QAK */
 
         /* Close the free space for the heap */
-        if(H5FS_close(hdr->f, hdr->fspace) < 0)
+        if(H5FS_close(hdr->f, dxpl_id, hdr->fspace) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTRELEASE, FAIL, "can't release free space info")
         hdr->fspace = NULL;
 
         /* Check if we can delete the free space manager for this heap */
         if(!nsects) {
-            if(H5FS_delete(hdr->f, hdr->fs_addr) < 0)
+            if(H5FS_delete(hdr->f, dxpl_id, hdr->fs_addr) < 0)
                 HGOTO_ERROR(H5E_HEAP, H5E_CANTDELETE, FAIL, "can't delete free space info")
             hdr->fs_addr = HADDR_UNDEF;
         } /* end if */
@@ -548,11 +559,11 @@ HDfprintf(stderr, "%s: nsects = %Hu\n", FUNC, nsects);
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_close() */
+} /* end H5HF_space_close() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_delete
+ * Function:	H5HF_space_delete
  *
  * Purpose:	Delete the free space manager for the heap
  *
@@ -566,11 +577,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_delete(H5HF_hdr_t *hdr)
+H5HF_space_delete(H5HF_hdr_t *hdr, hid_t dxpl_id)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -578,16 +589,16 @@ H5HF__space_delete(H5HF_hdr_t *hdr)
     HDassert(hdr);
 
     /* Delete the free space manager */
-    if(H5FS_delete(hdr->f, hdr->fs_addr) < 0)
+    if(H5FS_delete(hdr->f, dxpl_id, hdr->fs_addr) < 0)
         HGOTO_ERROR(H5E_HEAP, H5E_CANTFREE, FAIL, "can't delete to free space manager")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_delete() */
+} /* end H5HF_space_delete() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__space_sect_change_class
+ * Function:	H5HF_space_change_sect_class
  *
  * Purpose:	Change a section's class
  *
@@ -602,12 +613,11 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__space_sect_change_class(H5HF_hdr_t *hdr, H5HF_free_section_t *sect,
-    uint16_t new_class)
+H5HF_space_sect_change_class(H5HF_hdr_t *hdr, hid_t dxpl_id, H5HF_free_section_t *sect, unsigned new_class)
 {
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 #ifdef QAK
 HDfprintf(stderr, "%s: Called\n", FUNC);
 #endif /* QAK */
@@ -620,10 +630,10 @@ HDfprintf(stderr, "%s: Called\n", FUNC);
     HDassert(sect);
 
     /* Notify the free space manager that a section has changed class */
-    if(H5FS_sect_change_class(hdr->f, hdr->fspace, (H5FS_section_info_t *)sect, new_class) < 0)
+    if(H5FS_sect_change_class(hdr->f, dxpl_id, hdr->fspace, (H5FS_section_info_t *)sect, new_class) < 0)
         HGOTO_ERROR(H5E_HEAP, H5E_CANTMODIFY, FAIL, "can't modify class of free space section")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__space_sect_change_class() */
+} /* end H5HF_space_sect_change_class() */
 

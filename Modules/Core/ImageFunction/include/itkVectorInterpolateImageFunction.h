@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@
 namespace itk
 {
 
-/**
- *\class VectorInterpolateImageFunction
- * \brief Base class for all vector image interpolators.
+/** \class VectorInterpolateImageFunction
+ * \brief Base class for all vector image interpolaters.
  *
  * VectorInterpolateImageFunction is the base for all ImageFunctions that
  * interpolates image with vector pixel types. This function outputs
@@ -43,63 +42,66 @@ namespace itk
  * \ingroup ImageFunctions ImageInterpolators
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = double>
-class ITK_TEMPLATE_EXPORT VectorInterpolateImageFunction
-  : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
+template< typename TInputImage, typename TCoordRep = double >
+class ITK_TEMPLATE_EXPORT VectorInterpolateImageFunction:
+  public ImageFunction<
+    TInputImage,
+    typename NumericTraits< typename TInputImage::PixelType >::RealType,
+    TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorInterpolateImageFunction);
-
   /** Extract the vector dimension from the pixel template parameter. */
-  static constexpr unsigned int Dimension = TInputImage::PixelType::Dimension;
+  itkStaticConstMacro(Dimension, unsigned int,
+                      TInputImage::PixelType::Dimension);
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Standard class type aliases. */
-  using Self = VectorInterpolateImageFunction;
-  using Superclass =
-    ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>;
+  /** Standard class typedefs. */
+  typedef VectorInterpolateImageFunction Self;
+  typedef ImageFunction< TInputImage,
+                         typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                         TCoordRep >                          Superclass;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorInterpolateImageFunction, ImageFunction);
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
-  using PixelType = typename InputImageType::PixelType;
-  using ValueType = typename PixelType::ValueType;
-  using RealType = typename NumericTraits<ValueType>::RealType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType           InputImageType;
+  typedef typename InputImageType::PixelType            PixelType;
+  typedef typename PixelType::ValueType                 ValueType;
+  typedef typename NumericTraits< ValueType >::RealType RealType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType      IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Output type is RealType of TInputImage::PixelType. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  /** CoordRep type alias support */
-  using CoordRepType = TCoordRep;
+  /** CoordRep typedef support. */
+  typedef TCoordRep CoordRepType;
 
   /** Returns the interpolated image intensity at a
    * specified point position. No bounds checking is done.
    * The point is assume to lie within the image buffer.
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  Evaluate(const PointType & point) const override
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     ContinuousIndexType index;
 
     this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
-    return (this->EvaluateAtContinuousIndex(index));
+    return ( this->EvaluateAtContinuousIndex(index) );
   }
 
   /** Interpolate the image at a continuous index position
@@ -112,8 +114,8 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override = 0;
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE = 0;
 
   /** Interpolate the image at an index position.
    * Simply returns the image value at the
@@ -122,27 +124,27 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE
   {
     OutputType output;
     PixelType  input = this->GetInputImage()->GetPixel(index);
 
-    for (unsigned int k = 0; k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); k++)
-    {
-      output[k] = static_cast<double>(input[k]);
-    }
-    return (output);
+    for ( unsigned int k = 0;
+              k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); k++ )
+      {
+      output[k] = static_cast< double >( input[k] );
+      }
+    return ( output );
   }
 
 protected:
-  VectorInterpolateImageFunction() = default;
-  ~VectorInterpolateImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  VectorInterpolateImageFunction() {}
+  ~VectorInterpolateImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  { Superclass::PrintSelf(os, indent); }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorInterpolateImageFunction);
 };
 } // end namespace itk
 

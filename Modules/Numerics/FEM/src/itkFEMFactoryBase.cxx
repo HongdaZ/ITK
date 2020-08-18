@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,18 +41,21 @@
 
 namespace itk
 {
-FEMFactoryBase * FEMFactoryBase::m_Factory = nullptr;
-std::mutex       FEMFactoryBase::m_CreationLock;
+FEMFactoryBase * FEMFactoryBase::m_Factory = ITK_NULLPTR;
+SimpleFastMutexLock FEMFactoryBase::m_CreationLock;
 
-FEMFactoryBase::FEMFactoryBase() = default;
-
-FEMFactoryBase::~FEMFactoryBase() = default;
-
-void
-FEMFactoryBase::RegisterDefaultTypes()
+FEMFactoryBase::FEMFactoryBase()
 {
-  // if( m_Factory == 0 )
-  {
+}
+
+FEMFactoryBase::~FEMFactoryBase()
+{
+}
+
+void FEMFactoryBase::RegisterDefaultTypes()
+{
+  //if( m_Factory == 0 )
+    {
     FEMFactory<itk::fem::Element::Node>::RegisterType();
     FEMFactory<itk::fem::Element2DC0LinearLineStress>::RegisterType();
     FEMFactory<itk::fem::Element2DC0LinearQuadrilateralMembrane>::RegisterType();
@@ -79,11 +82,11 @@ FEMFactoryBase::RegisterDefaultTypes()
     FEMFactory<itk::fem::LoadGravConst>::RegisterType();
     FEMFactory<itk::fem::LoadElement>::RegisterType();
     FEMFactory<itk::fem::MaterialLinearElasticity>::RegisterType();
-  }
+    }
 }
 
 const char *
-FEMFactoryBase::GetITKSourceVersion() const
+FEMFactoryBase::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }

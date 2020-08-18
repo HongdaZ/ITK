@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,25 +28,23 @@ namespace itk
  * with xml.
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT XMLFilterWatcher : public SimpleFilterWatcher
+class  ITKCommon_EXPORT XMLFilterWatcher
+  : public SimpleFilterWatcher
 {
 public:
-  XMLFilterWatcher(ProcessObject * o, const char * comment = "")
-    : SimpleFilterWatcher(o, comment)
-  {}
+  XMLFilterWatcher(ProcessObject *o, const char *comment = ""):
+    SimpleFilterWatcher(o, comment) {}
 
 protected:
+
   /** Callback method to show the ProgressEvent */
-  void
-  ShowProgress() override;
+  virtual void ShowProgress();
 
   /** Callback method to show the StartEvent */
-  void
-  StartFilter() override;
+  virtual void StartFilter();
 
   /** Callback method to show the EndEvent */
-  void
-  EndFilter() override;
+  virtual void EndFilter();
 };
 } // end namespace itk
 

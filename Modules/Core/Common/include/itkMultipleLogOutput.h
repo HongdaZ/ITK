@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,56 +37,53 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT MultipleLogOutput : public LogOutput
+class ITKCommon_EXPORT MultipleLogOutput:public LogOutput
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleLogOutput);
 
-  using Self = MultipleLogOutput;
-  using Superclass = LogOutput;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef MultipleLogOutput          Self;
+  typedef LogOutput                  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using OutputType = LogOutput;
+  typedef LogOutput OutputType;
 
   itkTypeMacro(MultipleLogOutput, LogOutput);
   itkNewMacro(MultipleLogOutput);
 
 public:
+
   /** Register a additional output stream into the list of LogOutputs to write
    * to. The messages will be sent to the streams in the same order that the
    * streams have been added here.  */
-  void
-  AddLogOutput(OutputType * output);
+  void AddLogOutput(OutputType *output);
 
   /** Broadcast a flush operation to all the output streams */
-  void
-  Flush() override;
+  virtual void Flush() ITK_OVERRIDE;
 
   /** Write to multiple outputs */
-  void
-  Write(double timestamp) override;
+  virtual void Write(double timestamp) ITK_OVERRIDE;
 
   /** Write to multiple outputs */
-  void
-  Write(const std::string & content) override;
+  virtual void Write(const std::string & content) ITK_OVERRIDE;
 
   /** Write to a buffer */
-  void
-  Write(const std::string & content, double timestamp) override;
+  virtual void Write(const std::string & content, double timestamp) ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   MultipleLogOutput();
 
   /** Destructor */
-  ~MultipleLogOutput() override;
+  virtual ~MultipleLogOutput() ITK_OVERRIDE;
 
 private:
-  using ContainerType = std::set<OutputType::Pointer>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleLogOutput);
+
+  typedef std::set< OutputType::Pointer > ContainerType;
 
   ContainerType m_Output;
 };
-} // namespace itk
+}
 
-#endif // itkMultipleLogOutput_h
+#endif //itkMultipleLogOutput_h

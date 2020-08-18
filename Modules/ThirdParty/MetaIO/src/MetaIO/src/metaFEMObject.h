@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -179,19 +179,19 @@ public:
   char m_LoadName[256]; // load name
   int m_ElementGN;
   int m_Dim;
-  std::vector<float> m_ForceVector;
+  METAIO_STL::vector<float> m_ForceVector;
   int m_DOF;
   int m_NodeNumber;
   int m_NumRHS;
-  std::vector<float> m_RHS;
+  METAIO_STL::vector<float> m_RHS;
   int m_NumLHS;
-  std::vector<FEMObjectMFCTerm*> m_LHS;
+  METAIO_STL::vector<FEMObjectMFCTerm*> m_LHS;
   int m_NumElements;
-  std::vector<int> m_Elements;
-  std::vector< std::vector<float> > m_ForceMatrix;
+  METAIO_STL::vector<int> m_Elements;
+  METAIO_STL::vector< METAIO_STL::vector<float> > m_ForceMatrix;
   int m_EdgeNumber;
-  std::vector<float> m_Undeformed;
-  std::vector<float> m_Deformed;
+  METAIO_STL::vector<float> m_Undeformed;
+  METAIO_STL::vector<float> m_Deformed;
   float m_Variance;
 };
 
@@ -211,23 +211,23 @@ public:
 
   MetaFEMObject(unsigned int dim);
 
-  ~MetaFEMObject(void) override;
+  ~MetaFEMObject(void) MET_OVERRIDE;
 
-  void PrintInfo(void) const override;
+  void PrintInfo(void) const MET_OVERRIDE;
 
-  void CopyInfo(const MetaObject * _object) override;
+  void CopyInfo(const MetaObject * _object) MET_OVERRIDE;
 
   /** Clear the MetaFEMObject */
-  void  Clear(void) override;
+  void  Clear(void) MET_OVERRIDE;
 
   /** List of valid class name types from FEM namespace*/
-  typedef std::list<std::string> ClassNameListType;
+  typedef METAIO_STL::list<std::string> ClassNameListType;
 
   /** List of Node, Element, Material and Load*/
-  typedef std::list<FEMObjectNode*> NodeListType;
-  typedef std::list<FEMObjectElement*>  ElementListType;
-  typedef std::list<FEMObjectMaterial*>  MaterialListType;
-  typedef std::list<FEMObjectLoad*>  LoadListType;
+  typedef METAIO_STL::list<FEMObjectNode*> NodeListType;
+  typedef METAIO_STL::list<FEMObjectElement*>  ElementListType;
+  typedef METAIO_STL::list<FEMObjectMaterial*>  MaterialListType;
+  typedef METAIO_STL::list<FEMObjectLoad*>  LoadListType;
 
   /** Access methods*/
   NodeListType & GetNodeList(void) {return m_NodeList;}
@@ -244,15 +244,15 @@ public:
 
 protected:
 
-  void  M_Destroy(void) override;
+  void  M_Destroy(void) MET_OVERRIDE;
 
-  void  M_SetupReadFields(void) override;
+  void  M_SetupReadFields(void) MET_OVERRIDE;
 
-  void  M_SetupWriteFields(void) override;
+  void  M_SetupWriteFields(void) MET_OVERRIDE;
 
-  bool  M_Read(void) override;
+  bool  M_Read(void) MET_OVERRIDE;
 
-  bool  M_Write(void) override;
+  bool  M_Write(void) MET_OVERRIDE;
 
   /** For reading and writing in node details */
   bool  M_Read_Node();
@@ -298,12 +298,12 @@ protected:
 
   // to keep track of the type element created
   enum
-{
+  {
     NODE            = 0,
     MATERIAL        = 1,
     ELEMENT         = 2,
     LOAD            = 3
-};
+  };
 
 };
 

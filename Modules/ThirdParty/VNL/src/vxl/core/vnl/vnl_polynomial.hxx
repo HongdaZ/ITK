@@ -12,10 +12,8 @@
 // \author Peter Vanroose, ABIS Leuven.
 // \date  August 2011
 
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include <cassert>
+#include <vcl_compiler.h>
+#include <vcl_cassert.h>
 
 //: Evaluate polynomial at value x
 template <class T>

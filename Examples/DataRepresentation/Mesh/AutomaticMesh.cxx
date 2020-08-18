@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -77,13 +77,13 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = float;
-  using MeshType = itk::Mesh<PixelType, 3>;
+  typedef float                             PixelType;
+  typedef itk::Mesh< PixelType, 3 >         MeshType;
 
-  using PointType = MeshType::PointType;
+  typedef MeshType::PointType               PointType;
 
-  using MeshSourceType = itk::AutomaticTopologyMeshSource<MeshType>;
-  using IdentifierArrayType = MeshSourceType::IdentifierArrayType;
+  typedef itk::AutomaticTopologyMeshSource< MeshType >   MeshSourceType;
+  typedef MeshSourceType::IdentifierArrayType            IdentifierArrayType;
 
   MeshSourceType::Pointer meshSource;
 
@@ -100,10 +100,12 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  meshSource->AddTetrahedron(meshSource->AddPoint(-1, -1, -1),
-                             meshSource->AddPoint(1, 1, -1),
-                             meshSource->AddPoint(1, -1, 1),
-                             meshSource->AddPoint(-1, 1, 1));
+  meshSource->AddTetrahedron(
+    meshSource->AddPoint( -1, -1, -1 ),
+    meshSource->AddPoint(  1,  1, -1 ),
+    meshSource->AddPoint(  1, -1,  1 ),
+    meshSource->AddPoint( -1,  1,  1 )
+  );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -142,28 +144,28 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointType           p;
-  IdentifierArrayType idArray(4);
+  PointType p;
+  IdentifierArrayType idArray( 4 );
 
-  p[0] = -2;
-  p[1] = -2;
-  p[2] = -2;
-  idArray[0] = meshSource->AddPoint(p);
+  p[ 0 ] = -2;
+  p[ 1 ] = -2;
+  p[ 2 ] = -2;
+  idArray[ 0 ] = meshSource->AddPoint( p );
 
-  p[0] = 2;
-  p[1] = 2;
-  p[2] = -2;
-  idArray[1] = meshSource->AddPoint(p);
+  p[ 0 ] =  2;
+  p[ 1 ] =  2;
+  p[ 2 ] = -2;
+  idArray[ 1 ] = meshSource->AddPoint( p );
 
-  p[0] = 2;
-  p[1] = -2;
-  p[2] = 2;
-  idArray[2] = meshSource->AddPoint(p);
+  p[ 0 ] =  2;
+  p[ 1 ] = -2;
+  p[ 2 ] =  2;
+  idArray[ 2 ] = meshSource->AddPoint( p );
 
-  p[0] = -2;
-  p[1] = 2;
-  p[2] = 2;
-  idArray[3] = meshSource->AddPoint(p);
+  p[ 0 ] = -2;
+  p[ 1 ] =  2;
+  p[ 2 ] =  2;
+  idArray[ 3 ] = meshSource->AddPoint( p );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -174,10 +176,10 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  meshSource->AddTriangle(idArray[0], idArray[1], idArray[2]);
-  meshSource->AddTriangle(idArray[1], idArray[2], idArray[3]);
-  meshSource->AddTriangle(idArray[2], idArray[3], idArray[0]);
-  meshSource->AddTriangle(idArray[3], idArray[0], idArray[1]);
+  meshSource->AddTriangle( idArray[0], idArray[1], idArray[2] );
+  meshSource->AddTriangle( idArray[1], idArray[2], idArray[3] );
+  meshSource->AddTriangle( idArray[2], idArray[3], idArray[0] );
+  meshSource->AddTriangle( idArray[3], idArray[0], idArray[1] );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -218,4 +220,5 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   return EXIT_SUCCESS;
+
 }

@@ -32,7 +32,7 @@ public:
   virtual bool seek(streampos_t pos) = 0;
   virtual bool eof() = 0;
   virtual source * clone() = 0;
-  virtual ~source() = default;
+  virtual ~source() {}
 };
 
 // base class for a dest object.
@@ -44,7 +44,7 @@ public:
 
   virtual int write( const char * in, int len ) = 0;
   virtual bool seek( streampos_t abs_pos ) = 0; // seek to absolute position
-  virtual ~dest() = default;
+  virtual ~dest() {}
 };
 
 } // end namespace rle

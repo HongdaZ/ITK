@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ namespace network {
   std::vector<PresentationDataValue> CompositeMessageFactory::ConstructCEchoRQ(const ULConnection& inConnection)
     {
     CEchoRQ theEchoRQ;
-    return theEchoRQ.ConstructPDV(inConnection,nullptr);
+    return theEchoRQ.ConstructPDV(inConnection,NULL);
     }
 
   std::vector<PresentationDataValue> CompositeMessageFactory::ConstructCStoreRQ(const ULConnection& inConnection, const File &file, bool writeDataSet /*= true*/ )

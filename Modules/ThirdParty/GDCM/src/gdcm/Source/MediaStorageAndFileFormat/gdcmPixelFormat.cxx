@@ -35,7 +35,7 @@ static const char *ScalarTypeStrings[] = {
   "FLOAT64",
   "SINGLEBIT",
   "UNKNOWN",
-  nullptr,
+  NULL,
 };
 
 PixelFormat::PixelFormat(ScalarType st)
@@ -130,7 +130,6 @@ void PixelFormat::SetScalarType(ScalarType st)
 PixelFormat::ScalarType PixelFormat::GetScalarType() const
 {
   ScalarType type = PixelFormat::UNKNOWN;
-  gdcmAssertAlwaysMacro( BitsStored <= BitsAllocated );
   switch( BitsAllocated )
     {
   case 0:
@@ -192,7 +191,7 @@ PixelFormat::ScalarType PixelFormat::GetScalarType() const
       }
     else
       {
-      gdcmAssertAlwaysMacro(0);
+      assert(0);
       }
     }
   return type;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,9 +23,23 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage>
+/* constructor: seting the default value of the parameters */
+template< typename TInputImage, typename TOutputImage >
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::VoronoiPartitioningImageFilter():
+  m_SigmaThreshold(10)
+{}
+
+/* destructor */
+template< typename TInputImage, typename TOutputImage >
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::~VoronoiPartitioningImageFilter()
+{}
+
+template< typename TInputImage, typename TOutputImage >
 void
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::ClassifyDiagram()
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::ClassifyDiagram(void)
 {
   PointIdIterator currPit;
   PointIdIterator currPitEnd;
@@ -34,159 +48,165 @@ VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::ClassifyDiagram()
   IndexList       PixelPool;
 
   this->m_NumberOfBoundary = 0;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
-  {
+  for ( int i = 0; i < this->GetNumberOfSeeds(); i++ )
+    {
     CellAutoPointer currCell;
     this->m_WorkingVD->GetCellId(i, currCell);
     currPitEnd = currCell->PointIdsEnd();
     VertList.clear();
-    for (currPit = currCell->PointIdsBegin(); currPit != currPitEnd; ++currPit)
-    {
-      this->m_WorkingVD->GetPoint((*currPit), &(currP));
+    for ( currPit = currCell->PointIdsBegin(); currPit != currPitEnd; ++currPit )
+      {
+      this->m_WorkingVD->GetPoint( ( *currPit ), &( currP ) );
       VertList.push_back(currP);
-    }
+      }
 
     PixelPool.clear();
     this->GetPixelIndexFromPolygon(VertList, &PixelPool);
-    this->m_NumberOfPixels[i] = static_cast<SizeValueType>(PixelPool.size());
+    this->m_NumberOfPixels[i] = static_cast<SizeValueType>( PixelPool.size() );
     this->m_Label[i] = this->TestHomogeneity(PixelPool);
 
     // when partitioning the NumberOfBoundary is the number of regions that
     // are not homogeneous
-    if (!this->m_Label[i])
-    {
+    if ( !this->m_Label[i] )
+      {
       this->m_NumberOfBoundary++;
+      }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::GenerateAddingSeeds()
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::GenerateAddingSeeds(void)
 {
   EdgeIterator eit;
-  auto         eitend = this->m_WorkingVD->EdgeEnd();
+  EdgeIterator eitend = this->m_WorkingVD->EdgeEnd();
   PointType    adds;
 
-  Point<int, 2> seeds;
+  Point< int, 2 > seeds;
 
   // Walk the edges of the diagram, if a seed to either side is
   // no homogeneous, then place a new seed along the middle of the edge
-  for (eit = this->m_WorkingVD->EdgeBegin(); eit != eitend; ++eit)
-  {
+  for ( eit = this->m_WorkingVD->EdgeBegin(); eit != eitend; ++eit )
+    {
     seeds = this->m_WorkingVD->GetSeedsIDAroundEdge(&*eit);
     // if either seed is not homogeneous
-    if ((!this->m_Label[seeds[0]] || !this->m_Label[seeds[1]]) &&
-        (this->m_NumberOfPixels[seeds[0]] > this->GetMinRegion()) &&
-        (this->m_NumberOfPixels[seeds[1]] > this->GetMinRegion()))
-    {
-      adds[0] = (eit->m_Left[0] + eit->m_Right[0]) * 0.5;
-      adds[1] = (eit->m_Left[1] + eit->m_Right[1]) * 0.5;
+    if ( ( !this->m_Label[seeds[0]] || !this->m_Label[seeds[1]] )
+         && ( this->m_NumberOfPixels[seeds[0]] > this->GetMinRegion() )
+         && ( this->m_NumberOfPixels[seeds[1]] > this->GetMinRegion() ) )
+      {
+      adds[0] = ( eit->m_Left[0] + eit->m_Right[0] ) * 0.5;
+      adds[1] = ( eit->m_Left[1] + eit->m_Right[1] ) * 0.5;
       this->m_SeedsToAdded.push_back(adds);
+      }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::MakeSegmentBoundary()
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::MakeSegmentBoundary(void)
 {
   RegionType region = this->GetInput()->GetRequestedRegion();
 
-  itk::ImageRegionIteratorWithIndex<OutputImageType> oit(this->GetOutput(), region);
-  while (!oit.IsAtEnd())
-  {
+  itk::ImageRegionIteratorWithIndex< OutputImageType > oit(this->GetOutput(), region);
+  while ( !oit.IsAtEnd() )
+    {
     oit.Set(0);
     ++oit;
-  }
+    }
 
   NeighborIdIterator nit;
   NeighborIdIterator nitend;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
-  {
-    nitend = this->m_WorkingVD->NeighborIdsEnd(i);
-    for (nit = this->m_WorkingVD->NeighborIdsBegin(i); nit != nitend; ++nit)
+  for ( int i = 0; i < this->GetNumberOfSeeds(); i++ )
     {
-      if ((*nit) > i)
+    nitend = this->m_WorkingVD->NeighborIdsEnd(i);
+    for ( nit = this->m_WorkingVD->NeighborIdsBegin(i); nit != nitend; ++nit )
       {
-        this->drawLine(this->m_WorkingVD->GetSeed(i), this->m_WorkingVD->GetSeed(*nit));
+      if ( ( *nit ) > i )
+        {
+        this->drawLine( this->m_WorkingVD->GetSeed(i), this->m_WorkingVD->GetSeed(*nit) );
+        }
       }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::MakeSegmentObject()
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::MakeSegmentObject(void)
 {
   RegionType region = this->GetInput()->GetRequestedRegion();
 
-  itk::ImageRegionIteratorWithIndex<OutputImageType> oit(this->GetOutput(), region);
-  while (!oit.IsAtEnd())
-  {
+  itk::ImageRegionIteratorWithIndex< OutputImageType > oit(this->GetOutput(), region);
+  while ( !oit.IsAtEnd() )
+    {
     oit.Set(0);
     ++oit;
-  }
+    }
   PointIdIterator currPit;
   PointIdIterator currPitEnd;
   PointType       currP;
   PointTypeDeque  VertList;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
-  {
+  for ( int i = 0; i < this->GetNumberOfSeeds(); i++ )
+    {
     CellAutoPointer currCell;
     this->m_WorkingVD->GetCellId(i, currCell);
     currPitEnd = currCell->PointIdsEnd();
     VertList.clear();
-    for (currPit = currCell->PointIdsBegin(); currPit != currPitEnd; ++currPit)
-    {
-      this->m_WorkingVD->GetPoint((*currPit), &(currP));
+    for ( currPit = currCell->PointIdsBegin(); currPit != currPitEnd; ++currPit )
+      {
+      this->m_WorkingVD->GetPoint( ( *currPit ), &( currP ) );
       VertList.push_back(currP);
-    }
+      }
     // Need to fill with an segment identifier
-    this->FillPolygon(VertList, static_cast<OutputPixelType>(i));
-  }
+    this->FillPolygon( VertList, static_cast< OutputPixelType >( i ) );
+    }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 bool
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::TestHomogeneity(IndexList & Plist)
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::TestHomogeneity(IndexList & Plist)
 {
-  auto          num = static_cast<SizeValueType>(Plist.size());
+  SizeValueType num = static_cast<SizeValueType>( Plist.size());
   SizeValueType i;
-  double        getp;
-  double        addp = 0;
-  double        addpp = 0;
+  double getp;
+  double addp = 0;
+  double addpp = 0;
 
   const InputImageType * inputImage = this->GetInput();
 
-  for (i = 0; i < num; i++)
-  {
-    getp = (double)(inputImage->GetPixel(Plist[i]));
+  for ( i = 0; i < num; i++ )
+    {
+    getp = (double)( inputImage->GetPixel(Plist[i]) );
     addp = addp + getp;
     addpp = addpp + getp * getp;
-  }
+    }
 
   double savevar;
-  if (num > 1)
-  {
-    savevar = std::sqrt((addpp - (addp * addp) / static_cast<double>(num)) / (static_cast<double>(num) - 1.0));
-  }
+  if ( num > 1 )
+    {
+    savevar = std::sqrt( ( addpp - ( addp * addp ) / static_cast< double >( num ) )
+                        / ( static_cast< double >( num ) - 1.0 ) );
+    }
   else
-  {
+    {
     savevar = -1;
-  }
+    }
 
-  return (savevar >= 0 && std::sqrt(savevar) < m_SigmaThreshold);
+  return ( savevar >= 0 && std::sqrt(savevar) < m_SigmaThreshold );
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+VoronoiPartitioningImageFilter< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   os << indent << "SigmaThreshold: " << m_SigmaThreshold << std::endl;
 }
-} // namespace itk
+} //end namespace
 
 #endif

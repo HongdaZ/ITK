@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@
 #include "itkImage.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int, char *[])
+int main(int, char *[])
 {
   // Software Guide : BeginLatex
   //
@@ -46,7 +45,7 @@ main(int, char *[])
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  using ImageType = itk::Image<unsigned short, 3>;
+  typedef itk::Image< unsigned short, 3 > ImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -104,9 +103,9 @@ main(int, char *[])
   // Software Guide : BeginCodeSnippet
   ImageType::IndexType start;
 
-  start[0] = 0; // first index on X
-  start[1] = 0; // first index on Y
-  start[2] = 0; // first index on Z
+  start[0] =   0;  // first index on X
+  start[1] =   0;  // first index on Y
+  start[2] =   0;  // first index on Z
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -122,11 +121,11 @@ main(int, char *[])
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  ImageType::SizeType size;
+  ImageType::SizeType  size;
 
-  size[0] = 200; // size along X
-  size[1] = 200; // size along Y
-  size[2] = 200; // size along Z
+  size[0]  = 200;  // size along X
+  size[1]  = 200;  // size along Y
+  size[2]  = 200;  // size along Z
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -145,8 +144,8 @@ main(int, char *[])
   // Software Guide : BeginCodeSnippet
   ImageType::RegionType region;
 
-  region.SetSize(size);
-  region.SetIndex(start);
+  region.SetSize( size );
+  region.SetIndex( start );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -166,7 +165,7 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  image->SetRegions(region);
+  image->SetRegions( region );
   image->Allocate();
   // Software Guide : EndCodeSnippet
 

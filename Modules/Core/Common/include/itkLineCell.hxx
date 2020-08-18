@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,21 +24,23 @@ namespace itk
 /**
  * Standard CellInterface:
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-LineCell<TCellInterface>::MakeCopy(CellAutoPointer & cellPointer) const
+LineCell< TCellInterface >
+::MakeCopy(CellAutoPointer & cellPointer) const
 {
   cellPointer.TakeOwnership(new Self);
-  cellPointer->SetPointIds(this->GetPointIds());
+  cellPointer->SetPointIds( this->GetPointIds() );
 }
 
 /**
  * Standard CellInterface:
  * Get the topological dimension of this cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 unsigned int
-LineCell<TCellInterface>::GetDimension() const
+LineCell< TCellInterface >
+::GetDimension(void) const
 {
   return Self::CellDimension;
 }
@@ -47,9 +49,10 @@ LineCell<TCellInterface>::GetDimension() const
  * Standard CellInterface:
  * Get the number of points required to define the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 unsigned int
-LineCell<TCellInterface>::GetNumberOfPoints() const
+LineCell< TCellInterface >
+::GetNumberOfPoints(void) const
 {
   return Self::NumberOfPoints;
 }
@@ -58,17 +61,18 @@ LineCell<TCellInterface>::GetNumberOfPoints() const
  * Standard CellInterface:
  * Get the number of boundary entities of the given dimension.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::CellFeatureCount
-LineCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::CellFeatureCount
+LineCell< TCellInterface >
+::GetNumberOfBoundaryFeatures(int dimension) const
 {
-  switch (dimension)
-  {
+  switch ( dimension )
+    {
     case 0:
       return GetNumberOfVertices();
     default:
       return 0;
-  }
+    }
 }
 
 /**
@@ -77,18 +81,18 @@ LineCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
  * cell feature Id.
  * The Id can range from 0 to GetNumberOfBoundaryFeatures(dimension)-1.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 bool
-LineCell<TCellInterface>::GetBoundaryFeature(int                   dimension,
-                                             CellFeatureIdentifier featureId,
-                                             CellAutoPointer &     cellPointer)
+LineCell< TCellInterface >
+::GetBoundaryFeature(int dimension, CellFeatureIdentifier featureId,
+                     CellAutoPointer & cellPointer)
 {
   VertexAutoPointer vertexPointer;
-  if ((dimension == 0) && this->GetVertex(featureId, vertexPointer))
-  {
-    TransferAutoPointer(cellPointer, vertexPointer);
-    return true;
-  }
+  if( ( dimension == 0 ) && this->GetVertex(featureId, vertexPointer) )
+    {
+      TransferAutoPointer(cellPointer, vertexPointer);
+      return true;
+    }
   /* else */
   cellPointer.Reset();
   return false;
@@ -100,16 +104,17 @@ LineCell<TCellInterface>::GetBoundaryFeature(int                   dimension,
  * iterator can be incremented and safely de-referenced enough times to
  * get all the point ids needed by the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-LineCell<TCellInterface>::SetPointIds(PointIdConstIterator first)
+LineCell< TCellInterface >
+::SetPointIds(PointIdConstIterator first)
 {
   PointIdConstIterator ii(first);
 
-  for (unsigned int i = 0; i < Self::NumberOfPoints; ++i)
-  {
+  for ( unsigned int i = 0; i < Self::NumberOfPoints; ++i )
+    {
     m_PointIds[i] = *ii++;
-  }
+    }
 }
 
 /**
@@ -119,26 +124,28 @@ LineCell<TCellInterface>::SetPointIds(PointIdConstIterator first)
  * define the cell.  The position *last is NOT referenced, so it can safely
  * be one beyond the end of an array or other container.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-LineCell<TCellInterface>::SetPointIds(PointIdConstIterator first, PointIdConstIterator last)
+LineCell< TCellInterface >
+::SetPointIds(PointIdConstIterator first, PointIdConstIterator last)
 {
   int                  localId = 0;
   PointIdConstIterator ii(first);
 
-  while (ii != last)
-  {
+  while ( ii != last )
+    {
     m_PointIds[localId++] = *ii++;
-  }
+    }
 }
 
 /**
  * Standard CellInterface:
  * Set an individual point identifier in the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-LineCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
+LineCell< TCellInterface >
+::SetPointId(int localId, PointIdentifier ptId)
 {
   m_PointIds[localId] = ptId;
 }
@@ -147,9 +154,10 @@ LineCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Standard CellInterface:
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::PointIdIterator
-LineCell<TCellInterface>::PointIdsBegin()
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::PointIdIterator
+LineCell< TCellInterface >
+::PointIdsBegin(void)
 {
   return &m_PointIds[0];
 }
@@ -159,9 +167,10 @@ LineCell<TCellInterface>::PointIdsBegin()
  * Get a const begin iterator to the list of point identifiers used
  * by the cell.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::PointIdConstIterator
-LineCell<TCellInterface>::PointIdsBegin() const
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::PointIdConstIterator
+LineCell< TCellInterface >
+::PointIdsBegin(void) const
 {
   return &m_PointIds[0];
 }
@@ -170,9 +179,10 @@ LineCell<TCellInterface>::PointIdsBegin() const
  * Standard CellInterface:
  * Get an end iterator to the list of point identifiers used by the cell.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::PointIdIterator
-LineCell<TCellInterface>::PointIdsEnd()
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::PointIdIterator
+LineCell< TCellInterface >
+::PointIdsEnd(void)
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -182,9 +192,10 @@ LineCell<TCellInterface>::PointIdsEnd()
  * Get a const end iterator to the list of point identifiers used
  * by the cell.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::PointIdConstIterator
-LineCell<TCellInterface>::PointIdsEnd() const
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::PointIdConstIterator
+LineCell< TCellInterface >
+::PointIdsEnd(void) const
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -193,9 +204,10 @@ LineCell<TCellInterface>::PointIdsEnd() const
  * Line-specific:
  * Get the number of vertices for this line.
  */
-template <typename TCellInterface>
-typename LineCell<TCellInterface>::CellFeatureCount
-LineCell<TCellInterface>::GetNumberOfVertices() const
+template< typename TCellInterface >
+typename LineCell< TCellInterface >::CellFeatureCount
+LineCell< TCellInterface >
+::GetNumberOfVertices(void) const
 {
   return Self::NumberOfPoints;
 }
@@ -205,11 +217,12 @@ LineCell<TCellInterface>::GetNumberOfVertices() const
  * Get the vertex specified by the given cell feature Id.
  * The Id can range from 0 to GetNumberOfVertices()-1.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 bool
-LineCell<TCellInterface>::GetVertex(CellFeatureIdentifier vertexId, VertexAutoPointer & vertexPointer)
+LineCell< TCellInterface >
+::GetVertex(CellFeatureIdentifier vertexId, VertexAutoPointer & vertexPointer)
 {
-  auto * vert = new VertexType;
+  VertexType *vert = new VertexType;
 
   vert->SetPointId(0, m_PointIds[vertexId]);
   vertexPointer.TakeOwnership(vert);

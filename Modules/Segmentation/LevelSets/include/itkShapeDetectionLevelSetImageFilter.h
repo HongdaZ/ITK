@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ namespace itk
  *
  * \par OUTPUTS
  * The filter outputs a single, scalar, real-valued image.
- * Negative values in the output image represent the inside of the segmented region
+ * Negative values in the output image represent the inside of the segmentated region
  * and positive values in the image represent the outside of the segmented region.  The
  * zero crossings of the image correspond to the position of the propagating
  * front.
@@ -102,27 +102,29 @@ namespace itk
  * \ingroup LevelSetSegmentation
  * \ingroup ITKLevelSets
  */
-template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType = float>
-class ITK_TEMPLATE_EXPORT ShapeDetectionLevelSetImageFilter
-  : public SegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>
+template< typename TInputImage,
+          typename TFeatureImage,
+          typename TOutputPixelType = float >
+class ITK_TEMPLATE_EXPORT ShapeDetectionLevelSetImageFilter:
+  public SegmentationLevelSetImageFilter< TInputImage,
+                                          TFeatureImage, TOutputPixelType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeDetectionLevelSetImageFilter);
+  /** Standard class typedefs */
+  typedef ShapeDetectionLevelSetImageFilter                                               Self;
+  typedef SegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputPixelType > Superclass;
+  typedef SmartPointer< Self >                                                            Pointer;
+  typedef SmartPointer< const Self >                                                      ConstPointer;
 
-  /** Standard class type aliases */
-  using Self = ShapeDetectionLevelSetImageFilter;
-  using Superclass = SegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Inherited type alias from the superclass. */
-  using ValueType = typename Superclass::ValueType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using FeatureImageType = typename Superclass::FeatureImageType;
+  /** Inherited typedef from the superclass. */
+  typedef typename Superclass::ValueType        ValueType;
+  typedef typename Superclass::OutputImageType  OutputImageType;
+  typedef typename Superclass::FeatureImageType FeatureImageType;
 
   /** Type of the segmentation function */
-  using ShapeDetectionFunctionType = ShapeDetectionLevelSetFunction<OutputImageType, FeatureImageType>;
-  using ShapeDetectionFunctionPointer = typename ShapeDetectionFunctionType::Pointer;
+  typedef ShapeDetectionLevelSetFunction< OutputImageType,
+                                          FeatureImageType > ShapeDetectionFunctionType;
+  typedef typename ShapeDetectionFunctionType::Pointer ShapeDetectionFunctionPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ShapeDetectionLevelSetImageFilter, SegmentationLevelSetImageFilter);
@@ -131,16 +133,16 @@ public:
   itkNewMacro(Self);
 
 protected:
-  ~ShapeDetectionLevelSetImageFilter() override = default;
+  ~ShapeDetectionLevelSetImageFilter() ITK_OVERRIDE {}
   ShapeDetectionLevelSetImageFilter();
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeDetectionLevelSetImageFilter);
 
   /** Overridden from Superclass to handle the case when PropagationScaling is zero
    * and CurvatureScaling is non-zero.*/
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   ShapeDetectionFunctionPointer m_ShapeDetectionFunction;
@@ -148,7 +150,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShapeDetectionLevelSetImageFilter.hxx"
+#include "itkShapeDetectionLevelSetImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@
 
 #include "itkImageRegionIteratorWithIndex.h"
 
-int
-itkImageIteratorsForwardBackwardTest(int, char *[])
+int itkImageIteratorsForwardBackwardTest(int, char* [] )
 {
 
   std::cout << "Creating an image" << std::endl;
-  using ImageType = itk::Image<unsigned short, 3>;
+  typedef itk::Image<unsigned short,3> ImageType;
 
   ImageType::Pointer myImage = ImageType::New();
 
@@ -39,53 +38,54 @@ itkImageIteratorsForwardBackwardTest(int, char *[])
   start.Fill(0);
 
   ImageType::RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
-  myImage->SetLargestPossibleRegion(region);
-  myImage->SetBufferedRegion(region);
-  myImage->SetRequestedRegion(region);
+  myImage->SetLargestPossibleRegion( region );
+  myImage->SetBufferedRegion( region );
+  myImage->SetRequestedRegion( region );
   myImage->Allocate();
 
-  using IteratorType = itk::ImageRegionIteratorWithIndex<ImageType>;
+  typedef itk::ImageRegionIteratorWithIndex< ImageType > IteratorType;
 
-  using ConstIteratorType = itk::ImageRegionConstIteratorWithIndex<ImageType>;
+  typedef itk::ImageRegionConstIteratorWithIndex< ImageType > ConstIteratorType;
 
-  IteratorType it(myImage, region);
+  IteratorType it( myImage, region );
 
   ImageType::PixelType value;
 
-  value = itk::NumericTraits<ImageType::PixelType>::ZeroValue();
+  value = itk::NumericTraits< ImageType::PixelType >::ZeroValue();
 
   // Store information on the Image
   std::cout << "Storing data on the image ... " << std::endl;
 
-  while (!it.IsAtEnd())
+  while( !it.IsAtEnd() )
   {
     value++;
-    it.Set(value);
+    it.Set( value );
     ++it;
   }
 
 
   // Verification
-  IteratorType ot(myImage, region);
+  IteratorType ot( myImage, region );
   std::cout << "Verifying the data forwards... ";
 
-  value = itk::NumericTraits<ImageType::PixelType>::ZeroValue();
+  value = itk::NumericTraits< ImageType::PixelType >::ZeroValue();
 
-  while (!ot.IsAtEnd())
+  while( !ot.IsAtEnd() )
   {
     value++;
 
-    if (ot.Get() != value)
+    if( ot.Get() != value )
     {
       std::cerr << "Error in forward pass" << std::endl;
-      std::cerr << "Values don't correspond to what was stored " << std::endl;
+      std::cerr << "Values don't correspond to what was stored "
+        << std::endl;
       std::cerr << "Test failed at index ";
       std::cerr << ot.GetIndex() << std::endl;
       std::cerr << "Value stored is = " << ot.Get() << std::endl;
-      std::cerr << "Value should be = " << value << std::endl;
+      std::cerr << "Value should be = " << value    << std::endl;
       return EXIT_FAILURE;
     }
     ++ot;
@@ -99,17 +99,18 @@ itkImageIteratorsForwardBackwardTest(int, char *[])
   ot.GoToReverseBegin();
   --ot;
   --value;
-  while (!ot.IsAtReverseEnd())
+  while( !ot.IsAtReverseEnd() )
   {
 
-    if (ot.Get() != value)
+    if( ot.Get() != value )
     {
       std::cerr << "Error in backwards pass" << std::endl;
-      std::cerr << "Values don't correspond to what was stored " << std::endl;
+      std::cerr << "Values don't correspond to what was stored "
+        << std::endl;
       std::cerr << "Test failed at index ";
       std::cerr << ot.GetIndex() << std::endl;
       std::cerr << "Value stored is = " << ot.Get() << std::endl;
-      std::cerr << "Value should be = " << value << std::endl;
+      std::cerr << "Value should be = " << value    << std::endl;
       return EXIT_FAILURE;
     }
     value--;
@@ -119,23 +120,24 @@ itkImageIteratorsForwardBackwardTest(int, char *[])
   std::cout << "      PASSED !" << std::endl;
 
   // Verification
-  ConstIteratorType cot(myImage, region);
+  ConstIteratorType cot( myImage, region );
   std::cout << "Const Iterator: Verifying the data forwards... ";
 
-  value = itk::NumericTraits<ImageType::PixelType>::ZeroValue();
+  value = itk::NumericTraits< ImageType::PixelType >::ZeroValue();
 
-  while (!cot.IsAtEnd())
+  while( !cot.IsAtEnd() )
   {
     value++;
 
-    if (cot.Get() != value)
+    if( cot.Get() != value )
     {
       std::cerr << "Error in forward pass" << std::endl;
-      std::cerr << "Values don't correspond to what was stored " << std::endl;
+      std::cerr << "Values don't correspond to what was stored "
+        << std::endl;
       std::cerr << "Test failed at index ";
       std::cerr << cot.GetIndex() << std::endl;
       std::cerr << "Value stored is = " << cot.Get() << std::endl;
-      std::cerr << "Value should be = " << value << std::endl;
+      std::cerr << "Value should be = " << value    << std::endl;
       return EXIT_FAILURE;
     }
     ++cot;
@@ -149,17 +151,18 @@ itkImageIteratorsForwardBackwardTest(int, char *[])
   cot.GoToReverseBegin();
   --cot;
   --value;
-  while (!cot.IsAtReverseEnd())
+  while( !cot.IsAtReverseEnd() )
   {
 
-    if (cot.Get() != value)
+    if( cot.Get() != value )
     {
       std::cerr << "Error in backwards pass" << std::endl;
-      std::cerr << "Values don't correspond to what was stored " << std::endl;
+      std::cerr << "Values don't correspond to what was stored "
+        << std::endl;
       std::cerr << "Test failed at index ";
       std::cerr << cot.GetIndex() << std::endl;
       std::cerr << "Value stored is = " << cot.Get() << std::endl;
-      std::cerr << "Value should be = " << value << std::endl;
+      std::cerr << "Value should be = " << value    << std::endl;
       return EXIT_FAILURE;
     }
     value--;
@@ -171,4 +174,5 @@ itkImageIteratorsForwardBackwardTest(int, char *[])
   std::cout << std::endl << "Test passed" << std::endl;
 
   return EXIT_SUCCESS;
+
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,84 +23,90 @@
 #include "itkHConvexImageFilter.h"
 #include "itkHConcaveImageFilter.h"
 #include "itkAddImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 #include "itkTestingMacros.h"
 
-int
-itkHConvexConcaveImageFilterTest(int argc, char * argv[])
+int itkHConvexConcaveImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImageFile";
+    std::cerr << argv[0] << " inputImageFile";
     std::cerr << " outputImageFile height" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //
   //  The following code defines the input and output pixel types and their
   //  associated image types.
   //
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = float;
-  using OutputPixelType = float;
-  using WritePixelType = unsigned char;
+  typedef float         InputPixelType;
+  typedef float         OutputPixelType;
+  typedef unsigned char WritePixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using WriteImageType = itk::Image<WritePixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension > InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image< WritePixelType, Dimension >  WriteImageType;
 
   // Readers/writers
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
-  using RescaleType = itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
+  typedef itk::ImageFileReader< InputImageType  > ReaderType;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  typedef itk::RescaleIntensityImageFilter< OutputImageType, WriteImageType >
+                                                  RescaleType;
 
   // Define the itk::HConvexImageFilter filter type
-  using HConvexFilterType = itk::HConvexImageFilter<InputImageType, InputImageType>;
+  typedef itk::HConvexImageFilter<
+                            InputImageType,
+                            InputImageType > HConvexFilterType;
   // Define the itk::HConcaveImageFilter filter type
-  using HConcaveFilterType = itk::HConcaveImageFilter<InputImageType, InputImageType>;
+  typedef itk::HConcaveImageFilter<
+                            InputImageType,
+                            InputImageType > HConcaveFilterType;
 
 
   // Creation of reader and writer filters
-  ReaderType::Pointer  reader = ReaderType::New();
-  WriterType::Pointer  writer = WriterType::New();
+  ReaderType::Pointer reader = ReaderType::New();
+  WriterType::Pointer writer = WriterType::New();
   RescaleType::Pointer rescaler = RescaleType::New();
 
   // Create the filters
-  HConvexFilterType::Pointer  hConvexFilter = HConvexFilterType::New();
+  HConvexFilterType::Pointer hConvexFilter = HConvexFilterType::New();
   HConcaveFilterType::Pointer hConcaveFilter = HConcaveFilterType::New();
 
-  itk::SimpleFilterWatcher watchConvex(hConvexFilter, "HConvexImageFilter");
-  itk::SimpleFilterWatcher watchConcave(hConcaveFilter, "HConcaveImageFilter");
+  FilterWatcher watchConvex( hConvexFilter, "HConvexImageFilter" );
+  FilterWatcher watchConcave( hConcaveFilter, "HConcaveImageFilter" );
 
   // Set up the input and output files
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
   // Set up the filters
-  hConvexFilter->SetInput(reader->GetOutput());
-  hConvexFilter->SetHeight(std::stod(argv[3]));
+  hConvexFilter->SetInput( reader->GetOutput() );
+  hConvexFilter->SetHeight( atof( argv[3] ) );
 
-  hConcaveFilter->SetInput(reader->GetOutput());
-  hConcaveFilter->SetHeight(std::stod(argv[3]));
+  hConcaveFilter->SetInput( reader->GetOutput() );
+  hConcaveFilter->SetHeight( atof( argv[3] ) );
 
   // Create a filter to add the two images
-  using AddFilterType = itk::AddImageFilter<InputImageType, InputImageType, OutputImageType>;
+  typedef itk::AddImageFilter<
+                            InputImageType, InputImageType,
+                            OutputImageType > AddFilterType;
 
   AddFilterType::Pointer add = AddFilterType::New();
-  add->SetInput1(hConvexFilter->GetOutput());
-  add->SetInput2(hConcaveFilter->GetOutput());
+  add->SetInput1( hConvexFilter->GetOutput() );
+  add->SetInput2( hConcaveFilter->GetOutput() );
 
   // Run the filters
-  rescaler->SetInput(add->GetOutput());
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetInput( add->GetOutput() );
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
 
-  writer->SetInput(rescaler->GetOutput());
+  writer->SetInput( rescaler->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
 
   std::cout << "Test finished." << std::endl;

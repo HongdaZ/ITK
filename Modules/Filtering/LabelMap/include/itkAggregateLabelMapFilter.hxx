@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,32 +23,33 @@
 
 namespace itk
 {
-template <typename TImage>
+template< typename TImage >
 void
-AggregateLabelMapFilter<TImage>::GenerateData()
+AggregateLabelMapFilter< TImage >
+::GenerateData()
 {
   // Allocate the output
   this->AllocateOutputs();
 
-  ImageType * output = this->GetOutput();
+  ImageType *output = this->GetOutput();
 
-  ProgressReporter progress(this, 0, output->GetNumberOfLabelObjects());
+  ProgressReporter progress( this, 0, output->GetNumberOfLabelObjects() );
 
-  typename TImage::Iterator it(output);
-  if (!it.IsAtEnd())
-  {
-    LabelObjectType * mainLo = it.GetLabelObject();
+  typename TImage::Iterator it( output );
+  if ( ! it.IsAtEnd() )
+    {
+    LabelObjectType *mainLo = it.GetLabelObject();
     progress.CompletedPixel();
     ++it;
-    while (!it.IsAtEnd())
-    {
-      LabelObjectType *                           lo = it.GetLabelObject();
-      typename LabelObjectType::ConstLineIterator lit(lo);
-      while (!lit.IsAtEnd())
+    while ( ! it.IsAtEnd() )
       {
-        mainLo->AddLine(lit.GetLine());
+      LabelObjectType *lo = it.GetLabelObject();
+      typename LabelObjectType::ConstLineIterator lit( lo );
+      while( ! lit.IsAtEnd() )
+        {
+        mainLo->AddLine( lit.GetLine() );
         ++lit;
-      }
+        }
       // be sure to have the lines well organized
       mainLo->Optimize();
 
@@ -57,13 +58,14 @@ AggregateLabelMapFilter<TImage>::GenerateData()
       // must increment the iterator before removing the object to avoid
       // invalidating the iterator
       output->RemoveLabelObject(lo);
+      }
     }
-  }
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-AggregateLabelMapFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
+AggregateLabelMapFilter< TImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
 }

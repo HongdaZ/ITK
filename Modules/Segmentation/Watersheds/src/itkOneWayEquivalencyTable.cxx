@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,23 +19,19 @@
 
 namespace itk
 {
-bool
-OneWayEquivalencyTable::Add(unsigned long a, unsigned long b)
+bool OneWayEquivalencyTable::Add(unsigned long a, unsigned long b)
 {
   //
   // Unlike EquivalencyTable, the order of the equivalence is important.
   //
-  std::pair<Iterator, bool> result;
-  if (a == b)
-  {
-    return false;
-  }
-  result = m_HashMap.insert(ValueType(a, b));
+  std::pair< Iterator, bool > result;
+  if ( a == b ) { return false; }
+  result = m_HashMap.insert( ValueType(a, b) );
 
   return result.second;
 }
 
-// void OneWayEquivalencyTable::PrintHashTable()
+//void OneWayEquivalencyTable::PrintHashTable()
 //{
 //  ConstIterator it = this->Begin();
 //  while (it != this->End() )
@@ -45,42 +41,41 @@ OneWayEquivalencyTable::Add(unsigned long a, unsigned long b)
 //    }
 //}
 
-void
-OneWayEquivalencyTable::Flatten()
+void OneWayEquivalencyTable::Flatten()
 {
-  auto it = this->Begin();
+  Iterator it = this->Begin();
 
-  while (it != this->End())
-  {
-    (*it).second = this->RecursiveLookup((*it).first);
+  while ( it != this->End() )
+    {
+    ( *it ).second = this->RecursiveLookup( ( *it ).first );
     it++;
-  }
+    }
 }
 
-unsigned long
-OneWayEquivalencyTable::RecursiveLookup(const unsigned long a) const
+unsigned long OneWayEquivalencyTable::RecursiveLookup(const unsigned long a) const
 {
   unsigned long ans = a;
   unsigned long last_ans = a;
 
   ConstIterator it;
-  auto          hashEnd = m_HashMap.end();
+  ConstIterator hashEnd = m_HashMap.end();
 
-  while ((it = m_HashMap.find(ans)) != hashEnd)
-  {
-    ans = (*it).second;
-    if (ans == a)
+  while ( ( it = m_HashMap.find(ans) ) != hashEnd )
     {
-      return last_ans; // about to cycle again.
-    }
+    ans = ( *it ).second;
+    if ( ans == a )
+      {
+      return last_ans;              // about to cycle again.
+      }
     last_ans = ans;
-  }
+    }
 
   return ans;
 }
 
 void
-OneWayEquivalencyTable ::PrintSelf(std::ostream & os, Indent indent) const
+OneWayEquivalencyTable
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

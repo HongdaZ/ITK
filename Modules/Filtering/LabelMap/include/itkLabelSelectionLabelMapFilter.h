@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@
 #include <set>
 
 
-namespace itk
-{
-/**
- *\class LabelSelectionLabelMapFilter
+namespace itk {
+/** \class LabelSelectionLabelMapFilter
  * \brief remove the objects according to the value of their attribute
  *
  * LabelSelectionLabelMapFilter removes the objects in a label collection image
@@ -51,89 +49,85 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage>
-class LabelSelectionLabelMapFilter
-  : public AttributeSelectionLabelMapFilter<
-      TImage,
-      typename Functor::LabelLabelObjectAccessor<typename TImage::LabelObjectType>>
+template<typename TImage>
+class LabelSelectionLabelMapFilter :
+    public AttributeSelectionLabelMapFilter<TImage, typename Functor::LabelLabelObjectAccessor< typename TImage::LabelObjectType > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelSelectionLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef LabelSelectionLabelMapFilter Self;
+  typedef AttributeSelectionLabelMapFilter<TImage, typename Functor::LabelLabelObjectAccessor< typename TImage::LabelObjectType > >
+                                       Superclass;
+  typedef SmartPointer<Self>           Pointer;
+  typedef SmartPointer<const Self>     ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = LabelSelectionLabelMapFilter;
-  using Superclass =
-    AttributeSelectionLabelMapFilter<TImage,
-                                     typename Functor::LabelLabelObjectAccessor<typename TImage::LabelObjectType>>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TImage                              ImageType;
+  typedef typename ImageType::Pointer         ImagePointer;
+  typedef typename ImageType::ConstPointer    ImageConstPointer;
+  typedef typename ImageType::PixelType       PixelType;
+  typedef typename ImageType::IndexType       IndexType;
 
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
+  typedef typename Superclass::AttributeAccessorType AttributeAccessorType;
+  typedef typename Superclass::AttributeValueType    AttributeValueType;
 
-  using AttributeAccessorType = typename Superclass::AttributeAccessorType;
-  using AttributeValueType = typename Superclass::AttributeValueType;
-
-  using AttributeSetType = typename Superclass::AttributeSetType;
+  typedef typename Superclass::AttributeSetType AttributeSetType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LabelSelectionLabelMapFilter, AttributeSelectionLabelMapFilter);
+  itkTypeMacro(LabelSelectionLabelMapFilter,
+               AttributeSelectionLabelMapFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  /*  itkConceptMacro(InputEqualityComparableCheck,
-      (Concept::EqualityComparable<InputImagePixelType>));
-    itkConceptMacro(IntConvertibleToInputCheck,
-      (Concept::Convertible<int, InputImagePixelType>));
-    itkConceptMacro(InputOStreamWritableCheck,
-      (Concept::OStreamWritable<InputImagePixelType>));*/
+/*  itkConceptMacro(InputEqualityComparableCheck,
+    (Concept::EqualityComparable<InputImagePixelType>));
+  itkConceptMacro(IntConvertibleToInputCheck,
+    (Concept::Convertible<int, InputImagePixelType>));
+  itkConceptMacro(InputOStreamWritableCheck,
+    (Concept::OStreamWritable<InputImagePixelType>));*/
   // End concept checking
 #endif
 
-  const AttributeSetType &
-  GetLabelSet() const
-  {
+  const AttributeSetType & GetLabelSet() const
+    {
     return this->GetAttributeSet();
-  }
+    }
 
-  void
-  SetLabelSet(const AttributeSetType & set)
-  {
-    this->SetAttributeSet(set);
-  }
+  void SetLabelSet( const AttributeSetType & set )
+    {
+    this->SetAttributeSet( set );
+    }
 
   /** Clear the attribute set, and add the attribute passed in parameter */
-  void
-  SetLabel(const AttributeValueType & attr)
-  {
-    this->SetAttribute(attr);
-  }
+  void SetLabel( const AttributeValueType & attr )
+    {
+    this->SetAttribute( attr );
+    }
 
-  void
-  ClearLabelSet()
-  {
+  void ClearLabelSet()
+    {
     this->ClearAttributeSet();
-  }
+    }
 
-  void
-  AddLabel(const AttributeValueType & attr)
-  {
-    this->AddAttribute(attr);
-  }
+  void AddLabel( const AttributeValueType & attr )
+    {
+    this->AddAttribute( attr );
+    }
 
 protected:
-  LabelSelectionLabelMapFilter() = default;
-  ~LabelSelectionLabelMapFilter() override = default;
+  LabelSelectionLabelMapFilter() {};
+  ~LabelSelectionLabelMapFilter() ITK_OVERRIDE {};
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LabelSelectionLabelMapFilter);
+
 }; // end of class
 
 } // end namespace itk

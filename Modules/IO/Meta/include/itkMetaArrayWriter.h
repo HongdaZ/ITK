@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ namespace itk
 class ITKIOMeta_EXPORT MetaArrayWriter : public LightProcessObject
 {
 public:
-  /** SmartPointer type alias support */
-  using Self = MetaArrayWriter;
-  using Superclass = LightProcessObject;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** SmartPointer typedef support. */
+  typedef MetaArrayWriter             Self;
+  typedef LightProcessObject          Superclass;
+
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,48 +62,53 @@ public:
   itkGetConstMacro(Binary, bool);
 
   /** Set the input itk Array to write. */
-  template <typename TValue>
-  void
-  SetInput(MET_ValueEnumType _metaElementType, const Array<TValue> * _array)
+  template< typename TValue >
+  void SetInput(MET_ValueEnumType _metaElementType,
+                const Array< TValue > *_array)
   {
-    m_Buffer = (const void *)(_array->data_block());
-    m_MetaArray.InitializeEssential(_array->Size(), _metaElementType);
+    m_Buffer = (const void *)( _array->data_block() );
+    m_MetaArray.InitializeEssential(_array->Size(),
+                                    _metaElementType);
   }
 
   /** Set the input itk FixedArray to write. */
-  template <typename TValue, unsigned int VLength>
-  void
-  SetInput(MET_ValueEnumType _metaElementType, const FixedArray<TValue, VLength> * _array)
+  template< typename TValue, unsigned int VLength >
+  void SetInput(MET_ValueEnumType _metaElementType,
+                const FixedArray< TValue, VLength > *_array)
   {
-    m_Buffer = (const void *)(_array->GetDataPointer());
-    m_MetaArray.InitializeEssential(VLength, _metaElementType);
+    m_Buffer = (const void *)( _array->GetDataPointer() );
+    m_MetaArray.InitializeEssential(VLength,
+                                    _metaElementType);
   }
 
   /** Set the input itk Vector to write. */
-  template <typename TValue, unsigned int VLength>
-  void
-  SetInput(MET_ValueEnumType _metaElementType, const Vector<TValue, VLength> * _vector)
+  template< typename TValue, unsigned int VLength >
+  void SetInput(MET_ValueEnumType _metaElementType,
+                const Vector< TValue, VLength > *_vector)
   {
-    m_Buffer = (const void *)(_vector->GetDataPointer());
-    m_MetaArray.InitializeEssential(VLength, _metaElementType);
+    m_Buffer = (const void *)( _vector->GetDataPointer() );
+    m_MetaArray.InitializeEssential(VLength,
+                                    _metaElementType);
   }
 
   /** Set the input itk CovariantVector to write. */
-  template <typename TValue, unsigned int VLength>
-  void
-  SetInput(MET_ValueEnumType _metaElementType, const CovariantVector<TValue, VLength> * _vector)
+  template< typename TValue, unsigned int VLength >
+  void SetInput(MET_ValueEnumType _metaElementType,
+                const CovariantVector< TValue, VLength > *_vector)
   {
-    m_Buffer = (const void *)(_vector->GetDataPointer());
-    m_MetaArray.InitializeEssential(VLength, _metaElementType);
+    m_Buffer = (const void *)( _vector->GetDataPointer() );
+    m_MetaArray.InitializeEssential(VLength,
+                                    _metaElementType);
   }
 
   /** Set the input itk VariableLengthVector to write. */
-  template <typename TValue>
-  void
-  SetInput(MET_ValueEnumType _metaElementType, const VariableLengthVector<TValue> * _vector)
+  template< typename TValue >
+  void SetInput(MET_ValueEnumType _metaElementType,
+                const VariableLengthVector< TValue > *_vector)
   {
-    m_Buffer = (const void *)(_vector->GetDataPointer());
-    m_MetaArray.InitializeEssential(_vector->Size(), _metaElementType);
+    m_Buffer = (const void *)( _vector->GetDataPointer() );
+    m_MetaArray.InitializeEssential(_vector->Size(),
+                                    _metaElementType);
   }
 
   /** Copies the elements from an array of arrays into the output
@@ -112,22 +118,28 @@ public:
    *  array position. Expected form itk::Array< itk::Array< * > >.
    *  May work for othesub-array-types that define the [] operator and the
    *  GetSize() function. */
-  template <typename TValue>
-  void
-  SetMultiChannelInput(MET_ValueEnumType _metaElementType, int, const Array<TValue> * _array)
+  template< typename TValue >
+  void SetMultiChannelInput(MET_ValueEnumType _metaElementType,
+                            int ,
+                            const Array< TValue > *_array)
   {
     int rows = _array->GetSize();
-    int cols = (*_array)[0].GetSize();
+    int cols = ( *_array )[0].GetSize();
 
-    m_MetaArray.InitializeEssential(rows, _metaElementType, cols, nullptr, true, true);
+    m_MetaArray.InitializeEssential(rows,
+                                    _metaElementType,
+                                    cols,
+                                    ITK_NULLPTR,
+                                    true,
+                                    true);
     m_Buffer = m_MetaArray.ElementData();
-    for (int i = 0; i < rows; i++)
-    {
-      for (int j = 0; j < cols; j++)
+    for ( int i = 0; i < rows; i++ )
       {
-        m_MetaArray.ElementData(i * cols + j, (double)((*_array)[i][j]));
+      for ( int j = 0; j < cols; j++ )
+        {
+        m_MetaArray.ElementData( i * cols + j, (double)( ( *_array )[i][j] ) );
+        }
       }
-    }
   }
 
   /** Set/Get the precision of the writing. */
@@ -135,30 +147,29 @@ public:
   itkGetConstMacro(Precision, unsigned int);
 
   /** Set the data type written to the file. */
-  void
-  ConvertTo(MET_ValueEnumType _metaElementType);
+  void ConvertTo(MET_ValueEnumType _metaElementType);
 
   /** Write out the array. */
-  void
-  Update();
+  void Update();
 
 protected:
+
   MetaArrayWriter();
-  ~MetaArrayWriter() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MetaArrayWriter() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  bool m_Binary{ false };
 
-  unsigned int m_Precision{ 6 };
+  bool          m_Binary;
 
-  std::string m_FileName;
-  std::string m_DataFileName;
+  unsigned int  m_Precision;
 
-  MetaArray m_MetaArray;
+  std::string   m_FileName;
+  std::string   m_DataFileName;
 
-  const void * m_Buffer{ nullptr };
+  MetaArray     m_MetaArray;
+
+  const void   *m_Buffer;
 };
 } // namespace itk
 

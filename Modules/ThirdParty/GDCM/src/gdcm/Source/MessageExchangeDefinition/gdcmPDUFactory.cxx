@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ namespace network
 //eventually needs to be smartpointer'd
 BasePDU* PDUFactory::ConstructPDU(uint8_t itemtype)
 {
-  BasePDU* thePDU = nullptr;
+  BasePDU* thePDU = NULL;
   switch (itemtype)
     {
   case 0x01:
@@ -84,22 +84,22 @@ EEventID PDUFactory::DetermineEventByPDU(const BasePDU* inPDU)
   if(inPDU)
     {
     const AAssociateRQPDU* theAAssociateRQPDU = dynamic_cast<const AAssociateRQPDU*>(inPDU);
-    if (theAAssociateRQPDU != nullptr)
+    if (theAAssociateRQPDU != NULL)
       {
       return eAASSOCIATE_RQPDUreceived;
       }
     const AAssociateACPDU* theAAssociateACPDU = dynamic_cast<const AAssociateACPDU*>(inPDU);
-    if (theAAssociateACPDU != nullptr)
+    if (theAAssociateACPDU != NULL)
       {
       return eASSOCIATE_ACPDUreceived;
       }
     const AAssociateRJPDU* theAAssociateRJPDU = dynamic_cast<const AAssociateRJPDU*>(inPDU);
-    if (theAAssociateRJPDU != nullptr)
+    if (theAAssociateRJPDU != NULL)
       {
       return eASSOCIATE_RJPDUreceived;
       }
     const PDataTFPDU* thePDataTFPDU = dynamic_cast<const PDataTFPDU*>(inPDU);
-    if (thePDataTFPDU != nullptr)
+    if (thePDataTFPDU != NULL)
       {
       ///
       const PresentationDataValue &pdv = thePDataTFPDU->GetPresentationDataValue(0);
@@ -117,17 +117,17 @@ EEventID PDUFactory::DetermineEventByPDU(const BasePDU* inPDU)
       return ePDATATFPDU;
       }
     const AReleaseRQPDU* theAReleaseRQPDU = dynamic_cast<const AReleaseRQPDU*>(inPDU);
-    if (theAReleaseRQPDU != nullptr)
+    if (theAReleaseRQPDU != NULL)
       {
       return eARELEASE_RQPDUReceivedOpen;
       }
     const AReleaseRPPDU* theAReleaseRPPDU = dynamic_cast<const AReleaseRPPDU*>(inPDU);
-    if (theAReleaseRPPDU != nullptr)
+    if (theAReleaseRPPDU != NULL)
       {
       return eARELEASE_RPPDUReceived;
       }
     const AAbortPDU* theAAbortPDU = dynamic_cast<const AAbortPDU*>(inPDU);
-    if (theAAbortPDU != nullptr)
+    if (theAAbortPDU != NULL)
       {
       return eAABORTPDUReceivedOpen;
       }
@@ -343,7 +343,7 @@ std::vector<PresentationDataValue> PDUFactory::GetPDVs(const std::vector<BasePDU
   for (itor = inDataPDUs.begin(); itor < inDataPDUs.end(); itor++)
     {
     PDataTFPDU* thePDataTFPDU = dynamic_cast<PDataTFPDU*>(*itor);
-    if (thePDataTFPDU == nullptr)
+    if (thePDataTFPDU == NULL)
       {
       assert(0); //shouldn't really get here.
       return outPDVs; //just stop now, no longer with data pdus.

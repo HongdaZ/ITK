@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class SignedMaurerDistanceMapImageFilter
+/** \class SignedMaurerDistanceMapImageFilter
  *
  *  \brief This filter calculates the Euclidean distance transform
  *  of a binary image in linear time for arbitrary dimensions.
@@ -58,62 +57,64 @@ namespace itk
  *
  * \ingroup ImageFeatureExtraction
  * \ingroup ITKDistanceMap
- *
- * \sphinx
- * \sphinxexample{Filtering/DistanceMap/MaurerDistanceMapOfBinary,Maurer Distance Map Of Binary Image}
- * \endsphinx
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT SignedMaurerDistanceMapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT SignedMaurerDistanceMapImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SignedMaurerDistanceMapImageFilter);
 
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  typedef TOutputImage                          OutputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
 
-  /** Standard class type aliases. */
-  using Self = SignedMaurerDistanceMapImageFilter;
-  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
+  /** Standard class typedefs. */
+  typedef SignedMaurerDistanceMapImageFilter  Self;
+  typedef ImageToImageFilter<
+    InputImageType,
+    OutputImageType >                         Superclass;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SignedMaurerDistanceMapImageFilter, ImageToImageFilter);
+  itkTypeMacro(SignedMaurerDistanceMapImageFilter,
+               ImageToImageFilter);
 
-  using InputRegionType = typename InputImageType::RegionType;
-  using OutputRegionType = typename OutputImageType::RegionType;
+  typedef typename InputImageType::RegionType   InputRegionType;
+  typedef typename OutputImageType::RegionType  OutputRegionType;
 
-  /** Image type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType  InputPixelType;
+  typedef typename OutputImageType::PixelType OutputPixelType;
 
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputSizeValueType = typename InputImageType::SizeValueType;
-  using OutputSizeType = typename OutputImageType::SizeType;
-  using OutputSizeValueType = typename OutputImageType::SizeValueType;
+  typedef typename InputImageType::SizeType       InputSizeType;
+  typedef typename InputImageType::SizeValueType  InputSizeValueType;
+  typedef typename OutputImageType::SizeType      OutputSizeType;
+  typedef typename OutputImageType::SizeValueType OutputSizeValueType;
 
-  using InputIndexType = typename InputImageType::IndexType;
-  using InputIndexValueType = typename InputImageType::IndexValueType;
-  using OutputIndexType = typename OutputImageType::IndexType;
-  using OutputIndexValueType = typename OutputImageType::IndexValueType;
+  typedef typename InputImageType::IndexType        InputIndexType;
+  typedef typename InputImageType::IndexValueType   InputIndexValueType;
+  typedef typename OutputImageType::IndexType       OutputIndexType;
+  typedef typename OutputImageType::IndexValueType  OutputIndexValueType;
 
-  using InputSpacingType = typename InputImageType::SpacingType;
-  using OutputSpacingType = typename OutputImageType::SpacingType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef typename InputImageType::SpacingType  InputSpacingType;
+  typedef typename OutputImageType::SpacingType OutputSpacingType;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
 
   /** Set if the distance should be squared. */
   itkSetMacro(SquaredDistance, bool);
@@ -155,46 +156,40 @@ public:
 
 protected:
   SignedMaurerDistanceMapImageFilter();
-  ~SignedMaurerDistanceMapImageFilter() override = default;
+  virtual ~SignedMaurerDistanceMapImageFilter() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  unsigned int
-  SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType & splitRegion) override;
+  virtual unsigned int SplitRequestedRegion(unsigned int i, unsigned int num,
+    OutputImageRegionType & splitRegion) ITK_OVERRIDE;
 
-  void
-  ThreadedGenerateData(const OutputImageRegionType &, ThreadIdType) override;
-
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType &) override
-  {
-    itkExceptionMacro("This class requires threadId so it must use classic multi-threading model");
-  }
+  virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  void
-       Voronoi(unsigned int, OutputIndexType idx, OutputImageType * output);
-  bool Remove(OutputPixelType, OutputPixelType, OutputPixelType, OutputPixelType, OutputPixelType, OutputPixelType);
+  ITK_DISALLOW_COPY_AND_ASSIGN(SignedMaurerDistanceMapImageFilter);
+
+  void Voronoi(unsigned int, OutputIndexType idx, OutputImageType *output );
+  bool Remove(OutputPixelType, OutputPixelType, OutputPixelType,
+              OutputPixelType, OutputPixelType, OutputPixelType);
 
   InputPixelType   m_BackgroundValue;
   InputSpacingType m_Spacing;
 
-  unsigned int m_CurrentDimension{ 0 };
+  unsigned int m_CurrentDimension;
 
-  bool m_InsideIsPositive{ false };
-  bool m_UseImageSpacing{ true };
-  bool m_SquaredDistance{ false };
+  bool m_InsideIsPositive;
+  bool m_UseImageSpacing;
+  bool m_SquaredDistance;
 
-  const InputImageType * m_InputCache;
+  const InputImageType *m_InputCache;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSignedMaurerDistanceMapImageFilter.hxx"
+#include "itkSignedMaurerDistanceMapImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,42 +49,42 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename TInput = float, typename TOutput = double>
-class ITK_TEMPLATE_EXPORT AtanRegularizedHeavisideStepFunction
-  : public RegularizedHeavisideStepFunction<TInput, TOutput>
+template< typename TInput = float, typename TOutput = double >
+class ITK_TEMPLATE_EXPORT AtanRegularizedHeavisideStepFunction:
+  public RegularizedHeavisideStepFunction< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AtanRegularizedHeavisideStepFunction);
-
-  using Self = AtanRegularizedHeavisideStepFunction;
-  using Superclass = RegularizedHeavisideStepFunction<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef AtanRegularizedHeavisideStepFunction                Self;
+  typedef RegularizedHeavisideStepFunction< TInput, TOutput > Superclass;
+  typedef SmartPointer< Self >                                Pointer;
+  typedef SmartPointer< const Self >                          ConstPointer;
 
   itkNewMacro(Self);
 
   itkTypeMacro(AtanRegularizedHeavisideStepFunction, RegularizedHeavisideStepFunction);
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
-  using RealType = typename Superclass::RealType;
+  typedef typename Superclass::InputType  InputType;
+  typedef typename Superclass::OutputType OutputType;
+  typedef typename Superclass::RealType   RealType;
 
   /** Evaluate at the specified input position */
-  OutputType
-  Evaluate(const InputType & input) const override;
+  virtual OutputType Evaluate(const InputType & input) const ITK_OVERRIDE;
 
   /** Evaluate the derivative at the specified input position */
-  OutputType
-  EvaluateDerivative(const InputType & input) const override;
+  virtual OutputType EvaluateDerivative(const InputType & input) const ITK_OVERRIDE;
 
 protected:
-  AtanRegularizedHeavisideStepFunction() = default;
-  ~AtanRegularizedHeavisideStepFunction() override = default;
+
+  AtanRegularizedHeavisideStepFunction();
+  virtual ~AtanRegularizedHeavisideStepFunction() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AtanRegularizedHeavisideStepFunction);
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAtanRegularizedHeavisideStepFunction.hxx"
+#include "itkAtanRegularizedHeavisideStepFunction.hxx"
 #endif
 
 #endif

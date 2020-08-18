@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,21 +43,20 @@ namespace itk
  * \sa NeighborhoodIterator
  * \ingroup ITKImageFilterBase
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFilterBase/ApplyKernelToEveryPixel,Apply Kernel To Every Pixel}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Images/NeighborhoodOperatorImageFilter,Apply a kernel to every pixel in an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage, typename TOperatorValueType = typename TOutputImage::PixelType>
-class ITK_TEMPLATE_EXPORT NeighborhoodOperatorImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage, typename TOperatorValueType = typename TOutputImage::PixelType >
+class ITK_TEMPLATE_EXPORT NeighborhoodOperatorImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodOperatorImageFilter);
-
-  /** Standard "Self" & Superclass type alias. */
-  using Self = NeighborhoodOperatorImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" & Superclass typedef. */
+  typedef NeighborhoodOperatorImageFilter                 Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef       SmartPointer< Self >                      Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,71 +66,65 @@ public:
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  using OperatorValueType = TOperatorValueType;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename  TInputImage::PixelType         InputPixelType;
+  typedef typename  TInputImage::InternalPixelType InputInternalPixelType;
+  typedef TOperatorValueType                       OperatorValueType;
 
-  using InputPixelValueType = typename NumericTraits<InputPixelType>::ValueType;
-  using ComputingPixelType = typename NumericTraits<OutputPixelType>::RealType;
+  typedef typename NumericTraits<InputPixelType>::ValueType InputPixelValueType;
+  typedef typename NumericTraits<OutputPixelType>::RealType ComputingPixelType;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Image type alias support */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
+  /** Image typedef support. */
+  typedef TInputImage                      InputImageType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename InputImageType::Pointer InputImagePointer;
 
   /** Typedef for generic boundary condition pointer. */
-  using ImageBoundaryConditionPointerType = ImageBoundaryCondition<InputImageType> *;
+  typedef ImageBoundaryCondition< InputImageType > *
+  ImageBoundaryConditionPointerType;
 
   /** Typedef for the default boundary condition */
-  using DefaultBoundaryCondition = ZeroFluxNeumannBoundaryCondition<InputImageType>;
+  typedef ZeroFluxNeumannBoundaryCondition< InputImageType > DefaultBoundaryCondition;
 
-  /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
 
   /** Neighborhood types */
-  using OutputNeighborhoodType = Neighborhood<OperatorValueType, Self::ImageDimension>;
+  typedef Neighborhood< OperatorValueType,
+                        itkGetStaticConstMacro(ImageDimension) > OutputNeighborhoodType;
 
   /** Sets the operator that is used to filter the image. Note
    * that the operator is stored as an internal COPY (it
    * is not part of the pipeline). */
-  void
-  SetOperator(const OutputNeighborhoodType & p)
+  void SetOperator(const OutputNeighborhoodType & p)
   {
     m_Operator = p;
     this->Modified();
   }
 
   /** Get the operator that is used to filter the image. */
-  const OutputNeighborhoodType &
-  GetOperator() const
-  {
-    return m_Operator;
-  }
+  const OutputNeighborhoodType & GetOperator() const
+  { return m_Operator; }
 
   /** Allows a user to override the internal boundary condition. Care should be
    * be taken to ensure that the overriding boundary condition is a persistent
    * object during the time it is referenced.  The overriding condition
    * can be of a different type than the default type as long as it is
    * a subclass of ImageBoundaryCondition. */
-  void
-  OverrideBoundaryCondition(const ImageBoundaryConditionPointerType i)
-  {
-    m_BoundsCondition = i;
-  }
+  void OverrideBoundaryCondition(const ImageBoundaryConditionPointerType i)
+  { m_BoundsCondition = i; }
 
   /** Get the boundary condition specified */
-  ImageBoundaryConditionPointerType
-  GetBoundaryCondition()
-  {
-    return m_BoundsCondition;
-  }
+  ImageBoundaryConditionPointerType GetBoundaryCondition()
+  { return m_BoundsCondition; }
 
   /** NeighborhoodOperatorImageFilter needs a larger input requested
    * region than the output requested region.  As such,
@@ -140,50 +133,48 @@ public:
    * execution model.
    *
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, ImageDimension>));
-  itkConceptMacro(OperatorConvertibleToOutputCheck, (Concept::Convertible<OperatorValueType, OutputPixelType>));
-  itkConceptMacro(InputConvertibleToOperatorCheck, (Concept::Convertible<InputPixelValueType, OperatorValueType>));
-  itkConceptMacro(OperatorMultiplyOperatorCheck, (Concept::MultiplyOperator<OperatorValueType>));
-  itkConceptMacro(OperatorAdditiveOperatorsCheck, (Concept::AdditiveOperators<OperatorValueType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, ImageDimension > ) );
+  itkConceptMacro( OperatorConvertibleToOutputCheck,
+                   ( Concept::Convertible< OperatorValueType, OutputPixelType > ) );
+  itkConceptMacro( InputConvertibleToOperatorCheck,
+                   ( Concept::Convertible< InputPixelValueType, OperatorValueType > ) );
+  itkConceptMacro( OperatorMultiplyOperatorCheck,
+                   ( Concept::MultiplyOperator< OperatorValueType > ) );
+  itkConceptMacro( OperatorAdditiveOperatorsCheck,
+                   ( Concept::AdditiveOperators< OperatorValueType > ) );
   // End concept checking
 #endif
 
 protected:
   NeighborhoodOperatorImageFilter()
-  {
-    m_BoundsCondition = static_cast<ImageBoundaryConditionPointerType>(&m_DefaultBoundaryCondition);
-    this->DynamicMultiThreadingOn();
-    this->ThreaderUpdateProgressOff();
-  }
-  ~NeighborhoodOperatorImageFilter() override = default;
+  { m_BoundsCondition = static_cast< ImageBoundaryConditionPointerType >( &m_DefaultBoundaryCondition ); }
+  virtual ~NeighborhoodOperatorImageFilter() ITK_OVERRIDE {}
 
   /** NeighborhoodOperatorImageFilter can be implemented as a
    * multithreaded filter.  Therefore, this implementation provides a
-   * DynamicThreadedGenerateData() routine which is called for each
+   * ThreadedGenerateData() routine which is called for each
    * processing thread. The output image data is allocated
    * automatically by the superclass prior to calling
-   * DynamicThreadedGenerateData().  DynamicThreadedGenerateData can only write to
+   * ThreadedGenerateData().  ThreadedGenerateData can only write to
    * the portion of the output image specified by the parameter
    * "outputRegionForThread"
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
-
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  {  Superclass::PrintSelf(os, indent); }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodOperatorImageFilter);
+
   /** Internal operator used to filter the image. */
   OutputNeighborhoodType m_Operator;
 
@@ -197,7 +188,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNeighborhoodOperatorImageFilter.hxx"
+#include "itkNeighborhoodOperatorImageFilter.hxx"
 #endif
 
 #endif

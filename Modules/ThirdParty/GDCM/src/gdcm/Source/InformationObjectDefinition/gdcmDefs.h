@@ -34,8 +34,6 @@ class GDCM_EXPORT Defs
 public:
   Defs();
   ~Defs();
-  Defs &operator=(const Defs &val) = delete;
-  Defs(const Defs &val) = delete;
 
   const Modules &GetModules() const { return Part3Modules; }
   Modules &GetModules() { return Part3Modules; }
@@ -72,6 +70,8 @@ private:
   Modules Part3Modules;
   IODs Part3IODs;
 
+  Defs &operator=(const Defs &val); // purposely not implemented
+  Defs(const Defs &val); // purposely not implemented
 };
 
 

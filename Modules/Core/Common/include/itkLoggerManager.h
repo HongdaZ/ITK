@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,13 +39,14 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT LoggerManager : public Object
+class ITKCommon_EXPORT LoggerManager:public Object
 {
 public:
-  using Self = LoggerManager;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+
+  typedef LoggerManager              Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LoggerManager, Object);
@@ -53,65 +54,59 @@ public:
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);
 
-  using PriorityLevelEnum = Logger::PriorityLevelEnum;
+  typedef Logger::PriorityLevelType PriorityLevelType;
 
-  using OutputType = Logger::OutputType;
+  typedef Logger::OutputType OutputType;
 
-  using LoggerPointer = Logger::Pointer;
-  using ThreadLoggerPointer = ThreadLogger::Pointer;
+  typedef Logger::Pointer       LoggerPointer;
+  typedef ThreadLogger::Pointer ThreadLoggerPointer;
 
-  using NameType = std::string;
+  typedef std::string NameType;
 
   /** create a logger and add it into LoggerManager */
-  LoggerPointer
-  CreateLogger(const NameType &  name,
-               PriorityLevelEnum level,
-               PriorityLevelEnum levelForFlushing = LoggerBase::PriorityLevelEnum::MUSTFLUSH);
+  LoggerPointer CreateLogger(
+    const NameType & name,
+    PriorityLevelType level,
+    PriorityLevelType levelForFlushing = LoggerBase::MUSTFLUSH);
 
   /** create a thread logger and add it into LoggerManager */
-  ThreadLoggerPointer
-  CreateThreadLogger(const NameType &  name,
-                     PriorityLevelEnum level,
-                     PriorityLevelEnum levelForFlushing = LoggerBase::PriorityLevelEnum::MUSTFLUSH);
+  ThreadLoggerPointer CreateThreadLogger(
+    const NameType & name,
+    PriorityLevelType level,
+    PriorityLevelType levelForFlushing = LoggerBase::MUSTFLUSH);
 
   /** Registers a logger */
-  void
-  AddLogger(const NameType & name, Logger * logger);
+  void AddLogger(const NameType & name, Logger *logger);
 
-  Logger *
-  GetLogger(const NameType & name);
+  Logger * GetLogger(const NameType & name);
 
-  void
-  SetPriorityLevel(PriorityLevelEnum level);
+  void SetPriorityLevel(PriorityLevelType level);
 
-  void
-  SetLevelForFlushing(PriorityLevelEnum level);
+  void SetLevelForFlushing(PriorityLevelType level);
 
-  void
-  AddLogOutput(OutputType * output);
+  void AddLogOutput(OutputType *output);
 
-  void
-  Write(PriorityLevelEnum level, std::string const & content);
+  void Write(PriorityLevelType level, std::string const & content);
 
-  void
-  Flush();
+  void Flush();
 
 protected:
+
   /** Constructor */
-  LoggerManager() = default;
+  LoggerManager() {}
 
   /** Destructor */
-  ~LoggerManager() override = default;
+  virtual ~LoggerManager() ITK_OVERRIDE {}
 
   /** Print contents of a LoggerManager */
-  void
-  PrintSelf(std::ostream & s, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & s, Indent indent) const ITK_OVERRIDE;
 
 private:
-  using ContainerType = std::map<NameType, LoggerPointer>;
+
+  typedef std::map< NameType, LoggerPointer > ContainerType;
 
   ContainerType m_LoggerSet;
-}; // class Logger
+};  // class Logger
 } // namespace itk
 
-#endif // itkLoggerManager_h
+#endif  // itkLoggerManager_h

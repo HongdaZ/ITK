@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,20 +21,23 @@
 
 namespace itk
 {
-void
-NiftiImageIOFactory::PrintSelf(std::ostream &, Indent) const
+void NiftiImageIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 NiftiImageIOFactory::NiftiImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkNiftiImageIO", "Nifti Image IO", true, CreateObjectFunction<NiftiImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkNiftiImageIO",
+                          "Nifti Image IO",
+                          1,
+                          CreateObjectFunction< NiftiImageIO >::New() );
 }
 
-NiftiImageIOFactory::~NiftiImageIOFactory() = default;
+NiftiImageIOFactory::~NiftiImageIOFactory()
+{}
 
 const char *
-NiftiImageIOFactory::GetITKSourceVersion() const
+NiftiImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -50,14 +53,13 @@ NiftiImageIOFactory::GetDescription() const
 
 static bool NiftiImageIOFactoryHasBeenRegistered;
 
-void ITKIONIFTI_EXPORT
-     NiftiImageIOFactoryRegister__Private()
+void ITKIONIFTI_EXPORT NiftiImageIOFactoryRegister__Private(void)
 {
-  if (!NiftiImageIOFactoryHasBeenRegistered)
-  {
+  if( ! NiftiImageIOFactoryHasBeenRegistered )
+    {
     NiftiImageIOFactoryHasBeenRegistered = true;
     NiftiImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

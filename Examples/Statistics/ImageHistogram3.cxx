@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,16 +47,15 @@
 
 #include "itkImageFileReader.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
 
-  if (argc < 2)
-  {
+  if( argc < 2 )
+    {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  ImageHistogram3  inputRGBImageFileName " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -69,33 +68,32 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelComponentType = unsigned char;
+  typedef unsigned char                         PixelComponentType;
 
-  using RGBPixelType = itk::RGBPixel<PixelComponentType>;
+  typedef itk::RGBPixel< PixelComponentType >   RGBPixelType;
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int                            Dimension = 2;
 
-  using RGBImageType = itk::Image<RGBPixelType, Dimension>;
+  typedef itk::Image< RGBPixelType, Dimension > RGBImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<RGBImageType>;
+  typedef itk::ImageFileReader< RGBImageType >  ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Problem encoutered while reading image file : " << argv[1]
-              << std::endl;
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    std::cerr << "Problem encoutered while reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -107,9 +105,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramFilterType = itk::Statistics::ImageToHistogramFilter<RGBImageType>;
+  typedef itk::Statistics::ImageToHistogramFilter<
+                            RGBImageType >   HistogramFilterType;
 
-  HistogramFilterType::Pointer histogramFilter = HistogramFilterType::New();
+  HistogramFilterType::Pointer histogramFilter =
+                                             HistogramFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -128,15 +128,15 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SizeType = HistogramFilterType::HistogramSizeType;
+  typedef HistogramFilterType::HistogramSizeType   SizeType;
 
-  SizeType size(3);
+  SizeType size( 3 );
 
-  size[0] = 255; // number of bins for the Red   channel
-  size[1] = 1;   // number of bins for the Green channel
-  size[2] = 1;   // number of bins for the Blue  channel
+  size[0] = 255;        // number of bins for the Red   channel
+  size[1] =   1;        // number of bins for the Green channel
+  size[2] =   1;        // number of bins for the Blue  channel
 
-  histogramFilter->SetHistogramSize(size);
+  histogramFilter->SetHistogramSize( size );
   // Software Guide : EndCodeSnippet
 
 
@@ -148,7 +148,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramFilter->SetMarginalScale(10.0);
+  histogramFilter->SetMarginalScale( 10.0 );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -162,8 +162,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  HistogramFilterType::HistogramMeasurementVectorType lowerBound(3);
-  HistogramFilterType::HistogramMeasurementVectorType upperBound(3);
+  HistogramFilterType::HistogramMeasurementVectorType lowerBound( 3 );
+  HistogramFilterType::HistogramMeasurementVectorType upperBound( 3 );
 
   lowerBound[0] = 0;
   lowerBound[1] = 0;
@@ -172,8 +172,8 @@ main(int argc, char * argv[])
   upperBound[1] = 256;
   upperBound[2] = 256;
 
-  histogramFilter->SetHistogramBinMinimum(lowerBound);
-  histogramFilter->SetHistogramBinMaximum(upperBound);
+  histogramFilter->SetHistogramBinMinimum( lowerBound );
+  histogramFilter->SetHistogramBinMaximum( upperBound );
   // Software Guide : EndCodeSnippet
 
 
@@ -188,7 +188,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramFilter->SetInput(reader->GetOutput());
+  histogramFilter->SetInput(  reader->GetOutput()  );
 
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
@@ -209,7 +209,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramType = HistogramFilterType::HistogramType;
+  typedef HistogramFilterType::HistogramType  HistogramType;
 
   const HistogramType * histogram = histogramFilter->GetOutput();
   // Software Guide : EndCodeSnippet
@@ -249,15 +249,15 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  unsigned int channel = 0; // red channel
+  unsigned int channel = 0;  // red channel
 
   std::cout << "Histogram of the red component" << std::endl;
 
-  for (unsigned int bin = 0; bin < histogramSize; ++bin)
-  {
+  for (unsigned int bin=0; bin < histogramSize; ++bin)
+    {
     std::cout << "bin = " << bin << " frequency = ";
-    std::cout << histogram->GetFrequency(bin, channel) << std::endl;
-  }
+    std::cout << histogram->GetFrequency( bin, channel ) << std::endl;
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -272,11 +272,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 1;   // number of bins for the Red   channel
-  size[1] = 255; // number of bins for the Green channel
-  size[2] = 1;   // number of bins for the Blue  channel
+  size[0] =   1;  // number of bins for the Red   channel
+  size[1] = 255;  // number of bins for the Green channel
+  size[2] =   1;  // number of bins for the Blue  channel
 
-  histogramFilter->SetHistogramSize(size);
+  histogramFilter->SetHistogramSize( size );
 
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
@@ -290,15 +290,15 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  channel = 1; // green channel
+  channel = 1;  // green channel
 
   std::cout << "Histogram of the green component" << std::endl;
 
-  for (unsigned int bin = 0; bin < histogramSize; ++bin)
-  {
+  for (unsigned int bin=0; bin < histogramSize; ++bin)
+    {
     std::cout << "bin = " << bin << " frequency = ";
-    std::cout << histogram->GetFrequency(bin, channel) << std::endl;
-  }
+    std::cout << histogram->GetFrequency( bin, channel ) << std::endl;
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -311,11 +311,11 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  size[0] = 1;   // number of bins for the Red   channel
-  size[1] = 1;   // number of bins for the Green channel
-  size[2] = 255; // number of bins for the Blue  channel
+  size[0] =   1;  // number of bins for the Red   channel
+  size[1] =   1;  // number of bins for the Green channel
+  size[2] = 255;  // number of bins for the Blue  channel
 
-  histogramFilter->SetHistogramSize(size);
+  histogramFilter->SetHistogramSize( size );
 
   histogramFilter->Update();
   // Software Guide : EndCodeSnippet
@@ -329,16 +329,17 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  channel = 2; // blue channel
+  channel = 2;  // blue channel
 
   std::cout << "Histogram of the blue component" << std::endl;
 
-  for (unsigned int bin = 0; bin < histogramSize; ++bin)
-  {
+  for (unsigned int bin=0; bin < histogramSize; ++bin)
+    {
     std::cout << "bin = " << bin << " frequency = ";
-    std::cout << histogram->GetFrequency(bin, channel) << std::endl;
-  }
+    std::cout << histogram->GetFrequency( bin, channel ) << std::endl;
+    }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;
+
 }

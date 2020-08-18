@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,16 +36,15 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputImageFile ";
-    std::cerr << " insideValue    outsideValue   " << std::endl;
+    std::cerr << " insideValue    outsideValue   "  << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -55,9 +54,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
-  constexpr unsigned int Dimension = 2;
+  typedef  unsigned char  InputPixelType;
+  typedef  unsigned char  OutputPixelType;
+  const unsigned int      Dimension = 2;
   // Software Guide : EndCodeSnippet
 
 
@@ -69,8 +68,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -82,7 +81,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::OtsuThresholdImageFilter<InputImageType, OutputImageType>;
+  typedef itk::OtsuThresholdImageFilter<
+               InputImageType, OutputImageType >  FilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -96,7 +96,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
   // Software Guide : EndCodeSnippet
 
 
@@ -109,7 +109,7 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -126,8 +126,8 @@ main(int argc, char * argv[])
   // Software Guide : EndCodeSnippet
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  reader->SetFileName(argv[1]);
+  writer->SetInput( filter->GetOutput() );
+  reader->SetFileName( argv[1] );
 
 
   //  Software Guide : BeginLatex
@@ -141,7 +141,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -160,12 +160,12 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const OutputPixelType outsideValue = std::stoi(argv[3]);
-  const OutputPixelType insideValue = std::stoi(argv[4]);
+  const OutputPixelType outsideValue = atoi( argv[3] );
+  const OutputPixelType insideValue  = atoi( argv[4] );
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOutsideValue(outsideValue);
-  filter->SetInsideValue(insideValue);
+  filter->SetOutsideValue( outsideValue );
+  filter->SetInsideValue(  insideValue  );
   // Software Guide : EndCodeSnippet
 
 
@@ -181,13 +181,13 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << excp << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -230,15 +230,15 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << excp << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

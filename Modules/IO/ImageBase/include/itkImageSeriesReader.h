@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,16 +41,14 @@ namespace itk
  *
  */
 
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ImageSeriesReader : public ImageSource<TOutputImage>
+template< typename TOutputImage >
+class ITKIOImageBase_HIDDEN ImageSeriesReader:public ImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSeriesReader);
-
-  /** Standard class type aliases. */
-  using Self = ImageSeriesReader;
-  using Superclass = ImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef ImageSeriesReader           Self;
+  typedef ImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >        Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,47 +57,44 @@ public:
   itkTypeMacro(ImageSeriesReader, ImageSource);
 
   /** The size of the output image. */
-  using SizeType = typename TOutputImage::SizeType;
+  typedef typename TOutputImage::SizeType SizeType;
 
   /** The index of the output image. */
-  using IndexType = typename TOutputImage::IndexType;
+  typedef typename TOutputImage::IndexType IndexType;
 
   /** The region of the output image. */
-  using ImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType ImageRegionType;
 
   /** The pixel type of the output image. */
-  using OutputImagePixelType = typename TOutputImage::PixelType;
+  typedef typename TOutputImage::PixelType OutputImagePixelType;
 
   /** The pixel type of the output image. */
-  using DictionaryType = MetaDataDictionary;
-  using DictionaryRawPointer = MetaDataDictionary *;
-  using DictionaryArrayType = std::vector<DictionaryRawPointer>;
-  using DictionaryArrayRawPointer = const DictionaryArrayType *;
+  typedef MetaDataDictionary                  DictionaryType;
+  typedef MetaDataDictionary *                DictionaryRawPointer;
+  typedef std::vector< DictionaryRawPointer > DictionaryArrayType;
+  typedef const DictionaryArrayType *         DictionaryArrayRawPointer;
 
-  using FileNamesContainer = std::vector<std::string>;
+  typedef  std::vector< std::string > FileNamesContainer;
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */
-  void
-  SetFileNames(const FileNamesContainer & name)
+  void SetFileNames(const FileNamesContainer & name)
   {
-    if (m_FileNames != name)
-    {
+    if ( m_FileNames != name )
+      {
       m_FileNames = name;
       this->Modified();
-    }
+      }
   }
 
-  const FileNamesContainer &
-  GetFileNames() const
+  const FileNamesContainer & GetFileNames() const
   {
     return m_FileNames;
   }
 
   /** Set the first file name to be processed. This deletes previous
    * filenames. */
-  void
-  SetFileName(std::string const & name)
+  void SetFileName(std::string const & name)
   {
     m_FileNames.clear();
     m_FileNames.push_back(name);
@@ -107,8 +102,7 @@ public:
   }
 
   /** Add a single filename to the list of files. */
-  void
-  AddFileName(std::string const & name)
+  void AddFileName(std::string const & name)
   {
     m_FileNames.push_back(name);
     this->Modified();
@@ -119,12 +113,6 @@ public:
   itkSetMacro(ReverseOrder, bool);
   itkGetConstMacro(ReverseOrder, bool);
   itkBooleanMacro(ReverseOrder);
-
-  /** Do we want to force orthogonal direction cosines? On by default.
-   * Turning it off enables proper reading of DICOM series with gantry tilt. */
-  itkSetMacro(ForceOrthogonalDirection, bool);
-  itkGetConstMacro(ForceOrthogonalDirection, bool);
-  itkBooleanMacro(ForceOrthogonalDirection);
 
   /** Set/Get the ImageIO helper class. By default, the
    * ImageSeriesReader uses the factory mechanism of the
@@ -148,52 +136,43 @@ public:
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation(void) ITK_OVERRIDE;
 
   /** Give the reader a chance to indicate that it will produce more
    * output than it was requested to produce. ImageSeriesReader cannot
    * currently read a portion of an image (since the ImageIO objects
    * cannot read a portion of an image), so the ImageSeriesReader must
    * enlarge the RequestedRegion to the size of the image on disk. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
   /** Get access to the Array of MetaDataDictionaries which are
-   * updated in the GenerateData methods */
-  DictionaryArrayRawPointer
-  GetMetaDataDictionaryArray() const;
+* updated in the GenerateData methods */
+  DictionaryArrayRawPointer GetMetaDataDictionaryArray() const;
 
   /** Set the stream On or Off */
   itkSetMacro(UseStreaming, bool);
   itkGetConstReferenceMacro(UseStreaming, bool);
   itkBooleanMacro(UseStreaming);
 
-  /** Set the relative threshold for issuing warnings about non-uniform sampling */
-  itkSetMacro(SpacingWarningRelThreshold, double);
-  itkGetConstMacro(SpacingWarningRelThreshold, double);
-
 protected:
-  ImageSeriesReader()
-    : m_ImageIO(nullptr)
-
-  {}
-  ~ImageSeriesReader() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ImageSeriesReader() :
+    m_ImageIO(ITK_NULLPTR),
+    m_ReverseOrder(false),
+    m_NumberOfDimensionsInImage(0),
+    m_UseStreaming(true),
+    m_MetaDataDictionaryArrayUpdate(true)
+      {}
+  ~ImageSeriesReader() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Does the real work. */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  /** The image format, 0 will use the factory mechanism. */
+  /** The image format, 0 will use the factory mechnism. */
   ImageIOBase::Pointer m_ImageIO;
 
   /** Select the traversal order. */
-  bool m_ReverseOrder{ false };
-
-  /** Do we want to force orthogonal direction cosines? */
-  bool m_ForceOrthogonalDirection{ true };
+  bool m_ReverseOrder;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;
@@ -203,34 +182,31 @@ protected:
    *  index for the output image. That is for reading a series of 2D
    *  images into  a 3D image, the moving dimension index is 2.
    */
-  unsigned int m_NumberOfDimensionsInImage{ 0 };
+  unsigned int m_NumberOfDimensionsInImage;
 
   /** Array of MetaDataDictionaries. This allows to hold information from the
    * ImageIO objects after reading every sub image in the series */
   DictionaryArrayType m_MetaDataDictionaryArray;
 
-  bool m_UseStreaming{ true };
-
-  bool m_SpacingDefined{ false };
-
-  double m_SpacingWarningRelThreshold{ 1e-4 };
+  bool m_UseStreaming;
 
 private:
-  using ReaderType = ImageFileReader<TOutputImage>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSeriesReader);
 
-  int
-  ComputeMovingDimensionIndex(ReaderType * reader);
+  typedef ImageFileReader< TOutputImage > ReaderType;
+
+  int ComputeMovingDimensionIndex(ReaderType *reader);
 
   /** Modified time of the MetaDataDictionaryArray */
   TimeStamp m_MetaDataDictionaryArrayMTime;
 
   /** Indicated if the MMDA should be updated */
-  bool m_MetaDataDictionaryArrayUpdate{ true };
+  bool m_MetaDataDictionaryArrayUpdate;
 };
-} // namespace itk
+} //namespace ITK
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageSeriesReader.hxx"
+#include "itkImageSeriesReader.hxx"
 #endif
 
 #endif // itkImageSeriesReader_h

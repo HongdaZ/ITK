@@ -1,9 +1,7 @@
-The `VNL` module contains a portion of the `VXL` project from
+The vxl subdirectory contains a portion of the vxl project from
+
+  http://vxl.sourceforge.net
 
   https://github.com/vxl/vxl.git
 
-Documentation about the library can be found at
-
-  https://vxl.github.io/
-
-See [UpdatingThirdParty.md](https://github.com/InsightSoftwareConsortium/ITK/blob/master/Documentation/Maintenance/UpdatingThirdParty.md) for details and instructions to update from upstream.
+See `./src/README-ITK.txt` for details and instructions to update from upstream.

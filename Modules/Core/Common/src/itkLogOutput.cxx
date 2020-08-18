@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,6 +19,6 @@
 
 namespace itk
 {
-LogOutput::LogOutput() = default;
-LogOutput::~LogOutput() = default;
-} // namespace itk
+LogOutput::LogOutput() {}
+LogOutput::~LogOutput() {}
+}

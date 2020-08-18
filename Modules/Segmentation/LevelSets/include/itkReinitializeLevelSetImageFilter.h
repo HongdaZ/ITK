@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,17 +51,16 @@ namespace itk
  *
  * \ingroup ITKLevelSets
  */
-template <typename TLevelSet>
-class ITK_TEMPLATE_EXPORT ReinitializeLevelSetImageFilter : public ImageToImageFilter<TLevelSet, TLevelSet>
+template< typename TLevelSet >
+class ITK_TEMPLATE_EXPORT ReinitializeLevelSetImageFilter:
+  public ImageToImageFilter< TLevelSet, TLevelSet >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ReinitializeLevelSetImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ReinitializeLevelSetImageFilter;
-  using Superclass = ImageToImageFilter<TLevelSet, TLevelSet>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ReinitializeLevelSetImageFilter            Self;
+  typedef ImageToImageFilter< TLevelSet, TLevelSet > Superclass;
+  typedef SmartPointer< Self >                       Pointer;
+  typedef SmartPointer< const Self >                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -69,18 +68,19 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ReinitializeLevelSetImageFilter, ImageToImageFilter);
 
-  /** LevelSetType type alias support */
-  using LevelSetType = LevelSetTypeDefault<TLevelSet>;
-  using LevelSetImageType = typename LevelSetType::LevelSetImageType;
-  using LevelSetPointer = typename LevelSetType::LevelSetPointer;
-  using LevelSetConstPointer = typename LevelSetType::LevelSetConstPointer;
-  using PixelType = typename LevelSetType::PixelType;
-  using NodeType = typename LevelSetType::NodeType;
-  using NodeContainer = typename LevelSetType::NodeContainer;
-  using NodeContainerPointer = typename LevelSetType::NodeContainerPointer;
+  /** LevelSetType typedef support. */
+  typedef LevelSetTypeDefault< TLevelSet >            LevelSetType;
+  typedef typename LevelSetType::LevelSetImageType    LevelSetImageType;
+  typedef typename LevelSetType::LevelSetPointer      LevelSetPointer;
+  typedef typename LevelSetType::LevelSetConstPointer LevelSetConstPointer;
+  typedef typename LevelSetType::PixelType            PixelType;
+  typedef typename LevelSetType::NodeType             NodeType;
+  typedef typename LevelSetType::NodeContainer        NodeContainer;
+  typedef typename LevelSetType::NodeContainerPointer NodeContainerPointer;
 
   /** SetDimension enumeration. */
-  static constexpr unsigned int SetDimension = LevelSetType::SetDimension;
+  itkStaticConstMacro(SetDimension, unsigned int,
+                      LevelSetType::SetDimension);
 
   /** Set/Get the value of the level set to be located. The default value is
    *  0. */
@@ -94,82 +94,70 @@ public:
   itkBooleanMacro(NarrowBanding);
 
   /** Set/Get the input narrow bandwidth. The default value is 12. */
-  itkSetClampMacro(InputNarrowBandwidth, double, 0.0, NumericTraits<double>::max());
+  itkSetClampMacro( InputNarrowBandwidth, double, 0.0,
+                    NumericTraits< double >::max() );
   itkGetConstMacro(InputNarrowBandwidth, double);
 
   /** Set/Get the output narrow bandwidth. The default value is 12. */
-  itkSetClampMacro(OutputNarrowBandwidth, double, 0.0, NumericTraits<double>::max());
+  itkSetClampMacro( OutputNarrowBandwidth, double, 0.0,
+                    NumericTraits< double >::max() );
   itkGetConstMacro(OutputNarrowBandwidth, double);
 
   /** Set the bandwidth for both the input and output narrowband,
    * By default, both the input and output are set to 12. */
-  void
-  SetNarrowBandwidth(double value)
+  void SetNarrowBandwidth(double value)
   {
     this->SetInputNarrowBandwidth(value);
     this->SetOutputNarrowBandwidth(value);
   }
 
   /** Set/Get the input narrowband. */
-  void
-  SetInputNarrowBand(NodeContainer * ptr);
+  void SetInputNarrowBand(NodeContainer *ptr);
 
-  NodeContainerPointer
-  GetInputNarrowBand() const
-  {
-    return m_InputNarrowBand;
-  }
+  NodeContainerPointer GetInputNarrowBand() const
+  { return m_InputNarrowBand; }
 
   /** Get the output narrowband. */
-  NodeContainerPointer
-  GetOutputNarrowBand() const
-  {
-    return m_OutputNarrowBand;
-  }
+  NodeContainerPointer GetOutputNarrowBand() const
+  { return m_OutputNarrowBand; }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(LevelSetDoubleAdditiveOperatorsCheck, (Concept::AdditiveOperators<PixelType, double>));
-  itkConceptMacro(LevelSetOStreamWritableCheck, (Concept::OStreamWritable<PixelType>));
+  itkConceptMacro( LevelSetDoubleAdditiveOperatorsCheck,
+                   ( Concept::AdditiveOperators< PixelType, double > ) );
+  itkConceptMacro( LevelSetOStreamWritableCheck,
+                   ( Concept::OStreamWritable< PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   ReinitializeLevelSetImageFilter();
-  ~ReinitializeLevelSetImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ReinitializeLevelSetImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** Internal type alias. */
-  using SpeedImageType = Image<float, Self::SetDimension>;
-  using LocatorType = LevelSetNeighborhoodExtractor<TLevelSet>;
-  using FastMarchingImageFilterType = FastMarchingImageFilter<TLevelSet, SpeedImageType>;
+  /** Internal typedefs. */
+  typedef Image< float, itkGetStaticConstMacro(SetDimension) > SpeedImageType;
+  typedef LevelSetNeighborhoodExtractor< TLevelSet >           LocatorType;
+  typedef FastMarchingImageFilter< TLevelSet, SpeedImageType > FastMarchingImageFilterType;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void
-  GenerateDataFull();
+  virtual void GenerateDataFull();
 
-  virtual void
-  GenerateDataNarrowBand();
+  virtual void GenerateDataNarrowBand();
 
-  virtual void
-  AllocateOutput();
+  virtual void AllocateOutput();
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject *) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *) ITK_OVERRIDE;
 
-  void
-  SetOutputNarrowBand(NodeContainer * ptr)
-  {
-    m_OutputNarrowBand = ptr;
-  }
+  void SetOutputNarrowBand(NodeContainer *ptr)
+  { m_OutputNarrowBand = ptr; }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ReinitializeLevelSetImageFilter);
+
   double m_LevelSetValue;
 
   typename LocatorType::Pointer m_Locator;
@@ -185,7 +173,7 @@ private:
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkReinitializeLevelSetImageFilter.hxx"
+#include "itkReinitializeLevelSetImageFilter.hxx"
 #endif
 
 #endif

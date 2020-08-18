@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,21 +31,21 @@ namespace itk
  * \brief TODO
  * \ingroup ITKRegistrationCommon
  *
- * \sphinx
- * \sphinxexample{Registration/Common/ComputeMeanSquareBetweenTwoImages,Compute Mean Squares Metric Between Two Images}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Metrics/MeanSquaresImageToImageMetric,Compute the mean squares metric between two images}
+ * \endwiki
  */
-template <typename TFixedImage, typename TMovingImage>
-class ITK_TEMPLATE_EXPORT MeanSquaresImageToImageMetric : public ImageToImageMetric<TFixedImage, TMovingImage>
+template< typename TFixedImage, typename TMovingImage >
+class ITK_TEMPLATE_EXPORT MeanSquaresImageToImageMetric:
+  public ImageToImageMetric< TFixedImage, TMovingImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSquaresImageToImageMetric);
 
-  /** Standard class type aliases. */
-  using Self = MeanSquaresImageToImageMetric;
-  using Superclass = ImageToImageMetric<TFixedImage, TMovingImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MeanSquaresImageToImageMetric                   Self;
+  typedef ImageToImageMetric< TFixedImage, TMovingImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,29 +54,30 @@ public:
   itkTypeMacro(MeanSquaresImageToImageMetric, ImageToImageMetric);
 
   /** Types inherited from Superclass. */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using InterpolatorType = typename Superclass::InterpolatorType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
-  using MovingImageConstPointer = typename Superclass::MovingImageConstPointer;
-  using CoordinateRepresentationType = typename Superclass::CoordinateRepresentationType;
-  using FixedImageSampleContainer = typename Superclass::FixedImageSampleContainer;
-  using ImageDerivativesType = typename Superclass::ImageDerivativesType;
-  using WeightsValueType = typename Superclass::WeightsValueType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  typedef typename Superclass::TransformType                TransformType;
+  typedef typename Superclass::TransformPointer             TransformPointer;
+  typedef typename Superclass::TransformJacobianType        TransformJacobianType;
+  typedef typename Superclass::InterpolatorType             InterpolatorType;
+  typedef typename Superclass::MeasureType                  MeasureType;
+  typedef typename Superclass::DerivativeType               DerivativeType;
+  typedef typename Superclass::ParametersType               ParametersType;
+  typedef typename Superclass::FixedImageType               FixedImageType;
+  typedef typename Superclass::MovingImageType              MovingImageType;
+  typedef typename Superclass::MovingImagePointType         MovingImagePointType;
+  typedef typename Superclass::FixedImageConstPointer       FixedImageConstPointer;
+  typedef typename Superclass::MovingImageConstPointer      MovingImageConstPointer;
+  typedef typename Superclass::CoordinateRepresentationType CoordinateRepresentationType;
+  typedef typename Superclass::FixedImageSampleContainer    FixedImageSampleContainer;
+  typedef typename Superclass::ImageDerivativesType         ImageDerivativesType;
+  typedef typename Superclass::WeightsValueType             WeightsValueType;
+  typedef typename Superclass::IndexValueType               IndexValueType;
 
   // Needed for evaluation of Jacobian.
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
+  typedef typename Superclass::FixedImagePointType FixedImagePointType;
 
   /** The moving image dimension. */
-  static constexpr unsigned int MovingImageDimension = MovingImageType::ImageDimension;
+  itkStaticConstMacro(MovingImageDimension, unsigned int,
+                      MovingImageType::ImageDimension);
 
   /**
    *  Initialize the Metric by
@@ -85,42 +86,41 @@ public:
    *  (2) uniformly select NumberOfSpatialSamples within
    *      the FixedImageRegion, and
    *  (3) allocate memory for pdf data structures. */
-  void
-  Initialize() override;
+  virtual void Initialize(void) ITK_OVERRIDE;
 
   /**  Get the value. */
-  MeasureType
-  GetValue(const ParametersType & parameters) const override;
+  MeasureType GetValue(const ParametersType & parameters) const ITK_OVERRIDE;
 
   /** Get the derivatives of the match measure. */
-  void
-  GetDerivative(const ParametersType & parameters, DerivativeType & Derivative) const override;
+  void GetDerivative(const ParametersType & parameters,
+                     DerivativeType & Derivative) const ITK_OVERRIDE;
 
   /**  Get the value and derivatives for single valued optimizers. */
-  void
-  GetValueAndDerivative(const ParametersType & parameters,
-                        MeasureType &          Value,
-                        DerivativeType &       Derivative) const override;
+  void GetValueAndDerivative(const ParametersType & parameters,
+                             MeasureType & Value,
+                             DerivativeType & Derivative) const ITK_OVERRIDE;
 
 protected:
+
   MeanSquaresImageToImageMetric();
-  ~MeanSquaresImageToImageMetric() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MeanSquaresImageToImageMetric() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  bool
-  GetValueThreadProcessSample(ThreadIdType                 threadId,
-                              SizeValueType                fixedImageSample,
-                              const MovingImagePointType & mappedPoint,
-                              double                       movingImageValue) const override;
 
-  bool
-  GetValueAndDerivativeThreadProcessSample(ThreadIdType                 threadId,
-                                           SizeValueType                fixedImageSample,
-                                           const MovingImagePointType & mappedPoint,
-                                           double                       movingImageValue,
-                                           const ImageDerivativesType & movingImageGradientValue) const override;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSquaresImageToImageMetric);
+
+  bool GetValueThreadProcessSample(ThreadIdType threadId,
+                                   SizeValueType fixedImageSample,
+                                   const MovingImagePointType & mappedPoint,
+                                   double movingImageValue) const ITK_OVERRIDE;
+
+  bool GetValueAndDerivativeThreadProcessSample(ThreadIdType threadId,
+                                                SizeValueType fixedImageSample,
+                                                const MovingImagePointType & mappedPoint,
+                                                double movingImageValue,
+                                                const ImageDerivativesType &
+                                                movingImageGradientValue) const ITK_OVERRIDE;
 
   struct PerThreadS
   {
@@ -129,13 +129,13 @@ private:
     DerivativeType        m_MSEDerivative;
   };
 
-  itkAlignedTypedef(64, PerThreadS, AlignedPerThreadType);
-  AlignedPerThreadType * m_PerThread;
+  itkAlignedTypedef( 64, PerThreadS, AlignedPerThreadType );
+  AlignedPerThreadType *m_PerThread;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMeanSquaresImageToImageMetric.hxx"
+#include "itkMeanSquaresImageToImageMetric.hxx"
 #endif
 
 #endif

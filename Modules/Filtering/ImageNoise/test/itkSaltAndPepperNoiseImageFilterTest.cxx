@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,61 +23,52 @@
 #include "itkSaltAndPepperNoiseImageFilter.h"
 #include "itkTestingMacros.h"
 
-int
-itkSaltAndPepperNoiseImageFilterTest(int argc, char * argv[])
+int itkSaltAndPepperNoiseImageFilterTest(int argc, char * argv[])
 {
 
-  if (argc < 3)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " intput output Probability" << std::endl;
+  if( argc < 3 )
+    {
+    std::cerr << "usage: " << argv[0] << " intput output Probability" << std::endl;
     std::cerr << " input: the input image" << std::endl;
     std::cerr << " output: the output image" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using SaltAndPepperNoiseImageFilterType = itk::SaltAndPepperNoiseImageFilter<ImageType, ImageType>;
-  SaltAndPepperNoiseImageFilterType::Pointer saltAndPepperNoiseImageFilter = SaltAndPepperNoiseImageFilterType::New();
+  typedef itk::SaltAndPepperNoiseImageFilter< ImageType, ImageType >
+    SaltAndPepperNoiseImageFilterType;
+  SaltAndPepperNoiseImageFilterType::Pointer saltAndPepperNoiseImageFilter =
+    SaltAndPepperNoiseImageFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(saltAndPepperNoiseImageFilter, SaltAndPepperNoiseImageFilter, NoiseBaseImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( saltAndPepperNoiseImageFilter, SaltAndPepperNoiseImageFilter,
+    NoiseBaseImageFilter );
 
   double probability = 0.01;
-  if (argc >= 4)
-  {
-    probability = std::stod(argv[3]);
-  }
-  saltAndPepperNoiseImageFilter->SetProbability(probability);
-  ITK_TEST_SET_GET_VALUE(probability, saltAndPepperNoiseImageFilter->GetProbability());
+  if( argc >= 4 )
+    {
+    probability = atof( argv[3] );
+    }
+  saltAndPepperNoiseImageFilter->SetProbability( probability );
+  TEST_SET_GET_VALUE( probability, saltAndPepperNoiseImageFilter->GetProbability() );
 
-  // change the default values and then set back to defaults so that
-  // the original test image is still valid.
-  PixelType saltValue = 245;
-  saltAndPepperNoiseImageFilter->SetSaltValue(saltValue);
-  ITK_TEST_SET_GET_VALUE(saltValue, saltAndPepperNoiseImageFilter->GetSaltValue());
-  PixelType pepperValue = 10;
-  saltAndPepperNoiseImageFilter->SetPepperValue(pepperValue);
-  ITK_TEST_SET_GET_VALUE(pepperValue, saltAndPepperNoiseImageFilter->GetPepperValue());
-  saltAndPepperNoiseImageFilter->SetSaltValue(itk::NumericTraits<PixelType>::max());
-  saltAndPepperNoiseImageFilter->SetPepperValue(itk::NumericTraits<PixelType>::NonpositiveMin());
+  saltAndPepperNoiseImageFilter->SetInput( reader->GetOutput() );
 
-  saltAndPepperNoiseImageFilter->SetInput(reader->GetOutput());
+  itk::SimpleFilterWatcher watcher( saltAndPepperNoiseImageFilter, "SaltAndPepperNoiseImageFilter" );
 
-  itk::SimpleFilterWatcher watcher(saltAndPepperNoiseImageFilter, "SaltAndPepperNoiseImageFilter");
-
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(saltAndPepperNoiseImageFilter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( saltAndPepperNoiseImageFilter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@
 
 namespace itk
 {
-/**
- *\class MaskFeaturePointSelectionFilter
+/** \class MaskFeaturePointSelectionFilter
  * \brief Generate a PointSet containing the feature points
  * selected from a masked 3D input image.
  *
@@ -56,20 +55,18 @@ namespace itk
  * \ingroup ITKImageFeature
  */
 
-template <typename TImage,
-          typename TMask = TImage,
-          typename TFeatures = PointSet<Matrix<SpacePrecisionType, TImage::ImageDimension, TImage::ImageDimension>,
-                                        TImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT MaskFeaturePointSelectionFilter : public ImageToMeshFilter<TImage, TFeatures>
+template<
+  typename TImage,
+  typename TMask = TImage,
+  typename TFeatures = PointSet< Matrix< SpacePrecisionType, TImage::ImageDimension, TImage::ImageDimension>, TImage::ImageDimension > >
+class ITK_TEMPLATE_EXPORT MaskFeaturePointSelectionFilter: public ImageToMeshFilter< TImage, TFeatures >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskFeaturePointSelectionFilter);
-
-  /** Standard class type aliases. */
-  using Superclass = ImageToMeshFilter<TImage, TFeatures>;
-  using Self = MaskFeaturePointSelectionFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageToMeshFilter< TImage, TFeatures >  Superclass;
+  typedef MaskFeaturePointSelectionFilter         Self;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -77,29 +74,29 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MaskFeaturePointSelectionFilter, ImageToMeshFilter);
 
-  static constexpr unsigned ImageDimension = 3u;
+  itkStaticConstMacro(ImageDimension, unsigned, 3u);
 
-  /** Not input specific type alias */
-  using RegionType = ImageRegion<ImageDimension>;
-  using SizeType = Size<ImageDimension>;
-  using IndexType = Index<ImageDimension>;
-  using OffsetType = Offset<ImageDimension>;
+  /** Not input specific typedefs */
+  typedef ImageRegion< ImageDimension >  RegionType;
+  typedef Size< ImageDimension >         SizeType;
+  typedef Index< ImageDimension >        IndexType;
+  typedef Offset< ImageDimension >       OffsetType;
 
-  /** Image type alias */
-  using ImageType = TImage;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using ImagePixelType = typename ImageType::PixelType;
+  /** Image typedefs */
+  typedef TImage                            ImageType;
+  typedef typename ImageType::ConstPointer  ImageConstPointer;
+  typedef typename ImageType::PixelType     ImagePixelType;
 
-  /** Mask image type alias */
-  using MaskType = TMask;
-  using MaskConstPointer = typename MaskType::ConstPointer;
-  using MaskPixelType = typename MaskType::PixelType;
+  /** Mask image typedefs */
+  typedef TMask                            MaskType;
+  typedef typename MaskType::ConstPointer  MaskConstPointer;
+  typedef typename MaskType::PixelType     MaskPixelType;
 
-  /** Feature points pointset type alias */
-  using FeaturePointsType = TFeatures;
-  using FeaturePointsPointer = typename FeaturePointsType::Pointer;
-  using StructureTensorType = typename FeaturePointsType::PixelType;
-  using PointType = typename FeaturePointsType::PointType;
+  /** Feature points pointset typedefs */
+  typedef TFeatures                              FeaturePointsType;
+  typedef typename FeaturePointsType::Pointer    FeaturePointsPointer;
+  typedef typename FeaturePointsType::PixelType  StructureTensorType;
+  typedef typename FeaturePointsType::PointType  PointType;
 
   /** connectivity constants */
   enum
@@ -135,39 +132,41 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(ImageDimensionShouldBe3, (Concept::SameDimension<TImage::ImageDimension, 3u>));
-  itkConceptMacro(MaskDimensionShouldBe3, (Concept::SameDimension<TMask::ImageDimension, 3u>));
-  itkConceptMacro(PointDimensionShouldBe3, (Concept::SameDimension<TFeatures::PointType::PointDimension, 3u>));
+  itkConceptMacro( ImageDimensionShouldBe3,
+                   ( Concept::SameDimension< TImage::ImageDimension, 3u > ) );
+  itkConceptMacro( MaskDimensionShouldBe3,
+                   ( Concept::SameDimension< TMask::ImageDimension, 3u > ) );
+  itkConceptMacro( PointDimensionShouldBe3,
+                   ( Concept::SameDimension< TFeatures::PointType::PointDimension, 3u > ) );
   // End concept checking
 #endif
 
 protected:
   MaskFeaturePointSelectionFilter();
-  ~MaskFeaturePointSelectionFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MaskFeaturePointSelectionFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** Compute the connectivity offsets so that points can be excluded during
    * the execution of the filter. This method must be called after invoking
    * SetNonConnectivity().
    */
-  void
-  ComputeConnectivityOffsets();
+  void ComputeConnectivityOffsets( void );
 
 private:
-  unsigned                m_NonConnectivity;
-  std::vector<OffsetType> m_NonConnectivityOffsets;
-  SizeType                m_BlockRadius;
-  double                  m_SelectFraction;
-  bool                    m_ComputeStructureTensors;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaskFeaturePointSelectionFilter);
+
+  unsigned                   m_NonConnectivity;
+  std::vector< OffsetType >  m_NonConnectivityOffsets;
+  SizeType                   m_BlockRadius;
+  double                     m_SelectFraction;
+  bool                       m_ComputeStructureTensors;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMaskFeaturePointSelectionFilter.hxx"
+#include "itkMaskFeaturePointSelectionFilter.hxx"
 #endif
 
 #endif

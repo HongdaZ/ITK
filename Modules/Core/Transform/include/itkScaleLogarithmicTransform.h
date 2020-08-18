@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,17 +31,17 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = float, unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT ScaleLogarithmicTransform : public ScaleTransform<TParametersValueType, NDimensions>
+template<typename TParametersValueType=float,
+  unsigned int NDimensions = 3>
+class ITK_TEMPLATE_EXPORT ScaleLogarithmicTransform :
+  public ScaleTransform<TParametersValueType, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScaleLogarithmicTransform);
-
-  /** Standard class type aliases.   */
-  using Self = ScaleLogarithmicTransform;
-  using Superclass = ScaleTransform<TParametersValueType, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs.   */
+  typedef ScaleLogarithmicTransform                         Self;
+  typedef ScaleTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** New macro for creation of through a smart pointer. */
   itkNewMacro(Self);
@@ -50,78 +50,76 @@ public:
   itkTypeMacro(ScaleLogarithmicTransform, ScaleTransform);
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = NDimensions;
-  static constexpr unsigned int ParametersDimension = NDimensions;
+  itkStaticConstMacro(SpaceDimension, unsigned int, NDimensions);
+  itkStaticConstMacro(ParametersDimension, unsigned int, NDimensions);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename ParametersType::ValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename FixedParametersType::ValueType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename ParametersType::ValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
+  typedef typename FixedParametersType::ValueType  FixedParametersValueType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   /** Standard vector type for this class. */
-  using ScaleType = typename Superclass::ScaleType;
-  using ScalesValueType = typename ScaleType::ValueType;
+  typedef typename Superclass::ScaleType ScaleType;
+  typedef typename ScaleType::ValueType  ScalesValueType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  typedef typename Superclass::InputVectorType  InputVectorType;
+  typedef typename Superclass::OutputVectorType OutputVectorType;
 
   /** Standard covariant vector type for this class. */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  typedef typename Superclass::InputVnlVectorType  InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType OutputVnlVectorType;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::InputPointType  InputPointType;
+  typedef typename Superclass::OutputPointType OutputPointType;
 
   /** Set parameters.
    * This method sets the parameters for the transform
    * value specified by the user. */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
   /** Get the parameters that uniquely define the transform
    * This is typically used by optimizers.
    * There are 4 parameters. The first one represents the
    * rotation, the second one the scale and the last
    * two represent the offset. */
-  const ParametersType &
-  GetParameters() const override;
+  const ParametersType & GetParameters(void) const ITK_OVERRIDE;
 
   /** Compute the Jacobian Matrix of the transformation at one point,
    *  allowing for thread-safety. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
 protected:
   /** Construct an ScaleLogarithmicTransform object. */
-  ScaleLogarithmicTransform() = default;
+  ScaleLogarithmicTransform();
 
   /** Destroy an ScaleLogarithmicTransform object. */
-  ~ScaleLogarithmicTransform() override = default;
+  ~ScaleLogarithmicTransform() ITK_OVERRIDE;
 
   /** Print contents of an ScaleLogarithmicTransform */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-}; // class
-   // ScaleLogarithmicTransform
-} // namespace itk
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScaleLogarithmicTransform);
+
+};                                               // class
+                                                 // ScaleLogarithmicTransform
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkScaleLogarithmicTransform.hxx"
+#include "itkScaleLogarithmicTransform.hxx"
 #endif
 
 #endif /* itkScaleLogarithmicTransform_h */

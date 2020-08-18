@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,21 +18,18 @@
 
 #include "itkDecisionRule.h"
 
-namespace itk
-{
-namespace Statistics
-{
-namespace DecisionRuleTest
-{
+namespace itk {
+namespace Statistics {
+namespace DecisionRuleTest {
 
 class MyDecisionRule : public DecisionRule
 {
 public:
-  /** Standard class type alias. */
-  using Self = MyDecisionRule;
-  using Superclass = DecisionRule;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedef. */
+  typedef MyDecisionRule                   Self;
+  typedef DecisionRule                     Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer<const Self>         ConstPointer;
 
   /** Standard macros */
   itkTypeMacro(MyDecisionRule, DecisionRule);
@@ -41,41 +38,39 @@ public:
   itkNewMacro(Self);
 
   /** Types for discriminant values and vectors. */
-  using MembershipValueType = Superclass::MembershipValueType;
-  using MembershipVectorType = Superclass::MembershipVectorType;
+  typedef Superclass::MembershipValueType  MembershipValueType;
+  typedef Superclass::MembershipVectorType MembershipVectorType;
 
   /** Types for class identifiers. */
-  using ClassIdentifierType = Superclass::ClassIdentifierType;
+  typedef Superclass::ClassIdentifierType ClassIdentifierType;
 
   /** Evaluate membership score */
-  ClassIdentifierType
-  Evaluate(const MembershipVectorType & scoreVector) const override
-  {
+  virtual ClassIdentifierType Evaluate(const MembershipVectorType &scoreVector) const ITK_OVERRIDE
+    {
     double max = scoreVector[0];
 
     unsigned int maxIndex = 0;
     unsigned int i;
     for (i = 1; i < scoreVector.size(); i++)
-    {
-      if (scoreVector[i] > max)
       {
+      if (scoreVector[i] > max)
+        {
         max = scoreVector[i];
         maxIndex = i;
+        }
       }
-    }
     return maxIndex;
-  }
+    }
 };
 
-} // namespace DecisionRuleTest
-} // namespace Statistics
-} // namespace itk
-int
-itkDecisionRuleTest(int, char *[])
+}
+}
+}
+int itkDecisionRuleTest(int, char* [] )
 {
-  using DecisionRuleType = itk::Statistics::DecisionRuleTest::MyDecisionRule;
+  typedef itk::Statistics::DecisionRuleTest::MyDecisionRule DecisionRuleType;
 
-  using MembershipVectorType = DecisionRuleType::MembershipVectorType;
+  typedef DecisionRuleType::MembershipVectorType MembershipVectorType;
 
   DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
 
@@ -88,23 +83,23 @@ itkDecisionRuleTest(int, char *[])
 
   double membershipScore1;
   membershipScore1 = 0.1;
-  membershipScoreVector.push_back(membershipScore1);
+  membershipScoreVector.push_back( membershipScore1 );
 
   double membershipScore2;
   membershipScore2 = 0.5;
-  membershipScoreVector.push_back(membershipScore2);
+  membershipScoreVector.push_back( membershipScore2 );
 
   double membershipScore3;
   membershipScore3 = 1.9;
-  membershipScoreVector.push_back(membershipScore3);
+  membershipScoreVector.push_back( membershipScore3 );
 
   // the maximum score is the third component. The decision rule should
   // return index ( 2)
-  if (decisionRule->Evaluate(membershipScoreVector) != 2)
-  {
+  if( decisionRule->Evaluate( membershipScoreVector ) != 2 )
+    {
     std::cerr << "Decision rule computation is incorrect!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

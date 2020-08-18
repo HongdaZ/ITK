@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,51 +20,51 @@
 #include "itkImageFileWriter.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkAdaptiveHistogramEqualizationImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 #include "itkTestingMacros.h"
 
-int
-itkAdaptiveHistogramEqualizationImageFilterTest(int argc, char * argv[])
+int itkAdaptiveHistogramEqualizationImageFilterTest( int argc, char * argv[] )
 
 {
-  if (argc < 6)
-  {
+  if( argc < 6 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << "  inputImageFile  outputImageFile radius alpha beta"
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile  outputImageFile radius alpha beta" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using InputPixelType = float;
-  static constexpr int ImageDimension = 2;
+  typedef float InputPixelType;
+  static ITK_CONSTEXPR_VAR int ImageDimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, ImageDimension>;
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using FilterType = itk::AdaptiveHistogramEqualizationImageFilter<InputImageType>;
+  typedef itk::Image< InputPixelType,  ImageDimension >   InputImageType;
+  typedef itk::ImageFileReader< InputImageType >          ReaderType;
+  typedef itk::AdaptiveHistogramEqualizationImageFilter<
+               InputImageType >                           FilterType;
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   FilterType::ImageSizeType radius;
-  radius.Fill(std::stoi(argv[3]));
+  radius.Fill( atoi(argv[3]) );
 
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, AdaptiveHistogramEqualizationImageFilter, MovingHistogramImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, AdaptiveHistogramEqualizationImageFilter,
+    MovingHistogramImageFilter );
 
-  itk::SimpleFilterWatcher watcher(filter);
+  FilterWatcher watcher(filter);
 
-  filter->SetInput(reader->GetOutput());
-  filter->SetRadius(radius);
+  filter->SetInput( reader->GetOutput() );
+  filter->SetRadius( radius );
 
-  float alpha = std::stod(argv[4]);
-  filter->SetAlpha(alpha);
-  ITK_TEST_SET_GET_VALUE(alpha, filter->GetAlpha());
+  float alpha = atof(argv[4]);
+  filter->SetAlpha( alpha );
+  TEST_SET_GET_VALUE( alpha, filter->GetAlpha() );
 
-  float beta = std::stod(argv[5]);
-  filter->SetBeta(beta);
-  ITK_TEST_SET_GET_VALUE(beta, filter->GetBeta());
+  float beta = atof(argv[5]);
+  filter->SetBeta( beta );
+  TEST_SET_GET_VALUE( beta, filter->GetBeta() );
 
   //
   //  The output of the filter is connected here to a intensity rescaler filter
@@ -72,26 +72,27 @@ itkAdaptiveHistogramEqualizationImageFilterTest(int argc, char * argv[])
   //  execution of both filters.
   //
 
-  using WritePixelType = unsigned char;
+  typedef unsigned char WritePixelType;
 
-  using WriteImageType = itk::Image<WritePixelType, ImageDimension>;
+  typedef itk::Image< WritePixelType, ImageDimension > WriteImageType;
 
-  using RescaleFilterType = itk::RescaleIntensityImageFilter<InputImageType, WriteImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+               InputImageType, WriteImageType > RescaleFilterType;
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
-  rescaler->SetInput(filter->GetOutput());
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
+  rescaler->SetInput( filter->GetOutput() );
 
 
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
 
-  writer->SetInput(rescaler->GetOutput());
+  writer->SetInput( rescaler->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

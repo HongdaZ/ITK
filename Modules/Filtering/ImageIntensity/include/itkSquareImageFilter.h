@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,88 +18,88 @@
 #ifndef itkSquareImageFilter_h
 #define itkSquareImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 
 namespace itk
 {
-/**
- *\class SquareImageFilter
+/** \class SquareImageFilter
  * \brief Computes the square of the intensity values pixel-wise
  *
  * \ingroup IntensityImageFilters  MultiThreaded
  * \ingroup ITKImageIntensity
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageIntensity/SquareEveryPixel,Square Every Pixel}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/SquareImageFilter,Square every pixel in an image}
+ * \endwiki
  */
 
 namespace Functor
 {
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class Square
 {
 public:
-  using RealType = typename NumericTraits<TInput>::RealType;
-  Square() = default;
-  ~Square() = default;
-  bool
-  operator!=(const Square &) const
+  typedef typename NumericTraits< TInput >::RealType RealType;
+  Square() {}
+  ~Square() {}
+  bool operator!=(const Square &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Square & other) const
+  bool operator==(const Square & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    const auto ra = static_cast<RealType>(A);
+    const RealType ra = static_cast< RealType >( A );
 
-    return static_cast<TOutput>(ra * ra);
+    return static_cast< TOutput >( ra * ra );
   }
 };
-} // namespace Functor
-template <typename TInputImage, typename TOutputImage>
-class SquareImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+}
+template< typename TInputImage, typename TOutputImage >
+class SquareImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::Square< typename TInputImage::PixelType,
+                                            typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SquareImageFilter);
+  /** Standard class typedefs. */
+  typedef SquareImageFilter Self;
+  typedef UnaryFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::Square< typename TInputImage::PixelType,
+                     typename TOutputImage::PixelType > >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = SquareImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::Square<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SquareImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(SquareImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename TInputImage::PixelType>));
-  itkConceptMacro(RealTypeMultiplyOperatorCheck,
-                  (Concept::MultiplyOperator<typename NumericTraits<typename TInputImage::PixelType>::RealType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TInputImage::PixelType > ) );
+  itkConceptMacro( RealTypeMultiplyOperatorCheck,
+                   ( Concept::MultiplyOperator< typename NumericTraits< typename TInputImage::PixelType >::RealType > ) );
   // End concept checking
 #endif
 
 protected:
-  SquareImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  SquareImageFilter() {}
+  virtual ~SquareImageFilter() ITK_OVERRIDE {}
 
-  ~SquareImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SquareImageFilter);
 };
 } // end namespace itk
 

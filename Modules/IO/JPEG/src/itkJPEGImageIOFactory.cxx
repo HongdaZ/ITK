@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,20 +23,24 @@ namespace itk
 {
 JPEGImageIOFactory::JPEGImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkJPEGImageIO", "JPEG Image IO", true, CreateObjectFunction<JPEGImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkJPEGImageIO",
+                          "JPEG Image IO",
+                          1,
+                          CreateObjectFunction< JPEGImageIO >::New() );
 }
 
-JPEGImageIOFactory::~JPEGImageIOFactory() = default;
+JPEGImageIOFactory::~JPEGImageIOFactory()
+{}
 
 const char *
-JPEGImageIOFactory::GetITKSourceVersion() const
+JPEGImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-JPEGImageIOFactory::GetDescription() const
+JPEGImageIOFactory::GetDescription(void) const
 {
   return "JPEG ImageIO Factory, allows the loading of JPEG images into insight";
 }
@@ -46,14 +50,13 @@ JPEGImageIOFactory::GetDescription() const
 
 static bool JPEGImageIOFactoryHasBeenRegistered;
 
-void ITKIOJPEG_EXPORT
-     JPEGImageIOFactoryRegister__Private()
+void ITKIOJPEG_EXPORT JPEGImageIOFactoryRegister__Private(void)
 {
-  if (!JPEGImageIOFactoryHasBeenRegistered)
-  {
+  if( ! JPEGImageIOFactoryHasBeenRegistered )
+    {
     JPEGImageIOFactoryHasBeenRegistered = true;
     JPEGImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

@@ -35,7 +35,7 @@ using namespace gdcm;
 class GDCM_EXPORT ByteValue : public Value
 {
 public:
-  ByteValue(const char* array = nullptr, VL const &vl = 0):
+  ByteValue(const char* array = 0, VL const &vl = 0):
     Internal(array, array+vl),Length(vl) {
       if( vl.IsOdd() )
         {
@@ -51,7 +51,7 @@ public:
   //  (void)os;
   //   assert(0); // TODO
   //}
-  ~ByteValue() override {
+  ~ByteValue() {
     Internal.clear();
   }
 
@@ -75,11 +75,11 @@ public:
   return Length == 0;
 #endif
   }
-  VL GetLength() const override { return Length; }
+  VL GetLength() const { return Length; }
 
   VL ComputeLength() const { return Length + Length % 2; }
   // Does a reallocation
-  void SetLength(VL vl) override;
+  void SetLength(VL vl);
 
   operator const std::vector<char>& () const { return Internal; }
 
@@ -96,7 +96,7 @@ public:
       return true;
     return false;
     }
-  bool operator==(const Value &val) const override
+  bool operator==(const Value &val) const
     {
     const ByteValue &bv = dynamic_cast<const ByteValue&>(val);
     return Length == bv.Length && Internal == bv.Internal;
@@ -104,22 +104,13 @@ public:
 
   void Append(ByteValue const & bv);
 
-  void Clear() override {
+  void Clear() {
     Internal.clear();
   }
   // Use that only if you understand what you are doing
   const char *GetPointer() const {
     if(!Internal.empty()) return &Internal[0];
-    return nullptr;
-  }
-  // Use that only if you really understand what you are doing
-  const void *GetVoidPointer() const {
-    if(!Internal.empty()) return &Internal[0];
-    return nullptr;
-  }
-  void *GetVoidPointer() {
-    if(!Internal.empty()) return &Internal[0];
-    return nullptr;
+    return 0;
   }
   void Fill(char c) {
     //if( Internal.empty() ) return;
@@ -148,7 +139,7 @@ public:
         {
         is.read(&Internal[0], Length);
         assert( Internal.size() == Length || Internal.size() == Length + 1 );
-        TSwap::SwapArray((TType*)GetVoidPointer(), Internal.size() / sizeof(TType) );
+        TSwap::SwapArray((TType*)&Internal[0], Internal.size() / sizeof(TType) );
         }
       else
         {
@@ -170,7 +161,7 @@ public:
     if( !Internal.empty() ) {
       //os.write(&Internal[0], Internal.size());
       std::vector<char> copy = Internal;
-      TSwap::SwapArray((TType*)(void*)&copy[0], Internal.size() / sizeof(TType) );
+      TSwap::SwapArray((TType*)&copy[0], Internal.size() / sizeof(TType) );
       os.write(&copy[0], copy.size());
       }
     return os;
@@ -206,7 +197,7 @@ public:
   void PrintASCIIXML(std::ostream &os) const;
   void PrintHexXML(std::ostream &os) const;
 protected:
-  void Print(std::ostream &os) const override {
+  void Print(std::ostream &os) const {
   // This is perfectly valid to have a Length = 0 , so we cannot check
   // the length for printing
   if( !Internal.empty() )
@@ -233,7 +224,7 @@ protected:
 friend std::ostream& operator<<(std::ostream &os,const char c);
 */
 
-  void SetLengthOnly(VL vl) override {
+  void SetLengthOnly(VL vl) {
     Length = vl;
   }
 

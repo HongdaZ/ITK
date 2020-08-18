@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -69,35 +69,34 @@ namespace itk
  * \ingroup ImageEnhancement
  * \ingroup ITKAnisotropicSmoothing
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT AnisotropicDiffusionImageFilter
-  : public DenseFiniteDifferenceImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT AnisotropicDiffusionImageFilter:
+  public DenseFiniteDifferenceImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AnisotropicDiffusionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = AnisotropicDiffusionImageFilter;
-  using Superclass = DenseFiniteDifferenceImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef AnisotropicDiffusionImageFilter                               Self;
+  typedef DenseFiniteDifferenceImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                          Pointer;
+  typedef SmartPointer< const Self >                                    ConstPointer;
 
   /** Run-time type information. */
-  itkTypeMacro(AnisotropicDiffusionImageFilter, DenseFiniteDifferenceImageFilter);
+  itkTypeMacro(AnisotropicDiffusionImageFilter,
+               DenseFiniteDifferenceImageFilter);
 
   /** Capture information from the superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using UpdateBufferType = typename Superclass::UpdateBufferType;
+  typedef typename Superclass::InputImageType   InputImageType;
+  typedef typename Superclass::OutputImageType  OutputImageType;
+  typedef typename Superclass::UpdateBufferType UpdateBufferType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
   /** The pixel type of the output image will be used in computations.
    * Inherited from the superclass. */
-  using PixelType = typename Superclass::PixelType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  typedef typename Superclass::PixelType    PixelType;
+  typedef typename Superclass::TimeStepType TimeStepType;
 
   /** Set/Get the time step for each iteration */
   itkSetMacro(TimeStep, TimeStepType);
@@ -125,8 +124,7 @@ public:
       at a pixel.  This method is  useful in streaming applications to avoid
       block artifacts by overriding the normal gradient magnitude calculation
       (i.e. all image chunks are scaled uniformly). */
-  void
-  SetFixedAverageGradientMagnitude(double a)
+  void SetFixedAverageGradientMagnitude(double a)
   {
     m_FixedAverageGradientMagnitude = a;
     this->Modified();
@@ -137,21 +135,21 @@ public:
 
 protected:
   AnisotropicDiffusionImageFilter();
-  ~AnisotropicDiffusionImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~AnisotropicDiffusionImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Supplies the halting criteria for this class of filters.  The
    * algorithm will stop after a user-specified number of iterations. */
   //  virtual bool Halt();
 
   /** Prepare for the iteration process. */
-  void
-  InitializeIteration() override;
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
   bool m_GradientMagnitudeIsFixed;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AnisotropicDiffusionImageFilter);
+
   double       m_ConductanceParameter;
   double       m_ConductanceScalingParameter;
   unsigned int m_ConductanceScalingUpdateInterval;
@@ -159,10 +157,10 @@ private:
 
   TimeStepType m_TimeStep;
 };
-} // namespace itk
+} // end namspace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAnisotropicDiffusionImageFilter.hxx"
+#include "itkAnisotropicDiffusionImageFilter.hxx"
 #endif
 
 #endif

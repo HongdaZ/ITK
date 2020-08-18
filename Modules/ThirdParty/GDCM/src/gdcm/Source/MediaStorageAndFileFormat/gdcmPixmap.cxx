@@ -35,7 +35,7 @@ namespace gdcm
 
 Pixmap::Pixmap():Overlays(),Curves(),Icon(new IconImage) {}
 
-Pixmap::~Pixmap() = default;
+Pixmap::~Pixmap() {}
 
 bool Pixmap::AreOverlaysInPixelData() const
 {

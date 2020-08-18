@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,40 +37,50 @@ namespace itk
  *
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/ComputeTimeBetweenPoints,Compute Time Between Points}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Utilities/TimeProbe,Time probe}
+ * \endwiki
  */
-class ITKCommon_EXPORT TimeProbe : public ResourceProbe<RealTimeClock::TimeStampType, RealTimeClock::TimeStampType>
+class ITKCommon_EXPORT TimeProbe:public
+  ResourceProbe< RealTimeClock::TimeStampType, RealTimeClock::TimeStampType >
 {
 public:
+
   /** Type for counting how many times the probe has been started and stopped.
-   */
-  using CountType = unsigned long;
+    */
+  typedef unsigned long CountType;
 
   /** Type for measuring time. See the RealTimeClock class for details on the
    * precision and units of this clock signal */
-  using TimeStampType = RealTimeClock::TimeStampType;
+  typedef RealTimeClock::TimeStampType TimeStampType;
 
 public:
+
   /** Constructor */
   TimeProbe();
 
   /** Destructor */
-  ~TimeProbe() override;
+  virtual ~TimeProbe() ITK_OVERRIDE;
 
   /** Get the current time.
    *  Warning: the returned value is not the elapsed time since the last Start() call.
    */
-  TimeStampType
-  GetInstantValue() const override;
+  virtual TimeStampType GetInstantValue(void) const ITK_OVERRIDE;
+
+  /** Returns the average times passed between the starts and stops of the
+   *  probe. See the RealTimeClock for details on the precision and units of
+   *  this time value. Obsolete method kept for backward compatibility,
+   *  use Probe::GetMean() instead.
+   *  \deprecated
+   */
+  itkLegacyMacro(TimeStampType GetMeanTime(void) const);
 
   /** Get a handle to m_RealTimeClock. */
-  itkGetConstObjectMacro(RealTimeClock, RealTimeClock);
+  itkGetConstObjectMacro( RealTimeClock, RealTimeClock );
 
 private:
   RealTimeClock::Pointer m_RealTimeClock;
 };
 } // end namespace itk
 
-#endif // itkTimeProbe_h
+#endif //itkTimeProbe_h

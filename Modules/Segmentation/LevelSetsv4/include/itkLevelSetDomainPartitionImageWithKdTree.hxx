@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,28 +22,36 @@
 
 namespace itk
 {
-template <typename TImage>
-LevelSetDomainPartitionImageWithKdTree<TImage>::LevelSetDomainPartitionImageWithKdTree()
-  : m_KdTree(nullptr)
-{}
-
-template <typename TImage>
-void
-LevelSetDomainPartitionImageWithKdTree<TImage>::PopulateListDomain()
+template< typename TImage >
+LevelSetDomainPartitionImageWithKdTree< TImage >
+::LevelSetDomainPartitionImageWithKdTree() :
+  m_KdTree(ITK_NULLPTR), m_NumberOfNeighbors( 10 )
 {
-  if (this->m_KdTree.IsNotNull())
-  {
-    this->PopulateDomainWithKdTree();
-  }
-  else
-  {
-    Superclass::PopulateListDomain();
-  }
 }
 
-template <typename TImage>
-void
-LevelSetDomainPartitionImageWithKdTree<TImage>::PopulateDomainWithKdTree()
+template< typename TImage >
+LevelSetDomainPartitionImageWithKdTree< TImage >
+::~LevelSetDomainPartitionImageWithKdTree()
+{
+}
+
+template< typename TImage >
+void LevelSetDomainPartitionImageWithKdTree< TImage >
+::PopulateListDomain()
+{
+  if( this->m_KdTree.IsNotNull() )
+    {
+    this->PopulateDomainWithKdTree();
+    }
+  else
+    {
+    Superclass::PopulateListDomain();
+    }
+}
+
+template< typename TImage >
+void LevelSetDomainPartitionImageWithKdTree< TImage >
+::PopulateDomainWithKdTree()
 {
   Superclass::AllocateListDomain();
 
@@ -51,12 +59,12 @@ LevelSetDomainPartitionImageWithKdTree<TImage>::PopulateDomainWithKdTree()
 
   ListIteratorType lIt(this->m_ListDomain, region);
 
-  for (lIt.GoToBegin(); !lIt.IsAtEnd(); ++lIt)
-  {
+  for ( lIt.GoToBegin(); !lIt.IsAtEnd(); ++lIt )
+    {
     const ListIndexType & index = lIt.GetIndex();
-    ListPointType         pt;
+    ListPointType pt;
 
-    this->m_ListDomain->TransformIndexToPhysicalPoint(index, pt);
+    this->m_ListDomain->TransformIndexToPhysicalPoint( index, pt );
 
     CentroidVectorType queryPoint = pt.GetVectorFromOrigin();
 
@@ -64,17 +72,17 @@ LevelSetDomainPartitionImageWithKdTree<TImage>::PopulateDomainWithKdTree()
     this->m_KdTree->Search(queryPoint, this->m_NumberOfNeighbors, neighbors);
 
     IdentifierListType identifierList;
-    for (NeighborsIdType i = 0; i < this->m_NumberOfNeighbors; ++i)
-    {
-      IdentifierType levelSetID = neighbors[i];
-      if (this->m_LevelSetDomainRegionVector[levelSetID].IsInside(index))
+    for ( NeighborsIdType i = 0; i < this->m_NumberOfNeighbors; ++i )
       {
+      IdentifierType levelSetID = neighbors[i];
+      if ( this->m_LevelSetDomainRegionVector[levelSetID].IsInside( index ) )
+        {
         identifierList.push_back(neighbors[i]);
+        }
       }
-    }
     lIt.Set(identifierList);
-  }
+    }
 }
 
-} // end namespace itk
+} //end namespace itk
 #endif

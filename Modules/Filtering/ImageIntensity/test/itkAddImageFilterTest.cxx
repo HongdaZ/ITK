@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,32 +23,31 @@
 #include <complex>
 
 
-int
-itkAddImageFilterTest(int, char *[])
+int itkAddImageFilterTest( int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
   // Declare the pixel types of the images
-  using PixelType = float;
+  typedef float                               PixelType;
 
   // Declare the types of the images
-  using InputImageType1 = itk::Image<PixelType, Dimension>;
-  using InputImageType2 = itk::Image<PixelType, Dimension>;
-  using OutputImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >  InputImageType1;
+  typedef itk::Image< PixelType, Dimension >  InputImageType2;
+  typedef itk::Image< PixelType, Dimension >  OutputImageType;
 
   // Declare appropriate Iterator types for each image
-  using OutputImageIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex< OutputImageType > OutputImageIteratorType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<Dimension>;
+  typedef itk::Index< Dimension >         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<Dimension>;
+  typedef itk::Size< Dimension >          SizeType;
 
   // Declare the type of the region
-  using RegionType = itk::ImageRegion<Dimension>;
+  typedef itk::ImageRegion< Dimension >   RegionType;
 
   // Create two images
   InputImageType1::Pointer inputImageA = InputImageType1::New();
@@ -66,46 +65,51 @@ itkAddImageFilterTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetLargestPossibleRegion( region );
+  inputImageA->SetBufferedRegion( region );
+  inputImageA->SetRequestedRegion( region );
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetLargestPossibleRegion( region );
+  inputImageB->SetBufferedRegion( region );
+  inputImageB->SetRequestedRegion( region );
   inputImageB->Allocate();
 
   // Initialize the content of Image A
-  constexpr InputImageType1::PixelType valueA = 2.0;
-  inputImageA->FillBuffer(valueA);
+  const InputImageType1::PixelType valueA = 2.0;
+  inputImageA->FillBuffer( valueA );
 
   // Initialize the content of Image B
-  constexpr InputImageType2::PixelType valueB = 3.0;
-  inputImageB->FillBuffer(valueB);
+  const InputImageType2::PixelType valueB = 3.0;
+  inputImageB->FillBuffer( valueB );
 
 
   // Declare the type for the itk::AddImageFilter
-  using FilterType = itk::AddImageFilter<InputImageType1, InputImageType2, OutputImageType>;
+  typedef itk::AddImageFilter<
+                               InputImageType1,
+                               InputImageType2,
+                               OutputImageType > FilterType;
 
 
   // Create the filter
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, AddImageFilter, BinaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, AddImageFilter,
+    BinaryFunctorImageFilter );
 
   // Connect the input images
-  filter->SetInput1(inputImageA);
-  filter->SetInput2(inputImageB);
+  filter->SetInput1( inputImageA );
+  filter->SetInput2( inputImageB );
 
+  filter->SetFunctor( filter->GetFunctor() );
 
   // Execute the filter
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+  TRY_EXPECT_NO_EXCEPTION( filter->Update() );
 
 
   // Get the filter output
@@ -113,49 +117,53 @@ itkAddImageFilterTest(int, char *[])
 
 
   // Create an iterator for going through the image output
-  OutputImageIteratorType oIt(outputImage, outputImage->GetBufferedRegion());
+  OutputImageIteratorType oIt( outputImage, outputImage->GetBufferedRegion() );
 
   // Check the content of the result image
   //
-  const auto expectedValue = static_cast<OutputImageType::PixelType>(valueA + valueB);
-  while (!oIt.IsAtEnd())
-  {
-    if (!itk::Math::ExactlyEquals(oIt.Get(), expectedValue))
+  const OutputImageType::PixelType expectedValue =
+    static_cast< OutputImageType::PixelType >( valueA + valueB );
+  while( !oIt.IsAtEnd() )
     {
+    if( !itk::Math::ExactlyEquals( oIt.Get(), expectedValue ) )
+      {
       std::cerr << "Test failed!" << std::endl;
       std::cerr << "Error in pixel value at index [" << oIt.GetIndex() << "]" << std::endl;
-      std::cerr << "Expected: " << expectedValue << ", but got: " << oIt.Get() << std::endl;
+      std::cerr << "Expected: " << expectedValue
+        << ", but got: " << oIt.Get() << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++oIt;
-  }
+    }
 
 
   // Complementary tests
   // Instantiate the filter with other pixel types
   //
   {
-    using PixelType2 = double;
-    using ImageType2 = itk::Image<PixelType2>;
+  typedef double                    PixelType2;
+  typedef itk::Image< PixelType2 >  ImageType2;
 
-    using FilterType2 = itk::AddImageFilter<ImageType2, ImageType2, ImageType2>;
-    FilterType2::Pointer filter2 = FilterType2::New();
+  typedef itk::AddImageFilter< ImageType2, ImageType2, ImageType2 > FilterType2;
+  FilterType2::Pointer filter2 = FilterType2::New();
 
-    ITK_TEST_EXPECT_TRUE(!filter2.IsNull());
+  TEST_EXPECT_TRUE( !filter2.IsNull() );
   }
 
   {
-    using PixelType3 = float;
-    using ComplexPixelType = std::complex<PixelType3>;
+  typedef float                       PixelType3;
+  typedef std::complex< PixelType3 >  ComplexPixelType;
 
-    using ImageType3 = itk::Image<PixelType3>;
-    using ComplexImageType = itk::Image<ComplexPixelType>;
+  typedef itk::Image< PixelType3 >        ImageType3;
+  typedef itk::Image< ComplexPixelType >  ComplexImageType;
 
-    using FilterType3 = itk::AddImageFilter<ImageType3, ComplexImageType, ComplexImageType>;
+  typedef itk::AddImageFilter< ImageType3,
+                              ComplexImageType,
+                              ComplexImageType > FilterType3;
 
-    FilterType3::Pointer filter3 = FilterType3::New();
+  FilterType3::Pointer filter3 = FilterType3::New();
 
-    ITK_TEST_EXPECT_TRUE(!filter3.IsNull());
+  TEST_EXPECT_TRUE( !filter3.IsNull() );
   }
 
 

@@ -16,8 +16,8 @@
 
 #include "metaLine.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -67,7 +67,7 @@ MetaLine::
 MetaLine()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaLine()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -76,7 +76,7 @@ MetaLine::
 MetaLine(const char *_headerName)
 :MetaObject(_headerName)
 {
-  if(META_DEBUG)  std::cout << "MetaLine()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaLine()" << METAIO_STREAM::endl;
   Clear();
   Read(_headerName);
 }
@@ -86,7 +86,7 @@ MetaLine::
 MetaLine(const MetaLine *_line)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaLine()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaLine()" << METAIO_STREAM::endl;
   Clear();
   CopyInfo(_line);
 }
@@ -98,7 +98,7 @@ MetaLine::
 MetaLine(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaLine()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -115,11 +115,11 @@ void MetaLine::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "PointDim = " << m_PointDim << std::endl;
-  std::cout << "NPoints = " << m_NPoints << std::endl;
+  METAIO_STREAM::cout << "PointDim = " << m_PointDim << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NPoints = " << m_NPoints << METAIO_STREAM::endl;
   char str[255];
   MET_TypeToString(m_ElementType, str);
-  std::cout << "ElementType = " << str << std::endl;
+  METAIO_STREAM::cout << "ElementType = " << str << METAIO_STREAM::endl;
 }
 
 void MetaLine::
@@ -137,7 +137,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaLine::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -149,30 +149,26 @@ NPoints(int npnt)
 }
 
 int MetaLine::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
 
 /** Clear line information */
 void MetaLine::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaLine: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Line");
-
   m_NPoints = 0;
     // Delete the list of pointers to lines.
   PointListType::iterator it = m_PointList.begin();
   while(it != m_PointList.end())
-{
+  {
     LinePnt* pnt = *it;
     ++it;
     delete pnt;
-}
+  }
   m_PointList.clear();
 
   strcpy(m_PointDim, "x y z v1x v1y v1z");
@@ -181,16 +177,16 @@ Clear()
 
 /** Destroy line information */
 void MetaLine::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaLine::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaLine: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -219,8 +215,9 @@ M_SetupReadFields()
 }
 
 void MetaLine::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Line");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -232,12 +229,12 @@ M_SetupWriteFields()
   m_Fields.push_back(mF);
 
   if(strlen(m_PointDim)>0)
-{
+  {
     mF = new MET_FieldRecordType;
     MET_InitWriteField(mF, "PointDim", MET_STRING,
                            strlen(m_PointDim),m_PointDim);
     m_Fields.push_back(mF);
-}
+  }
 
   m_NPoints = (int)m_PointList.size();
   mF = new MET_FieldRecordType;
@@ -251,7 +248,7 @@ M_SetupWriteFields()
 }
 
 MET_ValueEnumType MetaLine::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -264,40 +261,40 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 bool MetaLine::
-M_Read()
+M_Read(void)
 {
-  if(META_DEBUG) std::cout << "MetaLine: M_Read: Loading Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: M_Read: Loading Header" << METAIO_STREAM::endl;
 
   if(!MetaObject::M_Read())
-{
-    std::cout << "MetaLine: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaLine: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
-  if(META_DEBUG) std::cout << "MetaLine: M_Read: Parsing Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLine: M_Read: Parsing Header" << METAIO_STREAM::endl;
 
   MET_FieldRecordType * mF;
 
   mF = MET_GetFieldRecord("NPoints", &m_Fields);
   if(mF->defined)
-{
+  {
     m_NPoints= (int)mF->value[0];
-}
+  }
 
   mF = MET_GetFieldRecord("ElementType", &m_Fields);
   if(mF->defined)
-{
+  {
     MET_StringToType((char *)(mF->value), &m_ElementType);
-}
+  }
 
   mF = MET_GetFieldRecord("PointDim", &m_Fields);
   if(mF->defined)
-{
+  {
     strcpy(m_PointDim,(char *)(mF->value));
-}
+  }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
   int ii;
@@ -310,7 +307,7 @@ M_Read()
   float v[16];
 
   if(m_BinaryData)
-{
+  {
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
     int readSize = m_NPoints*(m_NDims*m_NDims+4)*elementSize;
@@ -321,9 +318,9 @@ M_Read()
     int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
     {
-      std::cout << "MetaLine: m_Read: data not read completely"
-                << std::endl;
-      std::cout << "   ideal = " << readSize << " : actual = " << gc << std::endl;
+      METAIO_STREAM::cout << "MetaLine: m_Read: data not read completely"
+                << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc << METAIO_STREAM::endl;
       delete [] _data;
       return false;
     }
@@ -380,9 +377,9 @@ M_Read()
       m_PointList.push_back(pnt);
     }
     delete [] _data;
-}
+  }
   else
-{
+  {
     for(int j=0; j<m_NPoints; j++)
     {
       LinePnt* pnt = new LinePnt(m_NDims);
@@ -434,18 +431,18 @@ M_Read()
     {
       c = static_cast<char>(m_ReadStream->get());// to avoid unrecognized characters
     }
-}
+  }
 
   return true;
 }
 
 
 bool MetaLine::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
-    std::cout << "MetaLine: M_Read: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaLine: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -519,10 +516,10 @@ M_Write()
         *m_WriteStream << (*it)->m_Color[d] << " ";
       }
 
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
     }
-}
+  }
 
   return true;
 

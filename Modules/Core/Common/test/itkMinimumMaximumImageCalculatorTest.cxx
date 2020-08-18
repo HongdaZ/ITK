@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,24 +20,23 @@
 #include "itkObject.h"
 #include "itkTestingMacros.h"
 
-int
-itkMinimumMaximumImageCalculatorTest(int, char *[])
+int itkMinimumMaximumImageCalculatorTest( int, char *[] )
 {
 
-  using SizeType = itk::Size<3>;
-  using ImageType = itk::Image<short, 3>;
+  typedef itk::Size< 3 >                                  SizeType;
+  typedef itk::Image< short, 3 >                          ImageType;
 
-  using MinMaxCalculatorType = itk::MinimumMaximumImageCalculator<ImageType>;
+  typedef itk::MinimumMaximumImageCalculator<ImageType>   MinMaxCalculatorType;
 
   /* Define the image size and physical coordinates */
-  SizeType size = { { 20, 20, 20 } };
-  double   origin[3] = { 0.0, 0.0, 0.0 };
-  double   spacing[3] = { 1, 1, 1 };
+  SizeType size = {{20, 20, 20}};
+  double origin [3] = {0.0, 0.0, 0.0};
+  double spacing[3] = {1, 1, 1};
 
   std::cout << "Testing Minimum and Maximum Image Calulator:\n";
 
   // Allocate a simple test image
-  ImageType::Pointer    image = ImageType::New();
+  ImageType::Pointer image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(size);
   image->SetLargestPossibleRegion(region);
@@ -54,18 +53,15 @@ itkMinimumMaximumImageCalculatorTest(int, char *[])
 
   // Initialize the image contents with the minimum value
   itk::Index<3> index;
-  for (int slice = 0; slice < 20; ++slice)
-  {
-    index[2] = slice;
-    for (int row = 0; row < 20; ++row)
-    {
-      index[1] = row;
-      for (int col = 0; col < 20; ++col)
-      {
-        index[0] = col;
-        image->SetPixel(index, minimum);
+  for (int slice = 0; slice < 20; ++slice) {
+      index[2] = slice;
+      for (int row = 0; row < 20; ++row) {
+          index[1] = row;
+          for (int col = 0; col < 20; ++col) {
+              index[0] = col;
+              image->SetPixel(index, minimum);
+          }
       }
-    }
   }
 
   // The minimum intensity index position will contain a single value:
@@ -85,27 +81,27 @@ itkMinimumMaximumImageCalculatorTest(int, char *[])
   // Create and initialize the calculator
   MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(calculator, MinimumMaximumImageCalculator, Object);
+  EXERCISE_BASIC_OBJECT_METHODS( calculator, MinimumMaximumImageCalculator, Object );
 
-  calculator->SetImage(image);
+  calculator->SetImage( image );
   calculator->Compute();
 
   // Test minimum of intensity
-  ITK_TEST_SET_GET_VALUE(minimum, calculator->GetMinimum());
-  ITK_TEST_SET_GET_VALUE(minIntensityValueIndex, calculator->GetIndexOfMinimum());
+  TEST_SET_GET_VALUE( minimum, calculator->GetMinimum() );
+  TEST_SET_GET_VALUE( minIntensityValueIndex, calculator->GetIndexOfMinimum() );
 
   // Test maximum of intensity
-  ITK_TEST_SET_GET_VALUE(maximum, calculator->GetMaximum());
-  ITK_TEST_SET_GET_VALUE(maxIntensityValueIndex, calculator->GetIndexOfMaximum());
+  TEST_SET_GET_VALUE( maximum, calculator->GetMaximum() );
+  TEST_SET_GET_VALUE( maxIntensityValueIndex, calculator->GetIndexOfMaximum() );
 
   // Set the region over which perform the computations
-  itk::Size<3>                     regionSize = { { 4, 4, 4 } };
-  itk::Index<3>                    idx = { { 0, 0, 0 } };
+  itk::Size<3>  regionSize = {{4, 4, 4}};
+  itk::Index<3> idx = {{0, 0, 0}};
   MinMaxCalculatorType::RegionType computationRegion;
-  computationRegion.SetSize(regionSize);
-  computationRegion.SetIndex(idx);
+  computationRegion.SetSize( regionSize );
+  computationRegion.SetIndex( idx );
 
-  calculator->SetRegion(computationRegion);
+  calculator->SetRegion( computationRegion );
 
   minimum = -102;
   maximum = 800;
@@ -115,22 +111,22 @@ itkMinimumMaximumImageCalculatorTest(int, char *[])
   maxIntensityValueIndex[1] = 2;
   maxIntensityValueIndex[2] = 2;
 
-  image->SetPixel(minIntensityValueIndex, minimum);
-  image->SetPixel(maxIntensityValueIndex, maximum);
+  image->SetPixel( minIntensityValueIndex, minimum );
+  image->SetPixel( maxIntensityValueIndex, maximum );
 
-  calculator->SetImage(image);
+  calculator->SetImage( image );
 
   calculator->ComputeMinimum();
 
   // Test minimum of intensity
-  ITK_TEST_SET_GET_VALUE(minimum, calculator->GetMinimum());
-  ITK_TEST_SET_GET_VALUE(minIntensityValueIndex, calculator->GetIndexOfMinimum());
+  TEST_SET_GET_VALUE( minimum, calculator->GetMinimum() );
+  TEST_SET_GET_VALUE( minIntensityValueIndex, calculator->GetIndexOfMinimum() );
 
   calculator->ComputeMaximum();
 
   // Test maximum of intensity
-  ITK_TEST_SET_GET_VALUE(maximum, calculator->GetMaximum());
-  ITK_TEST_SET_GET_VALUE(maxIntensityValueIndex, calculator->GetIndexOfMaximum());
+  TEST_SET_GET_VALUE( maximum, calculator->GetMaximum() );
+  TEST_SET_GET_VALUE( maxIntensityValueIndex, calculator->GetIndexOfMaximum() );
 
 
   return EXIT_SUCCESS;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,69 +45,68 @@ namespace itk
  *
  * \ingroup ITKImageGrid
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT ChangeInformationImageFilter : public ImageToImageFilter<TInputImage, TInputImage>
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT ChangeInformationImageFilter:
+  public ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeInformationImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ChangeInformationImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ChangeInformationImageFilter                   Self;
+  typedef ImageToImageFilter< TInputImage, TInputImage > Superclass;
+  typedef SmartPointer< Self >                           Pointer;
+  typedef SmartPointer< const Self >                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  using InputImageType = TInputImage;
-  using OutputImageType = TInputImage;
+  typedef TInputImage   InputImageType;
+  typedef TInputImage   OutputImageType;
 
   /** Typedef to describe the output and input image region types. */
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using InputImageRegionType = typename InputImageType::RegionType;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
 
   /** Typedef to describe the pointer to the input. */
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
   /** Typedef to describe the type of pixel. */
-  using OutputImagePixelType = typename OutputImageType::PixelType;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  typedef typename OutputImageType::PixelType OutputImagePixelType;
+  typedef typename InputImageType::PixelType  InputImagePixelType;
 
   /** Typedef to describe the output and input image index and size types. */
-  using OutputImageIndexType = typename OutputImageType::IndexType;
-  using OutputImageSizeType = typename OutputImageType::SizeType;
-  using OutputImageOffsetType = typename OutputImageType::OffsetType;
-  using OutputImageDirectionType = typename OutputImageType::DirectionType;
-  using OutputImageOffsetValueType = typename OutputImageType::OffsetValueType;
-  using InputImageIndexType = typename InputImageType::IndexType;
-  using InputImageSizeType = typename InputImageType::SizeType;
-  using InputImageOffsetType = typename InputImageType::OffsetType;
-  using InputImageDirectionType = typename InputImageType::DirectionType;
+  typedef typename OutputImageType::IndexType        OutputImageIndexType;
+  typedef typename OutputImageType::SizeType         OutputImageSizeType;
+  typedef typename OutputImageType::OffsetType       OutputImageOffsetType;
+  typedef typename OutputImageType::DirectionType    OutputImageDirectionType;
+  typedef typename OutputImageType::OffsetValueType  OutputImageOffsetValueType;
+  typedef typename InputImageType::IndexType         InputImageIndexType;
+  typedef typename InputImageType::SizeType          InputImageSizeType;
+  typedef typename InputImageType::OffsetType        InputImageOffsetType;
+  typedef typename InputImageType::DirectionType     InputImageDirectionType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
-  /** Image spacing, origin and direction type alias */
-  using SpacingType = typename InputImageType::SpacingType;
-  using PointType = typename InputImageType::PointType;
-  using DirectionType = typename InputImageType::DirectionType;
+  /** Image spacing, origin and direction typedefs */
+  typedef typename InputImageType::SpacingType   SpacingType;
+  typedef typename InputImageType::PointType     PointType;
+  typedef typename InputImageType::DirectionType DirectionType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ChangeInformationImageFilter, ImageToImageFilter);
 
   /** Copy the information from another Image.  By default,
    *  the information is copied from the input image. */
-  void
-  SetReferenceImage(InputImageType * image)
+  void SetReferenceImage(InputImageType *image)
   {
-    if (image != m_ReferenceImage)
-    {
+    if ( image != m_ReferenceImage )
+      {
       m_ReferenceImage = image;
-      this->ProcessObject::SetNthInput(1, const_cast<InputImageType *>(image));
+      this->ProcessObject::SetNthInput(1, const_cast< InputImageType *>( image ) );
       this->Modified();
-    }
+      }
   }
 
   itkGetModifiableObjectMacro(ReferenceImage, TInputImage);
@@ -128,7 +127,7 @@ public:
   itkSetMacro(OutputOrigin, PointType);
   itkGetConstReferenceMacro(OutputOrigin, PointType);
 
-  /** Specify a new direction cosine matrix explicitly.  The default is to
+  /** Specify a new direciton cosine matrix explicitly.  The default is to
    *  use the direction of the Input, or of the ReferenceImage
    *  if UseReferenceImage is true. */
   itkSetMacro(OutputDirection, DirectionType);
@@ -147,8 +146,7 @@ public:
   itkSetVectorMacro(OutputOffset, OutputImageOffsetValueType, ImageDimension);
 
   /** Change the origin, spacing and region of the output image. */
-  void
-  ChangeAll()
+  void ChangeAll()
   {
     this->ChangeSpacingOn();
     this->ChangeOriginOn();
@@ -158,8 +156,7 @@ public:
 
   /** Do not change the origin, spacing, direction or region of the
    * output image. */
-  void
-  ChangeNone()
+  void ChangeNone()
   {
     this->ChangeSpacingOff();
     this->ChangeOriginOff();
@@ -211,34 +208,30 @@ public:
   itkGetConstMacro(CenterImage, bool);
 
   /** Apply changes to the output image information. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Apply changes to the input image requested region. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Copy the input buffer. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 protected:
   ChangeInformationImageFilter();
-  ~ChangeInformationImageFilter() override = default;
+  //~ChangeInformationImageFilter() {} default implementation ok
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** Override VerifyInputInformation() since this filter's inputs do
-   * not need to occupy the same physical space.
+  /** Override VeriyInputInformation() since this filter's inputs do
+   * not need to occoupy the same physical space.
    *
    * \sa ProcessObject::VerifyInputInformation
    */
-  void
-  VerifyInputInformation() ITKv5_CONST override
-  {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeInformationImageFilter);
+
   InputImagePointer m_ReferenceImage;
 
   bool m_CenterImage;
@@ -258,7 +251,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkChangeInformationImageFilter.hxx"
+#include "itkChangeInformationImageFilter.hxx"
 #endif
 
 #endif

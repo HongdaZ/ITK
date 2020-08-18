@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,52 +32,49 @@ namespace itk
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TDomainPartitioner, typename TImageToImageMetric, typename TCorrelationMetric>
+template < typename TDomainPartitioner, typename TImageToImageMetric, typename TCorrelationMetric >
 class ITK_TEMPLATE_EXPORT CorrelationImageToImageMetricv4HelperThreader
-  : public ImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner, TImageToImageMetric>
+  : public ImageToImageMetricv4GetValueAndDerivativeThreader< TDomainPartitioner, TImageToImageMetric >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CorrelationImageToImageMetricv4HelperThreader);
+  /** Standard class typedefs. */
+  typedef CorrelationImageToImageMetricv4HelperThreader                                      Self;
+  typedef ImageToImageMetricv4GetValueAndDerivativeThreader< TDomainPartitioner, TImageToImageMetric > Superclass;
+  typedef SmartPointer< Self >                                                                         Pointer;
+  typedef SmartPointer< const Self >                                                                   ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = CorrelationImageToImageMetricv4HelperThreader;
-  using Superclass = ImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner, TImageToImageMetric>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  itkTypeMacro( CorrelationImageToImageMetricv4HelperThreader, ImageToImageMetricv4GetValueAndDerivativeThreader );
 
-  itkTypeMacro(CorrelationImageToImageMetricv4HelperThreader, ImageToImageMetricv4GetValueAndDerivativeThreader);
+  itkNewMacro( Self );
 
-  itkNewMacro(Self);
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::ImageToImageMetricv4Type ImageToImageMetricv4Type;
+  typedef typename Superclass::VirtualIndexType         VirtualIndexType;
+  typedef typename Superclass::VirtualPointType         VirtualPointType;
+  typedef typename Superclass::FixedImagePointType      FixedImagePointType;
+  typedef typename Superclass::FixedImagePixelType      FixedImagePixelType;
+  typedef typename Superclass::FixedImageGradientType   FixedImageGradientType;
+  typedef typename Superclass::MovingImagePointType     MovingImagePointType;
+  typedef typename Superclass::MovingImagePixelType     MovingImagePixelType;
+  typedef typename Superclass::MovingImageGradientType  MovingImageGradientType;
+  typedef typename Superclass::MeasureType              MeasureType;
+  typedef typename Superclass::DerivativeType           DerivativeType;
+  typedef typename Superclass::DerivativeValueType      DerivativeValueType;
 
-  using ImageToImageMetricv4Type = typename Superclass::ImageToImageMetricv4Type;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
+  typedef typename Superclass::InternalComputationValueType InternalComputationValueType;
+  typedef typename Superclass::NumberOfParametersType       NumberOfParametersType;
 
-  using InternalComputationValueType = typename Superclass::InternalComputationValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
-
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
+  typedef typename Superclass::FixedOutputPointType     FixedOutputPointType;
+  typedef typename Superclass::MovingOutputPointType    MovingOutputPointType;
 
 protected:
   CorrelationImageToImageMetricv4HelperThreader();
-  ~CorrelationImageToImageMetricv4HelperThreader() override;
+  virtual ~CorrelationImageToImageMetricv4HelperThreader() ITK_OVERRIDE;
 
   /** Overload: Resize and initialize per thread objects. */
-  void
-  BeforeThreadedExecution() override;
+  virtual void BeforeThreadedExecution() ITK_OVERRIDE;
 
   /** Overload:
    * Collects the results from each thread and sums them.  Results are stored
@@ -86,8 +83,7 @@ protected:
    * m_NumberOfValidPoints, to average the value sum, and to average
    * derivative sums for global transforms only (i.e. transforms without local
    * support).  */
-  void
-  AfterThreadedExecution() override;
+  virtual void AfterThreadedExecution() ITK_OVERRIDE;
 
 
   /* Overload: don't need to compute the image gradients and store derivatives
@@ -96,41 +92,42 @@ protected:
    * in turn calls \c TransformAndEvaluateFixedPoint, \c
    * TransformAndEvaluateMovingPoint, and \c ProcessPoint.
    */
-  bool
-  ProcessVirtualPoint(const VirtualIndexType & virtualIndex,
-                      const VirtualPointType & virtualPoint,
-                      const ThreadIdType       threadId) override;
+  virtual bool ProcessVirtualPoint( const VirtualIndexType & virtualIndex,
+                                    const VirtualPointType & virtualPoint,
+                                    const ThreadIdType threadId ) ITK_OVERRIDE;
 
 
   /**
    * Not using. All processing is done in ProcessVirtualPoint.
    */
-  bool
-  ProcessPoint(const VirtualIndexType &,
-               const VirtualPointType &,
-               const FixedImagePointType &,
-               const FixedImagePixelType &,
-               const FixedImageGradientType &,
-               const MovingImagePointType &,
-               const MovingImagePixelType &,
-               const MovingImageGradientType &,
-               MeasureType &,
-               DerivativeType &,
-               const ThreadIdType) const override
+  virtual bool ProcessPoint(
+        const VirtualIndexType &          ,
+        const VirtualPointType &          ,
+        const FixedImagePointType &       ,
+        const FixedImagePixelType &       ,
+        const FixedImageGradientType &    ,
+        const MovingImagePointType &      ,
+        const MovingImagePixelType &      ,
+        const MovingImageGradientType &   ,
+        MeasureType &                     ,
+        DerivativeType &                  ,
+        const ThreadIdType                 ) const ITK_OVERRIDE
   {
     return false;
   }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CorrelationImageToImageMetricv4HelperThreader);
+
   struct CorrelationMetricPerThreadStruct
-  {
+    {
     InternalComputationValueType FixSum;
     InternalComputationValueType MovSum;
-  };
-  itkPadStruct(ITK_CACHE_LINE_ALIGNMENT, CorrelationMetricPerThreadStruct, PaddedCorrelationMetricPerThreadStruct);
-  itkAlignedTypedef(ITK_CACHE_LINE_ALIGNMENT,
-                    PaddedCorrelationMetricPerThreadStruct,
-                    AlignedCorrelationMetricPerThreadStruct);
+    };
+  itkPadStruct( ITK_CACHE_LINE_ALIGNMENT, CorrelationMetricPerThreadStruct,
+                                          PaddedCorrelationMetricPerThreadStruct);
+  itkAlignedTypedef( ITK_CACHE_LINE_ALIGNMENT, PaddedCorrelationMetricPerThreadStruct,
+                                               AlignedCorrelationMetricPerThreadStruct );
   /* per thread variables for correlation and its derivatives */
   mutable AlignedCorrelationMetricPerThreadStruct * m_CorrelationMetricPerThreadVariables;
 
@@ -142,7 +139,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCorrelationImageToImageMetricv4HelperThreader.hxx"
+#include "itkCorrelationImageToImageMetricv4HelperThreader.hxx"
 #endif
 
 #endif

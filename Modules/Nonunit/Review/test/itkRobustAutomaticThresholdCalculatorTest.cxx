@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,72 +24,77 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkRobustAutomaticThresholdCalculatorTest(int argc, char * argv[])
+int itkRobustAutomaticThresholdCalculatorTest( int argc, char *argv[] )
 {
-  if (argc != 4)
-  {
+  if( argc != 4 )
+    {
     std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage: " << argv[0] << " inputImage pow expectedOutput" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned short;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned short                      PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using RealPixelType = float;
-  using RealImageType = itk::Image<RealPixelType, Dimension>;
+  typedef float                                   RealPixelType;
+  typedef itk::Image< RealPixelType, Dimension >  RealImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using GradientType = itk::GradientMagnitudeRecursiveGaussianImageFilter<ImageType, RealImageType>;
+  typedef itk::GradientMagnitudeRecursiveGaussianImageFilter< ImageType, RealImageType >
+    GradientType;
   GradientType::Pointer gradient = GradientType::New();
-  gradient->SetInput(reader->GetOutput());
-  gradient->SetSigma(10);
+  gradient->SetInput( reader->GetOutput() );
+  gradient->SetSigma( 10 );
   gradient->Update();
 
-  using CalculatorType = itk::RobustAutomaticThresholdCalculator<ImageType, RealImageType>;
+  typedef itk::RobustAutomaticThresholdCalculator< ImageType, RealImageType >
+    CalculatorType;
   CalculatorType::Pointer calculator = CalculatorType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(calculator, RobustAutomaticThresholdCalculator, Object);
+  EXERCISE_BASIC_OBJECT_METHODS( calculator,
+    RobustAutomaticThresholdCalculator, Object );
 
 
-  calculator->SetGradient(gradient->GetOutput());
+  calculator->SetGradient( gradient->GetOutput() );
 
-  double pow = std::stod(argv[2]);
-  calculator->SetPow(pow);
-  ITK_TEST_SET_GET_VALUE(pow, calculator->GetPow());
+  double pow = atof( argv[2] );
+  calculator->SetPow( pow );
+  TEST_SET_GET_VALUE( pow, calculator->GetPow() );
 
 
   // Test input or gradient unset exceptions
-  ITK_TRY_EXPECT_EXCEPTION(calculator->Compute());
+  TRY_EXPECT_EXCEPTION( calculator->Compute() );
 
-  ITK_TRY_EXPECT_EXCEPTION(calculator->GetOutput());
+  TRY_EXPECT_EXCEPTION( calculator->GetOutput() );
 
 
-  calculator->SetInput(reader->GetOutput());
+  calculator->SetInput( reader->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(calculator->Compute());
+  TRY_EXPECT_NO_EXCEPTION( calculator->Compute() );
 
 
   // Regression test
-  auto                           expectedOutput = static_cast<CalculatorType::InputPixelType>(std::stod(argv[3]));
+  CalculatorType::InputPixelType expectedOutput =
+    static_cast< CalculatorType::InputPixelType >( atof( argv[3] ) );
   CalculatorType::InputPixelType computedOutput = calculator->GetOutput();
-  if (itk::Math::NotAlmostEquals(expectedOutput, computedOutput))
-  {
+  if( itk::Math::NotAlmostEquals( expectedOutput, computedOutput ) )
+    {
     std::cout << "Test failed!" << std::endl;
     std::cout << "Error in GetOutput()" << std::endl;
     std::cout << "Expected: "
-              << static_cast<itk::NumericTraits<CalculatorType::InputPixelType>::PrintType>(expectedOutput)
-              << ", but got: "
-              << static_cast<itk::NumericTraits<CalculatorType::InputPixelType>::PrintType>(computedOutput)
-              << std::endl;
+      << static_cast< itk::NumericTraits<
+      CalculatorType::InputPixelType >::PrintType >( expectedOutput )
+      << ", but got: "
+      << static_cast< itk::NumericTraits<
+      CalculatorType::InputPixelType >::PrintType >( computedOutput )
+      << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;

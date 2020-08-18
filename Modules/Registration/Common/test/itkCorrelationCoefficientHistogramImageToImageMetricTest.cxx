@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,36 +24,36 @@
 /** This test uses two 2D-Gaussians (standard deviation RegionSize/2).
     This test computes the correlation coefficient between the two images.
 */
-int
-itkCorrelationCoefficientHistogramImageToImageMetricTest(int, char *[])
+int itkCorrelationCoefficientHistogramImageToImageMetricTest(int, char* [])
 {
-  try
-  {
+  try {
     // Create two simple images.
-    constexpr unsigned int ImageDimension = 2;
-    using PixelType = double;
-    using CoordinateRepresentationType = double;
+    const unsigned int ImageDimension = 2;
+    typedef double PixelType;
+    typedef double CoordinateRepresentationType;
 
-    // Allocate Images
-    using MovingImageType = itk::Image<PixelType, ImageDimension>;
-    using FixedImageType = itk::Image<PixelType, ImageDimension>;
+    //Allocate Images
+    typedef itk::Image<PixelType,ImageDimension> MovingImageType;
+    typedef itk::Image<PixelType,ImageDimension> FixedImageType;
 
     // Declare Gaussian Sources
-    using MovingImageSourceType = itk::GaussianImageSource<MovingImageType>;
-    using FixedImageSourceType = itk::GaussianImageSource<FixedImageType>;
+    typedef itk::GaussianImageSource<MovingImageType> MovingImageSourceType;
+    typedef itk::GaussianImageSource<FixedImageType>  FixedImageSourceType;
 
     // Note: the following declarations are classical arrays
-    FixedImageType::SizeValueType  fixedImageSize[] = { 100, 100 };
-    MovingImageType::SizeValueType movingImageSize[] = { 100, 100 };
+    FixedImageType::SizeValueType  fixedImageSize[] = {100,  100};
+    MovingImageType::SizeValueType movingImageSize[] = {100,  100};
 
-    FixedImageType::SpacingValueType  fixedImageSpacing[] = { 1.0f, 1.0f };
-    MovingImageType::SpacingValueType movingImageSpacing[] = { 1.0f, 1.0f };
+    FixedImageType::SpacingValueType fixedImageSpacing[]  = {1.0f, 1.0f};
+    MovingImageType::SpacingValueType movingImageSpacing[] = {1.0f, 1.0f};
 
-    FixedImageType::PointValueType  fixedImageOrigin[] = { 0.0f, 0.0f };
-    MovingImageType::PointValueType movingImageOrigin[] = { 0.0f, 0.0f };
+    FixedImageType::PointValueType fixedImageOrigin[] = {0.0f, 0.0f};
+    MovingImageType::PointValueType movingImageOrigin[] = {0.0f, 0.0f};
 
-    MovingImageSourceType::Pointer movingImageSource = MovingImageSourceType::New();
-    FixedImageSourceType::Pointer  fixedImageSource = FixedImageSourceType::New();
+    MovingImageSourceType::Pointer movingImageSource =
+      MovingImageSourceType::New();
+    FixedImageSourceType::Pointer  fixedImageSource  =
+      FixedImageSourceType::New();
 
     movingImageSource->SetSize(movingImageSize);
     movingImageSource->SetOrigin(movingImageOrigin);
@@ -71,17 +71,19 @@ itkCorrelationCoefficientHistogramImageToImageMetricTest(int, char *[])
     fixedImageSource->Update();  // Force the filter to run
 
     MovingImageType::Pointer movingImage = movingImageSource->GetOutput();
-    FixedImageType::Pointer  fixedImage = fixedImageSource->GetOutput();
+    FixedImageType::Pointer  fixedImage  = fixedImageSource->GetOutput();
 
     // Set up the metric.
-    using MetricType = itk::CorrelationCoefficientHistogramImageToImageMetric<FixedImageType, MovingImageType>;
-    using TransformBaseType = MetricType::TransformType;
-    using ScalesType = MetricType::ScalesType;
-    using ParametersType = TransformBaseType::ParametersType;
+    typedef
+      itk::CorrelationCoefficientHistogramImageToImageMetric<FixedImageType,
+      MovingImageType>                        MetricType;
+    typedef MetricType::TransformType         TransformBaseType;
+    typedef MetricType::ScalesType            ScalesType;
+    typedef TransformBaseType::ParametersType ParametersType;
 
     MetricType::Pointer metric = MetricType::New();
 
-    unsigned int                        nBins = 256;
+    unsigned int nBins = 256;
     MetricType::HistogramType::SizeType histSize;
     histSize.SetSize(2);
     histSize[0] = nBins;
@@ -93,17 +95,19 @@ itkCorrelationCoefficientHistogramImageToImageMetricTest(int, char *[])
     metric->SetMovingImage(movingImage);
 
     // Set up a transform.
-    using TransformType = itk::TranslationTransform<CoordinateRepresentationType, ImageDimension>;
+    typedef itk::TranslationTransform<CoordinateRepresentationType,
+      ImageDimension> TransformType;
 
     TransformType::Pointer transform = TransformType::New();
-    metric->SetTransform(transform);
+    metric->SetTransform(transform.GetPointer());
 
     // Set up an interpolator.
-    using InterpolatorType = itk::LinearInterpolateImageFunction<MovingImageType, double>;
+    typedef itk::LinearInterpolateImageFunction<MovingImageType,
+      double> InterpolatorType;
 
     InterpolatorType::Pointer interpolator = InterpolatorType::New();
-    interpolator->SetInputImage(movingImage);
-    metric->SetInterpolator(interpolator);
+    interpolator->SetInputImage(movingImage.GetPointer());
+    metric->SetInterpolator(interpolator.GetPointer());
 
     // Define the region over which the metric will be computed.
     metric->SetFixedImageRegion(fixedImage->GetBufferedRegion());
@@ -126,18 +130,19 @@ itkCorrelationCoefficientHistogramImageToImageMetricTest(int, char *[])
     metric->Initialize();
 
     // Print out metric value and derivative.
-    MetricType::MeasureType    measure = metric->GetValue(parameters);
+    MetricType::MeasureType measure = metric->GetValue(parameters);
     MetricType::DerivativeType derivative;
     metric->GetDerivative(parameters, derivative);
 
-    std::cout << "Metric value = " << measure << std::endl << "Derivative = " << derivative << std::endl;
+    std::cout << "Metric value = " << measure << std::endl
+              << "Derivative = " << derivative << std::endl;
 
     // Exercise Print() method.
     metric->Print(std::cout);
 
     std::cout << "Test passed." << std::endl;
   }
-  catch (const itk::ExceptionObject & ex)
+  catch (itk::ExceptionObject& ex)
   {
     std::cerr << "Exception caught!" << std::endl;
     std::cerr << ex << std::endl;

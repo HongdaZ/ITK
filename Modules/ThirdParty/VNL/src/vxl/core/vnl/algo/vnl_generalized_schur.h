@@ -1,6 +1,9 @@
 // This is core/vnl/algo/vnl_generalized_schur.h
 #ifndef vnl_generalized_schur_h_
 #define vnl_generalized_schur_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief  Solves the generalized eigenproblem det(t A - s B) = 0.
@@ -53,9 +56,7 @@ VNL_ALGO_EXPORT bool vnl_generalized_schur(vnl_matrix<double> *A,
                            vnl_matrix<double> *L,
                            vnl_matrix<double> *R);
 
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 template <class T>
 T vnl_generalized_schur_convert_cast(double a) { return static_cast<T>(a); }

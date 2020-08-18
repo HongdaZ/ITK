@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,13 +48,14 @@ protected:
   friend class QueryFactory;
   BaseQuery();
 
+  std::string mHelpDescription; //used when generating the help output
   std::string mSopInstanceUID;
 
   void SetSearchParameter(const Tag& inTag, const DictEntry& inDictEntry, const std::string& inValue);
   
   bool ValidDataSet( const DataSet & dataSetToValid, const DataSet & dataSetReference  ) const ;
 public:
-  ~BaseQuery() override;
+  virtual ~BaseQuery();
 
   void SetSearchParameter(const Tag& inTag, const std::string& inValue);
   void SetSearchParameter(const std::string& inKeyword, const std::string& inValue);
@@ -79,7 +80,7 @@ public:
 
 
 
-  void Print(std::ostream &os) const override;
+  void Print(std::ostream &os) const;
 };
 
 } // end namespace gdcm

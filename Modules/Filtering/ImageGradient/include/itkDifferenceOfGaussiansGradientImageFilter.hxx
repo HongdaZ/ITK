@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,22 +25,25 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TDataType>
-DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::DifferenceOfGaussiansGradientImageFilter()
+template< typename TInputImage, typename TDataType >
+DifferenceOfGaussiansGradientImageFilter< TInputImage, TDataType >
+::DifferenceOfGaussiansGradientImageFilter()
 {
   itkDebugMacro(<< "DifferenceOfGaussiansGradientImageFilter::DifferenceOfGaussiansGradientImageFilter() called");
 
   m_Width = 2;
 }
 
-template <typename TInputImage, typename TDataType>
+template< typename TInputImage, typename TDataType >
 void
-DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::GenerateData()
+DifferenceOfGaussiansGradientImageFilter< TInputImage, TDataType >
+::GenerateData()
 {
   itkDebugMacro(<< "DifferenceOfGaussiansGradientImageFilter::GenerateData() called");
 
   // Get the input and output pointers
-  typename Superclass::InputImagePointer  inputPtr = const_cast<TInputImage *>(this->GetInput(0));
+  typename Superclass::InputImagePointer inputPtr =
+    const_cast< TInputImage * >( this->GetInput(0) );
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput(0);
 
   // Make sure we're getting everything
@@ -61,12 +64,13 @@ DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::GenerateData()
   outputPtr->Allocate();
 
   // Create a progress reporter
-  ProgressReporter progress(this, 0, outputPtr->GetRequestedRegion().GetNumberOfPixels());
+  ProgressReporter progress( this, 0, outputPtr->GetRequestedRegion().GetNumberOfPixels() );
 
   // Create an iterator that will walk the output region
-  using OutputIterator = ImageRegionIterator<TOutputImage>;
+  typedef ImageRegionIterator< TOutputImage > OutputIterator;
 
-  OutputIterator outIt = OutputIterator(outputPtr, outputPtr->GetRequestedRegion());
+  OutputIterator outIt = OutputIterator( outputPtr,
+                                         outputPtr->GetRequestedRegion() );
 
   // Define a few indices that will be used to translate from an input pixel
   // to an output pixel
@@ -75,8 +79,8 @@ DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::GenerateData()
   typename TOutputImage::IndexType lowerIndex;
 
   // walk the output image, and sample the input image
-  for (; !outIt.IsAtEnd(); ++outIt)
-  {
+  for (; !outIt.IsAtEnd(); ++outIt )
+    {
     // determine the index of the output pixel
     outputIndex = outIt.GetIndex();
 
@@ -84,62 +88,66 @@ DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::GenerateData()
     // of the image?
     bool isValidGrad = true;
 
-    for (unsigned int i = 0; i < NDimensions; ++i)
-    {
-      const auto width = static_cast<int>(m_Width);
-      const int  sizeDifference = static_cast<int>(size.m_InternalArray[i]) - width;
-
-      if (!((outputIndex[i] < sizeDifference) && (outputIndex[i] >= width)))
+    for ( unsigned int i = 0; i < NDimensions; ++i )
       {
-        isValidGrad = false;
-      }
-    }
+      const int width = static_cast< int >( m_Width );
+      const int sizeDifference =
+        static_cast< int >( size.m_Size[i] ) - width;
 
-    if (isValidGrad)
-    {
+      if ( !( ( outputIndex[i] < sizeDifference )
+              && ( outputIndex[i] >= width         ) ) )
+        {
+        isValidGrad = false;
+        }
+      }
+
+    if ( isValidGrad )
+      {
       // We're in a safe position, so calculate the gradient for
       // each dimension
-      for (unsigned int i = 0; i < NDimensions; i++)
-      {
-        // Build the indices for each pixel
-        for (unsigned int j = 0; j < NDimensions; j++)
+      for ( unsigned int i = 0; i < NDimensions; i++ )
         {
-          if (j == i)
+        // Build the indices for each pixel
+        for ( unsigned int j = 0; j < NDimensions; j++ )
           {
-            upperIndex[j] = outputIndex[j] + static_cast<IndexValueType>(m_Width);
-            lowerIndex[j] = outputIndex[j] - static_cast<IndexValueType>(m_Width);
-          }
+          if ( j == i )
+            {
+            upperIndex[j] = outputIndex[j] + static_cast< IndexValueType >( m_Width );
+            lowerIndex[j] = outputIndex[j] - static_cast< IndexValueType >( m_Width );
+            }
           else
-          {
+            {
             upperIndex[j] = outputIndex[j];
             lowerIndex[j] = outputIndex[j];
+            }
           }
-        }
         // Remember, output type is a covariant vector of TDataType
-        outputPtr->GetPixel(outputIndex)[i] = inputPtr->GetPixel(upperIndex) - inputPtr->GetPixel(lowerIndex);
+        outputPtr->GetPixel(outputIndex)[i] =
+          inputPtr->GetPixel(upperIndex) - inputPtr->GetPixel(lowerIndex);
+        }
       }
-    }
     else // We're not in a safe position, gradient is zero
-    {
-      for (unsigned int i = 0; i < NDimensions; ++i)
       {
+      for ( unsigned int i = 0; i < NDimensions; ++i )
+        {
         outputPtr->GetPixel(outputIndex)[i] = 0.0;
+        }
       }
-    }
     progress.CompletedPixel();
-  }
+    }
 
   itkDebugMacro(<< "DifferenceOfGaussiansGradientImageFilter::GenerateData() finished");
 }
 
-template <typename TInputImage, typename TDataType>
+template< typename TInputImage, typename TDataType >
 void
-DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::PrintSelf(std::ostream & os, Indent indent) const
+DifferenceOfGaussiansGradientImageFilter< TInputImage, TDataType >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   os << indent << "Width is " << m_Width << std::endl;
 }
-} // namespace itk
+} // end namespace
 
 #endif

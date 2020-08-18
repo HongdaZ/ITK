@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,17 +37,15 @@ namespace itk
  * deform ability.
  * \ingroup ITKMesh
  */
-template <typename TOutputMesh>
-class ITK_TEMPLATE_EXPORT SphereMeshSource : public MeshSource<TOutputMesh>
+template< typename TOutputMesh >
+class ITK_TEMPLATE_EXPORT SphereMeshSource:public MeshSource< TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SphereMeshSource);
-
-  /** Standard "Self" type alias. */
-  using Self = SphereMeshSource;
-  using Superclass = MeshSource<TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef SphereMeshSource           Self;
+  typedef MeshSource< TOutputMesh >  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -56,23 +54,23 @@ public:
   itkTypeMacro(SphereMeshSource, MeshSource);
 
   /** Hold on to the type information specified by the template parameters. */
-  using OutputMeshType = TOutputMesh;
-  using OMeshTraits = typename OutputMeshType::MeshTraits;
-  using OPointType = typename OutputMeshType::PointType;
-  using OPixelType = typename OMeshTraits::PixelType;
+  typedef TOutputMesh                         OutputMeshType;
+  typedef typename OutputMeshType::MeshTraits OMeshTraits;
+  typedef typename OutputMeshType::PointType  OPointType;
+  typedef typename OMeshTraits::PixelType     OPixelType;
 
-  /** Some convenient type alias. */
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using CellTraits = typename OutputMeshType::CellTraits;
-  using PointsContainerPointer = typename OutputMeshType::PointsContainerPointer;
-  using PointsContainer = typename OutputMeshType::PointsContainer;
+  /** Some convenient typedefs. */
+  typedef typename OutputMeshType::Pointer                OutputMeshPointer;
+  typedef typename OutputMeshType::CellTraits             CellTraits;
+  typedef typename OutputMeshType::PointsContainerPointer PointsContainerPointer;
+  typedef typename OutputMeshType::PointsContainer        PointsContainer;
 
   /** Define the triangular cell types which forms the surface of the model
    * and will be used in FEM application. */
-  using CellInterfaceType = CellInterface<OPixelType, CellTraits>;
-  using TriCellType = TriangleCell<CellInterfaceType>;
-  using TriCellAutoPointer = typename TriCellType::SelfAutoPointer;
-  using CellAutoPointer = typename TriCellType::CellAutoPointer;
+  typedef CellInterface< OPixelType, CellTraits > CellInterfaceType;
+  typedef TriangleCell< CellInterfaceType >       TriCellType;
+  typedef typename TriCellType::SelfAutoPointer   TriCellAutoPointer;
+  typedef typename TriCellType::CellAutoPointer   CellAutoPointer;
 
   /** All these parameter setting function are public temporarily to make the
    * test easier */
@@ -80,19 +78,17 @@ public:
   itkSetMacro(ResolutionY, unsigned int);
 
   itkSetMacro(Center, OPointType);
-  itkSetMacro(Scale, OPointType);
+  itkSetMacro(Scale,  OPointType);
 
   itkSetMacro(Squareness1, double);
   itkSetMacro(Squareness2, double);
 
 protected:
   SphereMeshSource();
-  ~SphereMeshSource() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~SphereMeshSource() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** model center */
   OPointType m_Center;
@@ -107,9 +103,12 @@ protected:
   /** model squareness */
   double m_Squareness1;
   double m_Squareness2;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SphereMeshSource);
 };
 } // end namespace itk
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSphereMeshSource.hxx"
+#include "itkSphereMeshSource.hxx"
 #endif
 #endif

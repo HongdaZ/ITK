@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,17 +37,16 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT Euler2DTransform : public Rigid2DTransform<TParametersValueType>
+template<typename TParametersValueType=double>
+class ITK_TEMPLATE_EXPORT Euler2DTransform:
+  public Rigid2DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Euler2DTransform);
-
-  /** Standard class type aliases. */
-  using Self = Euler2DTransform;
-  using Superclass = Rigid2DTransform<TParametersValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Euler2DTransform                       Self;
+  typedef Rigid2DTransform<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
   itkNewMacro(Self);
@@ -56,86 +55,79 @@ public:
   itkTypeMacro(Euler2DTransform, Rigid2DTransform);
 
   /** Dimension of parameters. */
-  static constexpr unsigned int SpaceDimension = 2;
-  static constexpr unsigned int ParametersDimension = 3;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 2);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 3);
 
 
   /** Parameters type. */
-  using ScalarType = typename Superclass::ScalarType;
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  typedef typename Superclass::ScalarType          ScalarType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   /** Point type. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::InputPointType  InputPointType;
+  typedef typename Superclass::OutputPointType OutputPointType;
 
   /** Vector type. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  typedef typename Superclass::InputVectorType  InputVectorType;
+  typedef typename Superclass::OutputVectorType OutputVectorType;
 
   /** CovariantVector type. */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
 
   /** VnlVector type. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using MatrixType = typename Superclass::MatrixType;
+  typedef typename Superclass::InputVnlVectorType  InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType OutputVnlVectorType;
+  typedef typename Superclass::MatrixType          MatrixType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost.*/
-  using InverseTransformBaseType = typename Superclass::InverseTransformBaseType;
-  using InverseTransformBasePointer = typename InverseTransformBaseType::Pointer;
+  typedef typename Superclass::InverseTransformBaseType InverseTransformBaseType;
+  typedef typename InverseTransformBaseType::Pointer    InverseTransformBasePointer;
 
   /**
    * This method creates and returns a new Euler2DTransform object
    * which is the inverse of self.
    */
-  void
-  CloneInverseTo(Pointer & newinverse) const;
+  void CloneInverseTo(Pointer & newinverse) const;
 
   /** Get an inverse of this transform. */
-  bool
-  GetInverse(Self * inverse) const;
+  bool GetInverse(Self *inverse) const;
 
   /** Return an inverse of this transform. */
-  InverseTransformBasePointer
-  GetInverseTransform() const override;
+  virtual InverseTransformBasePointer GetInverseTransform() const ITK_OVERRIDE;
 
   /**
    * This method creates and returns a new Euler2DTransform object
    * which has the same parameters as self.
    */
-  void
-  CloneTo(Pointer & clone) const;
+  void CloneTo(Pointer & clone) const;
 
   /**
    * Update the angle from the underlying matrix. This method
    * is old and is retained for backward compatibility.
    */
-  void
-  ComputeAngleFromMatrix()
-  {
-    this->ComputeMatrixParameters();
-  }
+  void ComputeAngleFromMatrix()
+  { this->ComputeMatrixParameters(); }
 
 protected:
   Euler2DTransform(unsigned int parametersDimension);
   Euler2DTransform();
-  ~Euler2DTransform() override = default;
+  ~Euler2DTransform() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-}; // class Euler2DTransform
-} // namespace itk
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Euler2DTransform);
+};                                //class Euler2DTransform
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEuler2DTransform.hxx"
+#include "itkEuler2DTransform.hxx"
 #endif
 
 #endif /* itkEuler2DTransform_h */

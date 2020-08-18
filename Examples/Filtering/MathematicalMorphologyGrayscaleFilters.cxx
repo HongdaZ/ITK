@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,16 +50,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFileErosion  outputImageFileDilation" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -70,17 +69,17 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
+  typedef unsigned char   InputPixelType;
+  typedef unsigned char   OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
 
 
   //  Software Guide : BeginLatex
@@ -102,8 +101,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using StructuringElementType =
-    itk::BinaryBallStructuringElement<InputPixelType, Dimension>;
+  typedef itk::BinaryBallStructuringElement<
+                      InputPixelType,
+                      Dimension  >             StructuringElementType;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -115,18 +115,22 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using ErodeFilterType = itk::
-    GrayscaleErodeImageFilter<InputImageType, OutputImageType, StructuringElementType>;
+  typedef itk::GrayscaleErodeImageFilter<
+                            InputImageType,
+                            OutputImageType,
+                            StructuringElementType >  ErodeFilterType;
 
-  using DilateFilterType = itk::
-    GrayscaleDilateImageFilter<InputImageType, OutputImageType, StructuringElementType>;
+  typedef itk::GrayscaleDilateImageFilter<
+                            InputImageType,
+                            OutputImageType,
+                            StructuringElementType >  DilateFilterType;
   // Software Guide : EndCodeSnippet
 
 
   // Creation of Reader and Writer filters
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writerDilation = WriterType::New();
-  WriterType::Pointer writerErosion = WriterType::New();
+  WriterType::Pointer writerErosion  = WriterType::New();
 
 
   //  Software Guide : BeginLatex
@@ -142,7 +146,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ErodeFilterType::Pointer  grayscaleErode = ErodeFilterType::New();
+  ErodeFilterType::Pointer  grayscaleErode  = ErodeFilterType::New();
   DilateFilterType::Pointer grayscaleDilate = DilateFilterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -170,21 +174,21 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  StructuringElementType structuringElement;
+  StructuringElementType  structuringElement;
 
-  structuringElement.SetRadius(1); // 3x3 structuring element
+  structuringElement.SetRadius( 1 );  // 3x3 structuring element
 
   structuringElement.CreateStructuringElement();
 
-  grayscaleErode->SetKernel(structuringElement);
-  grayscaleDilate->SetKernel(structuringElement);
+  grayscaleErode->SetKernel(  structuringElement );
+  grayscaleDilate->SetKernel( structuringElement );
   // Software Guide : EndCodeSnippet
 
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  writerErosion->SetFileName(argv[2]);
-  writerDilation->SetFileName(argv[3]);
+  writerErosion->SetFileName(  argv[2] );
+  writerDilation->SetFileName( argv[3] );
 
 
   //  Software Guide : BeginLatex
@@ -196,8 +200,8 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  grayscaleErode->SetInput(reader->GetOutput());
-  grayscaleDilate->SetInput(reader->GetOutput());
+  grayscaleErode->SetInput(  reader->GetOutput() );
+  grayscaleDilate->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -213,11 +217,11 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  writerDilation->SetInput(grayscaleDilate->GetOutput());
+  writerDilation->SetInput( grayscaleDilate->GetOutput() );
   writerDilation->Update();
   // Software Guide : EndCodeSnippet
 
-  writerErosion->SetInput(grayscaleErode->GetOutput());
+  writerErosion->SetInput( grayscaleErode->GetOutput() );
   writerErosion->Update();
 
   //  Software Guide : BeginLatex

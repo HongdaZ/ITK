@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,73 +21,54 @@
 #include "itkSimpleFilterWatcher.h"
 #include "itkMetaDataObject.h"
 #include "itkTestingMacros.h"
-#include "itkTIFFImageIO.h"
 
 
-int
-itkTIFFImageIOInfoTest(int argc, char * argv[])
+int itkTIFFImageIOInfoTest( int argc, char * argv[] )
 {
 
-  if (argc != 2)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " input" << std::endl;
+  if( argc != 2 )
+    {
+    std::cerr << "Usage: " << argv[0] << " input" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  const std::string filename = argv[1];
+  const unsigned int                          Dimension = 2;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  auto tiffImageIO = itk::TIFFImageIO::New();
-  tiffImageIO->SetFileName(filename);
-  tiffImageIO->ReadImageInformation();
+  typedef itk::ImageFileReader< ImageType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName( argv[1] );
 
+  reader->Update();
 
-  std::cout << "Dimensions: ( ";
-  for (unsigned int d = 0; d < tiffImageIO->GetNumberOfDimensions(); ++d)
-  {
-    std::cout << tiffImageIO->GetDimensions(d) << " ";
-  }
-  std::cout << ")" << std::endl;
+  typedef itk::MetaDataDictionary            DictionaryType;
+  typedef itk::MetaDataObject< std::string > MetaDataStringType;
 
-  std::cout << "Origin: ( ";
-  for (unsigned int d = 0; d < tiffImageIO->GetNumberOfDimensions(); ++d)
-  {
-    std::cout << tiffImageIO->GetOrigin(d) << " ";
-  }
-  std::cout << ")" << std::endl;
-
-  std::cout << "Spacing: ( ";
-  for (unsigned int d = 0; d < tiffImageIO->GetNumberOfDimensions(); ++d)
-  {
-    std::cout << tiffImageIO->GetSpacing(d) << " ";
-  }
-  std::cout << ")" << std::endl;
-
-  using DictionaryType = itk::MetaDataDictionary;
-  using MetaDataStringType = itk::MetaDataObject<std::string>;
-
-  const DictionaryType & dictionary = tiffImageIO->GetMetaDataDictionary();
-  auto                   itr = dictionary.Begin();
-  auto                   end = dictionary.End();
+  const DictionaryType & dictionary = reader->GetImageIO()->GetMetaDataDictionary();
+  DictionaryType::ConstIterator itr = dictionary.Begin();
+  DictionaryType::ConstIterator end = dictionary.End();
 
   std::cout << "MetaDataDictionary" << std::endl;
-  while (itr != end)
-  {
-    itk::MetaDataObjectBase::Pointer entry = itr->second;
-    const std::string                tagkey = itr->first;
-
-    MetaDataStringType::Pointer entryvalue = dynamic_cast<MetaDataStringType *>(entry.GetPointer());
-
-    if (entryvalue)
+  while( itr != end )
     {
+    itk::MetaDataObjectBase::Pointer  entry   = itr->second;
+    const std::string                 tagkey  = itr->first;
+
+    MetaDataStringType::Pointer entryvalue =
+      dynamic_cast<MetaDataStringType *>( entry.GetPointer() );
+
+    if( entryvalue )
+      {
       std::cout << tagkey << ": " << entryvalue->GetMetaDataObjectValue() << std::endl;
-    }
+      }
     else
-    {
+      {
       std::cout << tagkey << ": " << entry << std::endl;
-    }
+      }
 
     ++itr;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

@@ -28,7 +28,7 @@ class GDCM_EXPORT ImageToImageFilter : public PixmapToPixmapFilter
 {
 public:
   ImageToImageFilter();
-  ~ImageToImageFilter() = default;
+  ~ImageToImageFilter() {}
 
   Image &GetInput();
 

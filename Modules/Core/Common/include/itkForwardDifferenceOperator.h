@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,45 +33,55 @@ namespace itk
  * NeighborhoodOperator that should be applied to a Neighborhood using the
  * inner product.
  *
- * \note ForwardDifferenceOperator does not have any user-declared "special member function",
- * following the C++ Rule of Zero: the compiler will generate them if necessary.
- *
  * \ingroup Operators
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/CreateForwardDifferenceKernel,Create Forward Difference Kernel}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Operators/ForwardDifferenceOperator,Create a forward difference kernel}
+ * \endwiki
  */
-template <typename TPixel, unsigned int VDimension = 2, typename TAllocator = NeighborhoodAllocator<TPixel>>
-class ITK_TEMPLATE_EXPORT ForwardDifferenceOperator : public NeighborhoodOperator<TPixel, VDimension, TAllocator>
+template< typename TPixel, unsigned int VDimension = 2,
+          typename TAllocator = NeighborhoodAllocator< TPixel > >
+class ITK_TEMPLATE_EXPORT ForwardDifferenceOperator:
+  public NeighborhoodOperator< TPixel, VDimension, TAllocator >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ForwardDifferenceOperator;
-  using Superclass = NeighborhoodOperator<TPixel, VDimension, TAllocator>;
+  /** Standard class typedefs. */
+  typedef ForwardDifferenceOperator                              Self;
+  typedef NeighborhoodOperator< TPixel, VDimension, TAllocator > Superclass;
 
-  using PixelType = typename Superclass::PixelType;
+  typedef typename Superclass::PixelType PixelType;
+
+  /** Constructor. */
+  ForwardDifferenceOperator() {}
+
+  /** Copy constructor */
+  ForwardDifferenceOperator(const Self & other):
+    NeighborhoodOperator< TPixel, VDimension, TAllocator >(other) {}
+
+  /** Assignment operator */
+  Self & operator=(const Self & other)
+  {
+    Superclass::operator=(other);
+    return *this;
+  }
 
 protected:
   /** Necessary to work around VC++ compiler bug. */
-  using CoefficientVector = typename Superclass::CoefficientVector;
+  typedef typename Superclass::CoefficientVector CoefficientVector;
 
   /** Calculates operator coefficients. */
-  CoefficientVector
-  GenerateCoefficients() override;
+  CoefficientVector GenerateCoefficients();
 
   /** Arranges coefficients spatially in the memory buffer. */
-  void
-  Fill(const CoefficientVector & coeff) override
-  {
-    this->FillCenteredDirectional(coeff);
-  }
+  void Fill(const CoefficientVector & coeff)
+
+  { this->FillCenteredDirectional(coeff); }
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkForwardDifferenceOperator.hxx"
+#include "itkForwardDifferenceOperator.hxx"
 #endif
 
 #endif

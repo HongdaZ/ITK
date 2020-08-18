@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,15 +45,14 @@
 
 #include "itkImageFileWriter.h"
 
-int
-main(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
-  if (argc < 2)
-  {
+  if( argc < 2 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  outputImageFile" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -64,10 +63,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char   PixelType;
+  const unsigned int Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension > ImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -80,7 +79,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ImportFilterType = itk::ImportImageFilter<PixelType, Dimension>;
+  typedef itk::ImportImageFilter< PixelType, Dimension >   ImportFilterType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -111,20 +110,20 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
   //
   // Software Guide : BeginCodeSnippet
-  ImportFilterType::SizeType size;
+  ImportFilterType::SizeType  size;
 
-  size[0] = 200; // size along X
-  size[1] = 200; // size along Y
-  size[2] = 200; // size along Z
+  size[0]  = 200;  // size along X
+  size[1]  = 200;  // size along Y
+  size[2]  = 200;  // size along Z
 
   ImportFilterType::IndexType start;
-  start.Fill(0);
+  start.Fill( 0 );
 
   ImportFilterType::RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize(  size  );
 
-  importFilter->SetRegion(region);
+  importFilter->SetRegion( region );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -135,8 +134,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const itk::SpacePrecisionType origin[Dimension] = { 0.0, 0.0, 0.0 };
-  importFilter->SetOrigin(origin);
+  const itk::SpacePrecisionType origin[ Dimension ] = { 0.0, 0.0, 0.0 };
+  importFilter->SetOrigin( origin );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -147,8 +146,8 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   // spacing isotropic volumes to 1.0
-  const itk::SpacePrecisionType spacing[Dimension] = { 1.0, 1.0, 1.0 };
-  importFilter->SetSpacing(spacing);
+  const itk::SpacePrecisionType  spacing[ Dimension ] =  { 1.0, 1.0, 1.0 };
+  importFilter->SetSpacing( spacing );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -162,11 +161,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const unsigned int numberOfPixels = size[0] * size[1] * size[2];
-  auto *             localBuffer = new PixelType[numberOfPixels];
+  const unsigned int numberOfPixels =  size[0] * size[1] * size[2];
+  PixelType * localBuffer = new PixelType[ numberOfPixels ];
   // Software Guide : EndCodeSnippet
 
-  constexpr double radius = 80.0;
+  const double radius = 80.0;
 
   // Software Guide : BeginLatex
   //
@@ -181,23 +180,26 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr double radius2 = radius * radius;
-  PixelType *      it = localBuffer;
+  const double radius2 = radius * radius;
+  PixelType * it = localBuffer;
 
-  for (unsigned int z = 0; z < size[2]; z++)
-  {
-    const double dz = static_cast<double>(z) - static_cast<double>(size[2]) / 2.0;
-    for (unsigned int y = 0; y < size[1]; y++)
+  for(unsigned int z=0; z < size[2]; z++)
     {
-      const double dy = static_cast<double>(y) - static_cast<double>(size[1]) / 2.0;
-      for (unsigned int x = 0; x < size[0]; x++)
+    const double dz = static_cast<double>( z )
+      - static_cast<double>(size[2])/2.0;
+    for(unsigned int y=0; y < size[1]; y++)
       {
-        const double dx = static_cast<double>(x) - static_cast<double>(size[0]) / 2.0;
-        const double d2 = dx * dx + dy * dy + dz * dz;
-        *it++ = (d2 < radius2) ? 255 : 0;
+      const double dy = static_cast<double>( y )
+        - static_cast<double>(size[1])/2.0;
+      for(unsigned int x=0; x < size[0]; x++)
+        {
+        const double dx = static_cast<double>( x )
+          - static_cast<double>(size[0])/2.0;
+        const double d2 = dx*dx + dy*dy + dz*dz;
+        *it++ = ( d2 < radius2 ) ? 255 : 0;
+        }
       }
     }
-  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -223,8 +225,8 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   const bool importImageFilterWillOwnTheBuffer = true;
-  importFilter->SetImportPointer(
-    localBuffer, numberOfPixels, importImageFilterWillOwnTheBuffer);
+  importFilter->SetImportPointer( localBuffer, numberOfPixels,
+                                  importImageFilterWillOwnTheBuffer );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -235,23 +237,23 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[1]);
-  writer->SetInput(importFilter->GetOutput());
+  writer->SetFileName( argv[1] );
+  writer->SetInput(  importFilter->GetOutput()  );
   // Software Guide : EndCodeSnippet
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & exp)
-  {
+    }
+  catch( itk::ExceptionObject & exp )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << exp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //

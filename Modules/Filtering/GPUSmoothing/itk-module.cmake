@@ -8,6 +8,7 @@ itk_module(ITKGPUSmoothing
     ITKCommon
     ITKGPUCommon
     ITKGPUImageFilterBase
+  COMPILE_DEPENDS
     ITKSmoothing
   TEST_DEPENDS
     ITKTestKernel

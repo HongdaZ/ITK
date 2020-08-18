@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ namespace itk
 /**
  * Constructor
  */
-template <typename TInputImage, typename TPolyline, typename TOutputImage>
-PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::PolylineMask2DImageFilter()
+template< typename TInputImage, typename TPolyline,
+          typename TOutputImage >
+PolylineMask2DImageFilter< TInputImage, TPolyline, TOutputImage >
+::PolylineMask2DImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 }
@@ -40,80 +42,95 @@ PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::PolylineMask2DI
 /**
  *
  */
-template <typename TInputImage, typename TPolyline, typename TOutputImage>
-void
-PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::SetInput1(const TInputImage * input)
+template< typename TInputImage, typename TPolyline,
+          typename TOutputImage >
+void PolylineMask2DImageFilter< TInputImage, TPolyline, TOutputImage >
+::SetInput1(const TInputImage *input)
 
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(0, const_cast<TInputImage *>(input));
+  this->ProcessObject::SetNthInput( 0,
+                                    const_cast< TInputImage * >( input ) );
 }
 
 /**
  *
  */
-template <typename TInputImage, typename TPolyline, typename TOutputImage>
-void
-PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::SetInput2(const TPolyline * input)
+template< typename TInputImage, typename TPolyline,
+          typename TOutputImage >
+void PolylineMask2DImageFilter< TInputImage, TPolyline, TOutputImage >
+::SetInput2(const TPolyline *input)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(1, const_cast<TPolyline *>(input));
+  this->ProcessObject::SetNthInput( 1,
+                                    const_cast< TPolyline * >( input ) );
 }
 
 /**
  *
  */
-template <typename TInputImage, typename TPolyline, typename TOutputImage>
-void
-PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::GenerateData()
+template< typename TInputImage, typename TPolyline,
+          typename TOutputImage >
+void PolylineMask2DImageFilter< TInputImage, TPolyline, TOutputImage >
+::GenerateData()
 {
-  using LineIteratorType = LineIterator<TOutputImage>;
-  using ImageLineIteratorType = ImageLinearIteratorWithIndex<TOutputImage>;
+  typedef  LineIterator< TOutputImage >                 LineIteratorType;
+  typedef  ImageLinearIteratorWithIndex< TOutputImage > ImageLineIteratorType;
 
-  using InputImageConstIteratorType = ImageRegionConstIterator<TInputImage>;
+  typedef ImageRegionConstIterator< TInputImage > InputImageConstIteratorType;
 
-  using ImageIndexType = typename TOutputImage::IndexType;
-  using PixelType = typename TOutputImage::PixelType;
-  using OutputImageIteratorType = ImageRegionIterator<TOutputImage>;
+  typedef typename TOutputImage::IndexType    ImageIndexType;
+  typedef typename TOutputImage::PixelType    PixelType;
+  typedef ImageRegionIterator< TOutputImage > OutputImageIteratorType;
 
-  using VertexType = typename TPolyline::VertexType;
-  using VertexListType = typename TPolyline::VertexListType;
+  typedef typename TPolyline::VertexType     VertexType;
+  typedef typename TPolyline::VertexListType VertexListType;
 
-  typename TInputImage::ConstPointer inputImagePtr(dynamic_cast<const TInputImage *>(this->ProcessObject::GetInput(0)));
-  typename TPolyline::ConstPointer   polylinePtr(dynamic_cast<const TPolyline *>(this->ProcessObject::GetInput(1)));
-  typename TOutputImage::Pointer     outputImagePtr(dynamic_cast<TOutputImage *>(this->ProcessObject::GetOutput(0)));
+  typename TInputImage::ConstPointer inputImagePtr(
+    dynamic_cast< const TInputImage  * >(
+      this->ProcessObject::GetInput(0) ) );
+  typename TPolyline::ConstPointer polylinePtr(
+    dynamic_cast< const TPolyline    * >(
+      this->ProcessObject::GetInput(1) ) );
+  typename TOutputImage::Pointer outputImagePtr(
+    dynamic_cast< TOutputImage * >(
+      this->ProcessObject::GetOutput(0) ) );
 
-  outputImagePtr->SetOrigin(inputImagePtr->GetOrigin());
-  outputImagePtr->SetSpacing(inputImagePtr->GetSpacing());
-  outputImagePtr->SetDirection(inputImagePtr->GetDirection());
-  outputImagePtr->SetRequestedRegion(inputImagePtr->GetRequestedRegion());
-  outputImagePtr->SetBufferedRegion(inputImagePtr->GetBufferedRegion());
-  outputImagePtr->SetLargestPossibleRegion(inputImagePtr->GetLargestPossibleRegion());
+  outputImagePtr->SetOrigin( inputImagePtr->GetOrigin() );
+  outputImagePtr->SetSpacing( inputImagePtr->GetSpacing() );
+  outputImagePtr->SetDirection( inputImagePtr->GetDirection() );
+  outputImagePtr->SetRequestedRegion( inputImagePtr->GetRequestedRegion() );
+  outputImagePtr->SetBufferedRegion( inputImagePtr->GetBufferedRegion() );
+  outputImagePtr->SetLargestPossibleRegion( inputImagePtr->GetLargestPossibleRegion() );
   outputImagePtr->Allocate();
 
 
-  const VertexListType * container = polylinePtr->GetVertexList();
+  const VertexListType *container      = polylinePtr->GetVertexList();
 
   typename VertexListType::ConstIterator piter = container->Begin();
 
   /* Rasterize each polyline segment using bresenham line iterator  */
 
-  VertexType startVertex;
-  VertexType endVertex;
-  VertexType pstartVertex;
-  VertexType tmpVertex;
+  VertexType     startVertex;
+  VertexType     endVertex;
+  VertexType     pstartVertex;
+  VertexType     tmpVertex;
+  ImageIndexType tmpIndex;
 
-  /* Check if the polyline coordinates are within the input image */
-  while (piter != container->End())
-  {
-    tmpVertex = piter.Value();
-    const auto tmpIndex = outputImagePtr->TransformPhysicalPointToIndex(tmpVertex);
-    if (!outputImagePtr->GetBufferedRegion().IsInside(tmpIndex))
+/* Check if the polyline coordinates are within the input image */
+  while ( piter != container->End() )
     {
-      itkExceptionMacro(<< "Polyline vertex is out of bounds (Vertex,Index): " << tmpVertex << ", " << tmpIndex);
-    }
+    tmpVertex     = piter.Value();
+    outputImagePtr->TransformPhysicalPointToIndex(tmpVertex, tmpIndex);
+    if ( !outputImagePtr->GetBufferedRegion().IsInside(tmpIndex) )
+      {
+      itkExceptionMacro(<< "Polyline vertex is out of bounds (Vertex,Index): "
+                        << tmpVertex
+                        << ", "
+                        << tmpIndex);
+      }
     ++piter;
-  }
+    }
 
   // reset piter
   piter = container->Begin();
@@ -122,10 +139,10 @@ PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::GenerateData()
   bool pflag;
 
   /* define background, foreground pixel values and unlabeled pixel value */
-  PixelType zero_val = NumericTraits<PixelType>::ZeroValue();
-  auto      u_val = static_cast<PixelType>(0);
-  auto      b_val = static_cast<PixelType>(2);
-  auto      f_val = static_cast<PixelType>(255);
+  PixelType zero_val = NumericTraits< PixelType >::ZeroValue();
+  PixelType u_val = static_cast< PixelType >( 0 );
+  PixelType b_val = static_cast< PixelType >( 2 );
+  PixelType f_val = static_cast< PixelType >( 255 );
   outputImagePtr->FillBuffer(u_val);
 
   pstartVertex = piter.Value();
@@ -133,121 +150,123 @@ PolylineMask2DImageFilter<TInputImage, TPolyline, TOutputImage>::GenerateData()
   tmpVertex = pstartVertex;
   ++piter;
 
+  ImageIndexType startImageIndex;
+  ImageIndexType endImageIndex;
   ImageIndexType tmpImageIndex;
   tmpImageIndex.Fill(0);
 
-  ImageLineIteratorType imit(outputImagePtr, outputImagePtr->GetLargestPossibleRegion());
+  ImageLineIteratorType imit( outputImagePtr, outputImagePtr->GetLargestPossibleRegion() );
   imit.SetDirection(0);
 
   itkDebugMacro(<< "Generating the mask defined by the polyline.....");
 
-  while (piter != container->End())
-  {
-    pflag = false;
-    startVertex = tmpVertex;
-    endVertex = piter.Value();
+  while ( piter != container->End() )
+    {
+    pflag         = false;
+    startVertex    = tmpVertex;
+    endVertex      = piter.Value();
 
-    const auto startImageIndex = outputImagePtr->TransformPhysicalPointToIndex(startVertex);
-    const auto endImageIndex = outputImagePtr->TransformPhysicalPointToIndex(endVertex);
+    outputImagePtr->TransformPhysicalPointToIndex(startVertex, startImageIndex);
+    outputImagePtr->TransformPhysicalPointToIndex(endVertex, endImageIndex);
 
-    // itkDebugMacro(<<"Projection image (index,physical
+    //itkDebugMacro(<<"Projection image (index,physical
     // coordinate):"<<startImageIndex<<","<<startVertex<<std::endl);
 
-    if (endImageIndex[1] > startImageIndex[1])
-    {
+    if ( endImageIndex[1] > startImageIndex[1] )
+      {
       pflag = true;
-    }
+      }
 
     LineIteratorType it(outputImagePtr, startImageIndex, endImageIndex);
     it.GoToBegin();
 
-    while (!it.IsAtEnd())
-    {
+    while ( !it.IsAtEnd() )
+      {
       tmpImageIndex[0] = it.GetIndex()[0];
       tmpImageIndex[1] = it.GetIndex()[1];
 
-      // initialize imit using it
+      //initialize imit using it
       imit.SetIndex(tmpImageIndex);
-      while (!imit.IsAtEndOfLine())
-      {
-        if (pflag)
+      while ( !imit.IsAtEndOfLine() )
         {
-          if (imit.Get() == u_val)
+        if ( pflag )
           {
+          if ( imit.Get() == u_val )
+            {
             imit.Set(f_val);
+            }
           }
-        }
         else
-        {
+          {
           imit.Set(b_val);
-        }
+          }
         ++imit;
-      }
+        }
       ++it;
-    }
+      }
     tmpVertex = endVertex;
     ++piter;
-  }
+    }
 
   /* Close the polygon */
-  pflag = false;
-  startVertex = tmpVertex;
-  endVertex = pstartVertex;
+  pflag         = false;
+  startVertex    = tmpVertex;
+  endVertex      = pstartVertex;
 
-  const auto startImageIndex = outputImagePtr->TransformPhysicalPointToIndex(startVertex);
-  const auto endImageIndex = outputImagePtr->TransformPhysicalPointToIndex(endVertex);
+  outputImagePtr->TransformPhysicalPointToIndex(startVertex, startImageIndex);
+  outputImagePtr->TransformPhysicalPointToIndex(endVertex, endImageIndex);
 
-  if (endImageIndex[1] > startImageIndex[1])
-  {
+  if ( endImageIndex[1] > startImageIndex[1] )
+    {
     pflag = true;
-  }
+    }
 
   LineIteratorType it(outputImagePtr, startImageIndex, endImageIndex);
   it.GoToBegin();
 
-  while (!it.IsAtEnd())
-  {
+  while ( !it.IsAtEnd() )
+    {
     tmpImageIndex[0] = it.GetIndex()[0];
     tmpImageIndex[1] = it.GetIndex()[1];
 
-    // initialize imit using it
+    //initialize imit using it
     imit.SetIndex(tmpImageIndex);
-    while (!imit.IsAtEndOfLine())
-    {
-      if (pflag)
+    while ( !imit.IsAtEndOfLine() )
       {
-        if (imit.Get() == u_val)
+      if ( pflag )
         {
+        if ( imit.Get() == u_val )
+          {
           imit.Set(f_val);
+          }
         }
-      }
       else
-      {
+        {
         imit.Set(b_val);
-      }
+        }
       ++imit;
-    }
+      }
     ++it;
-  }
+    }
 
   /* Mask the input image with the mask generated */
-  InputImageConstIteratorType inputI(inputImagePtr, inputImagePtr->GetLargestPossibleRegion());
-  OutputImageIteratorType     outputI(outputImagePtr, outputImagePtr->GetLargestPossibleRegion());
+  InputImageConstIteratorType inputI( inputImagePtr, inputImagePtr->GetLargestPossibleRegion() );
+  OutputImageIteratorType     outputI( outputImagePtr, outputImagePtr->GetLargestPossibleRegion() );
   inputI.GoToBegin();
   outputI.GoToBegin();
-  while (!outputI.IsAtEnd())
-  {
-    if (outputI.Get() == f_val)
+  while ( !outputI.IsAtEnd() )
     {
-      outputI.Set(inputI.Get());
-    }
+    if ( outputI.Get() == f_val )
+      {
+      outputI.Set( inputI.Get() );
+      }
     else
-    {
+      {
       outputI.Set(zero_val);
-    }
+      }
     ++inputI;
     ++outputI;
-  }
+    }
 }
 } // end namespace itk
 #endif

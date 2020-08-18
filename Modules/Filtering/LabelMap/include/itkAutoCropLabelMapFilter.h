@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@
 
 namespace itk
 {
-/**
- *\class AutoCropLabelMapFilter
+/** \class AutoCropLabelMapFilter
  * \brief Crop a LabelMap image to fit exactly the objects in the LabelMap.
  *
  * The CropBorder can be used to add a border which will never be larger than
@@ -50,17 +49,16 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT AutoCropLabelMapFilter : public ChangeRegionLabelMapFilter<TInputImage>
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT AutoCropLabelMapFilter:
+  public ChangeRegionLabelMapFilter< TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AutoCropLabelMapFilter);
-
-  /** Standard class type aliases. */
-  using Self = AutoCropLabelMapFilter;
-  using Superclass = ChangeRegionLabelMapFilter<TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef AutoCropLabelMapFilter                    Self;
+  typedef ChangeRegionLabelMapFilter< TInputImage > Superclass;
+  typedef SmartPointer< Self >                      Pointer;
+  typedef SmartPointer< const Self >                ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -68,31 +66,31 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(AutoCropLabelMapFilter, ChangeRegionImageFilter);
 
-  /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageType       OutputImageType;
+  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using LabelObjectType = typename InputImageType::LabelObjectType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::Pointer         InputImagePointer;
+  typedef typename InputImageType::ConstPointer    InputImageConstPointer;
+  typedef typename InputImageType::RegionType      InputImageRegionType;
+  typedef typename InputImageType::PixelType       InputImagePixelType;
+  typedef typename InputImageType::LabelObjectType LabelObjectType;
 
-  using PixelType = typename InputImageType::PixelType;
-  using IndexType = typename InputImageType::IndexType;
-  using SizeType = typename InputImageType::SizeType;
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::PixelType  PixelType;
+  typedef typename InputImageType::IndexType  IndexType;
+  typedef typename InputImageType::SizeType   SizeType;
+  typedef typename InputImageType::RegionType RegionType;
 
-  using TOutputImage = TInputImage;
+  typedef TInputImage TOutputImage;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /**
    * Set/Get the border added to the mask before the crop. The default is 0 on * all the axis.
@@ -102,21 +100,21 @@ public:
 
 protected:
   AutoCropLabelMapFilter();
-  ~AutoCropLabelMapFilter() override = default;
+  ~AutoCropLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
-  SizeType m_CropBorder;
+  ITK_DISALLOW_COPY_AND_ASSIGN(AutoCropLabelMapFilter);
+
+  SizeType  m_CropBorder;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAutoCropLabelMapFilter.hxx"
+#include "itkAutoCropLabelMapFilter.hxx"
 #endif
 
 #endif

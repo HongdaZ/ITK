@@ -64,8 +64,8 @@ class GDCM_EXPORT CSAHeader
 {
   friend std::ostream& operator<<(std::ostream &_os, const CSAHeader &d);
 public :
-  CSAHeader():InternalDataSet(),InternalType(UNKNOWN),InterfileData(nullptr) {};
-  ~CSAHeader() = default;
+  CSAHeader():InternalDataSet(),InternalType(UNKNOWN),InterfileData(0) {};
+  ~CSAHeader() {};
 
   /// Divers format of CSAHeader as found 'in the wild'
   typedef enum {
@@ -76,6 +76,12 @@ public :
     INTERFILE,
     ZEROED_OUT
   } CSAHeaderType;
+
+  template <typename TSwap>
+  GDCM_LEGACY(std::istream &Read(std::istream &is));
+
+  template <typename TSwap>
+  GDCM_LEGACY(const std::ostream &Write(std::ostream &os) const);
 
   /// Decode the CSAHeader from element 'de'
   bool LoadFromDataElement(DataElement const &de);

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class QuadEdgeMeshTopologyChecker
+/** \class QuadEdgeMeshTopologyChecker
  *  \brief Make some basic checks in order to verify that the considered
  *         mesh is not degenerated and correctly represents a surface
  *         with a potential boundary.
@@ -38,26 +37,24 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshTopologyChecker : public Object
+template< typename TMesh >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshTopologyChecker:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshTopologyChecker);
-
   // Standard types
-  using Self = QuadEdgeMeshTopologyChecker;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef QuadEdgeMeshTopologyChecker Self;
+  typedef Object                      Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
-  using MeshType = TMesh;
-  using QEPrimal = typename MeshType::QEPrimal;
-  using EdgeCellType = typename MeshType::EdgeCellType;
-  using CellsContainerConstIterator = typename MeshType::CellsContainerConstIterator;
-  using BoundaryEdges = QuadEdgeMeshBoundaryEdgesMeshFunction<MeshType>;
+  typedef TMesh                                             MeshType;
+  typedef typename MeshType::QEPrimal                       QEPrimal;
+  typedef typename MeshType::EdgeCellType                   EdgeCellType;
+  typedef typename MeshType::CellsContainerConstIterator    CellsContainerConstIterator;
+  typedef QuadEdgeMeshBoundaryEdgesMeshFunction< MeshType > BoundaryEdges;
 
-  using PointIdentifier = typename MeshType::PointIdentifier;
-  using CellIdentifier = typename MeshType::CellIdentifier;
+  typedef typename MeshType::PointIdentifier                PointIdentifier;
+  typedef typename MeshType::CellIdentifier                 CellIdentifier;
 
 public:
   itkNewMacro(Self);
@@ -65,8 +62,8 @@ public:
 
   itkSetConstObjectMacro(Mesh, MeshType);
 
-  using IdentifierType = ::itk::IdentifierType;
-  using OffsetValueType = ::itk::OffsetValueType;
+  typedef ::itk::IdentifierType     IdentifierType;
+  typedef ::itk::OffsetValueType    OffsetValueType;
 
   itkSetMacro(ExpectedNumberOfPoints, PointIdentifier);
   itkSetMacro(ExpectedNumberOfEdges, CellIdentifier);
@@ -74,30 +71,30 @@ public:
   itkSetMacro(ExpectedNumberOfBoundaries, CellIdentifier);
   itkSetMacro(ExpectedGenus, OffsetValueType);
 
-  bool
-  ValidateEulerCharacteristic() const;
+  bool ValidateEulerCharacteristic() const;
 
 protected:
   QuadEdgeMeshTopologyChecker();
-  ~QuadEdgeMeshTopologyChecker() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~QuadEdgeMeshTopologyChecker() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  using MeshPointer = typename MeshType::ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshTopologyChecker);
+
+  typedef typename MeshType::ConstPointer MeshPointer;
 
   MeshPointer m_Mesh;
 
-  PointIdentifier m_ExpectedNumberOfPoints;
-  CellIdentifier  m_ExpectedNumberOfEdges;
-  CellIdentifier  m_ExpectedNumberOfFaces;
-  CellIdentifier  m_ExpectedNumberOfBoundaries;
-  OffsetValueType m_ExpectedGenus;
+  PointIdentifier  m_ExpectedNumberOfPoints;
+  CellIdentifier   m_ExpectedNumberOfEdges;
+  CellIdentifier   m_ExpectedNumberOfFaces;
+  CellIdentifier   m_ExpectedNumberOfBoundaries;
+  OffsetValueType  m_ExpectedGenus;
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkQuadEdgeMeshTopologyChecker.hxx"
+#include "itkQuadEdgeMeshTopologyChecker.hxx"
 #endif
 
 #endif

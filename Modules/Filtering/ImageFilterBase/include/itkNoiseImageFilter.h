@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,29 +43,30 @@ namespace itk
  * \ingroup IntensityImageFilters
  * \ingroup ITKImageFilterBase
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFilterBase/ComputerLocalNoise,Compute Local Noise In Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Statistics/NoiseImageFilter,Compute the local noise in an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT NoiseImageFilter : public BoxImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT NoiseImageFilter:
+  public BoxImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NoiseImageFilter);
-
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  /** Standard class type aliases. */
-  using Self = NoiseImageFilter;
-  using Superclass = BoxImageFilter<InputImageType, OutputImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NoiseImageFilter                                  Self;
+  typedef BoxImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef SmartPointer< Self >                              Pointer;
+  typedef SmartPointer< const Self >                        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,43 +74,47 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(NoiseImageFilter, BoxImageFilter);
 
-  /** Image type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using InputRealType = typename NumericTraits<InputPixelType>::RealType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType                 InputPixelType;
+  typedef typename OutputImageType::PixelType                OutputPixelType;
+  typedef typename NumericTraits< InputPixelType >::RealType InputRealType;
 
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
-  using InputSizeType = typename InputImageType::SizeType;
+  typedef typename InputImageType::SizeType InputSizeType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   NoiseImageFilter();
-  ~NoiseImageFilter() override = default;
+  virtual ~NoiseImageFilter() ITK_OVERRIDE {}
 
   /** NoiseImageFilter can be implemented as a multithreaded filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData()
+   * Therefore, this implementation provides a ThreadedGenerateData()
    * routine which is called for each processing thread. The output
    * image data is allocated automatically by the superclass prior to
-   * calling DynamicThreadedGenerateData().  DynamicThreadedGenerateData can only
+   * calling ThreadedGenerateData().  ThreadedGenerateData can only
    * write to the portion of the output image specified by the
    * parameter "outputRegionForThread"
    *
    * \sa BoxImageFilter::ThreadedGenerateData(),
    *     BoxImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NoiseImageFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNoiseImageFilter.hxx"
+#include "itkNoiseImageFilter.hxx"
 #endif
 
 #endif

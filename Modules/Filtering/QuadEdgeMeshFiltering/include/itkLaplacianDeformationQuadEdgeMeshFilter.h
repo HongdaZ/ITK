@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,36 +20,12 @@
 
 #include "itkQuadEdgeMeshParamMatrixCoefficients.h"
 #include "itkQuadEdgeMeshToQuadEdgeMeshFilter.h"
-#include "ITKQuadEdgeMeshFilteringExport.h"
 
 #include "itkConceptChecking.h"
 
-#include <unordered_map>
+#include "itksys/hash_map.hxx"
 
-namespace itk
-{
-/**\class LaplacianDeformationQuadEdgeMeshFilterEnums
- * \brief Contains all enum classes used by LaplacianDeformationQuadEdgeMeshFilter class.
- * \ingroup ITKQuadEdgeMeshFiltering
- */
-class LaplacianDeformationQuadEdgeMeshFilterEnums
-{
-public:
-  /**\class Area
-   * \ingroup ITKQuadEdgeMeshFiltering
-   * Type of area*/
-  enum class Area : uint8_t
-  {
-    /** Do not use any area information*/
-    NONE = 0,
-    /** Use a mixed area*/
-    MIXEDAREA
-  };
-};
-// Define how to print enumeration
-extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
-                                       operator<<(std::ostream & out, const LaplacianDeformationQuadEdgeMeshFilterEnums::Area value);
-
+namespace itk {
 /** \class LaplacianDeformationQuadEdgeMeshFilter
  *
  *  \brief (abstract) base class for laplacian surface mesh deformation.
@@ -81,8 +57,10 @@ extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
  * \Delta^2 \boldsymbol{p'} = \Delta \boldsymbol{\delta}
  * \f]
  *
- * When considering the input surface as the parameter domain, the Laplace operator turns out into the Laplace-Beltrami
- * operator \f$ \Delta_S \f$: \f[ L^2 \boldsymbol{p'} = L \boldsymbol{ \delta } \f]
+ * When considering the input surface as the parameter domain, the Laplace operator turns out into the Laplace-Beltrami operator \f$ \Delta_S \f$:
+ * \f[
+ * L^2 \boldsymbol{p'} = L \boldsymbol{ \delta }
+ * \f]
  *
  * which can be separated into 3 coordinate components.
  *
@@ -111,157 +89,150 @@ extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
  *
  *  \ingroup ITKQuadEdgeMeshFiltering
  */
-template <class TInputMesh, class TOutputMesh, class TSolverTraits>
-class ITK_TEMPLATE_EXPORT LaplacianDeformationQuadEdgeMeshFilter
-  : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+template< class TInputMesh, class TOutputMesh, class TSolverTraits >
+class ITK_TEMPLATE_EXPORT LaplacianDeformationQuadEdgeMeshFilter:
+  public QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianDeformationQuadEdgeMeshFilter);
-
   /** Basic types. */
-  using Self = LaplacianDeformationQuadEdgeMeshFilter;
-  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef LaplacianDeformationQuadEdgeMeshFilter                      Self;
+  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh > Superclass;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
 
   itkTypeMacro(LaplacianDeformationQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter)
 
-    /** Input types. */
-    using InputMeshType = TInputMesh;
-  using InputPointType = typename Superclass::InputPointType;
+  /** Input types. */
+  typedef TInputMesh                                        InputMeshType;
+  typedef typename Superclass::InputPointType               InputPointType;
 
-  static constexpr unsigned int InputPointDimension = InputMeshType::PointDimension;
+  itkStaticConstMacro(InputPointDimension, unsigned int, InputMeshType::PointDimension);
 
   /** Output types. */
-  using OutputMeshType = TOutputMesh;
-  using OutputCoordRepType = typename Superclass::OutputCoordRepType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using OutputPointIdentifier = typename Superclass::OutputPointIdentifier;
-  using OutputQEPrimal = typename Superclass::OutputQEPrimal;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputQEIterator = typename Superclass::OutputQEIterator;
+  typedef TOutputMesh                                        OutputMeshType;
+  typedef typename Superclass::OutputCoordRepType            OutputCoordRepType;
+  typedef typename Superclass::OutputPointType               OutputPointType;
+  typedef typename Superclass::OutputPointIdentifier         OutputPointIdentifier;
+  typedef typename Superclass::OutputQEPrimal                OutputQEPrimal;
+  typedef typename Superclass::OutputVectorType              OutputVectorType;
+  typedef typename Superclass::OutputQEIterator              OutputQEIterator;
 
-  static constexpr unsigned int OutputPointDimension = OutputMeshType::PointDimension;
+  itkStaticConstMacro(OutputPointDimension, unsigned int, OutputMeshType::PointDimension);
 
-  using SolverTraits = TSolverTraits;
-  using ValueType = typename SolverTraits::ValueType;
-  using MatrixType = typename SolverTraits::MatrixType;
-  using VectorType = typename SolverTraits::VectorType;
+  typedef TSolverTraits                     SolverTraits;
+  typedef typename SolverTraits::ValueType  ValueType;
+  typedef typename SolverTraits::MatrixType MatrixType;
+  typedef typename SolverTraits::VectorType VectorType;
 
-  using CoefficientsComputationType = MatrixCoefficients<OutputMeshType>;
+  typedef MatrixCoefficients< OutputMeshType > CoefficientsComputationType;
 
   /** Set the coefficient method to compute the Laplacian matrix of the input mesh*/
-  void
-  SetCoefficientsMethod(CoefficientsComputationType * iMethod)
+  void SetCoefficientsMethod(CoefficientsComputationType *iMethod)
   {
     this->m_CoefficientsMethod = iMethod;
     this->Modified();
   }
 
-  using TriangleType = TriangleHelper<OutputPointType>;
+  typedef TriangleHelper< OutputPointType > TriangleType;
 
   /** Constrain vertex vId to the given location iP */
-  void
-  SetConstrainedNode(OutputPointIdentifier vId, const OutputPointType & iP);
+  void SetConstrainedNode(OutputPointIdentifier vId, const OutputPointType & iP);
 
   /** Set the displacement vector iV for the vertex vId */
-  void
-  SetDisplacement(OutputPointIdentifier vId, const OutputVectorType & iV);
+  void SetDisplacement(OutputPointIdentifier vId, const OutputVectorType &iV);
 
   /** Get the displacement vector oV for the vertex vId.
    * Returns true if the vertex vId is a constraint, else false.
    */
-  bool
-  GetDisplacement(OutputPointIdentifier vId, OutputVectorType & oV) const;
+  bool GetDisplacement( OutputPointIdentifier vId, OutputVectorType& oV ) const;
 
   /** Clear all constraints added by the means of SetConstrainedNode or SetDisplacement.*/
-  void
-  ClearConstraints();
+  void ClearConstraints();
 
   /** Set/Get the Laplacian order */
   itkSetMacro(Order, unsigned int);
   itkGetMacro(Order, unsigned int);
 
-  using AreaEnum = LaplacianDeformationQuadEdgeMeshFilterEnums::Area;
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr AreaEnum NONE = AreaEnum::NONE;
-  static constexpr AreaEnum MIXEDAREA = AreaEnum::MIXEDAREA;
-#endif
+  enum AreaType
+  {
+    /** Do not use any area information*/
+    NONE = 0,
+    /** Use a mixed area*/
+    MIXEDAREA
+  };
 
   /** Set/Get the area normalization type */
-  itkSetEnumMacro(AreaComputationType, AreaEnum);
-  itkGetMacro(AreaComputationType, AreaEnum);
+  itkSetMacro(AreaComputationType, AreaType );
+  itkGetMacro(AreaComputationType, AreaType );
 
 #ifdef ITK_USE_CONCEPT_CHECKING
-  itkConceptMacro(SameDimensionCheck1, (Concept::SameDimension<InputPointDimension, OutputPointDimension>));
-  itkConceptMacro(SameDimensionCheck2, (Concept::SameDimension<InputPointDimension, 3>));
+  itkConceptMacro( SameDimensionCheck1,
+                   ( Concept::SameDimension< InputPointDimension, OutputPointDimension > ) );
+  itkConceptMacro( SameDimensionCheck2,
+                   ( Concept::SameDimension< InputPointDimension, 3 > ) );
 #endif
 
 protected:
+
   /** Default constructor*/
   LaplacianDeformationQuadEdgeMeshFilter();
-  ~LaplacianDeformationQuadEdgeMeshFilter() override = default;
+  virtual ~LaplacianDeformationQuadEdgeMeshFilter() ITK_OVERRIDE {}
 
-  using OutputMapPointIdentifier = std::unordered_map<OutputPointIdentifier, OutputPointIdentifier>;
-  using OutputMapPointIdentifierIterator = typename OutputMapPointIdentifier::iterator;
-  using OutputMapPointIdentifierConstIterator = typename OutputMapPointIdentifier::const_iterator;
+  typedef itksys::hash_map< OutputPointIdentifier, OutputPointIdentifier >  OutputMapPointIdentifier;
+  typedef typename OutputMapPointIdentifier::iterator                       OutputMapPointIdentifierIterator;
+  typedef typename OutputMapPointIdentifier::const_iterator                 OutputMapPointIdentifierConstIterator;
 
-  using ConstraintMapType = std::unordered_map<OutputPointIdentifier, OutputVectorType>;
-  using ConstraintMapConstIterator = typename ConstraintMapType::const_iterator;
+  typedef itksys::hash_map< OutputPointIdentifier, OutputVectorType > ConstraintMapType;
+  typedef typename ConstraintMapType::const_iterator                  ConstraintMapConstIterator;
 
   struct HashOutputQEPrimal
   {
-    size_t
-    operator()(OutputQEPrimal * qe) const
+    size_t operator() ( OutputQEPrimal* qe ) const
     {
-      return reinterpret_cast<size_t>(qe);
+      return reinterpret_cast< size_t >( qe );
     }
   };
 
-  using CoefficientMapType = std::unordered_map<OutputQEPrimal *, OutputCoordRepType, HashOutputQEPrimal>;
-  using CoefficientMapConstIterator = typename CoefficientMapType::const_iterator;
+  typedef itksys::hash_map< OutputQEPrimal*, OutputCoordRepType, HashOutputQEPrimal > CoefficientMapType;
+  typedef typename CoefficientMapType::const_iterator                                 CoefficientMapConstIterator;
 
-  using AreaMapType = std::unordered_map<OutputPointIdentifier, OutputCoordRepType>;
-  using AreaMapConstIterator = typename AreaMapType::const_iterator;
+  typedef itksys::hash_map< OutputPointIdentifier, OutputCoordRepType > AreaMapType;
+  typedef typename AreaMapType::const_iterator                          AreaMapConstIterator;
 
-  using RowType = std::unordered_map<OutputPointIdentifier, OutputCoordRepType>;
-  using RowIterator = typename RowType::iterator;
-  using RowConstIterator = typename RowType::const_iterator;
+  typedef itksys::hash_map< OutputPointIdentifier, OutputCoordRepType > RowType;
+  typedef typename RowType::iterator                                    RowIterator;
+  typedef typename RowType::const_iterator                              RowConstIterator;
 
-  OutputMapPointIdentifier m_InternalMap;
-  ConstraintMapType        m_Constraints;
-  CoefficientMapType       m_CoefficientMap;
-  AreaMapType              m_MixedAreaMap;
+  OutputMapPointIdentifier  m_InternalMap;
+  ConstraintMapType         m_Constraints;
+  CoefficientMapType        m_CoefficientMap;
+  AreaMapType               m_MixedAreaMap;
 
-  CoefficientsComputationType * m_CoefficientsMethod;
+  CoefficientsComputationType* m_CoefficientsMethod;
 
-  unsigned int m_Order{ 1 };
-  AreaEnum     m_AreaComputationType{ AreaEnum::NONE };
+  unsigned int              m_Order;
+  AreaType                  m_AreaComputationType;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  OutputCoordRepType
-  ComputeMixedAreaForGivenVertex(OutputPointIdentifier vId);
-  OutputCoordRepType
-  ComputeMixedArea(OutputQEPrimal * iQE1, OutputQEPrimal * iQE2);
+  OutputCoordRepType ComputeMixedAreaForGivenVertex(OutputPointIdentifier vId);
+  OutputCoordRepType ComputeMixedArea(OutputQEPrimal *iQE1, OutputQEPrimal *iQE2);
 
-  virtual void
-  ComputeVertexIdMapping();
+  virtual void ComputeVertexIdMapping();
+
+  void ComputeLaplacianMatrix( MatrixType &ioL );
 
   void
-  ComputeLaplacianMatrix(MatrixType & ioL);
-
-  void
-  FillMatrixRow(OutputPointIdentifier iId, unsigned int iDegree, OutputCoordRepType iWeight, RowType & ioRow);
+  FillMatrixRow(OutputPointIdentifier iId,
+                unsigned int iDegree,
+                OutputCoordRepType iWeight,
+                RowType & ioRow);
 
   /**
    *  \brief Fill matrix iM and vectors Bx, m_By and m_Bz depending on if one
    *  vertex is on the border or not.
    */
-  void
-  FillMatrix(MatrixType & iM, VectorType & iBx, VectorType & iBy, VectorType & iBz);
+  void FillMatrix(MatrixType & iM, VectorType & iBx, VectorType & iBy, VectorType & iBz);
 
   /**
    *  \brief Solve linears systems : \f$ iM \cdot oX = iBx \f$ and
@@ -275,25 +246,23 @@ protected:
    *  \param[out] oY
    *  \param[out] oZ
    */
-  void
-  SolveLinearSystems(const MatrixType & iM,
-                     const VectorType & iBx,
-                     const VectorType & iBy,
-                     const VectorType & iBz,
-                     VectorType &       oX,
-                     VectorType &       oY,
-                     VectorType &       oZ);
+  void SolveLinearSystems(const MatrixType & iM,
+                          const VectorType & iBx,
+                          const VectorType & iBy,
+                          const VectorType & iBz,
+                          VectorType & oX,
+                          VectorType & oY,
+                          VectorType & oZ);
 
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianDeformationQuadEdgeMeshFilter);
+
   struct Triple
   {
-    Triple() = default;
-    Triple(OutputPointIdentifier iV, OutputCoordRepType iWeight, unsigned int iDegree)
-      : m_Id(iV)
-      , m_Weight(iWeight)
-      , m_Degree(iDegree)
-    {}
+    Triple() {}
+    Triple(OutputPointIdentifier iV, OutputCoordRepType iWeight, unsigned int iDegree):
+      m_Id(iV), m_Weight(iWeight), m_Degree(iDegree) {}
 
     OutputPointIdentifier m_Id;
     OutputCoordRepType    m_Weight;

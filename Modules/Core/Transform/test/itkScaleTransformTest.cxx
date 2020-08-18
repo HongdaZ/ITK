@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,16 +20,15 @@
 
 #include "itkScaleTransform.h"
 
-int
-itkScaleTransformTest(int, char *[])
+int itkScaleTransformTest(int ,char * [] )
 {
 
 
-  using TransformType = itk::ScaleTransform<double>;
+  typedef itk::ScaleTransform<double>  TransformType;
 
 
-  const double           epsilon = 1e-10;
-  constexpr unsigned int N = 3;
+  const double epsilon = 1e-10;
+  const unsigned int N = 3;
 
 
   bool Ok = true;
@@ -37,23 +36,23 @@ itkScaleTransformTest(int, char *[])
 
   /* Create a 3D identity transformation and show its parameters */
   {
-    TransformType::Pointer   identityTransform = TransformType::New();
+    TransformType::Pointer  identityTransform = TransformType::New();
     TransformType::ScaleType scale = identityTransform->GetScale();
     std::cout << "Scale from instantiating an identity transform:  ";
-    for (unsigned int j = 0; j < N; j++)
+    for(unsigned int j=0; j<N; j++)
     {
       std::cout << scale[j] << " ";
     }
     std::cout << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for(unsigned int i=0; i<N; i++)
     {
-      if (std::fabs(scale[i] - 1.0) > epsilon)
+      if( std::fabs( scale[i] - 1.0 ) > epsilon )
       {
         Ok = false;
         break;
       }
     }
-    if (!Ok)
+    if( !Ok )
     {
       std::cerr << "Identity doesn't have a unit scale " << std::endl;
       return EXIT_FAILURE;
@@ -62,35 +61,36 @@ itkScaleTransformTest(int, char *[])
 
   /* Create a Scale transform */
   {
-    TransformType::Pointer scaleTransform = TransformType::New();
+    TransformType::Pointer    scaleTransform = TransformType::New();
 
-    TransformType::ScaleType::ValueType iscaleInit[3] = { 1, 4, 9 };
-    TransformType::ScaleType            iscale = iscaleInit;
+    TransformType::ScaleType::ValueType iscaleInit[3] = {1,4,9};
+    TransformType::ScaleType  iscale = iscaleInit;
 
-    scaleTransform->SetScale(iscale);
+    scaleTransform->SetScale( iscale );
     if (scaleTransform->GetFixedParameters().Size() != 3)
-    {
-      std::cout << "ScaleTransform has 3 fixed parameters, yet GetFixedParameters.Size() reports: "
+      {
+      std::cout <<
+        "ScaleTransform has 3 fixed parameters, yet GetFixedParameters.Size() reports: "
                 << scaleTransform->GetFixedParameters().Size() << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     TransformType::ScaleType scale = scaleTransform->GetScale();
     std::cout << "scale initialization  test:  ";
-    for (unsigned int j = 0; j < N; j++)
+    for(unsigned int j=0; j<N; j++)
     {
       std::cout << scale[j] << " ";
     }
     std::cout << std::endl;
 
-    for (unsigned int i = 0; i < N; i++)
+    for(unsigned int i=0; i<N; i++)
     {
-      if (std::fabs(scale[i] - iscale[i]) > epsilon)
+      if( std::fabs( scale[i] - iscale[i] ) > epsilon )
       {
         Ok = false;
         break;
       }
     }
-    if (!Ok)
+    if( !Ok )
     {
       std::cerr << "GetScale  differs from SetScale value " << std::endl;
       return EXIT_FAILURE;
@@ -98,24 +98,24 @@ itkScaleTransformTest(int, char *[])
 
     {
       // scale an itk::Point
-      TransformType::InputPointType::ValueType pInit[3] = { 10, 10, 10 };
-      TransformType::InputPointType            p = pInit;
-      TransformType::InputPointType            q;
-      for (unsigned int j = 0; j < N; j++)
+      TransformType::InputPointType::ValueType pInit[3] = {10,10,10};
+      TransformType::InputPointType p = pInit;
+      TransformType::InputPointType q;
+      for(unsigned int j=0; j<N; j++)
       {
         q[j] = p[j] * iscale[j];
       }
       TransformType::OutputPointType r;
-      r = scaleTransform->TransformPoint(p);
-      for (unsigned int i = 0; i < N; i++)
+      r = scaleTransform->TransformPoint( p );
+      for(unsigned int i=0; i<N; i++)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if( std::fabs( q[i] - r[i] ) > epsilon )
         {
           Ok = false;
           break;
         }
       }
-      if (!Ok)
+      if( !Ok )
       {
         std::cerr << "Error scaling point : " << p << std::endl;
         std::cerr << "Result should be    : " << q << std::endl;
@@ -130,24 +130,24 @@ itkScaleTransformTest(int, char *[])
 
     {
       // Scale an itk::Vector
-      TransformType::InputVectorType::ValueType pInit[3] = { 10, 10, 10 };
-      TransformType::InputVectorType            p = pInit;
-      TransformType::OutputVectorType           q;
-      for (unsigned int j = 0; j < N; j++)
+      TransformType::InputVectorType::ValueType pInit[3] = {10,10,10};
+      TransformType::InputVectorType p = pInit;
+      TransformType::OutputVectorType q;
+      for(unsigned int j=0; j<N; j++)
       {
         q[j] = p[j] * iscale[j];
       }
       TransformType::OutputVectorType r;
-      r = scaleTransform->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      r = scaleTransform->TransformVector( p );
+      for(unsigned int i=0; i<N; i++)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if( std::fabs( q[i]- r[i] ) > epsilon )
         {
           Ok = false;
           break;
         }
       }
-      if (!Ok)
+      if( !Ok )
       {
         std::cerr << "Error scaling vector: " << p << std::endl;
         std::cerr << "Reported Result is      : " << q << std::endl;
@@ -161,24 +161,24 @@ itkScaleTransformTest(int, char *[])
 
     {
       // Scale an itk::CovariantVector
-      TransformType::InputCovariantVectorType::ValueType pInit[3] = { 10, 10, 10 };
-      TransformType::InputCovariantVectorType            p = pInit;
-      TransformType::OutputCovariantVectorType           q;
-      for (unsigned int j = 0; j < N; j++)
+      TransformType::InputCovariantVectorType::ValueType pInit[3] = {10,10,10};
+      TransformType::InputCovariantVectorType p = pInit;
+      TransformType::OutputCovariantVectorType q;
+      for(unsigned int j=0; j<N; j++)
       {
         q[j] = p[j] / iscale[j];
       }
       TransformType::OutputCovariantVectorType r;
-      r = scaleTransform->TransformCovariantVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      r = scaleTransform->TransformCovariantVector( p );
+      for(unsigned int i=0; i<N; i++)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if( std::fabs( q[i]- r[i] ) > epsilon )
         {
           Ok = false;
           break;
         }
       }
-      if (!Ok)
+      if( !Ok )
       {
         std::cerr << "Error scaling covariant vector: " << p << std::endl;
         std::cerr << "Reported Result is      : " << q << std::endl;
@@ -194,24 +194,24 @@ itkScaleTransformTest(int, char *[])
       // Scale a vnl_vector
       TransformType::InputVnlVectorType p;
       p[0] = 11;
-      p[1] = 7;
+      p[1] =  7;
       p[2] = 15;
       TransformType::OutputVnlVectorType q;
-      for (unsigned int j = 0; j < N; j++)
+      for(unsigned int j=0; j<N; j++)
       {
         q[j] = p[j] * iscale[j];
       }
       TransformType::OutputVnlVectorType r;
-      r = scaleTransform->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      r = scaleTransform->TransformVector( p );
+      for(unsigned int i=0; i<N; i++)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if( std::fabs( q[i] - r[i] ) > epsilon )
         {
           Ok = false;
           break;
         }
       }
-      if (!Ok)
+      if( !Ok )
       {
         std::cerr << "Error scaling vnl_vector: " << p << std::endl;
         std::cerr << "Reported Result is      : " << q << std::endl;
@@ -226,20 +226,20 @@ itkScaleTransformTest(int, char *[])
 
     // Exercise Set/Get Center methods
     {
-      using CenterType = TransformType::InputPointType;
+      typedef TransformType::InputPointType  CenterType;
       CenterType center;
       center[0] = 5;
       center[1] = 6;
       center[2] = 7;
 
-      scaleTransform->SetCenter(center);
+      scaleTransform->SetCenter( center );
 
       CenterType c2 = scaleTransform->GetCenter();
-      if (c2.EuclideanDistanceTo(center) > 1e-5)
-      {
+      if( c2.EuclideanDistanceTo( center ) > 1e-5 )
+        {
         std::cerr << "Error in Set/Get center." << std::endl;
         std::cerr << "It was SetCenter() to    : " << center << std::endl;
-        std::cerr << "but GetCenter() returned : " << c2 << std::endl;
+        std::cerr << "but GetCenter() returned : " << c2     << std::endl;
         return EXIT_FAILURE;
       }
       else
@@ -247,7 +247,10 @@ itkScaleTransformTest(int, char *[])
         std::cout << "Ok SetCenter() / GetCenter() " << std::endl;
       }
     }
+
+
   }
 
   return EXIT_SUCCESS;
+
 }

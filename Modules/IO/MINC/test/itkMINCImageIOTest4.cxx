@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,93 +27,82 @@
 #include "itkImageMomentsCalculator.h"
 #include "itkStdStreamStateSave.h"
 
-template <typename ImageType>
-int
-test_image_moments(const char * input_image,
-                   const char * output_image,
-                   double       total,
-                   double       mx,
-                   double       my,
-                   double       mz,
-                   double       epsilon)
+template<typename ImageType> int test_image_moments(const char *input_image,const char *output_image,double total, double mx,double my,double mz,double epsilon)
 {
-  // itk::MINCImageIO::Pointer mincIO1 = itk::MINCImageIO::New();
+  //itk::MINCImageIO::Pointer mincIO1 = itk::MINCImageIO::New();
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
-  using MomentsCalculatorType = itk::ImageMomentsCalculator<ImageType>;
+  typedef itk::ImageMomentsCalculator< ImageType > MomentsCalculatorType;
 
   typename ReaderType::Pointer reader = ReaderType::New();
 
-  typename MomentsCalculatorType::Pointer calculator = MomentsCalculatorType::New();
+  typename MomentsCalculatorType::Pointer calculator=MomentsCalculatorType::New();
 
-  // reader->SetImageIO( mincIO1 );
+  //reader->SetImageIO( mincIO1 );
 
-  reader->SetFileName(input_image);
+  reader->SetFileName( input_image );
 
   reader->Update();
   calculator->SetImage(reader->GetOutput());
   calculator->Compute();
 
-  std::cout << "Image:" << input_image << " sum=" << calculator->GetTotalMass()
-            << " COM=" << calculator->GetCenterOfGravity() << std::endl;
+  std::cout<<"Image:"<<input_image<<" sum="<<calculator->GetTotalMass()<<" COM="<<calculator->GetCenterOfGravity()<<std::endl;
 
-  if (total > 0.0) // assume that if no total was provided this test should not be performed
-  {
-    if (fabs(calculator->GetTotalMass() - total) > epsilon)
+  if(total>0.0) //assume that if no total was provided this test should not be performed
     {
-      std::cerr << "Total sum mismatch:" << calculator->GetTotalMass()
-                << " difference=" << (calculator->GetTotalMass() - total) << std::endl;
+    if(fabs(calculator->GetTotalMass()-total)>epsilon)
+      {
+      std::cerr<<"Total sum mismatch:"<<calculator->GetTotalMass()<<" difference="<<(calculator->GetTotalMass()-total)<<std::endl;
       return EXIT_FAILURE;
-    }
-    if (fabs(calculator->GetCenterOfGravity()[0] - mx) > epsilon)
-    {
-      std::cerr << "Total mx mismatch:" << calculator->GetCenterOfGravity()[0] << std::endl;
+      }
+    if(fabs(calculator->GetCenterOfGravity()[0]-mx)>epsilon)
+      {
+      std::cerr<<"Total mx mismatch:"<<calculator->GetCenterOfGravity()[0]<<std::endl;
       return EXIT_FAILURE;
-    }
-    if (fabs(calculator->GetCenterOfGravity()[1] - my) > epsilon)
-    {
-      std::cerr << "Total my mismatch:" << calculator->GetCenterOfGravity()[1] << std::endl;
+      }
+    if(fabs(calculator->GetCenterOfGravity()[1]-my)>epsilon)
+      {
+      std::cerr<<"Total my mismatch:"<<calculator->GetCenterOfGravity()[1]<<std::endl;
       return EXIT_FAILURE;
-    }
-    if (fabs(calculator->GetCenterOfGravity()[2] - mz) > epsilon)
-    {
-      std::cerr << "Total mz mismatch:" << calculator->GetCenterOfGravity()[2] << std::endl;
+      }
+    if(fabs(calculator->GetCenterOfGravity()[2]-mz)>epsilon)
+      {
+      std::cerr<<"Total mz mismatch:"<<calculator->GetCenterOfGravity()[2]<<std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
-  if (output_image)
+  if( output_image )
   {
     typename WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(output_image);
-    writer->SetInput(reader->GetOutput());
+    writer->SetFileName( output_image );
+    writer->SetInput( reader->GetOutput() );
     writer->Update();
   }
   return EXIT_SUCCESS;
 }
 
 
-int
-itkMINCImageIOTest4(int argc, char * argv[])
+int itkMINCImageIOTest4( int argc, char * argv [] )
 {
-  // Save the format stream variables for std::cout
-  // They will be restored when coutState goes out of scope
-  // scope.
+// Save the format stream variables for std::cout
+// They will be restored when coutState goes out of scope
+// scope.
   itk::StdStreamStateSave coutState(std::cout);
 
-  if (argc < 3)
-  {
+  if ( argc < 3 )
+    {
     std::cerr << "Missing Arguments " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputfile outputfile [sum mx my mz ]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  const char * input = argv[1];
-  const char * output = argv[2];
+  const char *input=argv[1];
+  const char *output=argv[2];
 
   double total = 0.0;
   double mx = 0.0;
@@ -122,47 +111,47 @@ itkMINCImageIOTest4(int argc, char * argv[])
 
   itk::MINCImageIOFactory::RegisterOneFactory();
 
-  if (argc > 3)
-  {
-    if (argc == 7)
+  if(argc>3)
     {
-      total = std::stod(argv[3]);
-      mx = std::stod(argv[4]);
-      my = std::stod(argv[5]);
-      mz = std::stod(argv[6]);
+      if(argc==7)
+        {
+        total=atof( argv[3] );
+        mx=atof( argv[4] );
+        my=atof( argv[5] );
+        mz=atof( argv[6] );
+        }
+        else
+        {
+        std::cerr << "Incorrecte number of additional arguments " << std::endl;
+        std::cerr << "Usage: " << std::endl;
+        std::cerr << argv[0] << " inputfile outputfile [sum mx my mz ]" << std::endl;
+        return EXIT_FAILURE;
+        }
     }
-    else
-    {
-      std::cerr << "Incorrecte number of additional arguments " << std::endl;
-      std::cerr << "Usage: " << std::endl;
-      std::cerr << argv[0] << " inputfile outputfile [sum mx my mz ]" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
 
-  double epsilon = 1e-3;
+  double epsilon=1e-3;
 
   try
-  {
-    int ret = EXIT_SUCCESS;
+    {
+      int ret=EXIT_SUCCESS;
 
-    std::cout.precision(10);
-    if (test_image_moments<itk::Image<double, 3>>(input, nullptr, total, mx, my, mz, epsilon) != EXIT_SUCCESS)
-    {
-      ret = EXIT_FAILURE;
+      std::cout.precision( 10 );
+      if( test_image_moments<itk::Image< double, 3 > >(input,ITK_NULLPTR,total,mx,my,mz,epsilon) != EXIT_SUCCESS )
+        {
+          ret=EXIT_FAILURE;
+        }
+      // write out only float image
+      if( test_image_moments<itk::Image< float, 3 > >(input,output,total,mx,my,mz,epsilon) != EXIT_SUCCESS )
+        {
+          ret=EXIT_FAILURE;
+        }
+      return ret;
     }
-    // write out only float image
-    if (test_image_moments<itk::Image<float, 3>>(input, output, total, mx, my, mz, epsilon) != EXIT_SUCCESS)
+  catch( itk::ExceptionObject & excp )
     {
-      ret = EXIT_FAILURE;
-    }
-    return ret;
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   return EXIT_SUCCESS;

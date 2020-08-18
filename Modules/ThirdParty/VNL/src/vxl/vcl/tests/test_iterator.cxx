@@ -1,13 +1,9 @@
 /*
   fsm
 */
-#include <iostream>
-#include <iterator>
-#ifdef _MSC_VER
-#  include "vcl_msvc_warnings.h"
-#endif
+#include <vcl_iterator.h>
 
-void f(std::iterator<float, int> *) { }
+void f(vcl_iterator<float, int> *) { }
 
 int test_iterator_main(int /*argc*/,char* /*argv*/[])
 {

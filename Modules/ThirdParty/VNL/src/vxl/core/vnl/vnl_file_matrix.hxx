@@ -12,9 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include "vnl_file_matrix.h"
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: Load matrix from filename.
 template <class T>

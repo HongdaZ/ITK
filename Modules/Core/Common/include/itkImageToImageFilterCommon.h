@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,14 +38,10 @@ namespace itk
 class ITKCommon_EXPORT ImageToImageFilterCommon
 {
 public:
-  static void
-  SetGlobalDefaultCoordinateTolerance(double);
-  static double
-  GetGlobalDefaultCoordinateTolerance();
-  static void
-  SetGlobalDefaultDirectionTolerance(double);
-  static double
-  GetGlobalDefaultDirectionTolerance();
+  static void SetGlobalDefaultCoordinateTolerance(double);
+  static double GetGlobalDefaultCoordinateTolerance();
+  static void SetGlobalDefaultDirectionTolerance(double);
+  static double GetGlobalDefaultDirectionTolerance();
 };
 
 } // end namespace itk

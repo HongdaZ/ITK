@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ namespace gdcm
       void DataSetHandled() { mHandledDataSet = true; }
     public:
       ULConnectionCallback():mHandledDataSet(false),mImplicit(true){}
-      virtual ~ULConnectionCallback() = default; //placeholder for inherited objects
+      virtual ~ULConnectionCallback() {}; //placeholder for inherited objects
       virtual void HandleDataSet(const DataSet& inDataSet) = 0;
       virtual void HandleResponse(const DataSet& inDataSet) = 0;
 

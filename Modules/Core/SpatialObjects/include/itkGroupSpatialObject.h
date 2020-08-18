@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,17 +35,19 @@ namespace itk
  * \ingroup ITKSpatialObjects
  */
 
-template <unsigned int TDimension = 3>
-class ITK_TEMPLATE_EXPORT GroupSpatialObject : public SpatialObject<TDimension>
+template< unsigned int TDimension = 3 >
+class ITK_TEMPLATE_EXPORT GroupSpatialObject:
+  public SpatialObject< TDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GroupSpatialObject);
 
-  using Self = GroupSpatialObject;
-  using Superclass = SpatialObject<TDimension>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using ScalarType = double;
+  typedef GroupSpatialObject                      Self;
+  typedef SpatialObject< TDimension >             Superclass;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
+  typedef double                                  ScalarType;
+  typedef typename Superclass::TreeNodeType       TreeNodeType;
+  typedef typename TreeNodeType::ChildrenListType TreeNodeChildrenListType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,21 +55,22 @@ public:
   /** Method for creation through the object factory. */
   itkTypeMacro(GroupSpatialObject, SpatialObject);
 
+  /**  */
+  bool ComputeLocalBoundingBox() const ITK_OVERRIDE { return false; }
+
 protected:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GroupSpatialObject);
+
   GroupSpatialObject();
-  ~GroupSpatialObject() override = default;
+  virtual ~GroupSpatialObject() ITK_OVERRIDE;
 
   /** Method to print the object.*/
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-
-  typename LightObject::Pointer
-  InternalClone() const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGroupSpatialObject.hxx"
+#include "itkGroupSpatialObject.hxx"
 #endif
 
 #endif // itkGroupSpatialObject_h

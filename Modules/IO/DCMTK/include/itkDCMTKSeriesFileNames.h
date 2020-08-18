@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class DCMTKSeriesFileNames
+/** \class DCMTKSeriesFileNames
  * \brief Generate a sequence of filenames from a DICOM series.
  *
  * This class generate a sequence of files whose filenames points to
@@ -49,25 +48,23 @@ namespace itk
  *
  * \ingroup ITKIODCMTK
  */
-class ITKIODCMTK_EXPORT DCMTKSeriesFileNames : public ProcessObject
+class ITKIODCMTK_EXPORT DCMTKSeriesFileNames:public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKSeriesFileNames);
-
-  /** Standard class type aliases. */
-  using Self = DCMTKSeriesFileNames;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef DCMTKSeriesFileNames Self;
+  typedef ProcessObject        Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Type of the container that holds the UID's for the series. */
-  using SeriesUIDContainerType = std::vector<std::string>;
+  typedef std::vector< std::string > SeriesUIDContainerType;
   /** For backwards compatibility. */
-  using SeriesUIDContainer = SeriesUIDContainerType;
+  typedef SeriesUIDContainerType SeriesUIDContainer;
 
   /** Type of the container that holds the file names in the series. */
-  using FileNamesContainerType = std::vector<std::string>;
+  typedef std::vector< std::string > FileNamesContainerType;
   /** For backwards compatibility */
-  using FilenamesContainer = FileNamesContainerType;
+  typedef FileNamesContainerType FilenamesContainer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -78,16 +75,13 @@ public:
   /* -------- Define the API for DCMTKSeriesFileNames ----------- */
 
   /** Set the directory that contains the DICOM series. */
-  void
-  SetInputDirectory(const char * name);
+  void SetInputDirectory(const char *name);
 
   /** Set the directory that contains the DICOM series. */
-  void
-  SetInputDirectory(std::string const & name);
+  void SetInputDirectory(std::string const & name);
 
   /** Set the directory that contains the DICOM series. */
-  void
-  SetDirectory(std::string const & name)
+  void SetDirectory(std::string const & name)
   {
     SetInputDirectory(name);
   }
@@ -95,24 +89,21 @@ public:
   /** Returns a vector containing the series' file names. The file
    * names are ordered by the strategy define in header.
    * No sorting is done based on UID */
-  const FileNamesContainerType &
-  GetInputFileNames();
+  const FileNamesContainerType & GetInputFileNames();
 
   /** Set the directory where the output DICOM serie should be written. */
-  void
-  SetOutputDirectory(std::string const & name)
+  void SetOutputDirectory(std::string const & name)
   {
     m_OutputDirectory = name;
     this->Modified();
   }
 
   /** Returns a vector containing the series' file names. The file
-   * names are ordered in the same exact order as the input one.
+   * names are ordered in the same extact order as the input one.
    * This could be dangerous if the writing has changed 3rd position
    * or some other DICOM tag in the header
    */
-  const FileNamesContainerType &
-  GetOutputFileNames();
+  const FileNamesContainerType & GetOutputFileNames();
 
   /** Returns a vector containing the series' file names. The file
    * names are ordered by the strategy define in header.
@@ -120,16 +111,14 @@ public:
    * specified.  An extended UID may be returned/used if
    * SetUseSeriesDetails(true) has been called.
    */
-  const FileNamesContainerType &
-  GetFileNames(const std::string serie);
+  const FileNamesContainerType & GetFileNames(const std::string serie);
 
   /** Returns a vector containing all the UIDs found when parsing the
-   * directory specified via SetDirectory. If no directory is specified
+   * direcory specified via SetDirectory. If no direcory is specified
    * return an empty vector.  An extended UID may be returned/used if
    * SetUseSeriesDetails(true) has been called.
    */
-  const SeriesUIDContainerType &
-  GetSeriesUIDs();
+  const SeriesUIDContainerType & GetSeriesUIDs();
 
   /** Recursively parse the input directory */
   itkSetMacro(Recursive, bool);
@@ -140,15 +129,13 @@ public:
    *   and SeriesName to identify when a single SeriesUID contains
    *   multiple 3D volumes - as can occur with perfusion and DTI imaging
    */
-  void
-  SetUseSeriesDetails(bool useSeriesDetails);
+  void SetUseSeriesDetails(bool useSeriesDetails);
 
   /** Returns true if using additional series information such as ProtocolName
    *   and SeriesName to identify when a single SeriesUID contains
    *   multiple 3D volumes - as can occur with perfusion and DTI imaging
    */
-  bool
-  GetUseSeriesDetails() const
+  bool GetUseSeriesDetails(void)
   {
     return m_UseSeriesDetails;
   }
@@ -159,8 +146,7 @@ public:
    * series. Format for tag is "group|element" of a DICOM tag.
    * \warning User need to set SetUseSeriesDetails(true)
    */
-  void
-  AddSeriesRestriction(const std::string & /* tag */)
+  void AddSeriesRestriction(const std::string & /* tag */)
   {
     // m_SerieHelper->AddRestriction(tag);
   }
@@ -180,17 +166,16 @@ public:
   itkSetMacro(LoadPrivateTags, bool);
   itkGetConstMacro(LoadPrivateTags, bool);
   itkBooleanMacro(LoadPrivateTags);
-
 protected:
   DCMTKSeriesFileNames();
-  ~DCMTKSeriesFileNames() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~DCMTKSeriesFileNames();
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKSeriesFileNames);
+
   /** internal method for reading out filenames and UID lists */
-  void
-  GetDicomData(const std::string & series, bool saveFileNames);
+  void GetDicomData(const std::string &series, bool saveFileNames);
   /** Contains the input directory where the DICOM serie is found */
   std::string m_InputDirectory;
 
@@ -211,6 +196,6 @@ private:
   bool m_LoadSequences;
   bool m_LoadPrivateTags;
 };
-} // namespace itk
+} //namespace ITK
 
 #endif // itkDCMTKSeriesFileNames_h

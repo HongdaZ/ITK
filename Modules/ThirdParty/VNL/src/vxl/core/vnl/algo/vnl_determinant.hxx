@@ -5,10 +5,7 @@
 */
 #include "vnl_determinant.h"
 
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
 #include <vnl/algo/vnl_qr.h>
 
 

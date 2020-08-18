@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class NthElementImageAdaptor
+/** \class NthElementImageAdaptor
  * \brief Presents an image as being composed of the N-th element of its pixels
  *
  * It assumes that the pixels are of container type and have in their API
@@ -36,35 +35,36 @@ namespace itk
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  *
- * \sphinx
- * \sphinxexample{Core/ImageAdaptors/ExtractChannelOfImageWithMultipleComponents,Extract Channel Of Image With Multiple
- * Components} \sphinxexample{Core/ImageAdaptors/ProcessNthComponentOfVectorImage,Process Nth Component Of Vector Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/NthElementImageAdaptor,Extract a component/channel of an itkImage with pixels with multiple components}
+ * \wikiexample{ImageProcessing/ProcessingNthImageElement,Process the nth component/element/channel of a vector image}
+ * \endwiki
  */
 
 // Create a helper class to help the SunPro CC compiler
 // parse the templates for the NthElementImageAdaptor.
 // This is used to define the Super class.  for NthElementImageAdaptor
-template <typename TImage, typename TOutputPixelType>
+template< typename TImage, typename TOutputPixelType >
 class NthElementImageAdaptorHelper
 {
 public:
-  using PixelAccessor = NthElementPixelAccessor<TOutputPixelType, typename TImage::PixelType>;
+  typedef  NthElementPixelAccessor<
+    TOutputPixelType,
+    typename TImage::PixelType > PixelAccessor;
 
-  using Super = ImageAdaptor<TImage, PixelAccessor>;
+  typedef  ImageAdaptor< TImage, PixelAccessor > Super;
 };
 
-template <typename TImage, typename TOutputPixelType>
-class NthElementImageAdaptor : public NthElementImageAdaptorHelper<TImage, TOutputPixelType>::Super
+template< typename TImage, typename TOutputPixelType >
+class NthElementImageAdaptor:
+  public NthElementImageAdaptorHelper< TImage, TOutputPixelType >::Super
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NthElementImageAdaptor);
-
-  /** Standard class type aliases. */
-  using Self = NthElementImageAdaptor;
-  using Superclass = typename NthElementImageAdaptorHelper<TImage, TOutputPixelType>::Super;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NthElementImageAdaptor                                                   Self;
+  typedef typename NthElementImageAdaptorHelper< TImage, TOutputPixelType >::Super Superclass;
+  typedef SmartPointer< Self >                                                     Pointer;
+  typedef SmartPointer< const Self >                                               ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(NthElementImageAdaptor, ImageAdaptor);
@@ -73,16 +73,18 @@ public:
   itkNewMacro(Self);
 
   /** Select the element number to be accessed */
-  void
-  SelectNthElement(unsigned int nth)
+  void SelectNthElement(unsigned int nth)
   {
     this->GetPixelAccessor().SetElementNumber(nth);
     this->Modified();
   }
 
 protected:
-  NthElementImageAdaptor() = default;
-  ~NthElementImageAdaptor() override = default;
+  NthElementImageAdaptor() {}
+  virtual ~NthElementImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NthElementImageAdaptor);
 };
 } // end namespace itk
 

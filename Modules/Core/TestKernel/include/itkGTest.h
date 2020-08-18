@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ namespace itk
 
 /** \namespace itk::GTest
  * \brief The GTest namespace contains GTest extensions for ITK, and
- * convenience type alias, and functions to aid in analytic testing of
+ * convenience typedefs, and functions to aid in analytic testing of
  * results and values.
  *
  */
 namespace GTest
-{} // end namespace GTest
+{
+} // end namespace GTest
 
 } // end namespace itk
 

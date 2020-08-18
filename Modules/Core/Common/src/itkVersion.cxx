@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,9 +29,11 @@
 
 namespace itk
 {
-Version::Version() = default;
+Version::Version()
+{}
 
-Version::~Version() = default;
+Version::~Version()
+{}
 
 const char *
 Version::GetITKVersion()

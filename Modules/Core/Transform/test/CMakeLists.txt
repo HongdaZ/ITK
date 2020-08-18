@@ -3,7 +3,6 @@ set(ITKTransformTests
 itkFixedCenterOfRotationAffineTransformTest.cxx
 itkAffineTransformTest.cxx
 itkScaleSkewVersor3DTransformTest.cxx
-itkComposeScaleSkewVersor3DTransformTest.cxx
 itkEuler3DTransformTest.cxx
 itkCenteredRigid2DTransformTest.cxx
 itkEuler2DTransformTest.cxx
@@ -14,6 +13,7 @@ itkRigid3DPerspectiveTransformTest.cxx
 itkSimilarity2DTransformTest.cxx
 itkTranslationTransformTest.cxx
 itkIdentityTransformTest.cxx
+itkv3Rigid3DTransformTest.cxx
 itkCenteredAffineTransformTest.cxx
 itkRigid2DTransformTest.cxx
 itkScaleLogarithmicTransformTest.cxx
@@ -47,9 +47,6 @@ itk_add_test(NAME itkAffineTransformTest
       COMMAND ITKTransformTestDriver itkAffineTransformTest)
 itk_add_test(NAME itkScaleSkewVersor3DTransformTest
       COMMAND ITKTransformTestDriver itkScaleSkewVersor3DTransformTest)
-itk_add_test(NAME itkComposeScaleSkewVersor3DTransformTest
-      COMMAND ITKTransformTestDriver
-        itkComposeScaleSkewVersor3DTransformTest)
 itk_add_test(NAME itkEuler3DTransformTest
       COMMAND ITKTransformTestDriver itkEuler3DTransformTest)
 itk_add_test(NAME itkCenteredRigid2DTransformTest
@@ -70,6 +67,8 @@ itk_add_test(NAME itkTranslationTransformTest
       COMMAND ITKTransformTestDriver itkTranslationTransformTest)
 itk_add_test(NAME itkIdentityTransformTest
       COMMAND ITKTransformTestDriver itkIdentityTransformTest)
+itk_add_test(NAME itkv3Rigid3DTransformTest
+      COMMAND ITKTransformTestDriver itkv3Rigid3DTransformTest)
 itk_add_test(NAME itkCenteredAffineTransformTest
       COMMAND ITKTransformTestDriver itkCenteredAffineTransformTest)
 itk_add_test(NAME itkRigid2DTransformTest
@@ -176,10 +175,3 @@ itk_add_test(NAME itkMultiTransformTest
       COMMAND ITKTransformTestDriver itkMultiTransformTest)
 itk_add_test(NAME itkTestTransformGetInverse
   COMMAND ITKTransformTestDriver itkTestTransformGetInverse)
-set_property(TEST itkTestTransformGetInverse APPEND PROPERTY LABELS RUNS_LONG)
-set_tests_properties( itkTestTransformGetInverse PROPERTIES COST 50 )
-
-set(ITKTransformGTests
-  itkBSplineTransformGTest.cxx
-)
-CreateGoogleTestDriver(ITKTransform "${ITKTransform-Test_LIBRARIES}" "${ITKTransformGTests}")

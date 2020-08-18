@@ -16,8 +16,8 @@
 #include "metaUtils.h"
 #include "metaCommand.h"
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -37,7 +37,7 @@ namespace METAIO_NAMESPACE {
 MetaCommand::
 MetaCommand()
 {
-  m_HelpCallBack = nullptr;
+  m_HelpCallBack = NULL;
   m_OptionVector.clear();
   m_Version = "Not defined";
   m_Date = "Not defined";
@@ -55,15 +55,15 @@ MetaCommand()
 
 
 /** Extract the date from a CVS Date keyword/value pair.  */
-std::string MetaCommand::
-ExtractDateFromCVS(std::string date)
+METAIO_STL::string MetaCommand::
+ExtractDateFromCVS(METAIO_STL::string date)
 {
-  std::string newdate;
+  METAIO_STL::string newdate;
   for(int i=7;i<(int)date.size()-1;i++)
     {
     newdate += date[i];
     }
-  return newdate;
+  return newdate.c_str();
 }
 
 void MetaCommand::DisableDeprecatedWarnings()
@@ -72,28 +72,28 @@ void MetaCommand::DisableDeprecatedWarnings()
 }
 
 void MetaCommand::
-SetDateFromCVS(std::string cvsDate)
+SetDateFromCVS(METAIO_STL::string cvsDate)
 {
   this->SetDate( this->ExtractDateFromCVS( cvsDate ).c_str() );
 }
 
 /** Extract the version from a CVS Revision keyword/value pair.  */
-std::string MetaCommand::
-ExtractVersionFromCVS(std::string version)
+METAIO_STL::string MetaCommand::
+ExtractVersionFromCVS(METAIO_STL::string version)
 {
-  std::string newversion;
+  METAIO_STL::string newversion;
   for(int i=11;i<(int)version.size()-1;i++)
     {
     newversion += version[i];
     }
-  return newversion;
+  return newversion.c_str();
 }
 
 void MetaCommand::
-SetVersionFromCVS(std::string cvsVersion)
-{
+SetVersionFromCVS(METAIO_STL::string cvsVersion)
+  {
   this->SetVersion( this->ExtractVersionFromCVS( cvsVersion ).c_str() );
-}
+  }
 
 
 /** */
@@ -106,31 +106,31 @@ SetOption(Option option)
 }
 
 bool MetaCommand::
-SetOption(std::string name,
-                            std::string shortTag,
+SetOption(METAIO_STL::string name,
+                            METAIO_STL::string shortTag,
                             bool required,
-                            std::string description,
-                            std::vector<Field> fields)
+                            METAIO_STL::string description,
+                            METAIO_STL::vector<Field> fields)
 {
   // need to add some tests here to check if the option is not defined yet
   // Short tag can be empty as long as the long tag is defined.
   // This is checked in the Parse() command
   /*if(tag == "")
     {
-    std::cout << "Tag cannot be empty : use AddField() instead."
-                        << std::endl;
+    METAIO_STREAM::cout << "Tag cannot be empty : use AddField() instead."
+                        << METAIO_STREAM::endl;
     return false;
     }*/
   if(!m_DisableDeprecatedWarnings && shortTag.size()>1)
     {
-    std::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption()"
+    METAIO_STREAM::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption()"
               << " is expecting a shortTag of exactly one character."
               << " You should use the SetOptionLongTag(optionName,longTagName)"
               << " if you want to use a longer tag. The longtag will be"
-              << " referred to as --LongTag and the short tag as -ShortTag."
+              << " refered as --LongTag and the short tag as -ShortTag."
               << " Replace -" << shortTag.c_str()
               << " by --" << shortTag.c_str()
-              << std::endl;
+              << METAIO_STREAM::endl;
     }
 
   Option option;
@@ -149,12 +149,12 @@ SetOption(std::string name,
 
 
 bool MetaCommand::
-SetOption(std::string name,
-          std::string shortTag,
+SetOption(METAIO_STL::string name,
+          METAIO_STL::string shortTag,
           bool required,
-          std::string description,
+          METAIO_STL::string description,
           TypeEnumType type,
-          std::string defVal,
+          METAIO_STL::string defVal,
           DataEnumType externalData)
 {
   // need to add some tests here to check if the option is not defined yet
@@ -163,21 +163,21 @@ SetOption(std::string name,
   /*
   if(tag == "")
     {
-    std::cout << "Tag cannot be empty : use AddField() instead."
-                        << std::endl;
+    METAIO_STREAM::cout << "Tag cannot be empty : use AddField() instead."
+                        << METAIO_STREAM::endl;
     return false;
     }*/
 
   if(!m_DisableDeprecatedWarnings && shortTag.size()>1)
     {
-    std::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption() "
+    METAIO_STREAM::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption() "
               << " is expecting a shortTag of exactly one character."
               << " You should use the SetOptionLongTag(optionName,longTagName)"
               << " if you want to use a longer tag. The longtag will be "
-              << " referred to as --LongTag and the short tag as -ShortTag "
+              << " refered as --LongTag and the short tag as -ShortTag "
               << " Replace -" << shortTag.c_str()
               << " by --" << shortTag.c_str()
-              << std::endl;
+              << METAIO_STREAM::endl;
     }
 
   Option option;
@@ -215,12 +215,12 @@ SetOption(std::string name,
 
 /** Add a field */
 bool MetaCommand::
-AddField(std::string name,
-         std::string description,
+AddField(METAIO_STL::string name,
+         METAIO_STL::string description,
          TypeEnumType type,
          DataEnumType externalData,
-         std::string rangeMin,
-         std::string rangeMax)
+         METAIO_STL::string rangeMin,
+         METAIO_STL::string rangeMax)
 {
   // need to add some tests here to check if the option is not defined yet
   Option option;
@@ -250,8 +250,8 @@ AddField(std::string name,
 
 /** For backward compatibility */
 bool MetaCommand::
-AddField(std::string name,
-         std::string description,
+AddField(METAIO_STL::string name,
+         METAIO_STL::string description,
          TypeEnumType type,
          bool externalData)
 {
@@ -268,7 +268,7 @@ AddField(std::string name,
 /** Collect all the information until the next tag
   * \warning this function works only if the field is of type String */
 void MetaCommand::
-SetOptionComplete(std::string optionName,
+SetOptionComplete(METAIO_STL::string optionName,
                   bool complete)
 {
   OptionVector::iterator it = m_OptionVector.begin();
@@ -285,12 +285,12 @@ SetOptionComplete(std::string optionName,
 
 /** Add a field to a given an option */
 bool MetaCommand::
-AddOptionField(std::string optionName,
-               std::string name,
+AddOptionField(METAIO_STL::string optionName,
+               METAIO_STL::string name,
                TypeEnumType type,
                bool required,
-               std::string defVal,
-               std::string description,
+               METAIO_STL::string defVal,
+               METAIO_STL::string description,
                DataEnumType externalData)
 {
   OptionVector::iterator it = m_OptionVector.begin();
@@ -328,18 +328,18 @@ AddOptionField(std::string optionName,
 
 /** Set the range of an option */
 bool MetaCommand::
-SetOptionRange(std::string optionName,
-               std::string name,
-               std::string rangeMin,
-               std::string rangeMax)
+SetOptionRange(METAIO_STL::string optionName,
+               METAIO_STL::string name,
+               METAIO_STL::string rangeMin,
+               METAIO_STL::string rangeMax)
 {
   OptionVector::iterator it = m_OptionVector.begin();
   while(it != m_OptionVector.end())
     {
     if((*it).name == optionName)
       {
-      std::vector<Field> & fields = (*it).fields;
-      std::vector<Field>::iterator itField = fields.begin();
+      METAIO_STL::vector<Field> & fields = (*it).fields;
+      METAIO_STL::vector<Field>::iterator itField = fields.begin();
       while(itField != fields.end())
         {
         if((*itField).name == name)
@@ -358,9 +358,9 @@ SetOptionRange(std::string optionName,
 
 /** Set the range of an option */
 bool MetaCommand::
-SetOptionEnumerations(std::string optionName,
-                      std::string name,
-                      std::string optionEnums)
+SetOptionEnumerations(METAIO_STL::string optionName,
+                      METAIO_STL::string name,
+                      METAIO_STL::string optionEnums)
 
 {
   OptionVector::iterator it = m_OptionVector.begin();
@@ -368,8 +368,8 @@ SetOptionEnumerations(std::string optionName,
     {
     if((*it).name == optionName)
       {
-      std::vector<Field> & fields = (*it).fields;
-      std::vector<Field>::iterator itField = fields.begin();
+      METAIO_STL::vector<Field> & fields = (*it).fields;
+      METAIO_STL::vector<Field>::iterator itField = fields.begin();
       while(itField != fields.end())
         {
         if((*itField).name == name)
@@ -388,10 +388,10 @@ SetOptionEnumerations(std::string optionName,
 
 /** Return the value of the option as a boolean */
 bool MetaCommand::
-GetValueAsBool(std::string optionName,
-               std::string fieldName)
+GetValueAsBool(METAIO_STL::string optionName,
+               METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = optionName;
@@ -402,7 +402,7 @@ GetValueAsBool(std::string optionName,
     {
     if((*it).name == optionName)
       {
-      std::vector<Field>::const_iterator itField = (*it).fields.begin();
+      METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
       while(itField != (*it).fields.end())
         {
         if((*itField).name == fieldname)
@@ -429,15 +429,15 @@ GetValueAsBool(std::string optionName,
 /** Return the value of the option as a bool */
 bool MetaCommand::
 GetValueAsBool(Option option,
-               std::string fieldName)
+               METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = option.name;
     }
 
-  std::vector<Field>::const_iterator itField = option.fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = option.fields.begin();
   while(itField != option.fields.end())
     {
     if((*itField).name == fieldname)
@@ -459,10 +459,10 @@ GetValueAsBool(Option option,
 
 /** Return the value of the option as a float */
 float MetaCommand::
-GetValueAsFloat(std::string optionName,
-                std::string fieldName)
+GetValueAsFloat(METAIO_STL::string optionName,
+                METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = optionName;
@@ -473,7 +473,7 @@ GetValueAsFloat(std::string optionName,
     {
     if((*it).name == optionName)
       {
-      std::vector<Field>::const_iterator itField = (*it).fields.begin();
+      METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
       while(itField != (*it).fields.end())
         {
         if((*itField).name == fieldname)
@@ -491,15 +491,15 @@ GetValueAsFloat(std::string optionName,
 /** Return the value of the option as a float */
 float MetaCommand::
 GetValueAsFloat(Option option,
-                std::string fieldName)
+                METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = option.name;
     }
 
-  std::vector<Field>::const_iterator itField = option.fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = option.fields.begin();
   while(itField != option.fields.end())
     {
     if((*itField).name == fieldname)
@@ -513,10 +513,10 @@ GetValueAsFloat(Option option,
 
 /** Return the value of the option as a int */
 int MetaCommand::
-GetValueAsInt(std::string optionName,
-              std::string fieldName)
+GetValueAsInt(METAIO_STL::string optionName,
+              METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = optionName;
@@ -527,7 +527,7 @@ GetValueAsInt(std::string optionName,
     {
     if((*it).name == optionName)
       {
-      std::vector<Field>::const_iterator itField = (*it).fields.begin();
+      METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
       while(itField != (*it).fields.end())
         {
         if((*itField).name == fieldname)
@@ -545,15 +545,15 @@ GetValueAsInt(std::string optionName,
 /** Return the value of the option as a int */
 int MetaCommand::
 GetValueAsInt(Option option,
-              std::string fieldName)
+              METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = option.name;
     }
 
-  std::vector<Field>::const_iterator itField = option.fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = option.fields.begin();
   while(itField != option.fields.end())
     {
     if((*itField).name == fieldname)
@@ -566,11 +566,11 @@ GetValueAsInt(Option option,
 }
 
 /** Return the value of the option as a string */
-std::string MetaCommand::
-GetValueAsString(std::string optionName,
-                 std::string fieldName)
+METAIO_STL::string MetaCommand::
+GetValueAsString(METAIO_STL::string optionName,
+                 METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = optionName;
@@ -581,7 +581,7 @@ GetValueAsString(std::string optionName,
     {
     if((*it).name == optionName)
       {
-      std::vector<Field>::const_iterator itField = (*it).fields.begin();
+      METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
       while(itField != (*it).fields.end())
         {
         if((*itField).name == fieldname)
@@ -597,17 +597,17 @@ GetValueAsString(std::string optionName,
 }
 
 /** Return the value of the option as a string */
-std::string MetaCommand::
+METAIO_STL::string MetaCommand::
 GetValueAsString(Option option,
-                 std::string fieldName)
+                 METAIO_STL::string fieldName)
 {
-  std::string fieldname = fieldName;
+  METAIO_STL::string fieldname = fieldName;
   if(fieldName == "")
     {
     fieldname = option.name;
     }
 
-  std::vector<Field>::const_iterator itField = option.fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = option.fields.begin();
   while(itField != option.fields.end())
     {
     if((*itField).name == fieldname)
@@ -620,12 +620,12 @@ GetValueAsString(Option option,
 }
 
 /** Return the value of the option as a list of strings */
-std::list<std::string> MetaCommand::
+METAIO_STL::list<METAIO_STL::string> MetaCommand::
 GetValueAsList( Option option )
 {
-  std::list<std::string> results;
+  METAIO_STL::list<METAIO_STL::string> results;
   results.clear();
-  std::vector<Field>::const_iterator itField = option.fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = option.fields.begin();
   ++itField;
   while(itField != option.fields.end())
     {
@@ -635,8 +635,8 @@ GetValueAsList( Option option )
   return results;
 }
 
-std::list< std::string > MetaCommand::
-GetValueAsList( std::string optionName )
+METAIO_STL::list< METAIO_STL::string > MetaCommand::
+GetValueAsList( METAIO_STL::string optionName )
 {
   OptionVector::const_iterator it = m_OptionVector.begin();
   while(it != m_OptionVector.end())
@@ -647,7 +647,7 @@ GetValueAsList( std::string optionName )
       }
     ++it;
     }
-  std::list< std::string > empty;
+  METAIO_STL::list< METAIO_STL::string > empty;
   empty.clear();
   return empty;
 }
@@ -663,7 +663,7 @@ GetOptionWasSet(Option option)
 }
 
 bool MetaCommand::
-GetOptionWasSet( std::string optionName)
+GetOptionWasSet( METAIO_STL::string optionName)
 {
   OptionVector::const_iterator it = m_ParsedOptionVector.begin();
   while(it != m_ParsedOptionVector.end())
@@ -685,98 +685,98 @@ ListOptions()
   int i=0;
   while(it != m_OptionVector.end())
     {
-    std::cout << "Option #" << i << std::endl;
-    std::cout << "   Name: " <<  (*it).name.c_str()
-                        << std::endl;
+    METAIO_STREAM::cout << "Option #" << i << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "   Name: " <<  (*it).name.c_str()
+                        << METAIO_STREAM::endl;
     if((*it).tag.size() > 0)
       {
-      std::cout << "   Tag: " << (*it).tag.c_str()
-                          << std::endl;
+      METAIO_STREAM::cout << "   Tag: " << (*it).tag.c_str()
+                          << METAIO_STREAM::endl;
       }
     if((*it).longtag.size() > 0)
       {
-      std::cout << "   LongTag: " << (*it).longtag.c_str()
-                          << std::endl;
+      METAIO_STREAM::cout << "   LongTag: " << (*it).longtag.c_str()
+                          << METAIO_STREAM::endl;
       }
-    std::cout << "   Description: " << (*it).description.c_str()
-                        << std::endl;
+    METAIO_STREAM::cout << "   Description: " << (*it).description.c_str()
+                        << METAIO_STREAM::endl;
     if((*it).required)
       {
-      std::cout << "   Required: true" << std::endl;
+      METAIO_STREAM::cout << "   Required: true" << METAIO_STREAM::endl;
       }
     else
       {
-      std::cout << "   Required: false" << std::endl;
+      METAIO_STREAM::cout << "   Required: false" << METAIO_STREAM::endl;
       }
-    std::cout << "   Number of expected values: "
+    METAIO_STREAM::cout << "   Number of expeted values: "
                         << (*it).fields.size()
-                        << std::endl;
+                        << METAIO_STREAM::endl;
 
-    std::vector<Field>::const_iterator itField = (*it).fields.begin();
+    METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
     while(itField != (*it).fields.end())
       {
-      std::cout << "      Field Name: " <<  (*itField).name.c_str()
-                          << std::endl;
-      std::cout << "      Description: "
+      METAIO_STREAM::cout << "      Field Name: " <<  (*itField).name.c_str()
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "      Description: "
                           << (*itField).description.c_str()
-                          << std::endl;
-      std::cout << "      Type: "
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "      Type: "
                           << this->TypeToString((*itField).type).c_str()
-                          << std::endl;
-      std::cout << "      Value: " << (*itField).value.c_str()
-                          << std::endl;
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "      Value: " << (*itField).value.c_str()
+                          << METAIO_STREAM::endl;
       if( (*itField).type == ENUM )
         {
-        std::cout << "      Enum list: "
+        METAIO_STREAM::cout << "      Enum list: "
                             << (*itField).rangeMin.c_str()
-                            << std::endl;
+                            << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "      RangeMin: "
+        METAIO_STREAM::cout << "      RangeMin: "
                             << (*itField).rangeMin.c_str()
-                            << std::endl;
-        std::cout << "      RangeMax: "
+                            << METAIO_STREAM::endl;
+        METAIO_STREAM::cout << "      RangeMax: "
                             << (*itField).rangeMax.c_str()
-                            << std::endl;
+                            << METAIO_STREAM::endl;
         }
 
       if((*itField).externaldata)
         {
-        std::cout << "      External Data: true"
-                            << std::endl;
+        METAIO_STREAM::cout << "      External Data: true"
+                            << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "      External Data: false"
-                            << std::endl;
+        METAIO_STREAM::cout << "      External Data: false"
+                            << METAIO_STREAM::endl;
         }
 
       if((*itField).required)
         {
-        std::cout << "      Required: true" << std::endl;
+        METAIO_STREAM::cout << "      Required: true" << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "      Required: false" << std::endl;
+        METAIO_STREAM::cout << "      Required: false" << METAIO_STREAM::endl;
         }
 
       if((*itField).userDefined)
         {
-        std::cout << "      User Defined: true" << std::endl;
+        METAIO_STREAM::cout << "      User Defined: true" << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "      User Defined: false" << std::endl;
+        METAIO_STREAM::cout << "      User Defined: false" << METAIO_STREAM::endl;
         }
 
       ++itField;
       }
-    std::cout << std::endl;
+    METAIO_STREAM::cout << METAIO_STREAM::endl;
     i++;
     ++it;
     }
-  if(m_HelpCallBack != nullptr)
+  if(m_HelpCallBack != NULL)
     {
     m_HelpCallBack();
     }
@@ -789,78 +789,78 @@ void MetaCommand::ListOptionsXML()
   int i=0;
   while(it != m_OptionVector.end())
     {
-    std::cout << "<option>" << std::endl;
-    std::cout << "<number>" << i << "</number>"
-                        << std::endl;
-    std::cout << "<name>" << (*it).name.c_str() << "</name>"
-                        << std::endl;
-    std::cout << "<tag>" << (*it).tag.c_str() << "</tag>"
-                        << std::endl;
-    std::cout << "<longtag>" << (*it).longtag.c_str() << "</longtag>"
-                        << std::endl;
-    std::cout << "<description>" << (*it).description.c_str()
-                        << "</description>" << std::endl;
-    std::cout << "<required>";
+    METAIO_STREAM::cout << "<option>" << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<number>" << i << "</number>"
+                        << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<name>" << (*it).name.c_str() << "</name>"
+                        << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<tag>" << (*it).tag.c_str() << "</tag>"
+                        << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<longtag>" << (*it).longtag.c_str() << "</longtag>"
+                        << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<description>" << (*it).description.c_str()
+                        << "</description>" << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "<required>";
     if((*it).required)
       {
-      std::cout << "1</required>" << std::endl;
+      METAIO_STREAM::cout << "1</required>" << METAIO_STREAM::endl;
       }
     else
       {
-      std::cout << "0</required>" << std::endl;
+      METAIO_STREAM::cout << "0</required>" << METAIO_STREAM::endl;
       }
 
-    std::cout << "<nvalues>" << (*it).fields.size() << "</nvalues>"
-                        << std::endl;
+    METAIO_STREAM::cout << "<nvalues>" << (*it).fields.size() << "</nvalues>"
+                        << METAIO_STREAM::endl;
 
-    std::vector<Field>::const_iterator itField = (*it).fields.begin();
+    METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
     while(itField != (*it).fields.end())
       {
-      std::cout << "<field>" << std::endl;
-      std::cout << "<name>" << (*itField).name.c_str() << "</name>"
-                          << std::endl;
-      std::cout << "<description>" << (*itField).description.c_str()
-                          << "</description>" << std::endl;
-      std::cout << "<type>"
+      METAIO_STREAM::cout << "<field>" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "<name>" << (*itField).name.c_str() << "</name>"
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "<description>" << (*itField).description.c_str()
+                          << "</description>" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "<type>"
                           << this->TypeToString((*itField).type).c_str()
-                          << "</type>" << std::endl;
-      std::cout << "<value>" << (*itField).value.c_str()
-                          << "</value>" << std::endl;
-      std::cout << "<external>";
+                          << "</type>" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "<value>" << (*itField).value.c_str()
+                          << "</value>" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "<external>";
       if((*itField).externaldata == DATA_IN)
         {
-        std::cout << "1</external>" << std::endl;
+        METAIO_STREAM::cout << "1</external>" << METAIO_STREAM::endl;
         }
       else if((*itField).externaldata == DATA_OUT)
         {
-        std::cout << "2</external>" << std::endl;
+        METAIO_STREAM::cout << "2</external>" << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "0</external>" << std::endl;
+        METAIO_STREAM::cout << "0</external>" << METAIO_STREAM::endl;
         }
-      std::cout << "<required>";
+      METAIO_STREAM::cout << "<required>";
       if((*itField).required)
         {
-        std::cout << "1</required>" << std::endl;
+        METAIO_STREAM::cout << "1</required>" << METAIO_STREAM::endl;
         }
       else
         {
-        std::cout << "0</required>" << std::endl;
+        METAIO_STREAM::cout << "0</required>" << METAIO_STREAM::endl;
         }
 
 
-      std::cout << "</field>" << std::endl;
+      METAIO_STREAM::cout << "</field>" << METAIO_STREAM::endl;
       ++itField;
       }
-    std::cout << "</option>" << std::endl;
+    METAIO_STREAM::cout << "</option>" << METAIO_STREAM::endl;
     i++;
     ++it;
     }
 }
 
 /** Used by ListOptionsSlicerXML */
-void MetaCommand::WriteXMLOptionToCout(std::string optionName,
+void MetaCommand::WriteXMLOptionToCout(METAIO_STL::string optionName,
                                        unsigned int & index)
 {
   OptionVector::const_iterator it = m_OptionVector.begin();
@@ -873,9 +873,9 @@ void MetaCommand::WriteXMLOptionToCout(std::string optionName,
     ++it;
     }
 
-  std::vector<Field>::const_iterator itField = (*it).fields.begin();
+  METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
 
-  std::string optionType = "";
+  METAIO_STL::string optionType = "";
 
   if((*itField).type == MetaCommand::STRING
      && ( (*itField).externaldata == MetaCommand::DATA_IN
@@ -900,143 +900,143 @@ void MetaCommand::WriteXMLOptionToCout(std::string optionName,
     optionType = this->TypeToString((*itField).type).c_str();
     }
 
-  std::cout << "<" << optionType.c_str()
-                      << ">" << std::endl;
+  METAIO_STREAM::cout << "<" << optionType.c_str()
+                      << ">" << METAIO_STREAM::endl;
 
 
-  std::cout << "<name>" << (*it).name.c_str() << "</name>"
-                      << std::endl;
+  METAIO_STREAM::cout << "<name>" << (*it).name.c_str() << "</name>"
+                      << METAIO_STREAM::endl;
   // Label is the description for now
-  std::string label = (*it).label;
+  METAIO_STL::string label = (*it).label;
   if(label.size()==0)
     {
     label = (*it).name;
     }
 
-  std::cout << "<label>" << label.c_str() << "</label>"
-                      << std::endl;
-  std::cout << "<description>" << (*it).description.c_str()
-                      << "</description>" << std::endl;
+  METAIO_STREAM::cout << "<label>" << label.c_str() << "</label>"
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "<description>" << (*it).description.c_str()
+                      << "</description>" << METAIO_STREAM::endl;
   if((*it).tag.size()>0) // use the single by default flag if any
     {
-    std::cout << "<flag>" << (*it).tag.c_str() << "</flag>"
-                        << std::endl;
+    METAIO_STREAM::cout << "<flag>" << (*it).tag.c_str() << "</flag>"
+                        << METAIO_STREAM::endl;
     }
   else if((*it).longtag.size()>0)
     {
-    std::cout << "<longflag>" << (*it).longtag.c_str() << "</longflag>"
-                        << std::endl;
+    METAIO_STREAM::cout << "<longflag>" << (*it).longtag.c_str() << "</longflag>"
+                        << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "<index>" << index << "</index>" << std::endl;
+    METAIO_STREAM::cout << "<index>" << index << "</index>" << METAIO_STREAM::endl;
     index++;
     }
 
   if((*itField).value.size()>0)
     {
-    std::cout << "<default>" << (*itField).value.c_str() << "</default>"
-                        << std::endl;
+    METAIO_STREAM::cout << "<default>" << (*itField).value.c_str() << "</default>"
+                        << METAIO_STREAM::endl;
     }
 
   if((*itField).externaldata == MetaCommand::DATA_IN)
     {
-    std::cout << "<channel>input</channel>" << std::endl;
+    METAIO_STREAM::cout << "<channel>input</channel>" << METAIO_STREAM::endl;
     }
   else if((*itField).externaldata == MetaCommand::DATA_OUT)
     {
-    std::cout << "<channel>output</channel>" << std::endl;
+    METAIO_STREAM::cout << "<channel>output</channel>" << METAIO_STREAM::endl;
     }
 
   if((*itField).type == MetaCommand::ENUM)
     {
-    std::vector< std::string > enumVector;
-    MET_StringToVector< std::string>( (*itField).rangeMin, enumVector );
-    std::vector< std::string >::iterator itenum;
+    METAIO_STL::vector< METAIO_STL::string > enumVector;
+    MET_StringToVector< METAIO_STL::string>( (*itField).rangeMin, enumVector );
+    METAIO_STL::vector< METAIO_STL::string >::iterator itenum;
     itenum = enumVector.begin();
     while(itenum != enumVector.end() )
       {
-      std::cout << "<element>" << (*itenum).c_str() << "</element>"
-                          << std::endl;
+      METAIO_STREAM::cout << "<element>" << (*itenum).c_str() << "</element>"
+                          << METAIO_STREAM::endl;
       ++itenum;
       }
     }
 
   // Write out the closing tag
-  std::cout << "</" << optionType.c_str()
-                      << ">" << std::endl;
+  METAIO_STREAM::cout << "</" << optionType.c_str()
+                      << ">" << METAIO_STREAM::endl;
 }
 
 /** List the current options in Slicer's xml format (www.slicer.org) */
 void MetaCommand::ListOptionsSlicerXML()
 {
-  std::cout << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" <<  std::endl;
-  std::cout << "<executable>" <<  std::endl;
-  std::cout << "  <category>" << m_Category.c_str() << "</category>" <<  std::endl;
-  std::cout << "  <title>" << m_Name.c_str() << "</title>" <<  std::endl;
-  std::cout << "  <description>" <<  std::endl;
-  std::cout << "  " << m_Description.c_str() <<  std::endl;
-  std::cout << "  </description>" <<  std::endl;
-  std::cout << "  <version>" << m_Version.c_str() << "</version>" <<  std::endl;
-  std::cout << "  <contributor>" << m_Author.c_str() << "</contributor>" <<  std::endl;
-  std::cout << "  <documentation-url></documentation-url>" <<  std::endl;
-  std::cout << "  <license></license>" <<  std::endl;
-  std::cout << "  <acknowledgements>" <<  std::endl;
-  std::cout << "  " << m_Acknowledgments.c_str() <<  std::endl;
-  std::cout << "  </acknowledgements>" <<  std::endl;
+  METAIO_STREAM::cout << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "<executable>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <category>" << m_Category.c_str() << "</category>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <title>" << m_Name.c_str() << "</title>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <description>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  " << m_Description.c_str() <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  </description>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <version>" << m_Version.c_str() << "</version>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <contributor>" << m_Author.c_str() << "</contributor>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <documentation-url></documentation-url>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <license></license>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  <acknowledgements>" <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  " << m_Acknowledgments.c_str() <<  METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "  </acknowledgements>" <<  METAIO_STREAM::endl;
 
   // Organize by group first
   // Keep a list of options
   unsigned int index=0;
-  std::vector<std::string>   GroupedOptionVector;
+  METAIO_STL::vector<METAIO_STL::string>   GroupedOptionVector;
   ParameterGroupVector::const_iterator itGroup = m_ParameterGroup.begin();
   while(itGroup != m_ParameterGroup.end())
     {
     if( (*itGroup).advanced == true )
       {
-      std::cout << " <parameters advanced=\"true\">" <<  std::endl;
+      METAIO_STREAM::cout << " <parameters advanced=\"true\">" <<  METAIO_STREAM::endl;
       }
     else
       {
-      std::cout << " <parameters>" <<  std::endl;
+      METAIO_STREAM::cout << " <parameters>" <<  METAIO_STREAM::endl;
       }
-    std::cout << "  <label>" << (*itGroup).name.c_str()
-                        <<  "</label>" <<  std::endl;
+    METAIO_STREAM::cout << "  <label>" << (*itGroup).name.c_str()
+                        <<  "</label>" <<  METAIO_STREAM::endl;
 
     if((*itGroup).description.size() == 0)
       {
-      std::cout << "  <description>" << (*itGroup).name.c_str()
-                          << "</description>" <<  std::endl;
+      METAIO_STREAM::cout << "  <description>" << (*itGroup).name.c_str()
+                          << "</description>" <<  METAIO_STREAM::endl;
       }
     else
       {
-      std::cout << "  <description>" << (*itGroup).description.c_str()
-                          << "</description>" <<  std::endl;
+      METAIO_STREAM::cout << "  <description>" << (*itGroup).description.c_str()
+                          << "</description>" <<  METAIO_STREAM::endl;
       }
 
-    std::vector<std::string>::const_iterator itOption = (*itGroup).options.begin();
+    METAIO_STL::vector<METAIO_STL::string>::const_iterator itOption = (*itGroup).options.begin();
     while(itOption != (*itGroup).options.end())
       {
       this->WriteXMLOptionToCout(*itOption,index);
       GroupedOptionVector.push_back(*itOption);
       ++itOption;
       }
-    std::cout << " </parameters>" <<  std::endl;
+    METAIO_STREAM::cout << " </parameters>" <<  METAIO_STREAM::endl;
     ++itGroup;
     }
 
   // Then take the remaining options
   if(m_OptionVector.size()>GroupedOptionVector.size())
     {
-    std::cout << " <parameters>" <<  std::endl;
-    std::cout << "  <label>IO</label>" <<  std::endl;
-    std::cout << "  <description>Input/output parameters</description>" <<  std::endl;
+    METAIO_STREAM::cout << " <parameters>" <<  METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "  <label>IO</label>" <<  METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "  <description>Input/output parameters</description>" <<  METAIO_STREAM::endl;
 
     OptionVector::const_iterator it = m_OptionVector.begin();
     while(it != m_OptionVector.end())
       {
       bool optionIsGrouped = false;
-      std::vector<std::string>::const_iterator itGroupedOption = GroupedOptionVector.begin();
+      METAIO_STL::vector<METAIO_STL::string>::const_iterator itGroupedOption = GroupedOptionVector.begin();
       while(itGroupedOption != GroupedOptionVector.end())
         {
         if(!strcmp((*itGroupedOption).c_str(),(*it).name.c_str()))
@@ -1054,25 +1054,25 @@ void MetaCommand::ListOptionsSlicerXML()
       ++it;
       } // end loop option
 
-    std::cout << " </parameters>" <<  std::endl;
+    METAIO_STREAM::cout << " </parameters>" <<  METAIO_STREAM::endl;
     } // end m_OptionVector.size()>GroupedOptionVector.size()
 
-std::cout << "</executable>" <<  std::endl;
+METAIO_STREAM::cout << "</executable>" <<  METAIO_STREAM::endl;
 }
 
 
 /** Internal small XML parser */
-std::string MetaCommand::
+METAIO_STL::string MetaCommand::
 GetXML(const char* buffer, const char* desc, unsigned long pos)
 {
-  std::string begin = "<";
+  METAIO_STL::string begin = "<";
   begin += desc;
   begin += ">";
-  std::string end = "</";
+  METAIO_STL::string end = "</";
   end += desc;
   end += ">";
 
-  std::string buf = buffer;
+  METAIO_STL::string buf = buffer;
 
   long int posb = static_cast<long int>(buf.find(begin,pos));
   if(posb == -1)
@@ -1093,13 +1093,11 @@ bool MetaCommand::
 ParseXML(const char* buffer)
 {
   m_OptionVector.clear();
-  std::string buf = this->GetXML(buffer,"option",0);
+  METAIO_STL::string buf = this->GetXML(buffer,"option",0);
   long pos = 0;
   while(buf.size() > 0)
     {
     Option option;
-    option.userDefined = false;
-    option.complete = false;
     option.name = this->GetXML(buf.c_str(),"name",0);
     option.tag = this->GetXML(buf.c_str(),"tag",0);
     option.longtag = this->GetXML(buf.c_str(),"longtag",0);
@@ -1118,7 +1116,7 @@ ParseXML(const char* buffer)
     long posF = static_cast<long>(buf.find("<field>"));
     for(unsigned int i=0;i<n;i++)
       {
-      std::string f = this->GetXML(buf.c_str(),"field",posF);
+      METAIO_STL::string f = this->GetXML(buf.c_str(),"field",posF);
       Field field;
       field.userDefined = false;
       field.name = this->GetXML(f.c_str(),"name",0);
@@ -1169,40 +1167,40 @@ ListOptionsSimplified(bool extended)
 {
   if(extended)
     {
-    std::cout << " System tags: " << std::endl
+    METAIO_STREAM::cout << " System tags: " << METAIO_STREAM::endl
             << "   [ -v ] or [ -h ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = List options in short format"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ -V ] or [ -H ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = List options in long format"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ -vxml ] or [ -hxml ] or [ -exportXML ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = List options in xml format for BatchMake"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ --xml ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = List options in xml format for Slicer"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ -vgad ] or [ -hgad ] or [ -exportGAD ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = List options in Grid Application Description format"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ -version ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = return the version number"
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ -date ]"
-            << std::endl
+            << METAIO_STREAM::endl
             << "      = return the cvs checkout date"
 #ifdef METAIO_USE_LIBXML2
-            << std::endl
+            << METAIO_STREAM::endl
             << "   [ --loadArguments filename ]"
             << "      = load the arguments from an XML file"
 #endif
-            << std::endl;
+            << METAIO_STREAM::endl;
      }
 
   int count = 0;
@@ -1228,8 +1226,8 @@ ListOptionsSimplified(bool extended)
       {
       if(ntags > 0)
         {
-        std::cout << " Command tags: "
-                            << std::endl;
+        METAIO_STREAM::cout << " Command tags: "
+                            << METAIO_STREAM::endl;
         }
       else
         {
@@ -1240,8 +1238,8 @@ ListOptionsSimplified(bool extended)
       {
       if(nfields > 0)
         {
-        std::cout << " Command fields: "
-                            << std::endl;
+        METAIO_STREAM::cout << " Command fields: "
+                            << METAIO_STREAM::endl;
         }
       else
         {
@@ -1257,21 +1255,21 @@ ListOptionsSimplified(bool extended)
         {
         if(!(*it).required)
           {
-          std::cout << "   [ ";
+          METAIO_STREAM::cout << "   [ ";
           }
         else
           {
-          std::cout << "   ";
+          METAIO_STREAM::cout << "   ";
           }
         if((*it).tag.size() > 0)
           {
-          std::cout << "-" << (*it).tag.c_str() << " ";
+          METAIO_STREAM::cout << "-" << (*it).tag.c_str() << " ";
           }
         if((*it).longtag.size() > 0)
           {
-          std::cout << "--" << (*it).longtag.c_str() << " ";
+          METAIO_STREAM::cout << "--" << (*it).longtag.c_str() << " ";
           }
-        std::vector<Field>::const_iterator itField =
+        METAIO_STL::vector<Field>::const_iterator itField =
                                                   (*it).fields.begin();
         while(itField != (*it).fields.end())
           {
@@ -1280,22 +1278,22 @@ ListOptionsSimplified(bool extended)
             {
             if((*itField).required)
               {
-              std::cout << "< ";
+              METAIO_STREAM::cout << "< ";
               }
             else
               {
-              std::cout << "[ ";
+              METAIO_STREAM::cout << "[ ";
               }
 
-            std::cout << (*itField).name.c_str();
+            METAIO_STREAM::cout << (*itField).name.c_str();
 
             if((*itField).required)
               {
-              std::cout << " > ";
+              METAIO_STREAM::cout << " > ";
               }
             else
               {
-              std::cout << " ] ";
+              METAIO_STREAM::cout << " ] ";
               }
             }
           ++itField;
@@ -1303,32 +1301,32 @@ ListOptionsSimplified(bool extended)
 
         if(!(*it).required)
           {
-          std::cout << "]";
+          METAIO_STREAM::cout << "]";
           }
-        std::cout << std::endl;
+        METAIO_STREAM::cout << METAIO_STREAM::endl;
 
         if((*it).description.size()>0)
           {
-          std::cout << "      = " << (*it).description.c_str();
-          std::cout << std::endl;
+          METAIO_STREAM::cout << "      = " << (*it).description.c_str();
+          METAIO_STREAM::cout << METAIO_STREAM::endl;
           itField = (*it).fields.begin();
           while(itField != (*it).fields.end())
             {
             if((*itField).description.size() > 0
                || (*itField).value.size() > 0)
               {
-              std::cout << "        With: "
+              METAIO_STREAM::cout << "        With: "
                                   << (*itField).name.c_str();
               if((*itField).description.size() > 0)
                 {
-                std::cout << " = " << (*itField).description.c_str();
+                METAIO_STREAM::cout << " = " << (*itField).description.c_str();
                 }
               if((*itField).value.size() > 0)
                 {
-                std::cout << " (Default = "
+                METAIO_STREAM::cout << " (Default = "
                                     << (*itField).value.c_str() << ")";
                 }
-              std::cout << std::endl;
+              METAIO_STREAM::cout << METAIO_STREAM::endl;
               }
             ++itField;
             }
@@ -1338,7 +1336,7 @@ ListOptionsSimplified(bool extended)
       }
     }
 
-  if(m_HelpCallBack != nullptr)
+  if(m_HelpCallBack != NULL)
     {
     m_HelpCallBack();
     }
@@ -1347,16 +1345,16 @@ ListOptionsSimplified(bool extended)
 /** Get the option by "-"+tag
  *  or by "--"+longtag */
 bool MetaCommand::
-OptionExistsByMinusTag(std::string minusTag)
+OptionExistsByMinusTag(METAIO_STL::string minusTag)
 {
   OptionVector::const_iterator it = m_OptionVector.begin();
   while(it != m_OptionVector.end())
     {
-    std::string tagToSearch = "-";
+    METAIO_STL::string tagToSearch = "-";
     tagToSearch += (*it).tag;
-    std::string longtagToSearch = "--";
+    METAIO_STL::string longtagToSearch = "--";
     longtagToSearch += (*it).longtag;
-    std::string longtagToSearchBackwardCompatible = "-";
+    METAIO_STL::string longtagToSearchBackwardCompatible = "-";
     longtagToSearchBackwardCompatible += (*it).longtag;
     // WARNING: This is for backward compatibility but a warning
     // is going to be thrown if used so that people can adjust
@@ -1375,16 +1373,16 @@ OptionExistsByMinusTag(std::string minusTag)
 /** Get the option by "-"+tag
  *  or by "--"+longtag */
 MetaCommand::Option * MetaCommand::
-GetOptionByMinusTag(std::string minusTag)
+GetOptionByMinusTag(METAIO_STL::string minusTag)
 {
   OptionVector::iterator it = m_OptionVector.begin();
   while(it != m_OptionVector.end())
     {
-    std::string tagToSearch = "-";
+    METAIO_STL::string tagToSearch = "-";
     tagToSearch += (*it).tag;
-    std::string longtagToSearch = "--";
+    METAIO_STL::string longtagToSearch = "--";
     longtagToSearch += (*it).longtag;
-    std::string longtagToSearchBackwardCompatible = "-";
+    METAIO_STL::string longtagToSearchBackwardCompatible = "-";
     longtagToSearchBackwardCompatible += (*it).longtag;
 
     // WARNING: This is for backward compatibility but a warning
@@ -1398,12 +1396,12 @@ GetOptionByMinusTag(std::string minusTag)
       }
     ++it;
     }
-  return nullptr;
+  return NULL;
 }
 
 /** Get the option by tag */
 MetaCommand::Option * MetaCommand::
-GetOptionByTag(std::string tag)
+GetOptionByTag(METAIO_STL::string tag)
 {
   OptionVector::iterator it = m_OptionVector.begin();
   while(it != m_OptionVector.end())
@@ -1414,7 +1412,7 @@ GetOptionByTag(std::string tag)
       }
     ++it;
     }
-  return nullptr;
+  return NULL;
 }
 
 /** Return the option id. i.e the position in the vector */
@@ -1440,7 +1438,7 @@ GetOptionId(Option* option)
 bool MetaCommand::
 ExportGAD(bool dynamic)
 {
-  std::cout << "Exporting GAD file...";
+  METAIO_STREAM::cout << "Exporting GAD file...";
 
   OptionVector options = m_OptionVector;
   if(dynamic)
@@ -1450,84 +1448,84 @@ ExportGAD(bool dynamic)
 
   if(m_Name=="")
     {
-    std::cout << "Set the name of the application using SetName()"
-                        << std::endl;
+    METAIO_STREAM::cout << "Set the name of the application using SetName()"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
-  std::string filename = m_Name;
+  METAIO_STL::string filename = m_Name;
   filename += ".gad.xml";
 
-  std::ofstream file;
+  METAIO_STREAM::ofstream file;
 #ifdef __sgi
-  file.open(filename.c_str(), std::ios::out);
+  file.open(filename.c_str(), METAIO_STREAM::ios::out);
 #else
-  file.open(filename.c_str(), std::ios::binary
-                              | std::ios::out);
+  file.open(filename.c_str(), METAIO_STREAM::ios::binary
+                              | METAIO_STREAM::ios::out);
 #endif
   if(!file.rdbuf()->is_open())
     {
-    std::cout << "Cannot open file for writing: "
-                        << filename.c_str() <<  std::endl;
+    METAIO_STREAM::cout << "Cannot open file for writing: "
+                        << filename.c_str() <<  METAIO_STREAM::endl;
     return false;
     }
 
-  file << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
-  file << "<gridApplication" << std::endl;
+  file << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << METAIO_STREAM::endl;
+  file << "<gridApplication" << METAIO_STREAM::endl;
   file << "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-       << std::endl;
+       << METAIO_STREAM::endl;
   file << "xsi:noNamespaceSchemaLocation=\"grid-application-description.xsd\""
-       << std::endl;
-  file << "name=\"" << m_Name.c_str() << "\"" << std::endl;
+       << METAIO_STREAM::endl;
+  file << "name=\"" << m_Name.c_str() << "\"" << METAIO_STREAM::endl;
   file << "description=\"" << m_Description.c_str() << "\">"
-       << std::endl;
+       << METAIO_STREAM::endl;
   file << "<applicationComponent name=\"Client\" remoteExecution=\"true\">"
-       << std::endl;
-  file << "<componentActionList>" << std::endl;
-  file << std::endl;
+       << METAIO_STREAM::endl;
+  file << "<componentActionList>" << METAIO_STREAM::endl;
+  file << METAIO_STREAM::endl;
 
   unsigned int order = 1;
-  // Write out the input data to be transferred
+  // Write out the input data to be transfered
   OptionVector::const_iterator it = options.begin();
   while(it != options.end())
     {
-    std::vector<Field>::const_iterator itFields = (*it).fields.begin();
+    METAIO_STL::vector<Field>::const_iterator itFields = (*it).fields.begin();
     while(itFields != (*it).fields.end())
       {
       if((*itFields).externaldata == DATA_IN)
         {
         file << " <componentAction type=\"DataRelocation\" order=\"" << order
-             << "\">" << std::endl;
+             << "\">" << METAIO_STREAM::endl;
         file << "  <parameter name=\"Name\" value=\""
              << (*itFields).name.c_str()
-             <<"\"/>" << std::endl;
+             <<"\"/>" << METAIO_STREAM::endl;
         file << "  <parameter name=\"Host\" value=\"hostname\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Description\" value=\""
              << (*itFields).description.c_str() << "\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Direction\" value=\"In\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Protocol\" value=\"gsiftp\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"SourceDataPath\" value=\""
-             << (*itFields).value.c_str() << "\"/>" << std::endl;
+             << (*itFields).value.c_str() << "\"/>" << METAIO_STREAM::endl;
 
-        std::string datapath = (*itFields).value;
-        long int slash = static_cast<long int>(datapath.find_last_of('/'));
+        METAIO_STL::string datapath = (*itFields).value;
+        long int slash = static_cast<long int>(datapath.find_last_of("/"));
         if(slash>0)
           {
           datapath = datapath.substr(slash+1,datapath.size()-slash-1);
           }
-        slash = static_cast<long int>(datapath.find_last_of('\\'));
+        slash = static_cast<long int>(datapath.find_last_of("\\"));
         if(slash>0)
           {
           datapath = datapath.substr(slash+1,datapath.size()-slash-1);
           }
         file << "  <parameter name=\"DestDataPath\" value=\""
-             << datapath.c_str() << "\"/>" << std::endl;
-        file << " </componentAction>" << std::endl;
-        file << std::endl;
+             << datapath.c_str() << "\"/>" << METAIO_STREAM::endl;
+        file << " </componentAction>" << METAIO_STREAM::endl;
+        file << METAIO_STREAM::endl;
         order++;
         }
       ++itFields;
@@ -1536,9 +1534,9 @@ ExportGAD(bool dynamic)
     }
 
   file << " <componentAction type=\"JobSubmission\" order=\"" << order << "\">"
-       << std::endl;
+       << METAIO_STREAM::endl;
   file << "  <parameter name=\"Executable\" value=\""
-       << m_ExecutableName.c_str() << "\"/>" << std::endl;
+       << m_ExecutableName.c_str() << "\"/>" << METAIO_STREAM::endl;
   file << "  <parameter name=\"Arguments\"  value=\"";
   // Write out the command line arguments
   it = options.begin();
@@ -1551,14 +1549,14 @@ ExportGAD(bool dynamic)
     file << "{" << (*it).name.c_str() << "}";
     ++it;
     }
-  file << "\"/>" << std::endl;
+  file << "\"/>" << METAIO_STREAM::endl;
   // Write out the arguments that are not data
   it = options.begin();
   while(it != options.end())
     {
     // Find if this is a non data field
     bool isData = false;
-    std::vector<Field>::const_iterator itFields = (*it).fields.begin();
+    METAIO_STL::vector<Field>::const_iterator itFields = (*it).fields.begin();
     while(itFields != (*it).fields.end())
       {
       if((*itFields).externaldata != DATA_NONE)
@@ -1610,7 +1608,7 @@ ExportGAD(bool dynamic)
         }
       }
 
-    file << ">" << std::endl;
+    file << ">" << METAIO_STREAM::endl;
 
     // Now writes the value of the arguments
     itFields = (*it).fields.begin();
@@ -1631,68 +1629,68 @@ ExportGAD(bool dynamic)
         {
         file << " rangeMax=\"" << (*itFields).rangeMax.c_str() << "\"";
         }
-      file << "/>" << std::endl;
+      file << "/>" << METAIO_STREAM::endl;
       ++itFields;
       }
-    file << "  </group>" << std::endl;
+    file << "  </group>" << METAIO_STREAM::endl;
     ++it;
     }
-  file << " </componentAction>" << std::endl;
+  file << " </componentAction>" << METAIO_STREAM::endl;
   order++;
-  file << std::endl;
-  // Write out the input data to be transferred
+  file << METAIO_STREAM::endl;
+  // Write out the input data to be transfered
   it = options.begin();
   while(it != options.end())
     {
-    std::vector<Field>::const_iterator itFields = (*it).fields.begin();
+    METAIO_STL::vector<Field>::const_iterator itFields = (*it).fields.begin();
     while(itFields != (*it).fields.end())
       {
       if((*itFields).externaldata == DATA_OUT)
         {
         file << " <componentAction type=\"DataRelocation\" order=\"" << order
-             << "\">" << std::endl;
+             << "\">" << METAIO_STREAM::endl;
         file << "  <parameter name=\"Name\" Value=\""
              << (*itFields).name.c_str()
-             <<"\"/>" << std::endl;
+             <<"\"/>" << METAIO_STREAM::endl;
         file << "  <parameter name=\"Host\" Value=\"hostname\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Description\" value=\""
              << (*itFields).description.c_str() << "\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Direction\" value=\"Out\"/>"
-             << std::endl;
+             << METAIO_STREAM::endl;
         file << "  <parameter name=\"Protocol\" value=\"gsiftp\"/>"
-             << std::endl;
-        std::string datapath = (*itFields).value;
-        long int slash = static_cast<long int>(datapath.find_last_of('/'));
+             << METAIO_STREAM::endl;
+        METAIO_STL::string datapath = (*itFields).value;
+        long int slash = static_cast<long int>(datapath.find_last_of("/"));
         if(slash>0)
           {
           datapath = datapath.substr(slash+1,datapath.size()-slash-1);
           }
-        slash = static_cast<long int>(datapath.find_last_of('\\'));
+        slash = static_cast<long int>(datapath.find_last_of("\\"));
         if(slash>0)
           {
           datapath = datapath.substr(slash+1,datapath.size()-slash-1);
           }
         file << "  <parameter name=\"SourceDataPath\" value=\""
-             << datapath.c_str() << "\"/>" << std::endl;
+             << datapath.c_str() << "\"/>" << METAIO_STREAM::endl;
         file << "  <parameter name=\"DestDataPath\" value=\""
-             << (*itFields).value.c_str() << "\"/>" << std::endl;
-        file << " </componentAction>" << std::endl;
-        file << std::endl;
+             << (*itFields).value.c_str() << "\"/>" << METAIO_STREAM::endl;
+        file << " </componentAction>" << METAIO_STREAM::endl;
+        file << METAIO_STREAM::endl;
         order++;
         }
       ++itFields;
       }
     ++it;
     }
-  file << "    </componentActionList>" << std::endl;
-  file << "  </applicationComponent>" << std::endl;
-  file << "</gridApplication>" << std::endl;
+  file << "    </componentActionList>" << METAIO_STREAM::endl;
+  file << "  </applicationComponent>" << METAIO_STREAM::endl;
+  file << "</gridApplication>" << METAIO_STREAM::endl;
 
   file.close();
 
-  std::cout << "done" << std::endl;
+  METAIO_STREAM::cout << "done" << METAIO_STREAM::endl;
   return true;
 }
 
@@ -1703,13 +1701,13 @@ bool MetaCommand::Parse(int argc, char* argv[])
   m_GotXMLFlag = false;
   m_ExecutableName = argv[0];
 
-  long int slash = static_cast<long int>(m_ExecutableName.find_last_of('/'));
+  long int slash = static_cast<long int>(m_ExecutableName.find_last_of("/"));
   if(slash>0)
     {
     m_ExecutableName = m_ExecutableName.substr(slash+1,
                                                m_ExecutableName.size()-slash-1);
     }
-  slash = static_cast<long int>(m_ExecutableName.find_last_of('\\'));
+  slash = static_cast<long int>(m_ExecutableName.find_last_of("\\"));
   if(slash>0)
     {
     m_ExecutableName = m_ExecutableName.substr(slash+1,
@@ -1719,30 +1717,30 @@ bool MetaCommand::Parse(int argc, char* argv[])
   // Fill in the results
   m_ParsedOptionVector.clear();
   bool inArgument = false;
-  std::string tag = "";
-  std::string args;
+  METAIO_STL::string tag = "";
+  METAIO_STL::string args;
 
-  unsigned long currentField = 0; // current field position
-  long currentOption = 0; // id of the option to fill
+  unsigned int currentField = 0; // current field position
+  int currentOption = 0; // id of the option to fill
   unsigned int valuesRemaining=0;
   unsigned int optionalValuesRemaining=0;
   bool isComplete = false; // check if the option should be parse until
                            // the next tag is found
-  std::string completeString = "";
+  METAIO_STL::string completeString = "";
 
   bool exportGAD = false;
   for(unsigned int i=1;i<(unsigned int)argc;i++)
     {
     if(!strcmp(argv[i],"-V") || !strcmp(argv[i],"-H"))
       {
-      std::cout << "Usage : " << argv[0] << std::endl;
+      METAIO_STREAM::cout << "Usage : " << argv[0] << METAIO_STREAM::endl;
       this->ListOptions();
       return true;
       }
     // List the options if using -v
     if(!strcmp(argv[i],"-v") || !strcmp(argv[i],"-h"))
       {
-      std::cout << "Usage : " << argv[0] << std::endl;
+      METAIO_STREAM::cout << "Usage : " << argv[0] << METAIO_STREAM::endl;
       this->ListOptionsSimplified();
       return true;
       }
@@ -1751,8 +1749,8 @@ bool MetaCommand::Parse(int argc, char* argv[])
       {
       if((i+1)>=(unsigned int)argc)
         {
-        std::cout << "--loadArguments expected a filename as argument"
-                            << std::endl;
+        METAIO_STREAM::cout << "--loadArguments expected a filename as argument"
+                            << METAIO_STREAM::endl;
         return false;
         }
       this->LoadArgumentsFromXML(argv[i+1]);
@@ -1777,14 +1775,14 @@ bool MetaCommand::Parse(int argc, char* argv[])
       }
     if(!strcmp(argv[i],"-version"))
       {
-      std::cout << "Version: " << m_Version.c_str()
-                          << std::endl;
+      METAIO_STREAM::cout << "Version: " << m_Version.c_str()
+                          << METAIO_STREAM::endl;
       continue;
       }
     if(!strcmp(argv[i],"-date"))
       {
-      std::cout << "Date: " << m_Date.c_str()
-                          << std::endl;
+      METAIO_STREAM::cout << "Date: " << m_Date.c_str()
+                          << METAIO_STREAM::endl;
       continue;
       }
     if(!strcmp(argv[i],"-exportGAD")
@@ -1812,9 +1810,9 @@ bool MetaCommand::Parse(int argc, char* argv[])
             }
           else
             {
-            std::cout << "Found tag " << argv[i]
+            METAIO_STREAM::cout << "Found tag " << argv[i]
                               << " before end of value list!"
-                              << std::endl;
+                              << METAIO_STREAM::endl;
             return false;
             }
           }
@@ -1838,7 +1836,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
         // We check the number of mandatory and optional values for
         // this tag
-        std::vector<Field>::const_iterator fIt =
+        METAIO_STL::vector<Field>::const_iterator fIt =
                                  this->GetOptionByMinusTag(tag)->fields.begin();
         while(fIt != this->GetOptionByMinusTag(tag)->fields.end())
           {
@@ -1853,9 +1851,9 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
         if(currentOption < 0)
           {
-          std::cout << "Error processing tag " << tag.c_str()
+          METAIO_STREAM::cout << "Error processing tag " << tag.c_str()
                               << ".  Tag exists but cannot find its Id."
-                              << std::endl;
+                              << METAIO_STREAM::endl;
           }
         else
           {
@@ -1878,7 +1876,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
             char optName[255];
             for(unsigned int j=0; j<valuesInList; j++)
               {
-              snprintf(optName, sizeof(optName), "%03u", j);
+              sprintf(optName, "%03u", j);
               this->AddOptionField( m_OptionVector[currentOption].name,
                                     optName, STRING );
               }
@@ -1890,9 +1888,9 @@ bool MetaCommand::Parse(int argc, char* argv[])
         {
         if(m_Verbose)
           {
-          std::cout << "The tag " << tag.c_str()
+          METAIO_STREAM::cout << "The tag " << tag.c_str()
                               << " is not a valid argument : skipping this tag"
-                              << std::endl;
+                              << METAIO_STREAM::endl;
           }
         if(m_FailOnUnrecognizedOption)
           {
@@ -1925,10 +1923,10 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
       if(!found && m_Verbose)
         {
-        std::cout
+        METAIO_STREAM::cout
                   << "Too many arguments specified in your command line! "
                   << "Skipping extra argument: " << argv[i]
-                  << std::endl;
+                  << METAIO_STREAM::endl;
         }
 
       inArgument=true;
@@ -1967,10 +1965,10 @@ bool MetaCommand::Parse(int argc, char* argv[])
         // We change the value only if this is not a tag
         if(this->OptionExistsByMinusTag(argv[i]))
           {
-          std::cout << "Option "
+          METAIO_STREAM::cout << "Option "
                               << m_OptionVector[currentOption].name.c_str()
                               << " expect a value and got tag: " << argv[i]
-                              << std::endl;
+                              << METAIO_STREAM::endl;
           this->ListOptionsSimplified(false);
           return false;
           }
@@ -2030,10 +2028,10 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
   if(valuesRemaining>0)
     {
-    std::cout << "Not enough parameters for "
+    METAIO_STREAM::cout << "Not enough parameters for "
                         << m_OptionVector[currentOption].name.c_str()
-                        << std::endl;
-    std::cout << "Usage: " << argv[0] << std::endl;
+                        << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "Usage: " << argv[0] << METAIO_STREAM::endl;
     this->ListOptionsSimplified(false);
     return false;
     }
@@ -2048,16 +2046,16 @@ bool MetaCommand::Parse(int argc, char* argv[])
       // First check if the option is actually defined
       if(!(*it).userDefined)
         {
-        std::cout << "Option " << (*it).name.c_str()
+        METAIO_STREAM::cout << "Option " << (*it).name.c_str()
                             << " is required but not defined"
-                            << std::endl;
+                            << METAIO_STREAM::endl;
         requiredAndNotDefined = true;
         ++it;
         continue;
         }
 
       // Check if the values are defined
-      std::vector<Field>::const_iterator itFields = (*it).fields.begin();
+      METAIO_STL::vector<Field>::const_iterator itFields = (*it).fields.begin();
       bool defined = true;
       while(itFields != (*it).fields.end())
         {
@@ -2072,15 +2070,15 @@ bool MetaCommand::Parse(int argc, char* argv[])
         {
         if((*it).tag.size()>0 || (*it).longtag.size()>0)
           {
-          std::cout << "Field " << (*it).tag.c_str()
+          METAIO_STREAM::cout << "Field " << (*it).tag.c_str()
                               << " is required but not defined"
-                              << std::endl;
+                              << METAIO_STREAM::endl;
           }
         else
           {
-          std::cout << "Field " << (*it).name.c_str()
+          METAIO_STREAM::cout << "Field " << (*it).name.c_str()
                               << " is required but not defined"
-                              << std::endl;
+                              << METAIO_STREAM::endl;
           }
         requiredAndNotDefined = true;
         }
@@ -2090,7 +2088,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
   if(requiredAndNotDefined)
     {
-    //std::cout << "Command: " << argv[0] << std::endl;
+    //METAIO_STREAM::cout << "Command: " << argv[0] << METAIO_STREAM::endl;
     this->ListOptionsSimplified(false);
     return false;
     }
@@ -2100,7 +2098,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
   bool valueInRange = true;
   while(itParsed != m_ParsedOptionVector.end())
     {
-    std::vector<Field>::const_iterator itFields = (*itParsed).fields
+    METAIO_STL::vector<Field>::const_iterator itFields = (*itParsed).fields
                                                                     .begin();
     while(itFields != (*itParsed).fields.end())
       {
@@ -2122,12 +2120,12 @@ bool MetaCommand::Parse(int argc, char* argv[])
               < atof((*itFields).value.c_str())))
           )
           {
-          std::cout << (*itParsed).name.c_str()
+          METAIO_STREAM::cout << (*itParsed).name.c_str()
                     << "." << (*itFields).name.c_str()
                     << " : Value (" << (*itFields).value.c_str() << ") "
                     << "is not in the range [" << (*itFields).rangeMin.c_str()
                     << "," << (*itFields).rangeMax.c_str()
-                    << "]" << std::endl;
+                    << "]" << METAIO_STREAM::endl;
           valueInRange = false;
           }
         }
@@ -2152,7 +2150,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
 }
 
 /** Return the string representation of a type */
-std::string MetaCommand::TypeToString(TypeEnumType type)
+METAIO_STL::string MetaCommand::TypeToString(TypeEnumType type)
 {
   switch(type)
     {
@@ -2228,8 +2226,8 @@ MetaCommand::TypeEnumType MetaCommand::StringToType(const char* type)
 
 
 /** Set the long flag for the option */
-bool MetaCommand::SetOptionLongTag(std::string optionName,
-                                    std::string longTag)
+bool MetaCommand::SetOptionLongTag(METAIO_STL::string optionName,
+                                    METAIO_STL::string longTag)
 {
   OptionVector::iterator itOption = m_OptionVector.begin();
   while(itOption != m_OptionVector.end())
@@ -2246,8 +2244,8 @@ bool MetaCommand::SetOptionLongTag(std::string optionName,
 }
 
 /** Set the label for the option */
-bool MetaCommand::SetOptionLabel(std::string optionName,
-                                 std::string label)
+bool MetaCommand::SetOptionLabel(METAIO_STL::string optionName,
+                                 METAIO_STL::string label)
 {
   OptionVector::iterator itOption = m_OptionVector.begin();
   while(itOption != m_OptionVector.end())
@@ -2265,14 +2263,14 @@ bool MetaCommand::SetOptionLabel(std::string optionName,
 
 /** Set the group for a field or an option
  *  If the group doesn't exist it is automatically created. */
-bool MetaCommand::SetParameterGroup(std::string optionName,
-                                    std::string groupName,
-                                    std::string groupDescription,
+bool MetaCommand::SetParameterGroup(METAIO_STL::string optionName,
+                                    METAIO_STL::string groupName,
+                                    METAIO_STL::string groupDescription,
                                     bool advanced
                                     )
 {
   // Check if the group exists
-  ParameterGroup* group = nullptr;
+  ParameterGroup* group = NULL;
   ParameterGroupVector::iterator it = m_ParameterGroup.begin();
   while(it != m_ParameterGroup.end())
     {
@@ -2299,8 +2297,8 @@ bool MetaCommand::SetParameterGroup(std::string optionName,
 
   if(!optionExists)
     {
-    std::cout << "The option " << optionName.c_str()
-                        << " doesn't exist" << std::endl;
+    METAIO_STREAM::cout << "The option " << optionName.c_str()
+                        << " doesn't exist" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -2330,23 +2328,23 @@ bool MetaCommand::LoadArgumentsFromXML(const char* filename,
   xmlNodePtr cur;
   doc = xmlParseFile(filename);
 
-  if (doc == nullptr )
+  if (doc == NULL )
     {
-    std::cerr << "Cannot parse XML file" << std::endl;
+    METAIO_STREAM::cerr << "Cannot parse XML file" << METAIO_STREAM::endl;
     return false;
     }
 
   cur = xmlDocGetRootElement(doc);
 
-  if (cur == nullptr)
+  if (cur == NULL)
     {
-    std::cerr << "XML document is empty" << std::endl;
+    METAIO_STREAM::cerr << "XML document is empty" << METAIO_STREAM::endl;
     xmlFreeDoc(doc);
     return false;
     }
   if (xmlStrcmp(cur->name, (const xmlChar *) "MetaCommand"))
     {
-    std::cerr << "document of the wrong type. Root node should be MetaCommand" << std::endl;
+    METAIO_STREAM::cerr << "document of the wrong type. Root node shoule be MetaCommand" << METAIO_STREAM::endl;
     xmlFreeDoc(doc);
     return false;
     }
@@ -2386,7 +2384,7 @@ bool MetaCommand::LoadArgumentsFromXML(const char* filename,
     }
   xmlFreeDoc(doc);
 #else
-  std::cout << "LoadArguments(" << filename << ") requires libxml2" << std::endl;
+  METAIO_STREAM::cout << "LoadArguments(" << filename << ") requires libxml2" << METAIO_STREAM::endl;
   if(createMissingArguments)
     {
     }
@@ -2409,8 +2407,8 @@ bool MetaCommand::SetOptionValue(const char* optionName,
     if((*it).name == optionName)
       {
       (*it).userDefined = true;
-      std::vector<Field> & fields = (*it).fields;
-      std::vector<Field>::iterator itField = fields.begin();
+      METAIO_STL::vector<Field> & fields = (*it).fields;
+      METAIO_STL::vector<Field>::iterator itField = fields.begin();
       while(itField != fields.end())
         {
         if((*itField).name == name)

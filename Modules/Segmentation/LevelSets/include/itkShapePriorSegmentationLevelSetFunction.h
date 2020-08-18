@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,19 +51,18 @@ namespace itk
  * \ingroup FiniteDifferenceFunctions
  * \ingroup ITKLevelSets
  */
-template <typename TImageType, typename TFeatureImageType = TImageType>
-class ITK_TEMPLATE_EXPORT ShapePriorSegmentationLevelSetFunction
-  : public SegmentationLevelSetFunction<TImageType, TFeatureImageType>
+template< typename TImageType, typename TFeatureImageType = TImageType >
+class ITK_TEMPLATE_EXPORT ShapePriorSegmentationLevelSetFunction:
+  public SegmentationLevelSetFunction< TImageType, TFeatureImageType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapePriorSegmentationLevelSetFunction);
-
-  /** Standard class type aliases. */
-  using Self = ShapePriorSegmentationLevelSetFunction;
-  using Superclass = SegmentationLevelSetFunction<TImageType, TFeatureImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FeatureImageType = TFeatureImageType;
+  /** Standard class typedefs. */
+  typedef ShapePriorSegmentationLevelSetFunction Self;
+  typedef SegmentationLevelSetFunction< TImageType, TFeatureImageType >
+  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
+  typedef TFeatureImageType          FeatureImageType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -72,103 +71,88 @@ public:
   itkTypeMacro(ShapePriorSegmentationLevelSetFunction, SegmentationLevelSetFunction);
 
   /** Extract some parameters from the superclass. */
-  using ImageType = typename Superclass::ImageType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using FeatureScalarType = typename Superclass::FeatureScalarType;
-  using RadiusType = typename Superclass::RadiusType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using VectorImageType = typename Superclass::VectorImageType;
-  using PixelType = typename Superclass::PixelType;
-  using TimeStepType = typename Superclass::TimeStepType;
-  using IndexType = typename Superclass::IndexType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  typedef typename Superclass::ImageType           ImageType;
+  typedef typename Superclass::NeighborhoodType    NeighborhoodType;
+  typedef typename Superclass::ScalarValueType     ScalarValueType;
+  typedef typename Superclass::FeatureScalarType   FeatureScalarType;
+  typedef typename Superclass::RadiusType          RadiusType;
+  typedef typename Superclass::FloatOffsetType     FloatOffsetType;
+  typedef typename Superclass::VectorImageType     VectorImageType;
+  typedef typename Superclass::PixelType           PixelType;
+  typedef typename Superclass::TimeStepType        TimeStepType;
+  typedef typename Superclass::IndexType           IndexType;
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Extract some parameters from the superclass. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension);
 
-  /** ShapeFunction type alias support */
-  using ShapeFunctionType = ShapeSignedDistanceFunction<double, Self::ImageDimension>;
-  using ShapeFunctionPointer = typename ShapeFunctionType::ConstPointer;
+  /** ShapeFunction typedef support. */
+  typedef ShapeSignedDistanceFunction< double,
+                                       itkGetStaticConstMacro(ImageDimension) > ShapeFunctionType;
+  typedef typename ShapeFunctionType::ConstPointer ShapeFunctionPointer;
 
   /** Zeta. The ShapePriorWeight scales the shape prior term values. */
-  void
-  SetShapePriorWeight(const ScalarValueType p)
-  {
-    m_ShapePriorWeight = p;
-  }
-  ScalarValueType
-  GetShapePriorWeight() const
-  {
-    return m_ShapePriorWeight;
-  }
+  void SetShapePriorWeight(const ScalarValueType p)
+  { m_ShapePriorWeight = p; }
+  ScalarValueType GetShapePriorWeight() const
+  { return m_ShapePriorWeight; }
 
   /** The ShapeFunction encapsulates the signed distance to the shape used to
    * influence the evolution of the level set. */
-  void
-  SetShapeFunction(const ShapeFunctionType * ptr)
-  {
-    m_ShapeFunction = ptr;
-  }
-  const ShapeFunctionType *
-  GetShapeFunction() const
-  {
-    return m_ShapeFunction;
-  }
+  void SetShapeFunction(const ShapeFunctionType *ptr)
+  { m_ShapeFunction = ptr; }
+  const ShapeFunctionType * GetShapeFunction() const
+  { return m_ShapeFunction; }
 
   /** Compute the equation value with the additional shape prior term. */
-  PixelType
-  ComputeUpdate(const NeighborhoodType & neighborhood,
-                void *                   globalData,
-                const FloatOffsetType & = FloatOffsetType(0.0)) override;
+  virtual PixelType ComputeUpdate( const NeighborhoodType & neighborhood,
+                                   void *globalData,
+                                   const FloatOffsetType & = FloatOffsetType(0.0) ) ITK_OVERRIDE;
 
   /** Compute global time step from the global data structure. */
-  TimeStepType
-  ComputeGlobalTimeStep(void * globalData) const override;
+  virtual TimeStepType ComputeGlobalTimeStep(void *globalData) const ITK_OVERRIDE;
 
   /** A global data type used to store values needed to compute the time step.
-   */
-  using GlobalDataStruct = typename Superclass::GlobalDataStruct;
-  struct ShapePriorGlobalDataStruct : public GlobalDataStruct
-  {
+    */
+  typedef typename Superclass::GlobalDataStruct GlobalDataStruct;
+  struct ShapePriorGlobalDataStruct:public GlobalDataStruct {
     ScalarValueType m_MaxShapePriorChange;
   };
 
   /** Returns a pointer to a global data structure for computing time step. */
-  void *
-  GetGlobalDataPointer() const override
+  virtual void * GetGlobalDataPointer() const ITK_OVERRIDE
   {
-    auto * ans = new ShapePriorGlobalDataStruct();
+    ShapePriorGlobalDataStruct *ans = new ShapePriorGlobalDataStruct();
 
-    ans->m_MaxAdvectionChange = NumericTraits<ScalarValueType>::ZeroValue();
-    ans->m_MaxPropagationChange = NumericTraits<ScalarValueType>::ZeroValue();
-    ans->m_MaxCurvatureChange = NumericTraits<ScalarValueType>::ZeroValue();
-    ans->m_MaxShapePriorChange = NumericTraits<ScalarValueType>::ZeroValue();
+    ans->m_MaxAdvectionChange   = NumericTraits< ScalarValueType >::ZeroValue();
+    ans->m_MaxPropagationChange = NumericTraits< ScalarValueType >::ZeroValue();
+    ans->m_MaxCurvatureChange   = NumericTraits< ScalarValueType >::ZeroValue();
+    ans->m_MaxShapePriorChange  = NumericTraits< ScalarValueType >::ZeroValue();
     return ans;
   }
 
   /** Release the global data structure. */
-  void
-  ReleaseGlobalDataPointer(void * GlobalData) const override
-  {
-    delete (ShapePriorGlobalDataStruct *)GlobalData;
-  }
+  virtual void ReleaseGlobalDataPointer(void *GlobalData) const ITK_OVERRIDE
+  { delete (ShapePriorGlobalDataStruct *)GlobalData; }
 
 protected:
   ShapePriorSegmentationLevelSetFunction();
-  ~ShapePriorSegmentationLevelSetFunction() override = default;
+  virtual ~ShapePriorSegmentationLevelSetFunction() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShapePriorSegmentationLevelSetFunction);
+
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   ShapeFunctionPointer m_ShapeFunction;
   ScalarValueType      m_ShapePriorWeight;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShapePriorSegmentationLevelSetFunction.hxx"
+#include "itkShapePriorSegmentationLevelSetFunction.hxx"
 #endif
 
 #endif

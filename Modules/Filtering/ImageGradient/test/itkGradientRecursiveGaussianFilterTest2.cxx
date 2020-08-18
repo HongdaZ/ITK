@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,27 +22,26 @@
 #include "itkGradientRecursiveGaussianImageFilter.h"
 
 
-int
-itkGradientRecursiveGaussianFilterTest2(int, char *[])
+int itkGradientRecursiveGaussianFilterTest2(int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 1;
+  const unsigned int myDimension = 1;
 
   // Declare the types of the images
-  using myImageType = itk::Image<float, myDimension>;
+  typedef itk::Image<float, myDimension>           myImageType;
 
   // Declare the type of the index to access images
-  using myIndexType = itk::Index<myDimension>;
+  typedef itk::Index<myDimension>             myIndexType;
 
   // Declare the type of the size
-  using mySizeType = itk::Size<myDimension>;
+  typedef itk::Size<myDimension>              mySizeType;
 
   // Declare the type of the Region
-  using myRegionType = itk::ImageRegion<myDimension>;
+  typedef itk::ImageRegion<myDimension>        myRegionType;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  myImageType::Pointer inputImage  = myImageType::New();
 
 
   // Define their size, and start index
@@ -53,48 +52,49 @@ itkGradientRecursiveGaussianFilterTest2(int, char *[])
   start.Fill(0);
 
   myRegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetLargestPossibleRegion( region );
+  inputImage->SetBufferedRegion( region );
+  inputImage->SetRequestedRegion( region );
   inputImage->Allocate();
 
   // Declare Iterator type for the input image
-  using myIteratorType = itk::ImageRegionIteratorWithIndex<myImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<myImageType>  myIteratorType;
 
   // Create one iterator for the Input Image A (this is a light object)
-  myIteratorType it(inputImage, inputImage->GetRequestedRegion());
+  myIteratorType it( inputImage, inputImage->GetRequestedRegion() );
 
   // Initialize the content of Image A
-  while (!it.IsAtEnd())
-  {
-    it.Set(0.0);
+  while( !it.IsAtEnd() )
+    {
+    it.Set( 0.0 );
     ++it;
-  }
+    }
 
   size[0] = 32;
 
   start[0] = 16;
 
   // Create one iterator for an internal region
-  region.SetSize(size);
-  region.SetIndex(start);
-  myIteratorType itb(inputImage, region);
+  region.SetSize( size );
+  region.SetIndex( start );
+  myIteratorType itb( inputImage, region );
 
   // Initialize the content the internal region
-  while (!itb.IsAtEnd())
-  {
-    itb.Set(100.0);
+  while( !itb.IsAtEnd() )
+    {
+    itb.Set( 100.0 );
     ++itb;
-  }
+    }
 
   // Declare the type for the
-  using myFilterType = itk::GradientRecursiveGaussianImageFilter<myImageType>;
+  typedef itk::GradientRecursiveGaussianImageFilter<
+                                            myImageType >  myFilterType;
 
-  using myGradientImageType = myFilterType::OutputImageType;
+  typedef myFilterType::OutputImageType myGradientImageType;
 
 
   // Create a  Filter
@@ -102,10 +102,10 @@ itkGradientRecursiveGaussianFilterTest2(int, char *[])
 
 
   // Connect the input images
-  filter->SetInput(inputImage);
+  filter->SetInput( inputImage );
 
   // Select the value of Sigma
-  filter->SetSigma(2.5);
+  filter->SetSigma( 2.5 );
 
 
   // Execute the filter
@@ -118,11 +118,14 @@ itkGradientRecursiveGaussianFilterTest2(int, char *[])
   myGradientImageType::Pointer outputImage = filter->GetOutput();
 
   // Declare Iterator type for the output image
-  using myOutputIteratorType = itk::ImageRegionIteratorWithIndex<myGradientImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                 myGradientImageType>  myOutputIteratorType;
 
   // Create an iterator for going through the output image
-  myOutputIteratorType itg(outputImage, outputImage->GetRequestedRegion());
+  myOutputIteratorType itg( outputImage,
+                            outputImage->GetRequestedRegion() );
 
   // All objects should be automatically destroyed at this point
   return EXIT_SUCCESS;
+
 }

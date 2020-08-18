@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,14 +32,18 @@ namespace itk
 
 VoxBoCUBImageIOFactory::VoxBoCUBImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkVoxBoCUBImageIO", "VoxBo CUB Image IO", true, CreateObjectFunction<VoxBoCUBImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkVoxBoCUBImageIO",
+                          "VoxBo CUB Image IO",
+                          1,
+                          CreateObjectFunction< VoxBoCUBImageIO >::New() );
 }
 
-VoxBoCUBImageIOFactory::~VoxBoCUBImageIOFactory() = default;
+VoxBoCUBImageIOFactory::~VoxBoCUBImageIOFactory()
+{}
 
 const char *
-VoxBoCUBImageIOFactory::GetITKSourceVersion() const
+VoxBoCUBImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }

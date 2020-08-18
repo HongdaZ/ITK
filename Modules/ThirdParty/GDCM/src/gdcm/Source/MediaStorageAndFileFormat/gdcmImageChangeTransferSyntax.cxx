@@ -257,12 +257,12 @@ bool ImageChangeTransferSyntax::TryJPEGLSCodec(const DataElement &pixelde, Bitma
     bool r;
     if( input.AreOverlaysInPixelData() || input.UnusedBitsPresentInPixelData() )
       {
-      ByteValue *bv = const_cast<ByteValue*>(pixelde.GetByteValue());
+      const ByteValue *bv = pixelde.GetByteValue();
       assert( bv );
       gdcm::DataElement tmp;
       tmp.SetByteValue( bv->GetPointer(), bv->GetLength());
-      bv = const_cast<ByteValue*>(tmp.GetByteValue());
-      r = codec->CleanupUnusedBits((char*)bv->GetVoidPointer(), bv->GetLength());
+      bv = tmp.GetByteValue();
+      r = codec->CleanupUnusedBits((char*)bv->GetPointer(), bv->GetLength());
       if(!r) return false;
       r = codec->Code(tmp, out);
       }
@@ -403,11 +403,6 @@ bool ImageChangeTransferSyntax::Change()
   if( (Input->GetTransferSyntax() != TransferSyntax::ImplicitVRLittleEndian
     && Input->GetTransferSyntax() != TransferSyntax::ExplicitVRLittleEndian
     && Input->GetTransferSyntax() != TransferSyntax::ExplicitVRBigEndian)
-    // YBR_FULL_422 / raw needs to be decompressed:
-    || ( (Input->GetTransferSyntax() == TransferSyntax::ImplicitVRLittleEndian
-       || Input->GetTransferSyntax() == TransferSyntax::ExplicitVRLittleEndian
-       || Input->GetTransferSyntax() == TransferSyntax::ExplicitVRBigEndian)
-       && Input->GetPhotometricInterpretation() == PhotometricInterpretation::YBR_FULL_422 )
     || Force )
     {
     // In memory decompression:
@@ -415,7 +410,7 @@ bool ImageChangeTransferSyntax::Change()
     ByteValue *bv0 = new ByteValue();
     uint32_t len0 = (uint32_t)Input->GetBufferLength();
     bv0->SetLength( len0 );
-    bool b = Input->GetBuffer( (char*)bv0->GetVoidPointer() );
+    bool b = Input->GetBuffer( (char*)bv0->GetPointer() );
     if( !b )
       {
       gdcmErrorMacro( "Error in getting buffer from input image." );
@@ -443,14 +438,14 @@ bool ImageChangeTransferSyntax::Change()
       {
       Bitmap &outbitmap = *Output;
       Pixmap *outpixmap = dynamic_cast<Pixmap*>( &outbitmap );
-      assert( outpixmap != nullptr );
+      assert( outpixmap != NULL );
       if( !pixmap->GetIconImage().IsEmpty() )
         {
         // same goes for icon
         ByteValue *bv = new ByteValue();
         uint32_t len = (uint32_t)pixmap->GetIconImage().GetBufferLength();
         bv->SetLength( len );
-        bool bb = pixmap->GetIconImage().GetBuffer( (char*)bv->GetVoidPointer() );
+        bool bb = pixmap->GetIconImage().GetBuffer( (char*)bv->GetPointer() );
         if( !bb )
           {
           return false;

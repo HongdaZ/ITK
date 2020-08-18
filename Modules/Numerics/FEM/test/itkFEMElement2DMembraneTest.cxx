@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@
 #include <iostream>
 
 //
-int
-itkFEMElement2DMembraneTest(int, char *[])
+int itkFEMElement2DMembraneTest(int, char *[])
 {
 
-  using ElementType = itk::fem::Element;
-  using NodeType = ElementType::Node;
+  typedef itk::fem::Element ElementType;
+  typedef ElementType::Node NodeType;
 
-  using ElasticityType = itk::fem::MaterialLinearElasticity;
+  typedef itk::fem::MaterialLinearElasticity ElasticityType;
 
   NodeType::Pointer       n0, n1, n2, n3;
   ElementType::VectorType pt(2);
@@ -60,7 +59,7 @@ itkFEMElement2DMembraneTest(int, char *[])
   m->SetCrossSectionalArea(0.02);
   m->SetMomentOfInertia(0.004);
 
-  using MembraneElementType = itk::fem::Element2DC0LinearQuadrilateralMembrane;
+  typedef itk::fem::Element2DC0LinearQuadrilateralMembrane MembraneElementType;
   MembraneElementType::Pointer e0 = MembraneElementType::New();
 
   e0->SetGlobalNumber(0);
@@ -68,10 +67,10 @@ itkFEMElement2DMembraneTest(int, char *[])
   e0->SetNode(1, n1);
   e0->SetNode(2, n2);
   e0->SetNode(3, n3);
-  if (dynamic_cast<ElasticityType *>(m.GetPointer()))
-  {
-    e0->SetMaterial(dynamic_cast<ElasticityType *>(m.GetPointer()));
-  }
+  if (dynamic_cast<ElasticityType *>( m.GetPointer() ))
+    {
+    e0->SetMaterial( dynamic_cast<ElasticityType *>( m.GetPointer() ) );
+    }
   ElementType::MatrixType D;
   ElementType::MatrixType Me;
 

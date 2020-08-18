@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,16 +42,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
   // Verify the number of parameters in the command line
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile  outputImageFile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -60,9 +59,9 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int VectorDimension = 3;
+  const unsigned int VectorDimension = 3;
 
-  using PixelType = itk::Vector<float, VectorDimension>;
+  typedef itk::Vector< float, VectorDimension >    PixelType;
   // Software Guide : EndCodeSnippet
 
 
@@ -74,9 +73,9 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int ImageDimension = 2;
+  const unsigned int ImageDimension = 2;
 
-  using ImageType = itk::Image<PixelType, ImageDimension>;
+  typedef itk::Image< PixelType, ImageDimension > ImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -87,8 +86,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
@@ -103,8 +102,8 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
   // Software Guide : EndCodeSnippet
 
 
@@ -116,7 +115,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -130,15 +129,15 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

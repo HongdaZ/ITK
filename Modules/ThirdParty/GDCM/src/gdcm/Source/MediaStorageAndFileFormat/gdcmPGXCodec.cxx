@@ -23,10 +23,12 @@ namespace gdcm
 {
 
 PGXCodec::PGXCodec()
-= default;
+{
+}
 
 PGXCodec::~PGXCodec()
-= default;
+{
+}
 
 bool PGXCodec::CanDecode(TransferSyntax const &) const
 {
@@ -100,7 +102,7 @@ bool PGXCodec::GetHeaderInfo(std::istream &is, TransferSyntax &ts)
 
 ImageCodec * PGXCodec::Clone() const
 {
-  return nullptr;
+  return NULL;
 }
 
 } // end namespace gdcm

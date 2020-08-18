@@ -6,7 +6,7 @@
 // Work-around CMake dependency scanning limitation.  This must
 // duplicate the above list of headers.
 #if 0
-#  include "CommandLineArguments.hxx.in"
+#include "CommandLineArguments.hxx.in"
 #endif
 
 #include <iostream>
@@ -76,8 +76,8 @@ int testCommandLineArguments(int argc, char* argv[])
 
   int some_int_variable = 10;
   double some_double_variable = 10.10;
-  char* some_string_variable = nullptr;
-  std::string some_stl_string_variable;
+  char* some_string_variable = 0;
+  std::string some_stl_string_variable = "";
   bool some_bool_variable = false;
   bool some_bool_variable1 = false;
   bool bool_arg1 = false;
@@ -98,7 +98,7 @@ int testCommandLineArguments(int argc, char* argv[])
   std::vector<std::string> stl_strings_argument;
   std::string valid_stl_strings[] = { "ken", "brad", "bill", "andy" };
 
-  using argT = kwsys::CommandLineArguments;
+  typedef kwsys::CommandLineArguments argT;
 
   arg.AddArgument("--some-int-variable", argT::SPACE_ARGUMENT,
                   &some_int_variable, "Set some random int variable");
@@ -136,7 +136,7 @@ int testCommandLineArguments(int argc, char* argv[])
   arg.AddCallback("-C", argT::EQUAL_ARGUMENT, argument, random_ptr,
                   "Option -C takes argument after =");
   arg.AddCallback("-D", argT::CONCAT_ARGUMENT, argument, random_ptr,
-                  "This option takes concatenated argument");
+                  "This option takes concatinated argument");
   arg.AddCallback("--long1", argT::NO_ARGUMENT, argument, random_ptr, "-A");
   arg.AddCallback("--long2", argT::SPACE_ARGUMENT, argument, random_ptr, "-B");
   arg.AddCallback("--long3", argT::EQUAL_ARGUMENT, argument, random_ptr,
@@ -165,26 +165,25 @@ int testCommandLineArguments(int argc, char* argv[])
   }
   size_t cc;
 #define CompareTwoLists(list1, list_valid, lsize)                             \
-  do {                                                                        \
-    if (list1.size() != lsize) {                                              \
-      std::cerr << "Problem setting " #list1 ". Size is: " << list1.size()    \
-                << " should be: " << lsize << std::endl;                      \
-      res = 1;                                                                \
-    } else {                                                                  \
-      std::cout << #list1 " argument set:";                                   \
-      for (cc = 0; cc < lsize; ++cc) {                                        \
-        std::cout << " " << list1[cc];                                        \
-        if (!CompareTwoItemsOnList(list1[cc], list_valid[cc])) {              \
-          std::cerr << "Problem setting " #list1 ". Value of " << cc          \
-                    << " is: [" << list1[cc] << "] <> [" << list_valid[cc]    \
-                    << "]" << std::endl;                                      \
-          res = 1;                                                            \
-          break;                                                              \
-        }                                                                     \
+  if (list1.size() != lsize) {                                                \
+    std::cerr << "Problem setting " #list1 ". Size is: " << list1.size()      \
+              << " should be: " << lsize << std::endl;                        \
+    res = 1;                                                                  \
+  } else {                                                                    \
+    std::cout << #list1 " argument set:";                                     \
+    for (cc = 0; cc < lsize; ++cc) {                                          \
+      std::cout << " " << list1[cc];                                          \
+      if (!CompareTwoItemsOnList(list1[cc], list_valid[cc])) {                \
+        std::cerr << "Problem setting " #list1 ". Value of " << cc            \
+                  << " is: [" << list1[cc] << "] <> [" << list_valid[cc]      \
+                  << "]" << std::endl;                                        \
+        res = 1;                                                              \
+        break;                                                                \
       }                                                                       \
-      std::cout << std::endl;                                                 \
     }                                                                         \
-  } while (0)
+    std::cout << std::endl;                                                   \
+  }
+
   CompareTwoLists(numbers_argument, valid_numbers, 10);
   CompareTwoLists(doubles_argument, valid_doubles, 3);
   CompareTwoLists(bools_argument, valid_bools, 3);
@@ -203,7 +202,7 @@ int testCommandLineArguments(int argc, char* argv[])
 
   for (cc = 0; cc < strings_argument.size(); ++cc) {
     delete[] strings_argument[cc];
-    strings_argument[cc] = nullptr;
+    strings_argument[cc] = 0;
   }
   return res;
 }

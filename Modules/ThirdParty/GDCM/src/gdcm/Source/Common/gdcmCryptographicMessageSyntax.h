@@ -22,11 +22,9 @@ namespace gdcm
 class GDCM_EXPORT CryptographicMessageSyntax
 {
 public:
-  CryptographicMessageSyntax() = default;
+  CryptographicMessageSyntax() {}
 
-  virtual ~CryptographicMessageSyntax() = default;
-  CryptographicMessageSyntax(const CryptographicMessageSyntax&) = delete;
-  void operator=(const CryptographicMessageSyntax&) = delete;
+  virtual ~CryptographicMessageSyntax() {}
 
   typedef enum {
     DES3_CIPHER,   // Triple DES
@@ -50,6 +48,10 @@ public:
   virtual void SetCipherType(CipherTypes type) = 0;
 
   virtual CipherTypes GetCipherType() const = 0;
+
+private:
+  CryptographicMessageSyntax(const CryptographicMessageSyntax&);  // Not implemented.
+  void operator=(const CryptographicMessageSyntax&);  // Not implemented.
 };
 
 } // end namespace gdcm

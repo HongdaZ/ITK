@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@
 #ifndef itkConnectedComponentImageFilter_h
 #define itkConnectedComponentImageFilter_h
 
-#include "itkScanlineFilterCommon.h"
+#include "itkImageToImageFilter.h"
+#include "itkImage.h"
+#include <vector>
+#include <map>
+#include "itkProgressReporter.h"
+#include "itkBarrier.h"
 
 namespace itk
 {
@@ -32,11 +37,8 @@ namespace itk
  * Each distinct object is assigned a unique label. The filter experiments
  * with some improvements to the existing implementation, and is based on
  * run length encoding along raster lines.
- * If the output background value is set to zero (the default), the final
- * object labels start with 1 and are consecutive. If the output background
- * is set to a non-zero value (by calling the SetBackgroundValue() routine of the filter),
- * the final labels start at 0, and remain consecutive except for skipping the background
- * value as needed. Objects that are reached earlier by a raster order scan have a lower
+ * The final object labels start with 1 and are consecutive. Objects
+ * that are reached earlier by a raster order scan have a lower
  * label. This is different to the behaviour of the original connected
  * component image filter which did not produce consecutive labels or
  * impose any particular ordering.
@@ -48,70 +50,67 @@ namespace itk
  * \ingroup SingleThreaded
  * \ingroup ITKConnectedComponents
  *
- * \sphinx
- * \sphinxexample{Segmentation/ConnectedComponents/LabelConnectComponentsInBinaryImage,Label Connect Components In
- * Binary Image} \sphinxexample{Segmentation/ConnectedComponents/ExtraLargestConnectComponentFromBinaryImage,Extra
- * Largest Connect Component From Binary Image} \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/ConnectedComponentImageFilter,Label connected components in a binary image}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage>
-class ITK_TEMPLATE_EXPORT ConnectedComponentImageFilter
-  : public ImageToImageFilter<TInputImage, TOutputImage>
-  , protected ScanlineFilterCommon<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage >
+class ITK_TEMPLATE_EXPORT ConnectedComponentImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConnectedComponentImageFilter);
-
   /**
    * Standard "Self" & Superclass typedef.
    */
-  using Self = ConnectedComponentImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Superclass::Register;
-  using Superclass::UnRegister;
+  typedef ConnectedComponentImageFilter                   Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
 
   /**
    * Types from the Superclass
    */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  typedef typename Superclass::InputImagePointer InputImagePointer;
 
   /**
    * Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same.
    */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  using MaskPixelType = typename TMaskImage::PixelType;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename TInputImage::PixelType          InputPixelType;
+  typedef typename TInputImage::InternalPixelType  InputInternalPixelType;
+  typedef typename TMaskImage::PixelType           MaskPixelType;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /**
-   * Image type alias support
+   * Image typedef support
    */
-  using InputImageType = TInputImage;
-  using MaskImageType = TMaskImage;
-  using IndexType = typename TInputImage::IndexType;
-  using SizeType = typename TInputImage::SizeType;
-  using OffsetType = typename TInputImage::OffsetType;
+  typedef TInputImage                      InputImageType;
+  typedef TMaskImage                       MaskImageType;
+  typedef typename TInputImage::IndexType  IndexType;
+  typedef typename TInputImage::SizeType   SizeType;
+  typedef typename TInputImage::OffsetType OffsetType;
 
-  using OutputImageType = TOutputImage;
-  using RegionType = typename TOutputImage::RegionType;
-  using OutputIndexType = typename TOutputImage::IndexType;
-  using OutputSizeType = typename TOutputImage::SizeType;
-  using OutputOffsetType = typename TOutputImage::OffsetType;
-  using OutputImagePixelType = typename TOutputImage::PixelType;
+  typedef TOutputImage                      OutputImageType;
+  typedef typename TOutputImage::RegionType RegionType;
+  typedef typename TOutputImage::IndexType  OutputIndexType;
+  typedef typename TOutputImage::SizeType   OutputSizeType;
+  typedef typename TOutputImage::OffsetType OutputOffsetType;
+  typedef typename TOutputImage::PixelType  OutputImagePixelType;
 
-  using ListType = std::list<IndexType>;
-  using MaskImagePointer = typename MaskImageType::Pointer;
+  typedef std::list< IndexType >          ListType;
+  typedef typename MaskImageType::Pointer MaskImagePointer;
 
   /**
-   * Smart pointer type alias support
+   * Smart pointer typedef support
    */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /**
    * Run-time type information (and related methods)
@@ -134,12 +133,16 @@ public:
   itkBooleanMacro(FullyConnected);
 
   /** Type used as identifier of the different component labels. */
-  using LabelType = IdentifierType;
+  typedef IdentifierType   LabelType;
 
   // only set after completion
   itkGetConstReferenceMacro(ObjectCount, LabelType);
 
-  itkConceptMacro(OutputImagePixelTypeIsInteger, (Concept::IsInteger<OutputImagePixelType>));
+  // Concept checking -- input and output dimensions must be the same
+  itkConceptMacro( SameDimension,
+                   ( Concept::SameDimension< itkGetStaticConstMacro(InputImageDimension),
+                                             itkGetStaticConstMacro(OutputImageDimension) > ) );
+  itkConceptMacro( OutputImagePixelTypeIsInteger, ( Concept::IsInteger< OutputImagePixelType > ) );
 
   itkSetInputMacro(MaskImage, MaskImageType);
   itkGetInputMacro(MaskImage, MaskImageType);
@@ -153,61 +156,125 @@ public:
   itkGetConstMacro(BackgroundValue, OutputImagePixelType);
 
 protected:
-  ConnectedComponentImageFilter();
+  ConnectedComponentImageFilter()
+  {
+    m_FullyConnected = false;
+    m_ObjectCount = 0;
+    m_BackgroundValue = NumericTraits< OutputImagePixelType >::ZeroValue();
 
-  ~ConnectedComponentImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+    // implicit
+    // #0 "Primary" required
 
-  void
-  GenerateData() override;
+    //  #1 "MaskImage" optional
+    Self::AddOptionalInputName("MaskImage",1);
+  }
 
-  void
-  DynamicThreadedGenerateData(const RegionType &) override;
+  virtual ~ConnectedComponentImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  ThreadedWriteOutput(const RegionType &);
+  /**
+   * Standard pipeline methods.
+   */
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
+  void AfterThreadedGenerateData() ITK_OVERRIDE;
+
+  void ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
   /** ConnectedComponentImageFilter needs the entire input. Therefore
    * it must provide an implementation GenerateInputRequestedRegion().
    * \sa ProcessObject::GenerateInputRequestedRegion(). */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** ConnectedComponentImageFilter will produce all of the output.
    * Therefore it must provide an implementation of
    * EnlargeOutputRequestedRegion().
    * \sa ProcessObject::EnlargeOutputRequestedRegion() */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject * itkNotUsed(output) ) ITK_OVERRIDE;
 
-  using ScanlineFunctions = ScanlineFilterCommon<TInputImage, TOutputImage>;
-
-  using InternalLabelType = typename ScanlineFunctions::InternalLabelType;
-  using OutSizeType = typename ScanlineFunctions::OutSizeType;
-  using RunLength = typename ScanlineFunctions::RunLength;
-  using LineEncodingType = typename ScanlineFunctions::LineEncodingType;
-  using LineEncodingIterator = typename ScanlineFunctions::LineEncodingIterator;
-  using LineEncodingConstIterator = typename ScanlineFunctions::LineEncodingConstIterator;
-  using OffsetVectorType = typename ScanlineFunctions::OffsetVectorType;
-  using OffsetVectorConstIterator = typename ScanlineFunctions::OffsetVectorConstIterator;
-  using LineMapType = typename ScanlineFunctions::LineMapType;
-  using UnionFindType = typename ScanlineFunctions::UnionFindType;
-  using ConsecutiveVectorType = typename ScanlineFunctions::ConsecutiveVectorType;
-  using WorkUnitData = typename ScanlineFunctions::WorkUnitData;
+  bool m_FullyConnected;
 
 private:
-  OutputPixelType m_BackgroundValue = NumericTraits<OutputPixelType>::ZeroValue();
-  LabelType       m_ObjectCount = 0;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConnectedComponentImageFilter);
+
+  LabelType            m_ObjectCount;
+  OutputImagePixelType m_BackgroundValue;
+
+  // some additional types
+  typedef typename TOutputImage::RegionType::SizeType OutSizeType;
+
+  // types to support the run length encoding of lines
+  class runLength
+  {
+public:
+    // run length information - may be a more type safe way of doing this
+    typename TInputImage::OffsetValueType   length;
+    typename TInputImage::IndexType         where;   // Index of the start of the run
+    LabelType                               label;   // the initial label of the run
+  };
+
+  typedef std::vector< runLength > lineEncoding;
+
+  // the map storing lines
+  typedef std::vector< lineEncoding > LineMapType;
+
+  typedef std::vector< typename TInputImage::OffsetValueType > OffsetVec;
+
+  // the types to support union-find operations
+  typedef std::vector< LabelType > UnionFindType;
+  UnionFindType m_UnionFind;
+  UnionFindType m_Consecutive;
+
+  // functions to support union-find operations
+  void InitUnion( SizeValueType size )
+  {
+    m_UnionFind = UnionFindType(size + 1);
+  }
+
+  void InsertSet(const LabelType label);
+
+  SizeValueType LookupSet(const LabelType label);
+
+  void LinkLabels(const LabelType lab1, const LabelType lab2);
+
+  SizeValueType CreateConsecutive();
+
+  //////////////////
+  bool CheckNeighbors(const OutputIndexType & A,
+                      const OutputIndexType & B);
+
+  void CompareLines(lineEncoding & current, const lineEncoding & Neighbour);
+
+  void FillOutput(const LineMapType & LineMap,
+                  ProgressReporter & progress);
+
+  void SetupLineOffsets(OffsetVec & LineOffsets);
+
+  void Wait()
+  {
+    // use m_NumberOfLabels.size() to get the number of thread used
+    if ( m_NumberOfLabels.size() > 1 )
+      {
+      m_Barrier->Wait();
+      }
+  }
+
+  typename std::vector< IdentifierType > m_NumberOfLabels;
+  typename std::vector< IdentifierType > m_FirstLineIdToJoin;
+
+  typename Barrier::Pointer m_Barrier;
 
   typename TInputImage::ConstPointer m_Input;
+#if !defined( ITK_WRAPPING_PARSER )
+  LineMapType m_LineMap;
+#endif
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  if !defined(ITK_WRAPPING_PARSER)
-#    include "itkConnectedComponentImageFilter.hxx"
-#  endif
+#if !defined( ITK_WRAPPING_PARSER )
+#include "itkConnectedComponentImageFilter.hxx"
+#endif
 #endif
 
 #endif

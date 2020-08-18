@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,12 +58,12 @@ namespace fem
 class ITKFEM_EXPORT Element2DC0QuadraticTriangular : public ElementStd<6, 2>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element2DC0QuadraticTriangular;
-  using TemplatedParentClass = ElementStd<6, 2>;
-  using Superclass = TemplatedParentClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element2DC0QuadraticTriangular Self;
+  typedef ElementStd<6, 2>               TemplatedParentClass;
+  typedef TemplatedParentClass           Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Element2DC0QuadraticTriangular, TemplatedParentClass);
@@ -73,18 +73,13 @@ public:
    * Methods related to numeric integration
    */
 
-  enum
-  {
-    DefaultIntegrationOrder = 2
-  };
+  enum { DefaultIntegrationOrder = 2 };
 
   /** Get the Integration point and weight */
-  void
-  GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order) const override;
+  virtual void GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order) const ITK_OVERRIDE;
 
   /** Get the number of integration points */
-  unsigned int
-  GetNumberOfIntegrationPoints(unsigned int order) const override;
+  virtual unsigned int GetNumberOfIntegrationPoints(unsigned int order) const ITK_OVERRIDE;
 
   // ////////////////////////////////////////////////////////////////////////
   /**
@@ -92,34 +87,28 @@ public:
    */
 
   /** Return the shape functions used to interpolate across the element */
-  VectorType
-  ShapeFunctions(const VectorType & pt) const override;
+  virtual VectorType ShapeFunctions(const VectorType & pt) const ITK_OVERRIDE;
 
   /** Return the shape functions derivatives in the shapeD matrix */
-  void
-  ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const override;
+  virtual void ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const ITK_OVERRIDE;
 
   /** Convert from global to local coordinates */
-  bool
-  GetLocalFromGlobalCoordinates(const VectorType & GlobalPt, VectorType & LocalPt) const override;
+  virtual bool GetLocalFromGlobalCoordinates(const VectorType & GlobalPt, VectorType & LocalPt) const ITK_OVERRIDE;
 
   // Since the Jacobian is not quadratic, we need to provide our
   // own implementation of calculating the determinant and inverse.
-  Float
-  JacobianDeterminant(const VectorType & pt, const MatrixType * pJ = nullptr) const override;
+  virtual Float JacobianDeterminant(const VectorType & pt, const MatrixType *pJ = ITK_NULLPTR) const ITK_OVERRIDE;
 
   /** Compute the inverse of the Jacobian matrix */
-  void
-  JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType * pJ = nullptr) const override;
+  virtual void JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType *pJ = ITK_NULLPTR) const ITK_OVERRIDE;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  PopulateEdgeIds() override;
+  virtual void PopulateEdgeIds(void) ITK_OVERRIDE;
+
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif // itkFEMElement2DC0QuadraticTriangular_h
+#endif  // #ifndef itkFEMElement2DC0QuadraticTriangular_h

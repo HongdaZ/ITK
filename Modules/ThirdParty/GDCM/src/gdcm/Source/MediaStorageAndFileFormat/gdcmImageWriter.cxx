@@ -32,7 +32,8 @@ ImageWriter::ImageWriter()
 }
 
 ImageWriter::~ImageWriter()
-= default;
+{
+}
 
 MediaStorage ImageWriter::ComputeTargetMediaStorage()
 {

@@ -32,20 +32,18 @@ public:
   typedef ProgressEvent Self;
   typedef AnyEvent Superclass;
   ProgressEvent(double p = 0):m_Progress(p) {}
-  ~ProgressEvent() override = default;
-
-  ProgressEvent(const Self&s) : AnyEvent(s){};
-  void operator=(const Self&) = delete;
-
-  const char * GetEventName() const override { return "ProgressEvent"; }
-  bool CheckEvent(const ::gdcm::Event* e) const override
+  virtual ~ProgressEvent() {}
+  virtual const char * GetEventName() const { return "ProgressEvent"; }
+  virtual bool CheckEvent(const ::gdcm::Event* e) const
     { return dynamic_cast<const Self*>(e) ? true : false; }
-  ::gdcm::Event* MakeObject() const override
+  virtual ::gdcm::Event* MakeObject() const
     { return new Self; }
+  ProgressEvent(const Self&s) : AnyEvent(s){};
 
   void SetProgress(double p) { m_Progress = p; }
   double GetProgress() const { return m_Progress; }
 private:
+  void operator=(const Self&);
   double m_Progress;
 };
 

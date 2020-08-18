@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,24 +24,22 @@
 
 namespace itk
 {
-/**
- *\class MetaLandmarkConverter
+/** \class MetaLandmarkConverter
  *  \brief converts between MetaObject<->SpatialObject.
  *
  *  \sa MetaConverterBase
  *  \ingroup ITKSpatialObjects
  */
-template <unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT MetaLandmarkConverter : public MetaConverterBase<NDimensions>
+template< unsigned int NDimensions = 3 >
+class ITK_TEMPLATE_EXPORT MetaLandmarkConverter :
+    public MetaConverterBase< NDimensions >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaLandmarkConverter);
-
-  /** Standard class type aliases */
-  using Self = MetaLandmarkConverter;
-  using Superclass = MetaConverterBase<NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef MetaLandmarkConverter            Self;
+  typedef MetaConverterBase< NDimensions > Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -49,37 +47,38 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MetaLandmarkConverter, MetaConverterBase);
 
-  using SpatialObjectType = typename Superclass::SpatialObjectType;
-  using SpatialObjectPointer = typename SpatialObjectType::Pointer;
-  using MetaObjectType = typename Superclass::MetaObjectType;
+  typedef typename Superclass::SpatialObjectType SpatialObjectType;
+  typedef typename SpatialObjectType::Pointer    SpatialObjectPointer;
+  typedef typename Superclass::MetaObjectType    MetaObjectType;
 
   /** Specific class types for conversion */
-  using LandmarkSpatialObjectType = LandmarkSpatialObject<NDimensions>;
-  using LandmarkSpatialObjectPointer = typename LandmarkSpatialObjectType::Pointer;
-  using LandmarkSpatialObjectConstPointer = typename LandmarkSpatialObjectType::ConstPointer;
-  using LandmarkMetaObjectType = MetaLandmark;
+  typedef LandmarkSpatialObject<NDimensions>               LandmarkSpatialObjectType;
+  typedef typename LandmarkSpatialObjectType::Pointer      LandmarkSpatialObjectPointer;
+  typedef typename LandmarkSpatialObjectType::ConstPointer LandmarkSpatialObjectConstPointer;
+  typedef MetaLandmark                                     LandmarkMetaObjectType;
 
   /** Convert the MetaObject to Spatial Object */
-  SpatialObjectPointer
-  MetaObjectToSpatialObject(const MetaObjectType * mo) override;
+  virtual SpatialObjectPointer MetaObjectToSpatialObject(const MetaObjectType *mo) ITK_OVERRIDE;
 
   /** Convert the SpatialObject to MetaObject */
-  MetaObjectType *
-  SpatialObjectToMetaObject(const SpatialObjectType * spatialObject) override;
+  virtual MetaObjectType *SpatialObjectToMetaObject(const SpatialObjectType *spatialObject) ITK_OVERRIDE;
 
 protected:
   /** Create the specific MetaObject for this class */
-  MetaObjectType *
-  CreateMetaObject() override;
+  virtual MetaObjectType *CreateMetaObject() ITK_OVERRIDE;
 
-  MetaLandmarkConverter() = default;
-  ~MetaLandmarkConverter() override = default;
+  MetaLandmarkConverter();
+  ~MetaLandmarkConverter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaLandmarkConverter);
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMetaLandmarkConverter.hxx"
+  #include "itkMetaLandmarkConverter.hxx"
 #endif
 
 #endif

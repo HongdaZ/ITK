@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,96 +26,92 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class WeightedMeanSampleFilter
+/** \class WeightedMeanSampleFilter
  * \brief Given a sample where each measurement vector has
  * associated weight value, this filter computes the sample mean
  *
  * To run this algorithm, you have plug in the target sample data
  * using SetInput method and provides weight by an array or function.
- *. Then call the Update method to run the algorithm.
+ *. Then call the Update method to run the alogithm.
  *
  * \sa MeanSampleFilter
  *
  * \ingroup ITKStatistics
  */
-template <typename TSample>
-class ITK_TEMPLATE_EXPORT WeightedMeanSampleFilter : public MeanSampleFilter<TSample>
+template< typename TSample >
+class ITK_TEMPLATE_EXPORT WeightedMeanSampleFilter : public MeanSampleFilter< TSample >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedMeanSampleFilter);
-
-  /**Standard class type aliases. */
-  using Self = WeightedMeanSampleFilter;
-  using Superclass = MeanSampleFilter<TSample>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /**Standard class typedefs. */
+  typedef WeightedMeanSampleFilter    Self;
+  typedef MeanSampleFilter< TSample > Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /**Standard Macros */
   itkTypeMacro(WeightedMeanSampleFilter, MeanSampleFilter);
   itkNewMacro(Self);
 
   /** Types derived from the base class */
-  using SampleType = typename Superclass::SampleType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using MeasurementType = typename Superclass::MeasurementType;
+  typedef typename Superclass::SampleType                     SampleType;
+  typedef typename Superclass::MeasurementVectorType          MeasurementVectorType;
+  typedef typename Superclass::MeasurementVectorSizeType      MeasurementVectorSizeType;
+  typedef typename Superclass::MeasurementType                MeasurementType;
 
   /** Types derived from the base class */
-  using MeasurementVectorRealType = typename Superclass::MeasurementVectorRealType;
-  using MeasurementRealType = typename Superclass::MeasurementRealType;
+  typedef typename Superclass::MeasurementVectorRealType      MeasurementVectorRealType;
+  typedef typename Superclass::MeasurementRealType            MeasurementRealType;
 
 
   /** Type of weight values */
-  using WeightValueType = double;
+  typedef double WeightValueType;
 
 
   /** Array type for weights */
-  using WeightArrayType = Array<WeightValueType>;
+  typedef Array< WeightValueType > WeightArrayType;
 
   /** Type of DataObjects to use for the weight array type */
-  using InputWeightArrayObjectType = SimpleDataObjectDecorator<WeightArrayType>;
+  typedef SimpleDataObjectDecorator< WeightArrayType > InputWeightArrayObjectType;
 
   /** Method to set/get the input value of the weight array */
   itkSetGetDecoratedInputMacro(Weights, WeightArrayType);
 
 
   /** Weight calculation function type */
-  using WeightingFunctionType = FunctionBase<MeasurementVectorType, WeightValueType>;
+  typedef FunctionBase< MeasurementVectorType, WeightValueType > WeightingFunctionType;
 
   /** Type of DataObjects to use for Weight function */
-  using InputWeightingFunctionObjectType = DataObjectDecorator<WeightingFunctionType>;
+  typedef DataObjectDecorator< WeightingFunctionType > InputWeightingFunctionObjectType;
 
   /** Method to set/get the weighting function */
   itkSetGetDecoratedObjectInputMacro(WeightingFunction, WeightingFunctionType);
 
 
   /** Types derived from the base class */
-  using MeasurementVectorDecoratedType = typename Superclass::MeasurementVectorDecoratedType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::MeasurementVectorDecoratedType MeasurementVectorDecoratedType;
+  typedef typename Superclass::OutputType                     OutputType;
 
 protected:
   WeightedMeanSampleFilter();
-  ~WeightedMeanSampleFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~WeightedMeanSampleFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   // compute mean with weight array
-  void
-  ComputeMeanWithWeights();
+  void ComputeMeanWithWeights();
 
   // compute mean using a weighting function
-  void
-  ComputeMeanWithWeightingFunction();
-}; // end of class
+  void ComputeMeanWithWeightingFunction();
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedMeanSampleFilter);
+};                                        // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWeightedMeanSampleFilter.hxx"
+#include "itkWeightedMeanSampleFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,28 +26,8 @@ namespace itk
 {
 namespace Testing
 {
-/**\class HashImageFilterEnums
- * \brief Enum classes for HashImageFilter
- * \ingroup ITKTestKernel
- * */
-class HashImageFilterEnums
-{
-public:
-  /**\class HashFunction
-   * \ingroup ITKTestKernel
-   * Describes the hash function
-   */
-  enum class HashFunction : uint8_t
-  {
-    MD5
-  };
-};
-// Define how to print enumeration
-extern std::ostream &
-operator<<(std::ostream & out, HashImageFilterEnums::HashFunction value);
 
-/**
- *\class HashImageFilter
+/** \class HashImageFilter
  * \brief Generates a md5 hash string from an image.
  *
  * \note This class utlizes low level buffer pointer access, to work
@@ -61,19 +41,18 @@ operator<<(std::ostream & out, HashImageFilterEnums::HashFunction value);
  *
  * \ingroup ITKTestKernel
  */
-template <typename TImageType>
-class ITK_TEMPLATE_EXPORT HashImageFilter : public InPlaceImageFilter<TImageType, TImageType>
+template < typename TImageType >
+class ITK_TEMPLATE_EXPORT HashImageFilter:
+    public InPlaceImageFilter< TImageType, TImageType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HashImageFilter);
+  /** Standard Self typedef */
+  typedef HashImageFilter                              Self;
+  typedef InPlaceImageFilter< TImageType, TImageType > Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
-  /** Standard Self type alias */
-  using Self = HashImageFilter;
-  using Superclass = InPlaceImageFilter<TImageType, TImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using RegionType = typename TImageType::RegionType;
+  typedef typename TImageType::RegionType RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -82,78 +61,60 @@ public:
   itkTypeMacro(HashImageFilter, CastImageFilter);
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = typename DataObject::Pointer;
+  typedef typename DataObject::Pointer DataObjectPointer;
 
   /** Type of DataObjects used for scalar outputs */
-  using HashObjectType = SimpleDataObjectDecorator<std::string>;
+  typedef SimpleDataObjectDecorator< std::string >  HashObjectType;
 
   /** Get the computed Hash values */
-  std::string
-  GetHash() const
-  {
-    return this->GetHashOutput()->Get();
-  }
-  HashObjectType *
-  GetHashOutput()
-  {
-    return static_cast<HashObjectType *>(this->ProcessObject::GetOutput(1));
-  }
-  const HashObjectType *
-  GetHashOutput() const
-  {
-    return static_cast<const HashObjectType *>(this->ProcessObject::GetOutput(1));
-  }
+  std::string GetHash() const
+  { return this->GetHashOutput()->Get(); }
+  HashObjectType* GetHashOutput()
+  { return static_cast< HashObjectType *>( this->ProcessObject::GetOutput(1) ); }
+  const HashObjectType* GetHashOutput() const
+  { return static_cast<const HashObjectType *>( this->ProcessObject::GetOutput(1) ); }
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
-  using HashFunctionEnum = HashImageFilterEnums::HashFunction;
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr HashFunctionEnum MD5 = HashFunctionEnum::MD5;
-#endif
+  enum  HashFunction { MD5 };
 
   /** Set/Get The hash function type. Currently only MD5 is supported
    * and this value is ignores.
-   */
-  itkSetEnumMacro(HashFunction, HashFunctionEnum);
-  itkGetMacro(HashFunction, HashFunctionEnum);
+  */
+  itkSetMacro( HashFunction, HashFunction );
+  itkGetMacro( HashFunction, HashFunction );
 
 protected:
+
   HashImageFilter();
 
   // virtual ~HashImageFilter(); // implementation not needed
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** All work is done by AfterThreadedGenerateData(). */
-  void
-  ThreadedGenerateData(const typename Superclass::OutputImageRegionType &, ThreadIdType) override
-  {}
-  void
-  DynamicThreadedGenerateData(const typename Superclass::OutputImageRegionType &) override
-  {}
+  virtual
+    void ThreadedGenerateData(const typename Superclass::OutputImageRegionType &,
+                              ThreadIdType) ITK_OVERRIDE {}
 
   // See superclass for doxygen documentation
   //
   // This method is to do work after the superclass potential threaded
   // copy.
-  void
-  AfterThreadedGenerateData() override;
+  void AfterThreadedGenerateData() ITK_OVERRIDE;
 
   // See superclass for doxygen documentation
   //
   // Override since the filter produces all of its output
-  void
-  EnlargeOutputRequestedRegion(DataObject * data) override;
+  void EnlargeOutputRequestedRegion(DataObject *data) ITK_OVERRIDE;
 
 private:
-  HashFunctionEnum m_HashFunction{ HashFunctionEnum::MD5 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(HashImageFilter);
+
+  HashFunction m_HashFunction;
 };
 
 } // end namespace Testing

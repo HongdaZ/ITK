@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,35 +22,35 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkConstrainedValueAdditionImageFilterTest(int argc, char * argv[])
+int itkConstrainedValueAdditionImageFilterTest( int argc, char* argv[] )
 {
-  if (argc < 2)
-  {
-    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << "outputImage " << std::endl;
+  if ( argc < 2 )
+    {
+    std::cout << "Usage: " << argv[0]
+      << "outputImage " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Define the dimension of the images
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
   // Define the pixel types
-  using InputPixelType = float;
-  using OutputPixelType = unsigned short;
+  typedef float           InputPixelType;
+  typedef unsigned short  OutputPixelType;
 
   // Declare the types of the images
-  using InputImageType1 = itk::Image<InputPixelType, Dimension>;
-  using InputImageType2 = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType, Dimension >   InputImageType1;
+  typedef itk::Image< InputPixelType, Dimension >   InputImageType2;
+  typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<Dimension>;
+  typedef itk::Index< Dimension >         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<Dimension>;
+  typedef itk::Size< Dimension >          SizeType;
 
   // Declare the type of the Region
-  using RegionType = itk::ImageRegion<Dimension>;
+  typedef itk::ImageRegion< Dimension >   RegionType;
 
   // Create the input images
   InputImageType1::Pointer inputImageA = InputImageType1::New();
@@ -68,61 +68,65 @@ itkConstrainedValueAdditionImageFilterTest(int argc, char * argv[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetLargestPossibleRegion( region );
+  inputImageA->SetBufferedRegion( region );
+  inputImageA->SetRequestedRegion( region );
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetLargestPossibleRegion( region );
+  inputImageB->SetBufferedRegion( region );
+  inputImageB->SetRequestedRegion( region );
   inputImageB->Allocate();
 
   // Declare Iterator types apropriated for each image
-  using InputIteratorType1 = itk::ImageRegionIteratorWithIndex<InputImageType1>;
-  using InputIteratorType2 = itk::ImageRegionIteratorWithIndex<InputImageType2>;
+  typedef itk::ImageRegionIteratorWithIndex< InputImageType1 > InputIteratorType1;
+  typedef itk::ImageRegionIteratorWithIndex< InputImageType2 > InputIteratorType2;
 
   // Create one iterator for Image A (this is a light object)
-  InputIteratorType1 it1(inputImageA, inputImageA->GetBufferedRegion());
+  InputIteratorType1 it1( inputImageA, inputImageA->GetBufferedRegion() );
 
   // Initialize the content of Image A
   float valueA = 125; // when added to B will saturate a char in some of the pixels.
-  while (!it1.IsAtEnd())
-  {
-    it1.Set(valueA);
+  while( !it1.IsAtEnd() )
+    {
+    it1.Set( valueA );
     ++it1;
     valueA += 1.0;
-  }
+    }
 
   // Create one iterator for Image B (this is a light object)
-  InputIteratorType2 it2(inputImageB, inputImageB->GetBufferedRegion());
+  InputIteratorType2 it2( inputImageB, inputImageB->GetBufferedRegion() );
 
   // Initialize the content of Image B
   float valueB = 125; // when added to A will saturate a char in some of the pixels.
-  while (!it2.IsAtEnd())
-  {
-    it2.Set(valueB);
+  while( !it2.IsAtEnd() )
+    {
+    it2.Set( valueB );
     ++it2;
     valueB += 1.0;
-  }
+    }
 
   // Declare the type for the ADD filter
-  using ConstrainedValueAdditionImageFilterType =
-    itk::ConstrainedValueAdditionImageFilter<InputImageType1, InputImageType2, OutputImageType>;
+  typedef itk::ConstrainedValueAdditionImageFilter<
+    InputImageType1,
+    InputImageType2,
+    OutputImageType > ConstrainedValueAdditionImageFilterType;
 
   // Create the filter
-  ConstrainedValueAdditionImageFilterType::Pointer filter = ConstrainedValueAdditionImageFilterType::New();
+  ConstrainedValueAdditionImageFilterType::Pointer filter =
+    ConstrainedValueAdditionImageFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ConstrainedValueAdditionImageFilter, BinaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, ConstrainedValueAdditionImageFilter,
+    BinaryFunctorImageFilter );
 
   // Set the input images
-  filter->SetInput1(inputImageA);
-  filter->SetInput2(inputImageB);
+  filter->SetInput1( inputImageA );
+  filter->SetInput2( inputImageB );
 
   // Execute the filter
   filter->Update();
@@ -131,15 +135,15 @@ itkConstrainedValueAdditionImageFilterTest(int argc, char * argv[])
   OutputImageType::Pointer outputImage = filter->GetOutput();
 
   // Write the result image
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
 
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[1]);
+  writer->SetFileName( argv[1] );
 
-  writer->SetInput(outputImage);
+  writer->SetInput( outputImage );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   // All objects should be automatically destroyed at this point
   return EXIT_SUCCESS;

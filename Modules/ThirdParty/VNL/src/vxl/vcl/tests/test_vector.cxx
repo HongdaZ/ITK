@@ -1,19 +1,16 @@
 // This is vcl/tests/test_vector.cxx
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#ifdef _MSC_VER
-#  include "vcl_msvc_warnings.h"
-#endif
+#include <vcl_iostream.h>
+#include <vcl_vector.h>
+#include <vcl_algorithm.h>
 
-std::ostream &delim(std::ostream &os)
+vcl_ostream &delim(vcl_ostream &os)
 {
   //return os << endl;
   return os << ", ";
 }
 
-int frurk(std::vector<int> const &a,
-          std::vector<int> const &b)
+int frurk(vcl_vector<int> const &a,
+          vcl_vector<int> const &b)
 {
   if (a == b)
     return 0;
@@ -26,44 +23,44 @@ int test_vector_main(int /*argc*/,char* /*argv*/[])
 {
   bool fail = false;
   {
-    using container = std::vector<int>;
+    typedef vcl_vector<int> container;
     container m;
 
     m.push_back(1);
     m.push_back(2);
 
-    for (int & p : m)
-      std::cout << p << std::endl;
+    for (container::iterator p = m.begin(); p != m.end(); ++p)
+      vcl_cout << (*p) << vcl_endl;
   }
   {
-    std::vector<double> v;
+    vcl_vector<double> v;
     for (unsigned i=0; i<10; ++i)
     {
-      std::cout << "size : " << v.size() << delim
+      vcl_cout << "size : " << v.size() << delim
                << "capacity : " << v.capacity() << delim;
       if (i>0)
-        std::cout << "begin : " << (void*) &* v.begin()
-                 << delim << "end - 1: " << (void*) &* (v.end() - 1) << std::endl;
+        vcl_cout << "begin : " << (void*) &* v.begin()
+                 << delim << "end - 1: " << (void*) &* (v.end() - 1) << vcl_endl;
       else
-        std::cout << std::endl;
+        vcl_cout << vcl_endl;
 
       v.push_back(13.141592653589793 * i);
     }
   }
   {
-      std::vector<bool> bv(2);
+      vcl_vector<bool> bv(2);
       bv[0] = true;
       bv[1] = false;
-      std::nth_element(bv.begin(), bv.begin()+1, bv.end());
+      vcl_nth_element(bv.begin(), bv.begin()+1, bv.end());
   }
   { // check contiguity
 #define macro(T) do { \
-    std::vector<T > v; \
+    vcl_vector<T > v; \
     for (int i=0; i<5; ++i) v.push_back(T(i)); \
     bool ok = true; \
     for (unsigned int i=1; i<v.size(); ++i) { T *p = &v[i-1]; T *q = &v[i]; if (p + 1 != q) ok = false; } \
-    if (ok) std::cout << "PASS: vector<" << #T << "> has contiguous storage\n"; \
-    else  { std::cout << "FAIL: vector<" << #T << "> has non-contiguous storage\n"; fail = true; } \
+    if (ok) vcl_cout << "PASS: vector<" << #T << "> has contiguous storage\n"; \
+    else  { vcl_cout << "FAIL: vector<" << #T << "> has non-contiguous storage\n"; fail = true; } \
 } while (false)
     macro(char);
     macro(int);

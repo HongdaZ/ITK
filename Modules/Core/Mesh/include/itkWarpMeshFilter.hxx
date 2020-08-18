@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,27 +26,32 @@ namespace itk
 /**
  *
  */
-template <typename TInputMesh, typename TOutputMesh, typename TDisplacementField>
-WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::WarpMeshFilter()
+template< typename TInputMesh, typename TOutputMesh, typename TDisplacementField >
+WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >
+::WarpMeshFilter()
 {
   // Setup the number of required inputs.
   // This filter requires as input one Mesh and one Vector image.
   this->SetNumberOfRequiredInputs(2);
 }
 
-template <typename TInputMesh, typename TOutputMesh, typename TDisplacementField>
-const typename WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::DisplacementFieldType *
-WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::GetDisplacementField() const
+template< typename TInputMesh, typename TOutputMesh, typename TDisplacementField >
+const typename WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >::DisplacementFieldType *
+WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >
+::GetDisplacementField(void) const
 {
-  return itkDynamicCastInDebugMode<const DisplacementFieldType *>(this->ProcessObject::GetInput(1));
+  return itkDynamicCastInDebugMode< const DisplacementFieldType * >
+         ( this->ProcessObject::GetInput(1) );
 }
 
-template <typename TInputMesh, typename TOutputMesh, typename TDisplacementField>
+template< typename TInputMesh, typename TOutputMesh, typename TDisplacementField >
 void
-WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::SetDisplacementField(const DisplacementFieldType * field)
+WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >
+::SetDisplacementField(const DisplacementFieldType *field)
 {
   // const cast is needed because the pipeline is not const-correct.
-  auto * input = const_cast<DisplacementFieldType *>(field);
+  DisplacementFieldType *input =
+    const_cast< DisplacementFieldType * >( field );
 
   this->ProcessObject::SetNthInput(1, input);
 }
@@ -54,9 +59,10 @@ WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::SetDisplacementFiel
 /**
  *
  */
-template <typename TInputMesh, typename TOutputMesh, typename TDisplacementField>
+template< typename TInputMesh, typename TOutputMesh, typename TDisplacementField >
 void
-WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::PrintSelf(std::ostream & os, Indent indent) const
+WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }
@@ -64,43 +70,46 @@ WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::PrintSelf(std::ostr
 /**
  * This method causes the filter to generate its output.
  */
-template <typename TInputMesh, typename TOutputMesh, typename TDisplacementField>
+template< typename TInputMesh, typename TOutputMesh, typename TDisplacementField >
 void
-WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::GenerateData()
+WarpMeshFilter< TInputMesh, TOutputMesh, TDisplacementField >
+::GenerateData(void)
 {
-  using InputPointsContainer = typename TInputMesh::PointsContainer;
-  using OutputPointsContainer = typename TOutputMesh::PointsContainer;
+  typedef typename TInputMesh::PointsContainer  InputPointsContainer;
+  typedef typename TOutputMesh::PointsContainer OutputPointsContainer;
 
-  using OutputPointsContainerPointer = typename TOutputMesh::PointsContainerPointer;
+  typedef typename TOutputMesh::PointsContainerPointer OutputPointsContainerPointer;
 
-  const InputMeshType *    inputMesh = this->GetInput();
-  OutputMeshPointer        outputMesh = this->GetOutput();
-  DisplacementFieldPointer fieldPtr = this->GetDisplacementField();
+  const InputMeshType *   inputMesh   =  this->GetInput();
+  OutputMeshPointer       outputMesh     =  this->GetOutput();
+  DisplacementFieldPointer fieldPtr   =  this->GetDisplacementField();
 
-  if (!inputMesh)
-  {
+  if ( !inputMesh )
+    {
     itkExceptionMacro(<< "Missing Input Mesh");
-  }
+    }
 
-  if (!outputMesh)
-  {
+  if ( !outputMesh )
+    {
     itkExceptionMacro(<< "Missing Output Mesh");
-  }
+    }
 
-  outputMesh->SetBufferedRegion(outputMesh->GetRequestedRegion());
+  outputMesh->SetBufferedRegion( outputMesh->GetRequestedRegion() );
 
-  const InputPointsContainer * inPoints = inputMesh->GetPoints();
+  const InputPointsContainer * inPoints  = inputMesh->GetPoints();
   OutputPointsContainerPointer outPoints = outputMesh->GetPoints();
 
-  outPoints->Reserve(inputMesh->GetNumberOfPoints());
-  outPoints->Squeeze(); // in case the previous mesh had
-                        // allocated a larger memory
+  outPoints->Reserve( inputMesh->GetNumberOfPoints() );
+  outPoints->Squeeze();  // in case the previous mesh had
+                         // allocated a larger memory
 
-  typename InputPointsContainer::ConstIterator inputPoint = inPoints->Begin();
-  typename OutputPointsContainer::Iterator     outputPoint = outPoints->Begin();
+  typename InputPointsContainer::ConstIterator inputPoint  = inPoints->Begin();
+  typename OutputPointsContainer::Iterator outputPoint = outPoints->Begin();
 
-  using InputPointType = typename InputMeshType::PointType;
-  using OutputPointType = typename OutputMeshType::PointType;
+  typedef typename InputMeshType::PointType         InputPointType;
+  typedef typename OutputMeshType::PointType        OutputPointType;
+  typedef typename DisplacementFieldType::IndexType IndexType;
+  IndexType index;
 
   OutputPointType displacedPoint;
 
@@ -108,22 +117,22 @@ WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::GenerateData()
 
   const unsigned int Dimension = fieldPtr->GetImageDimension();
 
-  while (inputPoint != inPoints->End())
-  {
+  while ( inputPoint != inPoints->End() )
+    {
     const InputPointType & originalPoint = inputPoint.Value();
-    const auto             index = fieldPtr->TransformPhysicalPointToIndex(originalPoint);
+    fieldPtr->TransformPhysicalPointToIndex(originalPoint, index);
     displacement = fieldPtr->GetPixel(index);
 
-    for (unsigned int i = 0; i < Dimension; i++)
-    {
+    for ( unsigned int i = 0; i < Dimension; i++ )
+      {
       displacedPoint[i] = originalPoint[i] + displacement[i];
-    }
+      }
 
     outputPoint.Value() = displacedPoint;
 
     ++inputPoint;
     ++outputPoint;
-  }
+    }
 
   // Create duplicate references to the rest of data on the mesh
 
@@ -134,10 +143,11 @@ WarpMeshFilter<TInputMesh, TOutputMesh, TDisplacementField>::GenerateData()
 
   unsigned int maxDimension = TInputMesh::MaxTopologicalDimension;
 
-  for (unsigned int dim = 0; dim < maxDimension; dim++)
-  {
-    outputMesh->SetBoundaryAssignments(dim, inputMesh->GetBoundaryAssignments(dim));
-  }
+  for ( unsigned int dim = 0; dim < maxDimension; dim++ )
+    {
+    outputMesh->SetBoundaryAssignments( dim,
+                                        inputMesh->GetBoundaryAssignments(dim) );
+    }
 }
 } // end namespace itk
 

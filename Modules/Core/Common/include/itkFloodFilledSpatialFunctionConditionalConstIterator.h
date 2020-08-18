@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,106 +31,91 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename TImage, typename TFunction>
-class ITK_TEMPLATE_EXPORT FloodFilledSpatialFunctionConditionalConstIterator
-  : public FloodFilledFunctionConditionalConstIterator<TImage, TFunction>
+template< typename TImage, typename TFunction >
+class ITK_TEMPLATE_EXPORT FloodFilledSpatialFunctionConditionalConstIterator:public FloodFilledFunctionConditionalConstIterator<
+    TImage, TFunction >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = FloodFilledSpatialFunctionConditionalConstIterator;
-  using Superclass = FloodFilledFunctionConditionalConstIterator<TImage, TFunction>;
+  /** Standard class typedefs. */
+  typedef FloodFilledSpatialFunctionConditionalConstIterator               Self;
+  typedef FloodFilledFunctionConditionalConstIterator< TImage, TFunction > Superclass;
 
   /** Type of function */
-  using FunctionType = typename Superclass::FunctionType;
+  typedef typename Superclass::FunctionType FunctionType;
 
   /** Type of vector used to store location info in the spatial function */
-  using FunctionInputType = typename Superclass::FunctionInputType;
+  typedef typename Superclass::FunctionInputType FunctionInputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
   /** Index ContainerType. */
-  using SeedsContainerType = typename Superclass::SeedsContainerType;
+  typedef typename Superclass::SeedsContainerType SeedsContainerType;
 
-  /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  /** Size typedef support. */
+  typedef typename Superclass::SizeType SizeType;
 
-  /** Region type alias support */
-  using RegionType = typename Superclass::RegionType;
+  /** Region typedef support */
+  typedef typename Superclass::RegionType RegionType;
 
-  /** Image type alias support */
-  using ImageType = typename Superclass::ImageType;
+  /** Image typedef support. */
+  typedef typename Superclass::ImageType ImageType;
 
   /** Internal Pixel Type */
-  using InternalPixelType = typename Superclass::InternalPixelType;
+  typedef typename Superclass::InternalPixelType InternalPixelType;
 
   /** External Pixel Type */
-  using PixelType = typename Superclass::PixelType;
+  typedef typename Superclass::PixelType PixelType;
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor uses
    * an explicit seed pixel for the flood fill, the "startIndex" */
-  FloodFilledSpatialFunctionConditionalConstIterator(const ImageType * imagePtr,
-                                                     FunctionType *    fnPtr,
-                                                     IndexType         startIndex);
+  FloodFilledSpatialFunctionConditionalConstIterator(const ImageType *imagePtr,
+                                                     FunctionType *fnPtr,
+                                                     IndexType startIndex);
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor
    * should be used when the seed pixel is unknown. */
-  FloodFilledSpatialFunctionConditionalConstIterator(const ImageType * imagePtr, FunctionType * fnPtr);
+  FloodFilledSpatialFunctionConditionalConstIterator(const ImageType *imagePtr,
+                                                     FunctionType *fnPtr);
   /** Default Destructor. */
-  ~FloodFilledSpatialFunctionConditionalConstIterator() override = default;
+  virtual ~FloodFilledSpatialFunctionConditionalConstIterator() {}
 
   /** Compute whether the index of interest should be included in the flood */
-  bool
-  IsPixelIncluded(const IndexType & index) const override;
+  bool IsPixelIncluded(const IndexType & index) const;
 
   /** Set the inclusion strategy to origin */
-  void
-  SetOriginInclusionStrategy()
-  {
-    m_InclusionStrategy = 0;
-  }
+  void SetOriginInclusionStrategy() { m_InclusionStrategy = 0; }
 
   /** Set the inclusion strategy to center */
-  void
-  SetCenterInclusionStrategy()
-  {
-    m_InclusionStrategy = 1;
-  }
+  void SetCenterInclusionStrategy() { m_InclusionStrategy = 1; }
 
   /** Set the inclusion strategy to complete */
-  void
-  SetCompleteInclusionStrategy()
-  {
-    m_InclusionStrategy = 2;
-  }
+  void SetCompleteInclusionStrategy() { m_InclusionStrategy = 2; }
 
   /** Set the inclusion strategy to intersect */
-  void
-  SetIntersectInclusionStrategy()
-  {
-    m_InclusionStrategy = 3;
-  }
+  void SetIntersectInclusionStrategy() { m_InclusionStrategy = 3; }
 
-protected: // made protected so other iterators can access
+protected: //made protected so other iterators can access
+
   /** How the pixel (index) is examined in order to decide whether or not
-   * it's included. The strategies are:
-   * 0) Origin: if the origin of the pixel in physical space is inside the function,
-   * then the pixel is inside the function
-   * 1) Center: if the center of a pixel, in physical space, is inside the function,
-   * then the pixel is inside the function
-   * 2) Complete: if all of the corners of the pixel in physical space are inside the function,
-   * then the pixel is inside the function
-   * 3) Intersect: if any of the corners of the pixel in physical space are inside the function,
-   * then the pixel is inside the function */
+ * it's included. The strategies are:
+ * 0) Origin: if the origin of the pixel in physical space is inside the function,
+ * then the pixel is inside the function
+ * 1) Center: if the center of a pixel, in physical space, is inside the function,
+ * then the pixel is inside the function
+ * 2) Complete: if all of the corners of the pixel in physical space are inside the function,
+ * then the pixel is inside the function
+ * 3) Intersect: if any of the corners of the pixel in physical space are inside the function,
+ * then the pixel is inside the function */
 
   unsigned char m_InclusionStrategy;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFloodFilledSpatialFunctionConditionalConstIterator.hxx"
+#include "itkFloodFilledSpatialFunctionConditionalConstIterator.hxx"
 #endif
 
 #endif

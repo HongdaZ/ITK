@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ namespace itk
 {
 namespace watershed
 {
-/**
- *\class BoundaryResolver
+/** \class BoundaryResolver
  *  This filter implements a piece of the streaming watershed
  *  segmentation algorithm.  It takes in pairs of itk::watershed::Boundary
  *  objects and connects the labeling of pixels across image chunk boundaries.
@@ -61,51 +60,39 @@ namespace watershed
  * \ingroup WatershedSegmentation
  * \ingroup ITKWatersheds
  */
-template <typename TPixelType, unsigned int TDimension>
-class ITK_TEMPLATE_EXPORT BoundaryResolver : public ProcessObject
+template< typename TPixelType, unsigned int TDimension >
+class ITK_TEMPLATE_EXPORT BoundaryResolver:public ProcessObject
 {
 public:
   /** Set up smart pointer and object factory definitions.   */
-  using Self = BoundaryResolver;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef BoundaryResolver           Self;
+  typedef ProcessObject              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
   itkNewMacro(Self);
   itkTypeMacro(WatershedBoundaryResolver, ProcessObject);
 
   /** Expose the image dimension at run time. */
-  static constexpr unsigned int ImageDimension = TDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TDimension);
 
-  /** Some convenient type alias.   */
-  using PixelType = TPixelType;
-  using BoundaryType = Boundary<PixelType, TDimension>;
-  using EquivalencyTableType = EquivalencyTable;
-  using SegmenterType = Segmenter<Image<TPixelType, TDimension>>;
-  using DataObjectPointer = DataObject::Pointer;
+  /** Some convenient typedefs.   */
+  typedef TPixelType                                   PixelType;
+  typedef Boundary< PixelType, TDimension >            BoundaryType;
+  typedef EquivalencyTable                             EquivalencyTableType;
+  typedef Segmenter< Image< TPixelType, TDimension > > SegmenterType;
+  typedef DataObject::Pointer                          DataObjectPointer;
 
   /** Set/Get the first of two boundaries that are to be resolved.   */
-  void
-  SetBoundaryA(BoundaryType * bd)
-  {
-    this->ProcessObject::SetNthInput(0, bd);
-  }
-  typename BoundaryType::Pointer
-  GetBoundaryA()
-  {
-    return static_cast<BoundaryType *>(this->GetInput(0));
-  }
+  void SetBoundaryA(BoundaryType *bd)
+  { this->ProcessObject::SetNthInput(0, bd); }
+  typename BoundaryType::Pointer GetBoundaryA()
+  { return static_cast< BoundaryType * >( this->GetInput(0) );  }
 
   /** Set/Get the second of two boundaries that are to be resolved.  */
-  void
-  SetBoundaryB(BoundaryType * bd)
-  {
-    this->ProcessObject::SetNthInput(1, bd);
-  }
-  typename BoundaryType::Pointer
-  GetBoundaryB()
-  {
-    return static_cast<BoundaryType *>(this->GetInput(1));
-  }
+  void SetBoundaryB(BoundaryType *bd)
+  { this->ProcessObject::SetNthInput(1, bd); }
+  typename BoundaryType::Pointer GetBoundaryB()
+  { return static_cast< BoundaryType * >( this->GetInput(1) );  }
 
   /**  Set/Get the face of the boundary object that we are going to
    *  resolve. */
@@ -115,53 +102,45 @@ public:
   /** This method sets/gets the equivalency table used to store equivalencies
    *  among segments that are generated from the boundary resolution
    *  algorithm.  */
-  void
-  SetEquivalencyTable(EquivalencyTableType::Pointer a)
+  void SetEquivalencyTable(EquivalencyTableType::Pointer a)
+  { this->ProcessObject::SetNthOutput( 0, a.GetPointer() ); }
+  EquivalencyTableType::Pointer GetEquivalencyTable()
   {
-    this->ProcessObject::SetNthOutput(0, a.GetPointer());
-  }
-  EquivalencyTableType::Pointer
-  GetEquivalencyTable()
-  {
-    return static_cast<EquivalencyTableType *>(this->ProcessObject::GetOutput(0));
+    return static_cast< EquivalencyTableType * >
+           ( this->ProcessObject::GetOutput(0) );
   }
 
   /** Standard non-threaded pipeline method */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Standard itk::ProcessObject subclass method. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
 protected:
-  BoundaryResolver()
+  BoundaryResolver():m_Face(0)
   {
-    EquivalencyTable::Pointer eq = static_cast<EquivalencyTable *>(this->MakeOutput(0).GetPointer());
+    EquivalencyTable::Pointer eq =
+      static_cast< EquivalencyTable * >( this->MakeOutput(0).GetPointer() );
 
     this->SetNumberOfRequiredOutputs(1);
-    this->ProcessObject::SetNthOutput(0, eq.GetPointer());
+    this->ProcessObject::SetNthOutput( 0, eq.GetPointer() );
   }
 
-  ~BoundaryResolver() override = default;
+  virtual ~BoundaryResolver() ITK_OVERRIDE {}
   BoundaryResolver(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void operator=(const Self &) {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  unsigned short m_Face{ 0 };
-  void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  unsigned short m_Face;
+  virtual void GenerateOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 };
 } // end namespace watershed
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWatershedBoundaryResolver.hxx"
+#include "itkWatershedBoundaryResolver.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,59 +21,59 @@
 #include "itkImageFileWriter.h"
 #include "itkNrrdImageIO.h"
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest(int ac, char * av[])
+int itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest( int ac, char* av[] )
 {
-  if (ac < 2)
-  {
+  if(ac < 2)
+    {
     std::cerr << "Usage: " << av[0] << " Input Output\n";
     return EXIT_FAILURE;
-  }
+    }
 
-  using InPixelType = itk::DiffusionTensor3D<double>;
-  using InImage = itk::Image<InPixelType, 3>;
+  typedef itk::DiffusionTensor3D<double> InPixelType;
+  typedef itk::Image<InPixelType, 3>     InImage;
 
-  using ReaderType = itk::ImageFileReader<InImage>;
+  typedef itk::ImageFileReader<InImage>  ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetImageIO(itk::NrrdImageIO::New());
+  reader->SetImageIO( itk::NrrdImageIO::New() );
 
   reader->SetFileName(av[1]);
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   InImage::Pointer image = reader->GetOutput();
-  image->Print(std::cout);
+  image->Print(std::cout );
 
   // Generate test image
   itk::ImageFileWriter<InImage>::Pointer writer;
   writer = itk::ImageFileWriter<InImage>::New();
-  writer->SetImageIO(itk::NrrdImageIO::New());
-  writer->SetInput(reader->GetOutput());
+  writer->SetImageIO( itk::NrrdImageIO::New() );
+  writer->SetInput( reader->GetOutput() );
   writer->SetFileName(av[2]);
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file writer " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   return EXIT_SUCCESS;
+
 }

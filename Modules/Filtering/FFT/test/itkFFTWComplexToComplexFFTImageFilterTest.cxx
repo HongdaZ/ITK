@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,118 +38,114 @@
 #include "itkForwardFFTImageFilter.h"
 #include "itkInverseFFTImageFilter.h"
 
-template <typename TPixel, unsigned int VDimension>
-int
-transformImage(const char * inputImageFileName, const char * outputImageFileName)
+template< typename TPixel, unsigned int VDimension >
+int transformImage( const char * inputImageFileName, const char * outputImageFileName )
 {
-  using RealPixelType = TPixel;
-  using ComplexPixelType = std::complex<RealPixelType>;
+  typedef TPixel                        RealPixelType;
+  typedef std::complex< RealPixelType > ComplexPixelType;
   const unsigned int Dimension = VDimension;
 
-  using RealImageType = itk::Image<RealPixelType, Dimension>;
-  using ComplexImageType = itk::Image<ComplexPixelType, Dimension>;
+  typedef itk::Image< RealPixelType, Dimension >    RealImageType;
+  typedef itk::Image< ComplexPixelType, Dimension > ComplexImageType;
 
-  using ReaderType = itk::ImageFileReader<RealImageType>;
+  typedef itk::ImageFileReader< RealImageType >  ReaderType;
   typename ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(inputImageFileName);
+  reader->SetFileName( inputImageFileName );
 
-  using ForwardFilterType = itk::ForwardFFTImageFilter<RealImageType, ComplexImageType>;
+  typedef itk::ForwardFFTImageFilter< RealImageType, ComplexImageType > ForwardFilterType;
   typename ForwardFilterType::Pointer forwardFilter = ForwardFilterType::New();
-  forwardFilter->SetInput(reader->GetOutput());
+  forwardFilter->SetInput( reader->GetOutput() );
 
-  using ComplexFilterType = itk::FFTWComplexToComplexFFTImageFilter<ComplexImageType>;
+  typedef itk::FFTWComplexToComplexFFTImageFilter< ComplexImageType > ComplexFilterType;
   typename ComplexFilterType::Pointer inverseComplexFilter = ComplexFilterType::New();
-  inverseComplexFilter->SetInput(forwardFilter->GetOutput());
-  inverseComplexFilter->SetTransformDirection(ComplexFilterType::TransformDirectionEnum::INVERSE);
+  inverseComplexFilter->SetInput( forwardFilter->GetOutput() );
+  inverseComplexFilter->SetTransformDirection( ComplexFilterType::INVERSE );
 
   typename ComplexFilterType::Pointer forwardComplexFilter = ComplexFilterType::New();
-  forwardComplexFilter->SetInput(inverseComplexFilter->GetOutput());
-  forwardComplexFilter->SetTransformDirection(ComplexFilterType::TransformDirectionEnum::FORWARD);
+  forwardComplexFilter->SetInput( inverseComplexFilter->GetOutput() );
+  forwardComplexFilter->SetTransformDirection( ComplexFilterType::FORWARD );
   // This tests the CanUseDestructiveAlgorithm state with the FFTW version.
   forwardComplexFilter->ReleaseDataFlagOn();
 
-  using InverseFilterType = itk::InverseFFTImageFilter<ComplexImageType, RealImageType>;
+  typedef itk::InverseFFTImageFilter< ComplexImageType, RealImageType > InverseFilterType;
   typename InverseFilterType::Pointer inverseFilter = InverseFilterType::New();
-  inverseFilter->SetInput(forwardComplexFilter->GetOutput());
+  inverseFilter->SetInput( forwardComplexFilter->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<RealImageType>;
+  typedef itk::ImageFileWriter< RealImageType > WriterType;
   typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(outputImageFileName);
-  writer->SetInput(inverseFilter->GetOutput());
+  writer->SetFileName( outputImageFileName );
+  writer->SetInput( inverseFilter->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & error)
-  {
+    }
+  catch( itk::ExceptionObject & error )
+    {
     std::cerr << error << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }
 
-int
-itkFFTWComplexToComplexFFTImageFilterTest(int argc, char * argv[])
+int itkFFTWComplexToComplexFFTImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << argv[0] << " <InputImage> <OutputImage> <float|double>" << std::endl;
     return EXIT_FAILURE;
-  }
-  const char *      inputImageFileName = argv[1];
-  const char *      outputImageFileName = argv[2];
-  const std::string pixelTypeString(argv[3]);
+    }
+  const char * inputImageFileName = argv[1];
+  const char * outputImageFileName = argv[2];
+  const std::string pixelTypeString( argv[3] );
 
-  itk::ImageIOBase::Pointer imageIO =
-    itk::ImageIOFactory::CreateImageIO(inputImageFileName, itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-  imageIO->SetFileName(inputImageFileName);
+  itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO( inputImageFileName, itk::ImageIOFactory::ReadMode );
+  imageIO->SetFileName( inputImageFileName );
   imageIO->ReadImageInformation();
   const unsigned int dimension = imageIO->GetNumberOfDimensions();
 
-  if (pixelTypeString.compare("float") == 0)
-  {
-    switch (dimension)
+  if( pixelTypeString.compare( "float" ) == 0 )
     {
+    switch( dimension )
+      {
 #ifdef ITK_USE_FFTWF
-      case 2:
-        return transformImage<float, 2>(inputImageFileName, outputImageFileName);
-        break;
-      case 3:
-        return transformImage<float, 3>(inputImageFileName, outputImageFileName);
-        break;
+    case 2:
+      return transformImage< float, 2 >( inputImageFileName, outputImageFileName );
+      break;
+    case 3:
+      return transformImage< float, 3 >( inputImageFileName, outputImageFileName );
+      break;
 #endif
-      default:
-        std::cerr << "Unknown image dimension." << std::endl;
-        return EXIT_FAILURE;
-    }
+    default:
+      std::cerr << "Unknown image dimension." << std::endl;
+      return EXIT_FAILURE;
+      }
     return EXIT_SUCCESS;
-  }
-  else if (pixelTypeString.compare("double") == 0)
-  {
-    switch (dimension)
+    }
+  else if( pixelTypeString.compare( "double" ) == 0 )
     {
+    switch( dimension )
+      {
 #ifdef ITK_USE_FFTWD
-      case 2:
-        return transformImage<double, 2>(inputImageFileName, outputImageFileName);
-        break;
-      case 3:
-        return transformImage<double, 3>(inputImageFileName, outputImageFileName);
-        break;
+    case 2:
+      return transformImage< double, 2 >( inputImageFileName, outputImageFileName );
+      break;
+    case 3:
+      return transformImage< double, 3 >( inputImageFileName, outputImageFileName );
+      break;
 #endif
-      default:
-        std::cerr << "Unknown image dimension." << std::endl;
-        return EXIT_FAILURE;
-    }
+    default:
+      std::cerr << "Unknown image dimension." << std::endl;
+      return EXIT_FAILURE;
+      }
     return EXIT_SUCCESS;
-  }
+    }
   else
-  {
+    {
     std::cerr << "Unknown pixel type string." << std::endl;
     return EXIT_FAILURE;
-  }
-
+    }
 
   return EXIT_FAILURE;
 }

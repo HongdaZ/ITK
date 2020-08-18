@@ -9,13 +9,11 @@
 //:
 // \file
 
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include <cassert>
+#include <vcl_compiler.h>
+#include <vcl_cassert.h>
 
-#include "vnl_error.h"
-#include "vnl_math.h"
+#include <vnl/vnl_error.h>
+#include <vnl/vnl_math.h>
 
 //------------------------------------------------------------
 
@@ -538,7 +536,7 @@ vnl_matrix_fixed_ref<T,nrows,ncols>::read_ascii(std::istream& s) const
 
 template <class T, unsigned nrows, unsigned ncols>
 vnl_matrix_fixed_ref<T,nrows,ncols> &
-vnl_matrix_fixed_ref<T,nrows,ncols>::flipud()
+vnl_matrix_fixed_ref<T,nrows,ncols>::flipud() 
 {
   for (unsigned int r1 = 0; 2*r1+1 < nrows; ++r1)
   {

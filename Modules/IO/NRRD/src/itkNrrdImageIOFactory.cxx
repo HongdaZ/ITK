@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,14 +23,18 @@ namespace itk
 {
 NrrdImageIOFactory::NrrdImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkNrrdImageIO", "Nrrd Image IO", true, CreateObjectFunction<NrrdImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkNrrdImageIO",
+                          "Nrrd Image IO",
+                          1,
+                          CreateObjectFunction< NrrdImageIO >::New() );
 }
 
-NrrdImageIOFactory::~NrrdImageIOFactory() = default;
+NrrdImageIOFactory::~NrrdImageIOFactory()
+{}
 
 const char *
-NrrdImageIOFactory::GetITKSourceVersion() const
+NrrdImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -46,14 +50,13 @@ NrrdImageIOFactory::GetDescription() const
 
 static bool NrrdImageIOFactoryHasBeenRegistered;
 
-void ITKIONRRD_EXPORT
-     NrrdImageIOFactoryRegister__Private()
+void ITKIONRRD_EXPORT NrrdImageIOFactoryRegister__Private(void)
 {
-  if (!NrrdImageIOFactoryHasBeenRegistered)
-  {
+  if( ! NrrdImageIOFactoryHasBeenRegistered )
+    {
     NrrdImageIOFactoryHasBeenRegistered = true;
     NrrdImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

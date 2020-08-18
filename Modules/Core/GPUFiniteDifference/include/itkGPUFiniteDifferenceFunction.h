@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,53 +43,52 @@ namespace itk
  *
  * \ingroup ITKGPUFiniteDifference
  **/
-template <typename TImageType>
-class GPUFiniteDifferenceFunction : public FiniteDifferenceFunction<TImageType>
+template< typename TImageType >
+class GPUFiniteDifferenceFunction : public FiniteDifferenceFunction< TImageType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceFunction);
 
-  /** Standard class type aliases. */
-  using Self = GPUFiniteDifferenceFunction;
-  using Superclass = FiniteDifferenceFunction<TImageType>;
-  using DifferenceFunctionType = Superclass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GPUFiniteDifferenceFunction            Self;
+  typedef FiniteDifferenceFunction< TImageType > Superclass;
+  typedef Superclass                             DifferenceFunctionType;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef SmartPointer< const Self >             ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(GPUFiniteDifferenceFunction, FiniteDifferenceFunction);
 
   /** Extract some parameters from the image type */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
+  typedef typename Superclass::ImageType     ImageType;
+  typedef typename Superclass::PixelType     PixelType;
+  typedef typename Superclass::PixelRealType PixelRealType;
 
   /** Save image dimension. */
-  static constexpr unsigned int ImageDimension = ImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, ImageType::ImageDimension);
 
   /** Define the TimeStepType to always be double. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  typedef typename Superclass::TimeStepType TimeStepType;
 
   /** The default boundary condition for finite difference
    * functions that is used unless overridden in the Evaluate() method. */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  typedef typename Superclass::DefaultBoundaryConditionType DefaultBoundaryConditionType;
 
   /** Neighborhood radius type */
-  using RadiusType = typename Superclass::RadiusType;
+  typedef typename Superclass::RadiusType RadiusType;
 
   /** Neighborhood type */
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
+  typedef typename Superclass::NeighborhoodType NeighborhoodType;
 
   /** A floating point offset from an image grid location. Used for
-   * interpolation among grid values in a neighborhood. */
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+    * interpolation among grid values in a neighborhood. */
+  typedef typename Superclass::FloatOffsetType FloatOffsetType;
 
-#if !defined(ITK_WRAPPING_PARSER)
+#if !defined( ITK_WRAPPING_PARSER )
   /** Empty implementation - this will not be used by GPU filters */
-  PixelType
-  ComputeUpdate(const NeighborhoodType & itkNotUsed(neighborhood),
-                void *                   itkNotUsed(globalData),
-                const FloatOffsetType &  itkNotUsed(offset = FloatOffsetType(0.0))) override
+  virtual PixelType  ComputeUpdate( const NeighborhoodType & itkNotUsed(neighborhood),
+                                    void *itkNotUsed(globalData),
+                                    const FloatOffsetType & itkNotUsed(offset = FloatOffsetType(0.0)) )
+    ITK_OVERRIDE
   {
     PixelType pix = itk::NumericTraits<PixelType>::ZeroValue();
     return pix;
@@ -97,30 +96,33 @@ public:
 #endif
 
   /** GPU function to compute update buffer */
-  virtual void
-  GPUComputeUpdate(const typename TImageType::Pointer output, typename TImageType::Pointer update, void * gd) = 0;
+  virtual void GPUComputeUpdate( const typename TImageType::Pointer output,
+                                 typename TImageType::Pointer update,
+                                 void *gd) = 0;
 
-  /** Allocate GPU buffers for computing metric statistics
+  /** Allocate GPU buffers for computing metric statitics
    * */
-  virtual void
-  GPUAllocateMetricData(unsigned int itkNotUsed(numPixels))
-  {}
+  virtual void GPUAllocateMetricData(unsigned int itkNotUsed(numPixels)) {}
 
-  /** Release GPU buffers for computing metric statistics
+  /** Release GPU buffers for computing metric statitics
    * */
-  virtual void
-  GPUReleaseMetricData()
-  {}
+  virtual void GPUReleaseMetricData() {}
 
 protected:
-  GPUFiniteDifferenceFunction() { m_GPUKernelManager = GPUKernelManager::New(); }
-  ~GPUFiniteDifferenceFunction() override = default;
+  GPUFiniteDifferenceFunction() {
+    m_GPUKernelManager = GPUKernelManager::New();
+  }
+  ~GPUFiniteDifferenceFunction() ITK_OVERRIDE {}
 
   /** GPU kernel manager for GPUFiniteDifferenceFunction class */
   typename GPUKernelManager::Pointer m_GPUKernelManager;
 
   /** GPU kernel handle for GPUComputeUpdate() */
   int m_ComputeUpdateGPUKernelHandle;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceFunction);
+
 };
 } // end namespace itk
 

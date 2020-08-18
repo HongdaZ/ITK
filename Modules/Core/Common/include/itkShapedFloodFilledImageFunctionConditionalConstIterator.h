@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,80 +34,84 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename TImage, typename TFunction>
-class ITK_TEMPLATE_EXPORT ShapedFloodFilledImageFunctionConditionalConstIterator
-  : public ShapedFloodFilledFunctionConditionalConstIterator<TImage, TFunction>
+template< typename TImage, typename TFunction >
+class ITK_TEMPLATE_EXPORT ShapedFloodFilledImageFunctionConditionalConstIterator:
+  public ShapedFloodFilledFunctionConditionalConstIterator< TImage, TFunction >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ShapedFloodFilledImageFunctionConditionalConstIterator<TImage, TFunction>;
-  using Superclass = ShapedFloodFilledFunctionConditionalConstIterator<TImage, TFunction>;
+  /** Standard class typedefs. */
+  typedef ShapedFloodFilledImageFunctionConditionalConstIterator
+  Self;
+  typedef ShapedFloodFilledFunctionConditionalConstIterator< TImage, TFunction >
+  Superclass;
 
   /** Type of function */
-  using FunctionType = typename Superclass::FunctionType;
+  typedef typename Superclass::FunctionType FunctionType;
 
   /** Type of vector used to store location info in the spatial function */
-  using FunctionInputType = typename Superclass::FunctionInputType;
+  typedef typename Superclass::FunctionInputType FunctionInputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  /** Size typedef support. */
+  typedef typename Superclass::SizeType SizeType;
 
-  /** Region type alias support */
-  using RegionType = typename Superclass::RegionType;
+  /** Region typedef support */
+  typedef typename Superclass::RegionType RegionType;
 
-  /** Image type alias support */
-  using ImageType = typename Superclass::ImageType;
+  /** Image typedef support. */
+  typedef typename Superclass::ImageType ImageType;
 
   /** Internal Pixel Type */
-  using InternalPixelType = typename Superclass::InternalPixelType;
+  typedef typename Superclass::InternalPixelType InternalPixelType;
 
   /** External Pixel Type */
-  using PixelType = typename Superclass::PixelType;
+  typedef typename Superclass::PixelType PixelType;
 
   /** Dimension of the image the iterator walks.  This constant is needed so
    * functions that are templated over image iterator type (as opposed to
    * being templated over pixel type and dimension) can have compile time
    * access to the dimension of the image that the iterator walks. */
-  static constexpr unsigned int NDimensions = Superclass::NDimensions;
+  itkStaticConstMacro(NDimensions, unsigned int, Superclass::NDimensions);
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor uses
    * an explicit seed pixel for the flood fill, the "startIndex" */
-  ShapedFloodFilledImageFunctionConditionalConstIterator(const ImageType * imagePtr,
-                                                         FunctionType *    fnPtr,
-                                                         IndexType         startIndex)
-    : Superclass(imagePtr, fnPtr, startIndex)
-  {}
+  ShapedFloodFilledImageFunctionConditionalConstIterator(
+    const ImageType *imagePtr,
+    FunctionType *fnPtr,
+    IndexType startIndex):Superclass(imagePtr,
+                                     fnPtr,
+                                     startIndex) {}
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor uses
    * an explicit list of seed pixels for the flood fill, the "startIndex" */
-  ShapedFloodFilledImageFunctionConditionalConstIterator(const ImageType *        imagePtr,
-                                                         FunctionType *           fnPtr,
-                                                         std::vector<IndexType> & startIndex)
-    : Superclass(imagePtr, fnPtr, startIndex)
-  {}
+  ShapedFloodFilledImageFunctionConditionalConstIterator(
+    const ImageType *imagePtr,
+    FunctionType *fnPtr,
+    std::vector< IndexType > & startIndex):Superclass(imagePtr,
+                                                      fnPtr,
+                                                      startIndex) {}
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor
    * should be used when the seed pixel is unknown. */
-  ShapedFloodFilledImageFunctionConditionalConstIterator(const ImageType * imagePtr, FunctionType * fnPtr)
-    : Superclass(imagePtr, fnPtr)
-  {}
+  ShapedFloodFilledImageFunctionConditionalConstIterator(
+    const ImageType *imagePtr,
+    FunctionType *fnPtr):Superclass(imagePtr,
+                                    fnPtr) {}
   /** Default Destructor. */
-  ~ShapedFloodFilledImageFunctionConditionalConstIterator() override = default;
+  virtual ~ShapedFloodFilledImageFunctionConditionalConstIterator() {}
 
   /** Compute whether the index of interest should be included in the flood */
-  bool
-  IsPixelIncluded(const IndexType & index) const override;
+  bool IsPixelIncluded(const IndexType & index) const;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShapedFloodFilledImageFunctionConditionalConstIterator.hxx"
+#include "itkShapedFloodFilledImageFunctionConditionalConstIterator.hxx"
 #endif
 
 #endif

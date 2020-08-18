@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,24 +23,25 @@
 
 #include "itkOptImageToImageMetricsTest2.h"
 
-int
-itkOptImageToImageMetricsTest2(int, char * argv[])
+int itkOptImageToImageMetricsTest2(int , char* argv[])
 {
   std::cout << "OPTIMIZED ON" << std::endl;
 
-  std::cout << "Default number of threads : " << itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() << std::endl;
+  std::cout << "Default number of threads : "
+            << itk::MultiThreader::GetGlobalDefaultNumberOfThreads()
+            << std::endl;
 
-  using FixedImageType = itk::Image<unsigned int>;
-  using MovingImageType = itk::Image<unsigned int>;
+  typedef itk::Image< unsigned int > FixedImageType;
+  typedef itk::Image< unsigned int > MovingImageType;
 
-  using FixedImageReaderType = itk::ImageFileReader<FixedImageType>;
-  using MovingImageReaderType = itk::ImageFileReader<MovingImageType>;
+  typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
+  typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
 
-  FixedImageReaderType::Pointer  fixedImageReader = FixedImageReaderType::New();
+  FixedImageReaderType::Pointer  fixedImageReader  = FixedImageReaderType::New();
   MovingImageReaderType::Pointer movingImageReader = MovingImageReaderType::New();
 
-  fixedImageReader->SetFileName(argv[1]);
-  movingImageReader->SetFileName(argv[2]);
+  fixedImageReader->SetFileName(  argv[1] );
+  movingImageReader->SetFileName( argv[2] );
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //  First run the experiments with the default number of threads,
@@ -50,14 +51,13 @@ itkOptImageToImageMetricsTest2(int, char * argv[])
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
   std::cout << "Now Running tests with : " << std::endl;
-  std::cout << "\t Global Default Number of Threads " << itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads()
-            << std::endl;
-  std::cout << "\t Global Maximum Number of Threads " << itk::MultiThreaderBase::GetGlobalMaximumNumberOfThreads()
-            << std::endl;
+  std::cout << "\t Global Default Number of Threads " << itk::MultiThreader::GetGlobalDefaultNumberOfThreads() << std::endl;
+  std::cout << "\t Global Maximum Number of Threads " << itk::MultiThreader::GetGlobalMaximumNumberOfThreads() << std::endl;
   std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
   std::cout << std::endl;
 
-  itk::BSplineLinearTest<FixedImageReaderType, MovingImageReaderType>(fixedImageReader, movingImageReader);
+  itk::BSplineLinearTest( fixedImageReader.GetPointer(),
+                       movingImageReader.GetPointer() );
 
-  return (EXIT_SUCCESS);
+  return(EXIT_SUCCESS);
 }

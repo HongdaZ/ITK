@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,15 +19,14 @@
    This file tests whether we have _wopen and the like
 */
 
-#include <io.h>    // for _wopen
+#include <io.h> // for _wopen
 #include <fcntl.h> // for _O_RDONLY
-#include <cstdio>  // for _wfopen
+#include <stdio.h> // for _wfopen
 
-int
-main()
+int main()
 {
-  _wopen(L"tmptest.txt", _O_RDONLY);
-  _wfopen(L"tmptest.txt", L"r");
-  _wunlink(L"tmptest.txt");
+  _wopen( L"tmptest.txt", _O_RDONLY );
+  _wfopen( L"tmptest.txt", L"r" );
+  _wunlink( L"tmptest.txt" );
   return 0;
 }

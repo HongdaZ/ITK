@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,51 +31,53 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT SingleValuedCostFunction : public CostFunction
+class ITKOptimizers_EXPORT SingleValuedCostFunction:
+  public CostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedCostFunction);
-
-  /** Standard class type aliases. */
-  using Self = SingleValuedCostFunction;
-  using Superclass = CostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SingleValuedCostFunction   Self;
+  typedef CostFunction               Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SingleValuedCostFunction, CostFunction);
 
-  /**  MeasureType type alias.
+  /**  MeasureType typedef.
    *  It defines a type used to return the cost function value. */
-  using MeasureType = double;
+  typedef double MeasureType;
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersType = Superclass::ParametersType;
-  using ParametersValueType = Superclass::ParametersValueType;
+  typedef Superclass::ParametersType      ParametersType;
+  typedef Superclass::ParametersValueType ParametersValueType;
 
-  /** DerivativeType type alias.
+  /** DerivativeType typedef.
    *  It defines a type used to return the cost function derivative.  */
-  using DerivativeType = Array<ParametersValueType>;
+  typedef Array< ParametersValueType > DerivativeType;
 
   /** This method returns the value of the cost function corresponding
-   * to the specified parameters.    */
-  virtual MeasureType
-  GetValue(const ParametersType & parameters) const = 0;
+    * to the specified parameters.    */
+  virtual MeasureType GetValue(const ParametersType & parameters) const = 0;
 
   /** This method returns the derivative of the cost function corresponding
-   * to the specified parameters.   */
-  virtual void
-  GetDerivative(const ParametersType & parameters, DerivativeType & derivative) const = 0;
+    * to the specified parameters.   */
+  virtual void GetDerivative(const ParametersType & parameters,
+                             DerivativeType & derivative) const = 0;
 
   /** This method returns the value and derivative of the cost function corresponding
-   * to the specified parameters    */
-  virtual void
-  GetValueAndDerivative(const ParametersType & parameters, MeasureType & value, DerivativeType & derivative) const;
+    * to the specified parameters    */
+  virtual void GetValueAndDerivative(const ParametersType & parameters,
+                                     MeasureType & value,
+                                     DerivativeType & derivative) const;
 
 protected:
-  SingleValuedCostFunction() = default;
-  ~SingleValuedCostFunction() override;
+  SingleValuedCostFunction() {}
+  virtual ~SingleValuedCostFunction() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedCostFunction);
 };
 } // end namespace itk
 

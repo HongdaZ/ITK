@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,16 +37,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char ** argv)
+int main( int argc, char ** argv )
 {
   // Verify the number of parameters in the command line
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputRGBImageFile  outputRGBImageFile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -60,8 +59,8 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = itk::RGBPixel<unsigned char>;
-  using ImageType = itk::Image<PixelType, 2>;
+  typedef itk::RGBPixel< unsigned char >   PixelType;
+  typedef itk::Image< PixelType, 2 >       ImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -76,15 +75,15 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader< ImageType >  ReaderType;
+  typedef itk::ImageFileWriter< ImageType >  WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
 
-  const char * inputFilename = argv[1];
+  const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
 
@@ -96,13 +95,13 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName(inputFilename);
-  writer->SetFileName(outputFilename);
+  reader->SetFileName( inputFilename  );
+  writer->SetFileName( outputFilename );
   // Software Guide : EndCodeSnippet
 
 
   ImageType::Pointer image = reader->GetOutput();
-  writer->SetInput(image);
+  writer->SetInput( image );
 
 
   //  Software Guide : BeginLatex

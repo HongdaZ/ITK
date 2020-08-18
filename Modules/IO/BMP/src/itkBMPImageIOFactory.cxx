@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,14 +23,18 @@ namespace itk
 {
 BMPImageIOFactory::BMPImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkBMPImageIO", "BMP Image IO", true, CreateObjectFunction<BMPImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkBMPImageIO",
+                          "BMP Image IO",
+                          1,
+                          CreateObjectFunction< BMPImageIO >::New() );
 }
 
-BMPImageIOFactory::~BMPImageIOFactory() = default;
+BMPImageIOFactory::~BMPImageIOFactory()
+{}
 
 const char *
-BMPImageIOFactory::GetITKSourceVersion() const
+BMPImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -46,14 +50,13 @@ BMPImageIOFactory::GetDescription() const
 
 static bool BMPImageIOFactoryHasBeenRegistered;
 
-void ITKIOBMP_EXPORT
-     BMPImageIOFactoryRegister__Private()
+void ITKIOBMP_EXPORT BMPImageIOFactoryRegister__Private(void)
 {
-  if (!BMPImageIOFactoryHasBeenRegistered)
-  {
+  if( ! BMPImageIOFactoryHasBeenRegistered )
+    {
     BMPImageIOFactoryHasBeenRegistered = true;
     BMPImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

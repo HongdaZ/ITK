@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,16 +44,14 @@ namespace itk
  * \author Hans J. Johnson
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT MetaDataObjectBase : public LightObject
+class ITKCommon_EXPORT MetaDataObjectBase: public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaDataObjectBase);
-
-  /** Smart pointer type alias support */
-  using Self = MetaDataObjectBase;
-  using Superclass = LightObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support. */
+  typedef MetaDataObjectBase         Self;
+  typedef LightObject                Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(MetaDataObjectBase, LightObject);
@@ -62,27 +60,27 @@ public:
    * \author Hans J. Johnson
    * \return A pointer to a const char array containing the unique type name.
    */
-  virtual const char *
-  GetMetaDataObjectTypeName() const;
+  virtual const char * GetMetaDataObjectTypeName() const;
 
   /**
    * \author Hans J. Johnson
    * \return A constant reference to a std::type_info object
    */
-  virtual const std::type_info &
-  GetMetaDataObjectTypeInfo() const;
+  virtual const std::type_info & GetMetaDataObjectTypeInfo() const;
 
   /**
    * Defines the default behavior for printing out this element
    * \param os An output stream
    */
-  virtual void
-  Print(std::ostream & os) const;
+  virtual void Print( std::ostream & os ) const;
 
 protected:
   MetaDataObjectBase();
-  ~MetaDataObjectBase() override;
-};
-} // namespace itk
+  virtual ~MetaDataObjectBase() ITK_OVERRIDE;
 
-#endif // itkMetaDataObjectBase_h
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaDataObjectBase);
+};
+}
+
+#endif //itkMetaDataObjectBase_h

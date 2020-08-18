@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_int_matrix.h
 #ifndef vnl_int_matrix_h_
 #define vnl_int_matrix_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Specializes vnl_matrix for integers
@@ -14,8 +17,8 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "vnl_matrix.h"
-#include "vnl_error.h"
+#include <vnl/vnl_matrix.h>
+#include <vnl/vnl_error.h>
 #include "vnl/vnl_export.h"
 
 //: Specializes vnl_matrix for integers, adding a vnl_matrix<double> ctor.
@@ -24,7 +27,7 @@ class VNL_EXPORT vnl_int_matrix : public vnl_matrix<int>
   typedef vnl_matrix<int> Base;
  public:
 
-  vnl_int_matrix() = default;
+  vnl_int_matrix() {}
   vnl_int_matrix(char const* filename);
   vnl_int_matrix(unsigned r, unsigned c): Base(r, c) {}
   vnl_int_matrix(unsigned r, unsigned c, int fillvalue): Base(r, c, fillvalue) {}

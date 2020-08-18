@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class FastMarchingExtensionImageFilterBase
+/** \class FastMarchingExtensionImageFilterBase
  * \brief Extend auxiliary variables smoothly using Fast Marching.
  *
  * Fast marching can be used to extend auxiliary variables smoothly
@@ -54,106 +53,106 @@ namespace itk
  * \ingroup LevelSetSegmentation
  * \ingroup ITKFastMarching
  */
-template <typename TInput, typename TOutput, typename TAuxValue, unsigned int VAuxDimension>
-class ITK_TEMPLATE_EXPORT FastMarchingExtensionImageFilterBase : public FastMarchingImageFilterBase<TInput, TOutput>
+template< typename TInput, typename TOutput,
+         typename TAuxValue,
+         unsigned int VAuxDimension >
+class ITK_TEMPLATE_EXPORT FastMarchingExtensionImageFilterBase:
+  public FastMarchingImageFilterBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingExtensionImageFilterBase);
-
   /** Standard class typdedefs. */
-  using Self = FastMarchingExtensionImageFilterBase;
-  using Superclass = FastMarchingImageFilterBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  typedef FastMarchingExtensionImageFilterBase              Self;
+  typedef FastMarchingImageFilterBase< TInput, TOutput >    Superclass;
+  typedef SmartPointer< Self >                              Pointer;
+  typedef SmartPointer< const Self >                        ConstPointer;
+  typedef typename Superclass::Traits                       Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FastMarchingExtensionImageFilterBase, FastMarchingImageFilterBase);
+  itkTypeMacro(FastMarchingExtensionImageFilterBase,
+               FastMarchingImageFilterBase);
 
   /** The dimension of the level set. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension );
 
   /** Number of auxiliary variables to be extended. */
-  static constexpr unsigned int AuxDimension = VAuxDimension;
+  itkStaticConstMacro(AuxDimension, unsigned int, VAuxDimension);
 
-  /** AuxVarType type alias support */
-  using AuxValueType = TAuxValue;
-  using AuxValueVectorType = Vector<AuxValueType, AuxDimension>;
-  using AuxValueContainerType = VectorContainer<IdentifierType, AuxValueVectorType>;
+  /** AuxVarType typedef support. */
+  typedef TAuxValue                                             AuxValueType;
+  typedef Vector< AuxValueType, AuxDimension >                  AuxValueVectorType;
+  typedef VectorContainer< IdentifierType, AuxValueVectorType > AuxValueContainerType;
 
-  using AuxValueContainerPointer = typename AuxValueContainerType::Pointer;
-  using AuxValueContainerConstIterator = typename AuxValueContainerType::ConstIterator;
+  typedef typename AuxValueContainerType::Pointer       AuxValueContainerPointer;
+  typedef typename AuxValueContainerType::ConstIterator AuxValueContainerConstIterator;
 
-  using AuxImageType = Image<AuxValueType, ImageDimension>;
-  using AuxImagePointer = typename AuxImageType::Pointer;
+  typedef Image< AuxValueType, ImageDimension > AuxImageType;
+  typedef typename AuxImageType::Pointer        AuxImagePointer;
 
 
-  /** Index type alias support */
-  using NodeType = typename Superclass::NodeType;
-  using NodePairType = typename Superclass::NodePairType;
+  /** Index typedef support. */
+  typedef typename Superclass::NodeType       NodeType;
+  typedef typename Superclass::NodePairType   NodePairType;
 
-  //  using NodeContainerType = typename Superclass::NodeContainerType;
-  //  using NodeContainerPointer = typename Superclass::NodeContainerPointer;
-  //  using NodeContainerConstIterator = typename Superclass::NodeContainerConstIterator;
+//  typedef typename Superclass::NodeContainerType          NodeContainerType;
+//  typedef typename Superclass::NodeContainerPointer       NodeContainerPointer;
+//  typedef typename Superclass::NodeContainerConstIterator NodeContainerConstIterator;
 
-  using NodePairContainerType = typename Superclass::NodePairContainerType;
-  using NodePairContainerPointer = typename Superclass::NodePairContainerPointer;
-  using NodePairContainerConstIterator = typename Superclass::NodePairContainerConstIterator;
+  typedef typename Superclass::NodePairContainerType    NodePairContainerType;
+  typedef typename Superclass::NodePairContainerPointer NodePairContainerPointer;
+  typedef typename Superclass::NodePairContainerConstIterator
+    NodePairContainerConstIterator;
 
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using InternalNodeStructure = typename Superclass::InternalNodeStructure;
+  typedef typename Superclass::OutputImageType        OutputImageType;
+  typedef typename Superclass::OutputPixelType        OutputPixelType;
+  typedef typename Superclass::InternalNodeStructure  InternalNodeStructure;
 
   /** Get one of the extended auxiliary variable image. */
-  AuxImageType *
-  GetAuxiliaryImage(const unsigned int & idx);
+  AuxImageType * GetAuxiliaryImage( const unsigned int& idx );
 
   /** Set the container auxiliary values at the initial alive points. */
-  itkSetObjectMacro(AuxiliaryAliveValues, AuxValueContainerType);
-  itkGetModifiableObjectMacro(AuxiliaryAliveValues, AuxValueContainerType);
+  itkSetObjectMacro(AuxiliaryAliveValues, AuxValueContainerType );
+  itkGetModifiableObjectMacro(AuxiliaryAliveValues, AuxValueContainerType );
 
   /** Set the container of auxiliary values at the initial trial points. */
-  itkSetObjectMacro(AuxiliaryTrialValues, AuxValueContainerType);
-  itkGetModifiableObjectMacro(AuxiliaryTrialValues, AuxValueContainerType);
+  itkSetObjectMacro(AuxiliaryTrialValues, AuxValueContainerType );
+  itkGetModifiableObjectMacro(AuxiliaryTrialValues, AuxValueContainerType );
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(AuxValueHasNumericTraitsCheck, (Concept::HasNumericTraits<TAuxValue>));
+  itkConceptMacro( AuxValueHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< TAuxValue > ) );
   // End concept checking
 #endif
 
 protected:
   FastMarchingExtensionImageFilterBase();
-  ~FastMarchingExtensionImageFilterBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~FastMarchingExtensionImageFilterBase() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  InitializeOutput(OutputImageType *) override;
+  virtual void InitializeOutput(OutputImageType *) ITK_OVERRIDE;
 
-  void
-  UpdateValue(OutputImageType * oImage, const NodeType & iValue) override;
+  virtual void UpdateValue( OutputImageType* oImage, const NodeType& iValue ) ITK_OVERRIDE;
 
   /** Generate the output image meta information */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
   AuxValueContainerPointer m_AuxiliaryAliveValues;
   AuxValueContainerPointer m_AuxiliaryTrialValues;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingExtensionImageFilterBase);
   AuxImageType * m_AuxImages[VAuxDimension];
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFastMarchingExtensionImageFilterBase.hxx"
+#include "itkFastMarchingExtensionImageFilterBase.hxx"
 #endif
 
 #endif

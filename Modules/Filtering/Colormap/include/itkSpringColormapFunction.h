@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,36 +41,38 @@ namespace Function
  *
  * \ingroup ITKColormap
  */
-template <typename TScalar, typename TRGBPixel>
-class ITK_TEMPLATE_EXPORT SpringColormapFunction : public ColormapFunction<TScalar, TRGBPixel>
+template< typename TScalar, typename TRGBPixel >
+class ITK_TEMPLATE_EXPORT SpringColormapFunction:
+  public ColormapFunction< TScalar, TRGBPixel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpringColormapFunction);
 
-  using Self = SpringColormapFunction;
-  using Superclass = ColormapFunction<TScalar, TRGBPixel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SpringColormapFunction                 Self;
+  typedef ColormapFunction< TScalar, TRGBPixel > Superclass;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef SmartPointer< const Self >             ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  using RGBPixelType = typename Superclass::RGBPixelType;
-  using ScalarType = typename Superclass::ScalarType;
-  using RealType = typename Superclass::RealType;
+  typedef typename Superclass::RGBPixelType RGBPixelType;
+  typedef typename Superclass::ScalarType   ScalarType;
+  typedef typename Superclass::RealType     RealType;
 
-  RGBPixelType
-  operator()(const TScalar &) const override;
+  virtual RGBPixelType operator()(const TScalar &) const ITK_OVERRIDE;
 
 protected:
-  SpringColormapFunction() = default;
-  ~SpringColormapFunction() override = default;
+  SpringColormapFunction() {}
+  ~SpringColormapFunction() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpringColormapFunction);
 };
-} // end namespace Function
+} // end namespace functor
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSpringColormapFunction.hxx"
+#include "itkSpringColormapFunction.hxx"
 #endif
 
 #endif

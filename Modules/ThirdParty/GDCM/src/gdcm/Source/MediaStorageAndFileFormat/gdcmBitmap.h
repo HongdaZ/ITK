@@ -39,8 +39,8 @@ class GDCM_EXPORT Bitmap : public Object
 {
 public:
   Bitmap();
-  ~Bitmap() override;
-  void Print(std::ostream &) const override;
+  ~Bitmap();
+  void Print(std::ostream &) const;
 
   virtual bool AreOverlaysInPixelData() const { return false; }
   virtual bool UnusedBitsPresentInPixelData() const { return false; }
@@ -54,7 +54,6 @@ public:
   /// \warning you need to call SetPixelFormat first (before SetPlanarConfiguration) for consistency checking
   void SetPlanarConfiguration(unsigned int pc);
 
-  /// INTERNAL do not use
   bool GetNeedByteSwap() const
     {
     return NeedByteSwap;
@@ -174,7 +173,7 @@ protected:
   typedef SmartPointer<LookupTable> LUTPtr;
   LUTPtr LUT;
   // I believe the following 3 ivars can be derived from TS ...
-  bool NeedByteSwap; // FIXME: remove me
+  bool NeedByteSwap;
   bool LossyFlag;
 
 private:

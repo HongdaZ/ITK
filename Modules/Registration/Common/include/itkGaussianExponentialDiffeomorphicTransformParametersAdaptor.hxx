@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,84 +24,94 @@
 namespace itk
 {
 
-template <typename TTransform>
-GaussianExponentialDiffeomorphicTransformParametersAdaptor<
-  TTransform>::GaussianExponentialDiffeomorphicTransformParametersAdaptor()
-  : m_GaussianSmoothingVarianceForTheConstantVelocityField(0.5)
-  , m_GaussianSmoothingVarianceForTheUpdateField(1.75)
+template<typename TTransform>
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::GaussianExponentialDiffeomorphicTransformParametersAdaptor() :
+  m_GaussianSmoothingVarianceForTheConstantVelocityField( 0.5 ),
+  m_GaussianSmoothingVarianceForTheUpdateField( 1.75 ),
+  m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime( 0 ),
+  m_GaussianSmoothingVarianceForTheUpdateFieldSetTime( 0 )
+{
+}
 
-{}
+template<typename TTransform>
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::~GaussianExponentialDiffeomorphicTransformParametersAdaptor()
+{
+}
 
-template <typename TTransform>
+template<typename TTransform>
 void
-GaussianExponentialDiffeomorphicTransformParametersAdaptor<
-  TTransform>::SetGaussianSmoothingVarianceForTheConstantVelocityField(ScalarType variance)
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::SetGaussianSmoothingVarianceForTheConstantVelocityField( ScalarType variance )
 {
   this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime = this->GetMTime();
-  if (Math::NotExactlyEquals(this->m_GaussianSmoothingVarianceForTheConstantVelocityField, variance))
-  {
-    itkDebugMacro("Setting GaussianSmoothingVarianceForTheConstantVelocityField to " << variance);
+  if( Math::NotExactlyEquals(this->m_GaussianSmoothingVarianceForTheConstantVelocityField, variance) )
+    {
+    itkDebugMacro( "Setting GaussianSmoothingVarianceForTheConstantVelocityField to " << variance );
     this->m_GaussianSmoothingVarianceForTheConstantVelocityField = variance;
     this->Modified();
-  }
+    }
 }
 
-template <typename TTransform>
+template<typename TTransform>
 void
-GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>::SetGaussianSmoothingVarianceForTheUpdateField(
-  ScalarType variance)
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::SetGaussianSmoothingVarianceForTheUpdateField( ScalarType variance )
 {
   this->m_GaussianSmoothingVarianceForTheUpdateFieldSetTime = this->GetMTime();
-  if (Math::NotExactlyEquals(this->m_GaussianSmoothingVarianceForTheUpdateField, variance))
-  {
-    itkDebugMacro("Setting GaussianSmoothingVarianceForTheUpdateField to " << variance);
+  if( Math::NotExactlyEquals(this->m_GaussianSmoothingVarianceForTheUpdateField, variance) )
+    {
+    itkDebugMacro( "Setting GaussianSmoothingVarianceForTheUpdateField to " << variance );
     this->m_GaussianSmoothingVarianceForTheUpdateField = variance;
     this->Modified();
-  }
+    }
 }
 
-template <typename TTransform>
+template<typename TTransform>
 void
-GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::AdaptTransformParameters()
 {
   Superclass::AdaptTransformParameters();
 
-  if (this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0)
-  {
+  if( this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0 )
+    {
     this->m_Transform->SetGaussianSmoothingVarianceForTheConstantVelocityField(
-      this->m_GaussianSmoothingVarianceForTheConstantVelocityField);
-  }
-  if (this->m_GaussianSmoothingVarianceForTheUpdateFieldSetTime > 0)
-  {
+      this->m_GaussianSmoothingVarianceForTheConstantVelocityField );
+    }
+  if( this->m_GaussianSmoothingVarianceForTheUpdateFieldSetTime > 0 )
+    {
     this->m_Transform->SetGaussianSmoothingVarianceForTheUpdateField(
-      this->m_GaussianSmoothingVarianceForTheUpdateField);
-  }
+      this->m_GaussianSmoothingVarianceForTheUpdateField );
+    }
 }
 
 template <typename TTransform>
 void
-GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>::PrintSelf(std::ostream & os,
-                                                                                  Indent         indent) const
+GaussianExponentialDiffeomorphicTransformParametersAdaptor<TTransform>
+::PrintSelf( std::ostream& os, Indent indent ) const
 {
-  Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf( os,indent );
 
-  if (this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0)
-  {
+  if( this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0 )
+    {
     os << indent << "Gaussian smoothing parameters: " << std::endl;
-    if (this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0)
-    {
+    if( this->m_GaussianSmoothingVarianceForTheConstantVelocityFieldSetTime > 0 )
+      {
       os << indent << "m_GaussianSmoothingVarianceForTheConstantVelocityField: "
-         << this->m_GaussianSmoothingVarianceForTheConstantVelocityField << std::endl;
-    }
-    if (this->m_GaussianSmoothingVarianceForTheUpdateFieldSetTime > 0)
-    {
-      os << indent
-         << "m_GaussianSmoothingVarianceForTheUpdateField: " << this->m_GaussianSmoothingVarianceForTheUpdateField
+         << this->m_GaussianSmoothingVarianceForTheConstantVelocityField
          << std::endl;
+      }
+    if( this->m_GaussianSmoothingVarianceForTheUpdateFieldSetTime > 0 )
+      {
+      os << indent << "m_GaussianSmoothingVarianceForTheUpdateField: "
+         << this->m_GaussianSmoothingVarianceForTheUpdateField
+         << std::endl;
+      }
     }
-  }
 }
 
-} // namespace itk
+}  // namespace itk
 
 #endif

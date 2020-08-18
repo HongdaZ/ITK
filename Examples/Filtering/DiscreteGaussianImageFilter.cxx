@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -74,17 +74,14 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0]
-              << "  inputImageFile  outputImageFile  variance  maxKernelWidth "
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile  outputImageFile  variance  maxKernelWidth " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -95,15 +92,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = float;
-  using OutputPixelType = float;
+  typedef    float    InputPixelType;
+  typedef    float    OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  typedef itk::Image< InputPixelType,  2 >   InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
 
 
   //  Software Guide : BeginLatex
@@ -118,14 +115,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::DiscreteGaussianImageFilter<InputImageType, OutputImageType>;
+  typedef itk::DiscreteGaussianImageFilter<
+                 InputImageType, OutputImageType >  FilterType;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
 
   //  Software Guide : BeginLatex
@@ -136,12 +134,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
-  const double       gaussianVariance = std::stod(argv[3]);
-  const unsigned int maxKernelWidth = std::stoi(argv[4]);
+  const double gaussianVariance = atof( argv[3] );
+  const unsigned int maxKernelWidth = atoi( argv[4] );
 
 
   //  Software Guide : BeginLatex
@@ -160,8 +158,8 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetVariance(gaussianVariance);
-  filter->SetMaximumKernelWidth(maxKernelWidth);
+  filter->SetVariance( gaussianVariance );
+  filter->SetMaximumKernelWidth( maxKernelWidth );
   // Software Guide : EndCodeSnippet
 
 
@@ -188,22 +186,22 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  using WritePixelType = unsigned char;
-  using WriteImageType = itk::Image<WritePixelType, 2>;
-  using RescaleFilterType =
-    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
+  typedef unsigned char                          WritePixelType;
+  typedef itk::Image< WritePixelType, 2 >        WriteImageType;
+  typedef itk::RescaleIntensityImageFilter<
+               OutputImageType, WriteImageType > RescaleFilterType;
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
 
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
 
   // Software Guide : BeginCodeSnippet
-  rescaler->SetInput(filter->GetOutput());
-  writer->SetInput(rescaler->GetOutput());
+  rescaler->SetInput( filter->GetOutput() );
+  writer->SetInput( rescaler->GetOutput() );
   writer->Update();
   // Software Guide : EndCodeSnippet
 

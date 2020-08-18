@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,28 +25,23 @@
 
 namespace itk
 {
-/**
- *\class NiftiImageIOFactory
- * \brief Create instances of NiftiImageIO objects using an object factory.
- * \ingroup ITKIONIFTI
- */
-class ITKIONIFTI_EXPORT NiftiImageIOFactory : public ObjectFactoryBase
+/** \class NiftiImageIOFactory
+   * \brief Create instances of NiftiImageIO objects using an object factory.
+   * \ingroup ITKIONIFTI
+   */
+class ITKIONIFTI_EXPORT NiftiImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NiftiImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = NiftiImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NiftiImageIOFactory        Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription(void) const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -55,8 +50,7 @@ public:
   itkTypeMacro(NiftiImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     NiftiImageIOFactory::Pointer metaFactory = NiftiImageIOFactory::New();
 
@@ -65,9 +59,11 @@ public:
 
 protected:
   NiftiImageIOFactory();
-  ~NiftiImageIOFactory() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~NiftiImageIOFactory() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NiftiImageIOFactory);
 };
 } // end namespace itk
 

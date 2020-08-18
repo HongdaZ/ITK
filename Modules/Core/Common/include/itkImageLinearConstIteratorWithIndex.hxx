@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,10 +25,12 @@ namespace itk
 //----------------------------------------------------------------------
 //  Constructor
 //----------------------------------------------------------------------
-template <typename TImage>
-ImageLinearConstIteratorWithIndex<TImage>::ImageLinearConstIteratorWithIndex(const ImageType *  ptr,
-                                                                             const RegionType & region)
-  : ImageConstIteratorWithIndex<TImage>(ptr, region)
+template< typename TImage >
+ImageLinearConstIteratorWithIndex< TImage >
+::ImageLinearConstIteratorWithIndex(
+  const ImageType *ptr,
+  const RegionType & region):
+  ImageConstIteratorWithIndex< TImage >(ptr, region)
 {
   this->SetDirection(0);
 }
@@ -36,11 +38,13 @@ ImageLinearConstIteratorWithIndex<TImage>::ImageLinearConstIteratorWithIndex(con
 //----------------------------------------------------------------------
 //  Go to the last pixel of the current line
 //----------------------------------------------------------------------
-template <typename TImage>
+template< typename TImage >
 void
-ImageLinearConstIteratorWithIndex<TImage>::GoToReverseBeginOfLine()
+ImageLinearConstIteratorWithIndex< TImage >
+::GoToReverseBeginOfLine(void)
 {
-  OffsetValueType distanceToEnd = this->m_EndIndex[m_Direction] - this->m_PositionIndex[m_Direction] - 1;
+  OffsetValueType distanceToEnd =
+    this->m_EndIndex[m_Direction] - this->m_PositionIndex[m_Direction] - 1;
 
   this->m_Position += m_Jump * distanceToEnd;
   this->m_PositionIndex[m_Direction] = this->m_EndIndex[m_Direction] - 1;
@@ -49,11 +53,13 @@ ImageLinearConstIteratorWithIndex<TImage>::GoToReverseBeginOfLine()
 //----------------------------------------------------------------------
 //  Go to the first pixel of the current line
 //----------------------------------------------------------------------
-template <typename TImage>
+template< typename TImage >
 void
-ImageLinearConstIteratorWithIndex<TImage>::GoToBeginOfLine()
+ImageLinearConstIteratorWithIndex< TImage >
+::GoToBeginOfLine(void)
 {
-  OffsetValueType distanceToBegin = this->m_PositionIndex[m_Direction] - this->m_BeginIndex[m_Direction];
+  OffsetValueType distanceToBegin =
+    this->m_PositionIndex[m_Direction] - this->m_BeginIndex[m_Direction];
 
   this->m_Position -= m_Jump * distanceToBegin;
 
@@ -63,11 +69,13 @@ ImageLinearConstIteratorWithIndex<TImage>::GoToBeginOfLine()
 //----------------------------------------------------------------------
 //  Pass to the past last pixel of the current line
 //----------------------------------------------------------------------
-template <typename TImage>
+template< typename TImage >
 void
-ImageLinearConstIteratorWithIndex<TImage>::GoToEndOfLine()
+ImageLinearConstIteratorWithIndex< TImage >
+::GoToEndOfLine(void)
 {
-  OffsetValueType distanceToEnd = this->m_EndIndex[m_Direction] - this->m_PositionIndex[m_Direction];
+  OffsetValueType distanceToEnd =
+    this->m_EndIndex[m_Direction] - this->m_PositionIndex[m_Direction];
 
   this->m_Position += m_Jump * distanceToEnd;
 

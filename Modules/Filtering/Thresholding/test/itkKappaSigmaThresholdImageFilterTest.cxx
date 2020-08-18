@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,101 +17,69 @@
  *=========================================================================*/
 
 #include "itkKappaSigmaThresholdImageFilter.h"
+
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkSimpleFilterWatcher.h"
-#include "itkTestingMacros.h"
+#include "itkFilterWatcher.h"
 
-
-int
-itkKappaSigmaThresholdImageFilterTest(int argc, char * argv[])
+int itkKappaSigmaThresholdImageFilterTest(int argc, char* argv[] )
 {
-  if (argc != 7)
-  {
-    std::cerr << "Missing parameters." << std::endl;
-    std::cerr << "Usage:" << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImageFile"
-              << " outputImageFile"
-              << " maskValue"
-              << " sigmaFactor"
-              << " numberOfIterations"
-              << " expectedThreshold" << std::endl;
+
+  if( argc < 5 )
+    {
+    std::cerr << "Usage: " << argv[0];
+    std::cerr << " inputImageFile outputImageFile iterations sigmaFactor";
+    std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using InputPixelType = unsigned char;
-  using MaskPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
+  typedef  unsigned char  InputPixelType;
+  typedef  unsigned char  MaskPixelType;
+  typedef  unsigned char  OutputPixelType;
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using MaskImageType = itk::Image<MaskPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< MaskPixelType,   Dimension >   MaskImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::KappaSigmaThresholdImageFilter<
+    InputImageType, MaskImageType, OutputImageType >  FilterType;
+
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
+
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
-
-
-  using FilterType = itk::KappaSigmaThresholdImageFilter<InputImageType, MaskImageType, OutputImageType>;
   FilterType::Pointer filter = FilterType::New();
-
-  itk::SimpleFilterWatcher watcher(filter);
-
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, KappaSigmaThresholdImageFilter, ImageToImageFilter);
-
-
-  auto insideValue = static_cast<FilterType::OutputPixelType>(255);
-  filter->SetInsideValue(insideValue);
-  ITK_TEST_SET_GET_VALUE(insideValue, filter->GetInsideValue());
-
-  auto outsideValue = static_cast<FilterType::OutputPixelType>(0);
-  filter->SetOutsideValue(outsideValue);
-  ITK_TEST_SET_GET_VALUE(outsideValue, filter->GetOutsideValue());
-
-  auto maskValue = static_cast<FilterType::MaskPixelType>(std::stod(argv[3]));
-  filter->SetMaskValue(maskValue);
-  ITK_TEST_SET_GET_VALUE(maskValue, filter->GetMaskValue());
-
-  double sigmaFactor = std::stod(argv[4]);
-  filter->SetSigmaFactor(sigmaFactor);
-  ITK_TEST_SET_GET_VALUE(sigmaFactor, filter->GetSigmaFactor());
-
-  auto numberOfIterations = static_cast<unsigned int>(std::stoi(argv[5]));
-  filter->SetNumberOfIterations(numberOfIterations);
-  ITK_TEST_SET_GET_VALUE(numberOfIterations, filter->GetNumberOfIterations());
-
-
-  filter->SetInput(reader->GetOutput());
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
-
-
-  // Regression test: compare computed threshold
-  FilterType::InputPixelType expectedThreshold = std::stod(argv[6]);
-  FilterType::InputPixelType resultThreshold = filter->GetThreshold();
-  if (itk::Math::NotAlmostEquals(expectedThreshold, resultThreshold))
-  {
-    std::cerr << "Test failed!" << std::endl;
-    std::cerr << "Error in GetThreshold()" << std::endl;
-    std::cerr << "Expected: " << itk::NumericTraits<FilterType::InputPixelType>::PrintType(expectedThreshold)
-              << ", but got: " << itk::NumericTraits<FilterType::InputPixelType>::PrintType(resultThreshold)
-              << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // Write output image
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  FilterWatcher watcher(filter);
 
+  reader->SetFileName( argv[1] );
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
 
-  std::cout << "Test finished" << std::endl;
+  filter->SetOutsideValue( 0 );
+  filter->SetInsideValue( 255 );
+  filter->SetMaskValue( 255 );
+  filter->SetSigmaFactor( atof( argv[3] ) );
+  filter->SetNumberOfIterations( atoi( argv[4] ) );
+
+  filter->Print( std::cout );
+
+  std::cout << " GetOutsideValue()       = " << filter->GetOutsideValue() << std::endl;
+  std::cout << " GetInsideValue()        = " << filter->GetInsideValue() << std::endl;
+  std::cout << " GetMaskValue()          = " << filter->GetMaskValue() << std::endl;
+  std::cout << " GetSigmaFactor()        = " << filter->GetSigmaFactor() << std::endl;
+  std::cout << " GetNumberOfIterations() = " << filter->GetNumberOfIterations() << std::endl;
+
+  filter->Update();
+
+  std::cout << "Computed Threshold is: " << filter->GetThreshold() << std::endl;
+
+  writer->SetFileName( argv[2] );
+  writer->Update();
+
   return EXIT_SUCCESS;
 }

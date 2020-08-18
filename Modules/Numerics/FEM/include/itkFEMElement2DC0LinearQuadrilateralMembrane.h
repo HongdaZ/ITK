@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,22 +58,21 @@ namespace fem
 class ITKFEM_EXPORT Element2DC0LinearQuadrilateralMembrane : public Element2DMembrane<Element2DC0LinearQuadrilateral>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element2DC0LinearQuadrilateralMembrane;
-  using Superclass = Element2DMembrane<Element2DC0LinearQuadrilateral>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element2DC0LinearQuadrilateralMembrane            Self;
+  typedef Element2DMembrane<Element2DC0LinearQuadrilateral> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Element2DC0LinearQuadrilateralMembrane, Element2DMembrane<Element2DC0LinearQuadrilateral>);
+  itkTypeMacro(Element2DC0LinearQuadrilateralMembrane, Element2DMembrane<Element2DC0LinearQuadrilateral> );
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
   /**
    * Default constructor only clears the internal storage
@@ -84,18 +83,18 @@ public:
    * Construct an element by specifying pointers to
    * 4 points and a material.
    */
-  Element2DC0LinearQuadrilateralMembrane(NodeIDType             n1_,
-                                         NodeIDType             n2_,
-                                         NodeIDType             n3_,
-                                         NodeIDType             n4_,
+  Element2DC0LinearQuadrilateralMembrane(NodeIDType n1_,
+                                         NodeIDType n2_,
+                                         NodeIDType n3_,
+                                         NodeIDType n4_,
                                          Material::ConstPointer p_);
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-}; // class Element2DC0LinearQuadrilateralMembrane
-} // end namespace fem
-} // end namespace itk
+};  // class Element2DC0LinearQuadrilateralMembrane
 
-#endif // itkFEMElement2DC0LinearQuadrilateralMembrane_h
+}
+}  // end namespace itk::fem
+
+#endif  // #ifndef itkFEMElement2DC0LinearQuadrilateralMembrane_h

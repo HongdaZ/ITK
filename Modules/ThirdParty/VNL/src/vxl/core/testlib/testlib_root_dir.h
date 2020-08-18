@@ -9,9 +9,7 @@
 //     17-05-2001 I. Scott - Moved from vul to testlib
 // \endverbatim
 #include <string>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 // macros to stringify compiler -D path value
 #define TEST_STR(x) #x

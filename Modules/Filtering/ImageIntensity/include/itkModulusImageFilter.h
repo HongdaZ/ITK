@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,15 +18,14 @@
 #ifndef itkModulusImageFilter_h
 #define itkModulusImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 #include "itkArithmeticOpsFunctors.h"
 
 
 namespace itk
 {
 
-/**
- *\class ModulusImageFilter
+/** \class ModulusImageFilter
  * \brief Computes the modulus (x % dividend) pixel-wise
  *
  * The input pixel type must support the c++ modulus operator (%).
@@ -39,59 +38,61 @@ namespace itk
  *
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1>
-class ITK_TEMPLATE_EXPORT ModulusImageFilter
-  : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename  TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
+class ITK_TEMPLATE_EXPORT ModulusImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::Modulus<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ModulusImageFilter);
+  /** Standard class typedefs. */
+  typedef ModulusImageFilter Self;
+  typedef BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::Modulus<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ModulusImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using FunctorType = Functor::
-    Modulus<typename TInputImage1::PixelType, typename TInputImage2::PixelType, typename TOutputImage::PixelType>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using InputPixelType = typename TInputImage1::PixelType;
+  typedef typename TOutputImage::PixelType                    OutputPixelType;
+  typedef typename TInputImage1::PixelType                    InputPixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ModulusImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(ModulusImageFilter,
+               UnaryFunctorImageFilter);
 
   /** Set/Get the dividend */
-  virtual void
-  SetDividend(InputPixelType _arg)
-  {
-    this->SetConstant2(_arg);
-  }
-  virtual const InputPixelType &
-  GetDividend() const
-  {
-    return this->GetConstant2();
-  }
+  virtual void SetDividend( InputPixelType _arg ) { this->SetConstant2(_arg); }
+  virtual const InputPixelType &GetDividend () const { return this->GetConstant2(); }
 
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   ModulusImageFilter();
-  ~ModulusImageFilter() override = default;
+  virtual ~ModulusImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ModulusImageFilter);
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkModulusImageFilter.hxx"
+#include "itkModulusImageFilter.hxx"
 #endif
 
 #endif

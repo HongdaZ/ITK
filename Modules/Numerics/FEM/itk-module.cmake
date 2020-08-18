@@ -15,7 +15,6 @@ itk_module(ITKFEM
     ITKIOSpatialObjects
   DESCRIPTION
     "${DOCUMENTATION}"
-  EXCLUDE_FROM_DEFAULT
 )
 
 # ITKIOSpatialObjects dependency added for itkFEMSpatialObjectWriter

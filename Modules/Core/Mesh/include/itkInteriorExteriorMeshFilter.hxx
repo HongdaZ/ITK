@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,11 +27,13 @@ namespace itk
 /**
  *
  */
-template <typename TInputMesh, typename TOutputMesh, typename TSpatialFunction>
-InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::InteriorExteriorMeshFilter()
+template< typename TInputMesh, typename TOutputMesh, typename TSpatialFunction >
+InteriorExteriorMeshFilter< TInputMesh, TOutputMesh, TSpatialFunction >
+::InteriorExteriorMeshFilter()
 {
   m_SpatialFunction = SpatialFunctionType::New();
-  SpatialFunctionDataObjectPointer spatialFunctionObject = SpatialFunctionDataObjectType::New();
+  SpatialFunctionDataObjectPointer spatialFunctionObject =
+    SpatialFunctionDataObjectType::New();
   spatialFunctionObject->Set(m_SpatialFunction);
   this->ProcessObject::SetNthInput(1, spatialFunctionObject);
 }
@@ -39,9 +41,10 @@ InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::InteriorE
 /**
  *
  */
-template <typename TInputMesh, typename TOutputMesh, typename TSpatialFunction>
+template< typename TInputMesh, typename TOutputMesh, typename TSpatialFunction >
 void
-InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::PrintSelf(std::ostream & os, Indent indent) const
+InteriorExteriorMeshFilter< TInputMesh, TOutputMesh, TSpatialFunction >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << m_SpatialFunction << std::endl;
@@ -50,85 +53,86 @@ InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::PrintSelf
 /**
  * This method causes the filter to generate its output.
  */
-template <typename TInputMesh, typename TOutputMesh, typename TSpatialFunction>
+template< typename TInputMesh, typename TOutputMesh, typename TSpatialFunction >
 void
-InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::GenerateData()
+InteriorExteriorMeshFilter< TInputMesh, TOutputMesh, TSpatialFunction >
+::GenerateData(void)
 {
-  using InputPointsContainer = typename TInputMesh::PointsContainer;
+  typedef typename TInputMesh::PointsContainer  InputPointsContainer;
 
-  using InputPointsContainerConstPointer = typename TInputMesh::PointsContainerConstPointer;
+  typedef typename TInputMesh::PointsContainerConstPointer InputPointsContainerConstPointer;
 
-  using InputPointDataContainer = typename TInputMesh::PointDataContainer;
+  typedef typename TInputMesh::PointDataContainer  InputPointDataContainer;
 
-  using InputPointDataContainerConstPointer = typename TInputMesh::PointDataContainerConstPointer;
+  typedef typename TInputMesh::PointDataContainerConstPointer InputPointDataContainerConstPointer;
 
-  const InputMeshType * inputMesh = this->GetInput();
-  OutputMeshPointer     outputMesh = this->GetOutput();
+  const InputMeshType *inputMesh =  this->GetInput();
+  OutputMeshPointer    outputMesh =  this->GetOutput();
 
-  if (!inputMesh)
-  {
+  if ( !inputMesh )
+    {
     ExceptionObject exception(__FILE__, __LINE__);
     exception.SetDescription("Missing Input Mesh");
     exception.SetLocation(ITK_LOCATION);
     throw exception;
-  }
+    }
 
-  if (!outputMesh)
-  {
+  if ( !outputMesh )
+    {
     ExceptionObject exception(__FILE__, __LINE__);
     exception.SetDescription("Missing Output Mesh");
     exception.SetLocation(ITK_LOCATION);
     throw exception;
-  }
+    }
 
-  outputMesh->SetBufferedRegion(outputMesh->GetRequestedRegion());
+  outputMesh->SetBufferedRegion( outputMesh->GetRequestedRegion() );
 
-  InputPointsContainerConstPointer    inPoints = inputMesh->GetPoints();
+  InputPointsContainerConstPointer    inPoints  = inputMesh->GetPoints();
   InputPointDataContainerConstPointer inData = inputMesh->GetPointData();
 
-  typename InputPointsContainer::ConstIterator    inputPoint = inPoints->Begin();
+  typename InputPointsContainer::ConstIterator inputPoint = inPoints->Begin();
   typename InputPointDataContainer::ConstIterator inputData;
 
   bool inputDataExists = false;
-  if (inData)
-  {
+  if ( inData )
+    {
     inputDataExists = true;
-  }
+    }
 
-  if (inputDataExists)
-  {
+  if ( inputDataExists )
+    {
     inputData = inData->Begin();
-  }
+    }
 
   // support progress methods/callbacks
-  ProgressReporter progress(this, 0, inPoints->Size());
+  ProgressReporter progress( this, 0, inPoints->Size() );
 
-  using ValueType = typename TSpatialFunction::OutputType;
+  typedef typename TSpatialFunction::OutputType ValueType;
 
-  using PointIdType = typename TOutputMesh::PointIdentifier;
-  PointIdType pointId = NumericTraits<PointIdType>::ZeroValue();
+  typedef typename TOutputMesh::PointIdentifier PointIdType;
+  PointIdType pointId = NumericTraits< PointIdType >::ZeroValue();
 
-  while (inputPoint != inPoints->End())
-  {
-    ValueType value = m_SpatialFunction->Evaluate(inputPoint.Value());
-
-    if (value) // Assumes return type is "bool"
+  while ( inputPoint != inPoints->End() )
     {
-      outputMesh->SetPoint(pointId, inputPoint.Value());
-      if (inputDataExists)
+    ValueType value = m_SpatialFunction->Evaluate( inputPoint.Value() );
+
+    if ( value ) // Assumes return type is "bool"
       {
-        outputMesh->SetPointData(pointId, inputData.Value());
-      }
+      outputMesh->SetPoint( pointId, inputPoint.Value() );
+      if ( inputDataExists )
+        {
+        outputMesh->SetPointData( pointId, inputData.Value() );
+        }
       pointId++;
-    }
+      }
 
     ++inputPoint;
-    if (inputDataExists)
-    {
+    if ( inputDataExists )
+      {
       ++inputData;
-    }
+      }
     progress.CompletedPixel();
-  }
+    }
 
   // Create duplicate references to the rest of data in the mesh
   this->CopyInputMeshToOutputMeshCellLinks();
@@ -137,10 +141,11 @@ InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::GenerateD
 
   unsigned int maxDimension = TInputMesh::MaxTopologicalDimension;
 
-  for (unsigned int dim = 0; dim < maxDimension; dim++)
-  {
-    outputMesh->SetBoundaryAssignments(dim, inputMesh->GetBoundaryAssignments(dim));
-  }
+  for ( unsigned int dim = 0; dim < maxDimension; dim++ )
+    {
+    outputMesh->SetBoundaryAssignments( dim,
+                                        inputMesh->GetBoundaryAssignments(dim) );
+    }
 }
 } // end namespace itk
 

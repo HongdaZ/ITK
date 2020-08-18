@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,71 +19,70 @@
 #include "itkLevelSetNeighborhoodExtractor.h"
 #include "itkFastMarchingImageFilter.h"
 
-int
-itkLevelSetNeighborhoodExtractorTest(int, char *[])
+int itkLevelSetNeighborhoodExtractorTest(int, char* [] )
 {
-  constexpr unsigned int ImageDimension = 2;
-  using PixelType = float;
-  using ImageType = itk::Image<PixelType, ImageDimension>;
+  const unsigned int ImageDimension = 2;
+  typedef float                                PixelType;
+  typedef itk::Image<PixelType,ImageDimension> ImageType;
 
   // Create an input image using fastmarching
-  using SourceType = itk::FastMarchingImageFilter<ImageType>;
+  typedef itk::FastMarchingImageFilter<ImageType> SourceType;
   SourceType::Pointer source = SourceType::New();
 
   ImageType::SizeType size;
-  size.Fill(17);
+  size.Fill( 17 );
 
-  source->SetOutputSize(size);
+  source->SetOutputSize( size );
 
   SourceType::NodeType node;
   ImageType::IndexType index;
-  index.Fill(8);
+  index.Fill( 8 );
 
-  node.SetIndex(index);
-  node.SetValue(-4.0);
+  node.SetIndex( index );
+  node.SetValue( -4.0 );
 
-  using NodeContainerType = SourceType::NodeContainer;
+  typedef SourceType::NodeContainer NodeContainerType;
   NodeContainerType::Pointer container = NodeContainerType::New();
 
-  container->InsertElement(0, node);
+  container->InsertElement( 0, node );
 
-  source->SetTrialPoints(container);
+  source->SetTrialPoints( container );
   source->CollectPointsOn();
   source->Update();
 
-  using ExtractorType = itk::LevelSetNeighborhoodExtractor<ImageType>;
+  typedef itk::LevelSetNeighborhoodExtractor<ImageType> ExtractorType;
   ExtractorType::Pointer extractor = ExtractorType::New();
 
-  extractor->SetInputLevelSet(source->GetOutput());
-  extractor->SetLevelSetValue(0.0);
+  extractor->SetInputLevelSet( source->GetOutput() );
+  extractor->SetLevelSetValue( 0.0 );
   extractor->NarrowBandingOff();
 
   extractor->Locate();
 
-  using Iterator = NodeContainerType::ConstIterator;
+  typedef NodeContainerType::ConstIterator Iterator;
   Iterator iter;
   Iterator iterEnd;
 
   std::cout << "Inside Points" << std::endl;
-  iter = extractor->GetInsidePoints()->Begin();
+  iter    = extractor->GetInsidePoints()->Begin();
   iterEnd = extractor->GetInsidePoints()->End();
-  for (; iter != iterEnd; iter++)
-  {
+  for(; iter != iterEnd; iter++ )
+    {
     std::cout << iter.Value().GetIndex() << " ";
     std::cout << iter.Value().GetValue() << std::endl;
-  }
+    }
 
   std::cout << "Outside Points" << std::endl;
-  iter = extractor->GetOutsidePoints()->Begin();
+  iter    = extractor->GetOutsidePoints()->Begin();
   iterEnd = extractor->GetOutsidePoints()->End();
-  for (; iter != iterEnd; iter++)
-  {
+  for(; iter != iterEnd; iter++ )
+    {
     std::cout << iter.Value().GetIndex() << " ";
     std::cout << iter.Value().GetValue() << std::endl;
-  }
+    }
 
   // exercise Print
-  extractor->Print(std::cout);
+  extractor->Print( std::cout );
 
   // exercise Get methods
   std::cout << "InputLevelSet: " << extractor->GetInputLevelSet() << std::endl;
@@ -94,47 +93,48 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
 
   // exercise error handling
   bool passed;
-  std::cout << "Testing nullptr inputs" << std::endl;
+  std::cout << "Testing ITK_NULLPTR inputs" << std::endl;
 
   try
-  {
+    {
     passed = false;
-    extractor->SetInputLevelSet(nullptr);
+    extractor->SetInputLevelSet( ITK_NULLPTR );
     extractor->Locate();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject& err )
+    {
     std::cout << err << std::endl;
     passed = true;
-    extractor->SetInputLevelSet(source->GetOutput());
-  }
+    extractor->SetInputLevelSet( source->GetOutput() );
+    }
 
-  if (!passed)
-  {
+  if ( !passed )
+    {
     std::cout << "Test failed" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   try
-  {
+    {
     passed = false;
     extractor->NarrowBandingOn();
-    extractor->SetInputNarrowBand(nullptr);
+    extractor->SetInputNarrowBand( ITK_NULLPTR );
     extractor->Locate();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject& err )
+    {
     std::cout << err << std::endl;
     passed = true;
     extractor->NarrowBandingOff();
-  }
+    }
 
-  if (!passed)
-  {
+  if ( !passed )
+    {
     std::cout << "Test failed" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;
+
 }

@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_sparse_matrix.h
 #ifndef vnl_sparse_matrix_h_
 #define vnl_sparse_matrix_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 //  \file
 //  \brief Simple sparse matrix
@@ -54,10 +57,8 @@
 
 #include <vector>
 #include <functional>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_vector.h"
+#include <vcl_compiler.h>
+#include <vnl/vnl_vector.h>
 #include "vnl/vnl_export.h"
 
 //: Stores elements of sparse matrix
@@ -71,31 +72,29 @@
 //  value.  All rows are stored, as std::vector< row >;
 //
 template <class T>
-class VNL_EXPORT vnl_sparse_matrix_pair
+class VNL_TEMPLATE_EXPORT vnl_sparse_matrix_pair
 {
  public:
-   unsigned int first{0};
-   T second;
+  unsigned int first;
+  T second;
 
-   //: Constructs a pair with null values
-   vnl_sparse_matrix_pair() : second(T(0)) {}
+  //: Constructs a pair with null values
+  vnl_sparse_matrix_pair() : first(0), second(T(0)) {}
 
-   //: Constructs a pair with position a and value b
-   vnl_sparse_matrix_pair(unsigned int const &a, T const &b)
-       : first(a), second(b) {}
+  //: Constructs a pair with position a and value b
+  vnl_sparse_matrix_pair(unsigned int const& a, T const& b) : first(a), second(b) {}
 
-   vnl_sparse_matrix_pair(const vnl_sparse_matrix_pair<T> &o)
-       : first(o.first), second(o.second) {}
+  vnl_sparse_matrix_pair(const vnl_sparse_matrix_pair<T>& o) : first(o.first), second(o.second) {}
 
-   vnl_sparse_matrix_pair<T> &operator=(vnl_sparse_matrix_pair const &o) {
-     if (&o != this) {
-       first = o.first;
-       second = o.second;
-     }
-     return *this;
+  vnl_sparse_matrix_pair<T>& operator=(vnl_sparse_matrix_pair const &o) {
+    if (&o != this) {
+      first = o.first;
+      second = o.second;
+    }
+    return *this;
   }
 
-  struct less
+  struct less : public std::binary_function<vnl_sparse_matrix_pair, vnl_sparse_matrix_pair, bool>
   {
     bool operator() (vnl_sparse_matrix_pair const& p1, vnl_sparse_matrix_pair const& p2) {
       return p1.first < p2.first;
@@ -107,7 +106,7 @@ class VNL_EXPORT vnl_sparse_matrix_pair
 //: Simple sparse matrix
 //  Stores non-zero elements as a sparse_matrix_pair
 template <class T>
-class VNL_EXPORT vnl_sparse_matrix
+class VNL_TEMPLATE_EXPORT vnl_sparse_matrix
 {
  public:
   typedef vnl_sparse_matrix_pair<T> pair_t;

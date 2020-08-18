@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@
 
 namespace itk
 {
-/**
- *\class JoinSeriesImageFilter
+/** \class JoinSeriesImageFilter
  * \brief Join N-D images into an (N+1)-D image
  *
  * This filter is templated over the input image type and the output image
  * type. The pixel type of them must be the same and the input dimension
  * must be less than the output dimension.
- * When the input images are N-dimensional, they are joined in order and
+ * When the input images are N-dimensinal, they are joined in order and
  * the size of the N+1'th dimension of the output is same as the number of
  * the inputs. The spacing and the origin (where the first input is placed)
  * for the N+1'th dimension is specified in this filter. The output image
@@ -47,17 +46,16 @@ namespace itk
  *
  * \ingroup ITKImageCompose
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT JoinSeriesImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT JoinSeriesImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JoinSeriesImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = JoinSeriesImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef JoinSeriesImageFilter                           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,17 +63,19 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(JoinSeriesImageFilter, ImageToImageFilter);
 
-  /** Compiler can't inherit type alias? */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  /** Compiler can't inherit typedef? */
+  typedef typename Superclass::InputImageType  InputImageType;
+  typedef typename Superclass::OutputImageType OutputImageType;
+  typedef typename InputImageType::Pointer     InputImagePointer;
+  typedef typename OutputImageType::Pointer    OutputImagePointer;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   /** Compiler can't inherit ImageDimension enumeration? */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Set/Get spacing of the new dimension */
   itkSetMacro(Spacing, double);
@@ -87,57 +87,55 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToOutputCheck,
-                  (Concept::Convertible<typename TInputImage::PixelType, typename TOutputImage::PixelType>));
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType,
+                                           typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   JoinSeriesImageFilter();
-  ~JoinSeriesImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~JoinSeriesImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** Override VerifyInputInformation() to add the additional check
+  /** Override VeriyInputInformation() to add the additional check
    * that all inputs have the same number of components.
    *
    * \sa ProcessObject::VerifyInputInformation
    */
-  void
-  VerifyInputInformation() ITKv5_CONST override;
+  virtual void VerifyInputInformation() ITK_OVERRIDE;
 
   /** Overrides GenerateOutputInformation() in order to produce
    * an image which has a different information than the first input.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Overrides GenerateInputRequestedRegion() in order to inform
    * the pipeline execution model of different input requested regions
    * than the output requested region.
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** JoinSeriesImageFilter can be implemented as a multithreaded filter.
    * \sa ImageSource::ThreadedGenerateData(),
    *     ImageSource::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  virtual void ThreadedGenerateData(const OutputImageRegionType &
+                                    outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(JoinSeriesImageFilter);
+
   /** IndexValueType is used to switch among the inputs and
    * is used as the index value of the new dimension */
-  using IndexValueType = unsigned int;
+  typedef unsigned int IndexValueType;
 
-  double m_Spacing{ 1.0 };
-  double m_Origin{ 0.0 };
+  double m_Spacing;
+  double m_Origin;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkJoinSeriesImageFilter.hxx"
+#include "itkJoinSeriesImageFilter.hxx"
 #endif
 
 #endif

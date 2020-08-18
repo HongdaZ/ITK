@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 namespace itk
 {
 
-/**
- *\class ShotNoiseImageFilter
+/** \class ShotNoiseImageFilter
  *
  * \brief Alter an image with shot noise.
  *
@@ -90,17 +89,16 @@ namespace itk
  *
  * \ingroup ITKImageNoise
  */
-template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT ShotNoiseImageFilter : public NoiseBaseImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage=TInputImage>
+class ITK_TEMPLATE_EXPORT ShotNoiseImageFilter :
+  public NoiseBaseImageFilter<TInputImage,TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShotNoiseImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ShotNoiseImageFilter;
-  using Superclass = NoiseBaseImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ShotNoiseImageFilter                             Self;
+  typedef NoiseBaseImageFilter< TInputImage,TOutputImage > Superclass;
+  typedef SmartPointer<Self>                               Pointer;
+  typedef SmartPointer<const Self>                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -108,18 +106,18 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ShotNoiseImageFilter, NoiseBaseImageFilter);
 
-  /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageType       OutputImageType;
+  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
 
   /** Set/Get the value to map the pixel value to the actual particle counting.
    * The scaling can be seen as the inverse of the gain used during the
@@ -131,28 +129,29 @@ public:
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputConvertibleToOutputCheck,
-                  (Concept::Convertible<typename TInputImage::PixelType, typename TOutputImage::PixelType>));
+                  (Concept::Convertible<typename TInputImage::PixelType,
+                                        typename TOutputImage::PixelType>) );
   /** End concept checking */
 #endif
 
 protected:
   ShotNoiseImageFilter();
-  ~ShotNoiseImageFilter() override = default;
+  virtual ~ShotNoiseImageFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
-  double m_Scale{ 1.0 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShotNoiseImageFilter);
+
+  double m_Scale;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShotNoiseImageFilter.hxx"
+#include "itkShotNoiseImageFilter.hxx"
 #endif
 
 #endif

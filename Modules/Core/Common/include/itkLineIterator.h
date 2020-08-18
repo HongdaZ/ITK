@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ namespace itk
  * the two indices is closed.  So, a line iterator specified with
  * the same start and end index will visit exactly one pixel.
  *
-   \code
-   LineConstIterator<ImageType> it(image, I1, I2);
-   while (!it.IsAtEnd())
-   {
-      // visits at least 1 pixel
-   }
-   \endcode
+ * \code
+ * LineConstIterator<ImageType> it(image, I1, I2);
+ * while (!it.IsAtEnd())
+ * {
+ *    // visits at least 1 pixel
+ * }
+ * \endcode
  *
  * \author Benjamin King, Experimentelle Radiologie, Medizinische
  * Hochschule Hannover.
@@ -48,76 +48,76 @@ namespace itk
  * \sa LineConstIterator
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/IterateLineThroughImage,Iterate Line Through Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Iterators/LineIterator,Iterate over a line through an image}
+ * \endwiki
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT LineIterator : public LineConstIterator<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT LineIterator:public LineConstIterator< TImage >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LineIterator;
+  /** Standard class typedefs. */
+  typedef LineIterator Self;
 
   /** Dimension of the image that the iterator walks.  This constant is needed so
    * that functions that are templated over image iterator type (as opposed to
    * being templated over pixel type and dimension) can have compile time
    * access to the dimension of the image that the iterator walks. */
-  static constexpr unsigned int ImageIteratorDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageIteratorDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Define the superclass */
-  using Superclass = LineConstIterator<TImage>;
+  typedef LineConstIterator< TImage > Superclass;
 
   /** Inherit types from the superclass */
-  using IndexType = typename Superclass::IndexType;
-  using OffsetType = typename Superclass::OffsetType;
-  using SizeType = typename Superclass::SizeType;
-  using RegionType = typename Superclass::RegionType;
-  using ImageType = typename Superclass::ImageType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using PixelType = typename Superclass::PixelType;
-  using AccessorType = typename Superclass::AccessorType;
+  typedef typename Superclass::IndexType             IndexType;
+  typedef typename Superclass::OffsetType            OffsetType;
+  typedef typename Superclass::SizeType              SizeType;
+  typedef typename Superclass::RegionType            RegionType;
+  typedef typename Superclass::ImageType             ImageType;
+  typedef typename Superclass::PixelContainer        PixelContainer;
+  typedef typename Superclass::PixelContainerPointer PixelContainerPointer;
+  typedef typename Superclass::InternalPixelType     InternalPixelType;
+  typedef typename Superclass::PixelType             PixelType;
+  typedef typename Superclass::AccessorType          AccessorType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LineIterator, LineConstIterator);
 
   /** Set the pixel value */
-  void
-  Set(const PixelType & value)
+  void Set(const PixelType & value)
   {
     // Normally, this would just be the following:
     //   m_Image->SetPixel(m_CurrentImageIndex,value);
     // However, we don't want a warning about m_Image being a ConstPointer
     // in the Superclass.
-    const_cast<ImageType *>(this->m_Image.GetPointer())->SetPixel(this->m_CurrentImageIndex, value);
+    const_cast< ImageType * >( this->m_Image.GetPointer() )->
+    SetPixel(this->m_CurrentImageIndex, value);
   }
 
   /** Return a reference to the pixel.
    * This method will provide the fastest access to pixel
    * data, but it will NOT support ImageAdaptors. */
-  const PixelType &
-  Value()
+  const PixelType & Value(void)
   {
-    return (this->m_Image->GetPixel(this->m_CurrentImageIndex));
+    return ( this->m_Image->GetPixel(this->m_CurrentImageIndex) );
   }
 
   /** operator= is provided to make sure the handle to the image is properly
    * reference counted. */
-  Self &
-  operator=(const Self & it);
+  Self & operator=(const Self & it);
 
   /** Constructor establishes an iterator to walk along a path */
-  LineIterator(ImageType * imagePtr, const IndexType & firstIndex, const IndexType & lastIndex);
+  LineIterator(ImageType *imagePtr, const IndexType & firstIndex,
+               const IndexType & lastIndex);
 
   /** Default Destructor. */
-  ~LineIterator() override = default;
+  virtual ~LineIterator() ITK_OVERRIDE {}
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLineIterator.hxx"
+#include "itkLineIterator.hxx"
 #endif
 
 #endif

@@ -5,7 +5,7 @@ filters in this module compute label statistics and perform operations between
 labels.")
 
 itk_module(ITKImageLabel
-  DEPENDS
+  COMPILE_DEPENDS
     ITKImageIntensity
   TEST_DEPENDS
     ITKTestKernel

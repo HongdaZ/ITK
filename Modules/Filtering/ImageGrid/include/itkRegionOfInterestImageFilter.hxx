@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,39 +21,40 @@
 #include "itkRegionOfInterestImageFilter.h"
 #include "itkImageAlgorithm.h"
 #include "itkObjectFactory.h"
-#include "itkTotalProgressReporter.h"
+#include "itkProgressReporter.h"
 #include "itkImage.h"
 
 namespace itk
 {
 
-template <typename TInputImage, typename TOutputImage>
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::RegionOfInterestImageFilter()
-{
-  this->DynamicMultiThreadingOn();
-  this->ThreaderUpdateProgressOff();
-}
+template< typename TInputImage, typename TOutputImage >
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::RegionOfInterestImageFilter()
+{}
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::GenerateInputRequestedRegion()
 {
   // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Get pointer to the input
-  typename Superclass::InputImagePointer inputPtr = const_cast<TInputImage *>(this->GetInput());
+  typename Superclass::InputImagePointer inputPtr =
+    const_cast< TInputImage * >( this->GetInput() );
 
-  if (inputPtr)
-  {
+  if ( inputPtr )
+    {
     // Request the region of interest
     inputPtr->SetRequestedRegion(m_RegionOfInterest);
-  }
+    }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::EnlargeOutputRequestedRegion(DataObject * output)
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::EnlargeOutputRequestedRegion(DataObject *output)
 {
   // Call the superclass' implementation of this method
   Superclass::EnlargeOutputRequestedRegion(output);
@@ -62,28 +63,29 @@ RegionOfInterestImageFilter<TInputImage, TOutputImage>::EnlargeOutputRequestedRe
   output->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::GenerateOutputInformation()
 {
   // Do not call the superclass' implementation of this method since
   // this filter allows the input the output to be of different dimensions
 
   // Get pointers to the input and output
-  typename Superclass::OutputImagePointer     outputPtr = this->GetOutput();
-  typename Superclass::InputImageConstPointer inputPtr = this->GetInput();
+  typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
+  typename Superclass::InputImageConstPointer inputPtr  = this->GetInput();
 
-  if (!outputPtr || !inputPtr)
-  {
+  if ( !outputPtr || !inputPtr )
+    {
     return;
-  }
+    }
 
   // Set the output image size to the same value as the region of interest.
   RegionType region;
   IndexType  start;
   start.Fill(0);
 
-  region.SetSize(m_RegionOfInterest.GetSize());
+  region.SetSize( m_RegionOfInterest.GetSize() );
   region.SetIndex(start);
 
   // Copy Information without modification.
@@ -93,43 +95,48 @@ RegionOfInterestImageFilter<TInputImage, TOutputImage>::GenerateOutputInformatio
   outputPtr->SetLargestPossibleRegion(region);
 
   // Correct origin of the extracted region.
-  IndexType                                       roiStart(m_RegionOfInterest.GetIndex());
+  IndexType roiStart( m_RegionOfInterest.GetIndex() );
   typename Superclass::OutputImageType::PointType outputOrigin;
   inputPtr->TransformIndexToPhysicalPoint(roiStart, outputOrigin);
   outputPtr->SetOrigin(outputOrigin);
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const RegionType & outputRegionForThread)
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::ThreadedGenerateData(const RegionType & outputRegionForThread,
+                       ThreadIdType threadId)
 {
 
   // Get the input and output pointers
-  const TInputImage * inputPtr = this->GetInput();
-  TOutputImage *      outputPtr = this->GetOutput();
+  const TInputImage *inputPtr  = this->GetInput();
+  TOutputImage      *outputPtr = this->GetOutput();
 
-  TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
+  // Support progress methods/callbacks
+  ProgressReporter progress( this, threadId, 1 );
 
   // Define the portion of the input to walk for this thread
   InputImageRegionType inputRegionForThread;
-  inputRegionForThread.SetSize(outputRegionForThread.GetSize());
+  inputRegionForThread.SetSize( outputRegionForThread.GetSize() );
 
   IndexType start;
-  for (unsigned int i = 0; i < ImageDimension; ++i)
-  {
-    start[i] = m_RegionOfInterest.GetIndex()[i] + outputRegionForThread.GetIndex()[i];
-  }
+  for ( unsigned int i = 0; i < ImageDimension; ++i )
+    {
+    start[i] = m_RegionOfInterest.GetIndex()[i] +
+               outputRegionForThread.GetIndex()[i];
+    }
 
   inputRegionForThread.SetIndex(start);
 
-  ImageAlgorithm::Copy(inputPtr, outputPtr, inputRegionForThread, outputRegionForThread);
-  progress.Completed(outputRegionForThread.GetNumberOfPixels());
+  ImageAlgorithm::Copy( inputPtr, outputPtr, inputRegionForThread, outputRegionForThread );
+
+  progress.CompletedPixel();
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-RegionOfInterestImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+RegionOfInterestImageFilter< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

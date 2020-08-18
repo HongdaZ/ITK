@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 
 #include "itkMorphologyHistogram.h"
 #include "itkMovingHistogramImageFilter.h"
-#include "itkLexicographicCompare.h"
 #include <list>
 #include <map>
 
@@ -40,51 +39,52 @@ namespace itk
  * \ingroup ITKMathematicalMorphology
  */
 
-template <typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram>
-class ITK_TEMPLATE_EXPORT MovingHistogramMorphologyImageFilter
-  : public MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>
+template< typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram >
+class ITK_TEMPLATE_EXPORT MovingHistogramMorphologyImageFilter:
+  public MovingHistogramImageFilter< TInputImage, TOutputImage, TKernel, THistogram >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MovingHistogramMorphologyImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MovingHistogramMorphologyImageFilter;
-  using Superclass = MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MovingHistogramMorphologyImageFilter Self;
+  typedef MovingHistogramImageFilter< TInputImage, TOutputImage, TKernel, THistogram >
+  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(MovingHistogramMorphologyImageFilter, MovingHistogramImageFilter);
+  itkTypeMacro(MovingHistogramMorphologyImageFilter,
+               MovingHistogramImageFilter);
 
-  /** Image related type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using RegionType = typename TInputImage::RegionType;
-  using SizeType = typename TInputImage::SizeType;
-  using IndexType = typename TInputImage::IndexType;
-  using PixelType = typename TInputImage::PixelType;
-  using OffsetType = typename TInputImage::OffsetType;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputPixelType = typename TOutputImage::PixelType;
+  /** Image related typedefs. */
+  typedef TInputImage                                InputImageType;
+  typedef TOutputImage                               OutputImageType;
+  typedef typename TInputImage::RegionType           RegionType;
+  typedef typename TInputImage::SizeType             SizeType;
+  typedef typename TInputImage::IndexType            IndexType;
+  typedef typename TInputImage::PixelType            PixelType;
+  typedef typename TInputImage::OffsetType           OffsetType;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename TOutputImage::PixelType           OutputPixelType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Kernel type alias. */
-  using KernelType = TKernel;
+  /** Kernel typedef. */
+  typedef TKernel KernelType;
 
   /** Kernel (structuring element) iterator. */
-  using KernelIteratorType = typename KernelType::ConstIterator;
+  typedef typename KernelType::ConstIterator KernelIteratorType;
 
   /** n-dimensional Kernel radius. */
-  using RadiusType = typename KernelType::SizeType;
+  typedef typename KernelType::SizeType RadiusType;
 
-  using OffsetListType = typename std::list<OffsetType>;
+  typedef typename std::list< OffsetType > OffsetListType;
 
-  using OffsetMapType = typename std::map<OffsetType, OffsetListType, Functor::LexicographicCompare>;
+  typedef typename std::map< OffsetType, OffsetListType, typename OffsetType::LexicographicCompare > OffsetMapType;
 
   /** Set/Get the boundary value.
    *  Subclasses should set their own values. */
@@ -93,34 +93,32 @@ public:
 
   /** Return true if the vector based algorithm is used, and
    * false if the map based algorithm is used */
-  static bool
-  GetUseVectorBasedAlgorithm()
-  {
-    return THistogram::UseVectorBasedAlgorithm();
-  }
+  static bool GetUseVectorBasedAlgorithm()
+  { return THistogram::UseVectorBasedAlgorithm(); }
 
 protected:
   MovingHistogramMorphologyImageFilter();
-  ~MovingHistogramMorphologyImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MovingHistogramMorphologyImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Multi-thread version GenerateData. */
-  //   void  ThreadedGenerateData (const OutputImageRegionType&
-  //                               outputRegionForThread,
-  //                               ThreadIdType threadId);
+//   void  ThreadedGenerateData (const OutputImageRegionType&
+//                               outputRegionForThread,
+//                               ThreadIdType threadId);
 
   /** Configure the histogram.
    *  Used by this class to pass the boundary value to the histogram object. */
-  void
-  ConfigureHistogram(THistogram & histogram) override;
+  virtual void ConfigureHistogram(THistogram & histogram) ITK_OVERRIDE;
 
   PixelType m_Boundary;
-}; // end of class
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MovingHistogramMorphologyImageFilter);
+};                                                    // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMovingHistogramMorphologyImageFilter.hxx"
+#include "itkMovingHistogramMorphologyImageFilter.hxx"
 #endif
 
 #endif

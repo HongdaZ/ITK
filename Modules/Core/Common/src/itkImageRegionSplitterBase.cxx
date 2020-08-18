@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,12 +22,16 @@
 namespace itk
 {
 
-ImageRegionSplitterBase ::ImageRegionSplitterBase() = default;
+ImageRegionSplitterBase
+::ImageRegionSplitterBase()
+{
+}
 
 void
-ImageRegionSplitterBase ::PrintSelf(std::ostream & os, Indent indent) const
+ImageRegionSplitterBase
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }
 
-} // namespace itk
+}

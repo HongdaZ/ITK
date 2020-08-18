@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*-------------------------------------------------------------------------
@@ -26,8 +28,7 @@
 /* Module Setup */
 /****************/
 
-#include "H5B2module.h"         /* This source code file is part of the H5B2 module */
-
+#define H5B2_PACKAGE		/*suppress error about including H5B2pkg  */
 
 /***********/
 /* Headers */
@@ -73,7 +74,7 @@
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5B2__hdr_debug
+ * Function:	H5B2_hdr_debug
  *
  * Purpose:	Prints debugging info about a B-tree header.
  *
@@ -86,15 +87,17 @@
  *-------------------------------------------------------------------------
  */
 herr_t
-H5B2__hdr_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
+H5B2_hdr_debug(H5F_t *f, hid_t dxpl_id, haddr_t addr, FILE *stream, int indent, int fwidth,
     const H5B2_class_t *type, haddr_t obj_addr)
 {
     H5B2_hdr_t	*hdr = NULL;            /* B-tree header info */
+    void        *dbg_ctx = NULL;	/* v2 B-tree debugging context */
     unsigned    u;                      /* Local index variable */
     char        temp_str[128];          /* Temporary string, for formatting */
+    H5B2_hdr_cache_ud_t cache_udata;    /* User-data for callback */
     herr_t      ret_value = SUCCEED;    /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI(FAIL)
 
     /*
      * Check arguments.
@@ -106,10 +109,23 @@ H5B2__hdr_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     HDassert(indent >= 0);
     HDassert(fwidth >= 0);
     HDassert(type);
+    HDassert((type->crt_dbg_ctx && type->dst_dbg_ctx) ||
+        (NULL == type->crt_dbg_ctx && NULL == type->dst_dbg_ctx));
 
-    /* Load the B-tree header  */
-    if(NULL == (hdr = H5B2__hdr_protect(f, addr, f, H5AC__READ_ONLY_FLAG)))
-        HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load B-tree header")
+    /* Check for debugging context callback available */
+    if(type->crt_dbg_ctx) {
+        /* Create debugging context */
+        if(NULL == (dbg_ctx = (type->crt_dbg_ctx)(f, dxpl_id, obj_addr)))
+	    HGOTO_ERROR(H5E_BTREE, H5E_CANTGET, FAIL, "unable to create v2 B-tree debugging context")
+    } /* end if */
+
+    /*
+     * Load the B-tree header.
+     */
+    cache_udata.f = f;
+    cache_udata.ctx_udata = dbg_ctx;
+    if(NULL == (hdr = (H5B2_hdr_t *)H5AC_protect(f, dxpl_id, H5AC_BT2_HDR, addr, &cache_udata, H5AC_READ)))
+	HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load B-tree header")
 
     /* Set file pointer for this B-tree operation */
     hdr->f = f;
@@ -122,12 +138,12 @@ H5B2__hdr_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
      */
     HDfprintf(stream, "%*s%-*s %s (%u)\n", indent, "", fwidth,
 	      "Tree type ID:", hdr->cls->name, (unsigned)hdr->cls->id);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of node:",
-	      (unsigned)hdr->node_size);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+	      hdr->node_size);
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of raw (disk) record:",
-	      (unsigned)hdr->rrec_size);
+	      hdr->rrec_size);
     HDfprintf(stream, "%*s%-*s %s\n", indent, "", fwidth,
 	      "Dirty flag:",
 	      hdr->cache_info.is_dirty ? "True" : "False");
@@ -160,15 +176,20 @@ H5B2__hdr_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     } /* end for */
 
 done:
-    if(hdr && H5B2__hdr_unprotect(hdr, H5AC__NO_FLAGS_SET) < 0)
-        HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release v2 B-tree header")
+    if(dbg_ctx && (type->dst_dbg_ctx)(dbg_ctx) < 0)
+        HDONE_ERROR(H5E_BTREE, H5E_CANTRELEASE, FAIL, "unable to release v2 B-tree debugging context")
+    if(hdr) {
+        hdr->f = NULL;
+        if(H5AC_unprotect(f, dxpl_id, H5AC_BT2_HDR, addr, hdr, H5AC__NO_FLAGS_SET) < 0)
+            HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree header")
+    } /* end if */
 
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5B2__hdr_debug() */
+} /* end H5B2_hdr_debug() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5B2__int_debug
+ * Function:	H5B2_int_debug
  *
  * Purpose:	Prints debugging info about a B-tree internal node
  *
@@ -181,17 +202,18 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5B2__int_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
+H5B2_int_debug(H5F_t *f, hid_t dxpl_id, haddr_t addr, FILE *stream, int indent, int fwidth,
     const H5B2_class_t *type, haddr_t hdr_addr, unsigned nrec, unsigned depth, haddr_t obj_addr)
 {
     H5B2_hdr_t	*hdr = NULL;            /* B-tree header */
     H5B2_internal_t	*internal = NULL;   /* B-tree internal node */
-    H5B2_node_ptr_t node_ptr;           /* Fake node pointer for protect */
+    void        *dbg_ctx = NULL;	/* v2 B-tree debugging context */
     unsigned	u;                      /* Local index variable */
     char        temp_str[128];          /* Temporary string, for formatting */
+    H5B2_hdr_cache_ud_t cache_udata;    /* User-data for callback */
     herr_t      ret_value=SUCCEED;      /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI(FAIL)
 
     /*
      * Check arguments.
@@ -202,13 +224,26 @@ H5B2__int_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     HDassert(indent >= 0);
     HDassert(fwidth >= 0);
     HDassert(type);
+    HDassert((type->crt_dbg_ctx && type->dst_dbg_ctx) ||
+        (NULL == type->crt_dbg_ctx && NULL == type->dst_dbg_ctx));
     HDassert(H5F_addr_defined(hdr_addr));
     HDassert(H5F_addr_defined(obj_addr));
     HDassert(nrec > 0);
 
-    /* Load the B-tree header */
-    if(NULL == (hdr = H5B2__hdr_protect(f, hdr_addr, f, H5AC__READ_ONLY_FLAG)))
-        HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load v2 B-tree header")
+    /* Check for debugging context callback available */
+    if(type->crt_dbg_ctx) {
+        /* Create debugging context */
+        if(NULL == (dbg_ctx = (type->crt_dbg_ctx)(f, dxpl_id, obj_addr)))
+	    HGOTO_ERROR(H5E_BTREE, H5E_CANTGET, FAIL, "unable to create v2 B-tree debugging context")
+    } /* end if */
+
+    /*
+     * Load the B-tree header.
+     */
+    cache_udata.f = f;
+    cache_udata.ctx_udata = dbg_ctx;
+    if(NULL == (hdr = (H5B2_hdr_t *)H5AC_protect(f, dxpl_id, H5AC_BT2_HDR, hdr_addr, &cache_udata, H5AC_READ)))
+	HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load B-tree header")
 
     /* Set file pointer for this B-tree operation */
     hdr->f = f;
@@ -216,26 +251,26 @@ H5B2__int_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     /*
      * Load the B-tree internal node
      */
-    H5_CHECK_OVERFLOW(depth, unsigned, uint16_t);
-    node_ptr.addr = addr;
-    H5_CHECKED_ASSIGN(node_ptr.node_nrec, uint16_t, nrec, unsigned)
-    if(NULL == (internal = H5B2__protect_internal(hdr, NULL, &node_ptr, (uint16_t)depth, FALSE, H5AC__READ_ONLY_FLAG)))
-        HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load B-tree internal node")
+    if(NULL == (internal = H5B2_protect_internal(hdr, dxpl_id, addr, nrec, depth, H5AC_READ)))
+	HGOTO_ERROR(H5E_BTREE, H5E_CANTLOAD, FAIL, "unable to load B-tree internal node")
 
     /* Print opening message */
-    HDfprintf(stream, "%*sv2 B-tree Internal Node...\n", indent, "");
+    if(internal->depth == 1)
+        HDfprintf(stream, "%*sv2 B-tree Internal 'Leaf' Node...\n", indent, "");
+    else
+        HDfprintf(stream, "%*sv2 B-tree Internal 'Branch' Node...\n", indent, "");
 
     /*
      * Print the values.
      */
     HDfprintf(stream, "%*s%-*s %s (%u)\n", indent, "", fwidth,
 	      "Tree type ID:", hdr->cls->name, (unsigned)hdr->cls->id);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of node:",
-	      (unsigned)hdr->node_size);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+	      hdr->node_size);
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of raw (disk) record:",
-	      (unsigned)hdr->rrec_size);
+	      hdr->rrec_size);
     HDfprintf(stream, "%*s%-*s %s\n", indent, "", fwidth,
 	      "Dirty flag:",
 	      internal->cache_info.is_dirty ? "True" : "False");
@@ -258,7 +293,8 @@ H5B2__int_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
         HDfprintf(stream, "%*s%-*s\n", indent + 3, "", MAX(0, fwidth - 3),
                   temp_str);
         HDassert(H5B2_INT_NREC(internal, hdr, u));
-        (void)(type->debug)(stream, indent + 6, MAX (0, fwidth-6), H5B2_INT_NREC(internal, hdr, u), hdr->cb_ctx);
+        (void)(type->debug)(stream, f, dxpl_id, indent + 6, MAX (0, fwidth-6),
+            H5B2_INT_NREC(internal, hdr, u), dbg_ctx);
     } /* end for */
 
     /* Print final node pointer */
@@ -270,17 +306,22 @@ H5B2__int_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
               internal->node_ptrs[u].addr);
 
 done:
-    if(hdr && H5B2__hdr_unprotect(hdr, H5AC__NO_FLAGS_SET) < 0)
-        HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release v2 B-tree header")
-    if(internal && H5AC_unprotect(f, H5AC_BT2_INT, addr, internal, H5AC__NO_FLAGS_SET) < 0)
+    if(dbg_ctx && (type->dst_dbg_ctx)(dbg_ctx) < 0)
+        HDONE_ERROR(H5E_BTREE, H5E_CANTRELEASE, FAIL, "unable to release v2 B-tree debugging context")
+    if(hdr) {
+        hdr->f = NULL;
+        if(H5AC_unprotect(f, dxpl_id, H5AC_BT2_HDR, hdr_addr, hdr, H5AC__NO_FLAGS_SET) < 0)
+            HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree header")
+    } /* end if */
+    if(internal && H5AC_unprotect(f, dxpl_id, H5AC_BT2_INT, addr, internal, H5AC__NO_FLAGS_SET) < 0)
         HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree internal node")
 
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5B2__int_debug() */
+} /* end H5B2_int_debug() */
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5B2__leaf_debug
+ * Function:	H5B2_leaf_debug
  *
  * Purpose:	Prints debugging info about a B-tree leaf node
  *
@@ -293,17 +334,18 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5B2__leaf_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
+H5B2_leaf_debug(H5F_t *f, hid_t dxpl_id, haddr_t addr, FILE *stream, int indent, int fwidth,
     const H5B2_class_t *type, haddr_t hdr_addr, unsigned nrec, haddr_t obj_addr)
 {
     H5B2_hdr_t	*hdr = NULL;            /* B-tree header */
     H5B2_leaf_t	*leaf = NULL;           /* B-tree leaf node */
-    H5B2_node_ptr_t node_ptr;           /* Fake node pointer for protect */
+    H5B2_hdr_cache_ud_t cache_udata;    /* User-data for callback */
+    void        *dbg_ctx = NULL;	/* v2 B-tree debugging context */
     unsigned	u;                      /* Local index variable */
     char        temp_str[128];          /* Temporary string, for formatting */
     herr_t      ret_value = SUCCEED;    /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI(FAIL)
 
     /*
      * Check arguments.
@@ -314,13 +356,26 @@ H5B2__leaf_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     HDassert(indent >= 0);
     HDassert(fwidth >= 0);
     HDassert(type);
+    HDassert((type->crt_dbg_ctx && type->dst_dbg_ctx) ||
+        (NULL == type->crt_dbg_ctx && NULL == type->dst_dbg_ctx));
     HDassert(H5F_addr_defined(hdr_addr));
     HDassert(H5F_addr_defined(obj_addr));
     HDassert(nrec > 0);
 
-    /* Load the B-tree header */
-    if(NULL == (hdr = H5B2__hdr_protect(f, hdr_addr, f, H5AC__READ_ONLY_FLAG)))
-        HGOTO_ERROR(H5E_BTREE, H5E_CANTPROTECT, FAIL, "unable to protect v2 B-tree header")
+    /* Check for debugging context callback available */
+    if(type->crt_dbg_ctx) {
+        /* Create debugging context */
+        if(NULL == (dbg_ctx = (type->crt_dbg_ctx)(f, dxpl_id, obj_addr)))
+	    HGOTO_ERROR(H5E_BTREE, H5E_CANTGET, FAIL, "unable to create v2 B-tree debugging context")
+    } /* end if */
+
+    /*
+     * Load the B-tree header.
+     */
+    cache_udata.f = f;
+    cache_udata.ctx_udata = dbg_ctx;
+    if(NULL == (hdr = (H5B2_hdr_t *)H5AC_protect(f, dxpl_id, H5AC_BT2_HDR, hdr_addr, &cache_udata, H5AC_READ)))
+	HGOTO_ERROR(H5E_BTREE, H5E_CANTPROTECT, FAIL, "unable to protect B-tree header")
 
     /* Set file pointer for this B-tree operation */
     hdr->f = f;
@@ -328,11 +383,8 @@ H5B2__leaf_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
     /*
      * Load the B-tree leaf node
      */
-    H5_CHECK_OVERFLOW(nrec, unsigned, uint16_t);
-    node_ptr.addr = addr;
-    H5_CHECKED_ASSIGN(node_ptr.node_nrec, uint16_t, nrec, unsigned)
-    if(NULL == (leaf = H5B2__protect_leaf(hdr, NULL, &node_ptr, FALSE, H5AC__READ_ONLY_FLAG)))
-        HGOTO_ERROR(H5E_BTREE, H5E_CANTPROTECT, FAIL, "unable to protect B-tree leaf node")
+    if(NULL == (leaf = H5B2_protect_leaf(hdr, dxpl_id, addr, nrec, H5AC_READ)))
+	HGOTO_ERROR(H5E_BTREE, H5E_CANTPROTECT, FAIL, "unable to protect B-tree leaf node")
 
     /* Print opening message */
     HDfprintf(stream, "%*sv2 B-tree Leaf Node...\n", indent, "");
@@ -342,12 +394,12 @@ H5B2__leaf_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
      */
     HDfprintf(stream, "%*s%-*s %s (%u)\n", indent, "", fwidth,
 	      "Tree type ID:", hdr->cls->name, (unsigned)hdr->cls->id);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of node:",
-	      (unsigned)hdr->node_size);
-    HDfprintf(stream, "%*s%-*s %u\n", indent, "", fwidth,
+	      hdr->node_size);
+    HDfprintf(stream, "%*s%-*s %Zu\n", indent, "", fwidth,
 	      "Size of raw (disk) record:",
-	      (unsigned)hdr->rrec_size);
+	      hdr->rrec_size);
     HDfprintf(stream, "%*s%-*s %s\n", indent, "", fwidth,
 	      "Dirty flag:",
 	      leaf->cache_info.is_dirty ? "True" : "False");
@@ -362,15 +414,21 @@ H5B2__leaf_debug(H5F_t *f, haddr_t addr, FILE *stream, int indent, int fwidth,
         HDfprintf(stream, "%*s%-*s\n", indent + 3, "", MAX(0, fwidth - 3),
                   temp_str);
         HDassert(H5B2_LEAF_NREC(leaf, hdr, u));
-        (void)(type->debug)(stream, indent + 6, MAX (0, fwidth-6), H5B2_LEAF_NREC(leaf, hdr, u), hdr->cb_ctx);
+        (void)(type->debug)(stream, f, dxpl_id, indent + 6, MAX (0, fwidth-6),
+            H5B2_LEAF_NREC(leaf, hdr, u), dbg_ctx);
     } /* end for */
 
 done:
-    if(hdr && H5B2__hdr_unprotect(hdr, H5AC__NO_FLAGS_SET) < 0)
-        HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree header")
-    if(leaf && H5AC_unprotect(f, H5AC_BT2_LEAF, addr, leaf, H5AC__NO_FLAGS_SET) < 0)
+    if(dbg_ctx && (type->dst_dbg_ctx)(dbg_ctx) < 0)
+        HDONE_ERROR(H5E_BTREE, H5E_CANTRELEASE, FAIL, "unable to release v2 B-tree debugging context")
+    if(hdr) {
+        hdr->f = NULL;
+        if(H5AC_unprotect(f, dxpl_id, H5AC_BT2_HDR, hdr_addr, hdr, H5AC__NO_FLAGS_SET) < 0)
+            HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree header")
+    } /* end if */
+    if(leaf && H5AC_unprotect(f, dxpl_id, H5AC_BT2_LEAF, addr, leaf, H5AC__NO_FLAGS_SET) < 0)
         HDONE_ERROR(H5E_BTREE, H5E_PROTECT, FAIL, "unable to release B-tree leaf node")
 
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5B2__leaf_debug() */
+} /* end H5B2_leaf_debug() */
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,17 +58,16 @@
 
 #include "itkImageFileReader.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  ImageHistogram4  inputRGBImageFileName ";
     std::cerr << " histogramFilename.raw" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -79,32 +78,32 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelComponentType = unsigned char;
+  typedef unsigned char                         PixelComponentType;
 
-  using RGBPixelType = itk::RGBPixel<PixelComponentType>;
+  typedef itk::RGBPixel< PixelComponentType >   RGBPixelType;
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int                            Dimension = 2;
 
-  using RGBImageType = itk::Image<RGBPixelType, Dimension>;
+  typedef itk::Image< RGBPixelType, Dimension > RGBImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<RGBImageType>;
+  typedef itk::ImageFileReader< RGBImageType >  ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Problem reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -118,9 +117,11 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using HistogramFilterType = itk::Statistics::ImageToHistogramFilter<RGBImageType>;
+  typedef itk::Statistics::ImageToHistogramFilter<
+                                 RGBImageType >   HistogramFilterType;
 
-  HistogramFilterType::Pointer histogramFilter = HistogramFilterType::New();
+  HistogramFilterType::Pointer histogramFilter =
+                                           HistogramFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -136,15 +137,15 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SizeType = HistogramFilterType::HistogramSizeType;
+  typedef HistogramFilterType::HistogramSizeType   SizeType;
 
   SizeType size(3);
 
-  size[0] = 256; // number of bins for the Red   channel
-  size[1] = 256; // number of bins for the Green channel
-  size[2] = 256; // number of bins for the Blue  channel
+  size[0] = 256;  // number of bins for the Red   channel
+  size[1] = 256;  // number of bins for the Green channel
+  size[2] = 256;  // number of bins for the Blue  channel
 
-  histogramFilter->SetHistogramSize(size);
+  histogramFilter->SetHistogramSize( size );
   // Software Guide : EndCodeSnippet
 
 
@@ -157,11 +158,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatexex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramMeasurementVectorType =
-    HistogramFilterType::HistogramMeasurementVectorType;
+  typedef HistogramFilterType::HistogramMeasurementVectorType
+    HistogramMeasurementVectorType;
 
-  HistogramMeasurementVectorType binMinimum(3);
-  HistogramMeasurementVectorType binMaximum(3);
+  HistogramMeasurementVectorType binMinimum( 3 );
+  HistogramMeasurementVectorType binMaximum( 3 );
 
   binMinimum[0] = -0.5;
   binMinimum[1] = -0.5;
@@ -171,9 +172,9 @@ main(int argc, char * argv[])
   binMaximum[1] = 255.5;
   binMaximum[2] = 255.5;
 
-  histogramFilter->SetHistogramBinMinimum(binMinimum);
-  histogramFilter->SetHistogramBinMaximum(binMaximum);
-  // Software Guide : EndCodeSnippet
+  histogramFilter->SetHistogramBinMinimum( binMinimum );
+  histogramFilter->SetHistogramBinMaximum( binMaximum );
+  //Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginLatex
@@ -185,7 +186,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramFilter->SetInput(reader->GetOutput());
+  histogramFilter->SetInput(  reader->GetOutput()  );
   // Software Guide : EndCodeSnippet
 
 
@@ -197,7 +198,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  histogramFilter->SetMarginalScale(10.0);
+  histogramFilter->SetMarginalScale( 10.0 );
   // Software Guide : EndCodeSnippet
 
 
@@ -223,7 +224,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using HistogramType = HistogramFilterType::HistogramType;
+  typedef HistogramFilterType::HistogramType  HistogramType;
 
   const HistogramType * histogram = histogramFilter->GetOutput();
   // Software Guide : EndCodeSnippet
@@ -253,26 +254,27 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   std::ofstream histogramFile;
-  histogramFile.open(argv[2]);
+  histogramFile.open( argv[2] );
 
   HistogramType::ConstIterator itr = histogram->Begin();
   HistogramType::ConstIterator end = histogram->End();
 
-  using AbsoluteFrequencyType = HistogramType::AbsoluteFrequencyType;
+  typedef HistogramType::AbsoluteFrequencyType AbsoluteFrequencyType;
 
-  while (itr != end)
-  {
+  while( itr != end )
+    {
     const AbsoluteFrequencyType frequency = itr.GetFrequency();
-    histogramFile.write((const char *)(&frequency), sizeof(frequency));
+    histogramFile.write( (const char *)(&frequency), sizeof(frequency) );
 
     if (frequency != 0)
-    {
+      {
       HistogramType::IndexType index;
       index = histogram->GetIndex(itr.GetInstanceIdentifier());
-      std::cout << "Index = " << index << ", Frequency = " << frequency << std::endl;
-    }
+      std::cout << "Index = " << index << ", Frequency = " << frequency
+                << std::endl;
+      }
     ++itr;
-  }
+    }
 
   histogramFile.close();
   // Software Guide : EndCodeSnippet
@@ -289,4 +291,6 @@ main(int argc, char * argv[])
 
 
   return EXIT_SUCCESS;
+
+
 }

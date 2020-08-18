@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,25 +23,19 @@
 
 namespace itk
 {
-template <typename TImage, typename TKernel>
-class AnchorCloseImageFilter
-  : public AnchorOpenCloseImageFilter<TImage,
-                                      TKernel,
-                                      std::greater<typename TImage::PixelType>,
-                                      std::less<typename TImage::PixelType>>
+template< typename TImage, typename TKernel >
+class AnchorCloseImageFilter:
+  public AnchorOpenCloseImageFilter< TImage, TKernel, std::greater< typename TImage::PixelType >,
+                                     std::less< typename TImage::PixelType > >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorCloseImageFilter);
+  typedef AnchorCloseImageFilter Self;
+  typedef AnchorOpenCloseImageFilter< TImage, TKernel, std::greater< typename TImage::PixelType >,
+                                      std::less< typename TImage::PixelType > > Superclass;
 
-  using Self = AnchorCloseImageFilter;
-  using Superclass = AnchorOpenCloseImageFilter<TImage,
-                                                TKernel,
-                                                std::greater<typename TImage::PixelType>,
-                                                std::less<typename TImage::PixelType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -49,12 +43,14 @@ public:
 protected:
   AnchorCloseImageFilter()
   {
-    this->m_Boundary1 = NumericTraits<typename TImage::PixelType>::NonpositiveMin();
-    this->m_Boundary2 = NumericTraits<typename TImage::PixelType>::max();
+    this->m_Boundary1 = NumericTraits< typename TImage::PixelType >::NonpositiveMin();
+    this->m_Boundary2 = NumericTraits< typename TImage::PixelType >::max();
   }
-  ~AnchorCloseImageFilter() override = default;
+  virtual ~AnchorCloseImageFilter() ITK_OVERRIDE {}
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorCloseImageFilter);
 };
 } // namespace itk
 

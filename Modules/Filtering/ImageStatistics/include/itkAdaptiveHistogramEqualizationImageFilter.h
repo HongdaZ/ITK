@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ namespace itk
  * (beta=1, with alpha=1).
  *
  * The parameter window controls the size of the region over which
- * local statistics are calculated. The size of the window is controlled
- * by SetRadius -- the default Radius is 5 in all directions.
+ * local statistics are calculated.
  *
  * By altering alpha, beta and window, a host of equalization and unsharp
  * masking filters is available.
@@ -64,35 +63,35 @@ namespace itk
  * \ingroup ImageEnhancement
  * \ingroup ITKImageStatistics
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageStatistics/AdaptiveHistogramEqualizationImageFilter,Adaptive Histogram Equalization
- * Image Filter} \endsphinx
+ * \wiki
+ * \wikiexample{NeedDemo/ImageProcessing/AdaptiveHistogramEqualizationImageFilter,Adaptive histogram equalization}
+ * \endwiki
  */
-template <typename TImageType, typename TKernel = Neighborhood<bool, TImageType::ImageDimension>>
-class ITK_TEMPLATE_EXPORT AdaptiveHistogramEqualizationImageFilter
-  : public MovingHistogramImageFilter<
-      TImageType,
-      TImageType,
-      TKernel,
-      typename Function::AdaptiveEqualizationHistogram<typename TImageType::PixelType, typename TImageType::PixelType>>
+template< typename TImageType , typename TKernel = Neighborhood<bool, TImageType::ImageDimension> >
+class ITK_TEMPLATE_EXPORT AdaptiveHistogramEqualizationImageFilter:
+  public MovingHistogramImageFilter< TImageType,
+                                     TImageType,
+                                     TKernel,
+                                     typename Function::AdaptiveEqualizationHistogram< typename TImageType::PixelType,
+                                                                                       typename TImageType::PixelType > >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AdaptiveHistogramEqualizationImageFilter);
-
   /**
-   * Standard class type aliases
+   * Standard class typedefs
    */
-  using Self = AdaptiveHistogramEqualizationImageFilter;
-  using Superclass = MovingHistogramImageFilter<
-    TImageType,
-    TImageType,
-    TKernel,
-    typename Function::AdaptiveEqualizationHistogram<typename TImageType::PixelType, typename TImageType::PixelType>>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef AdaptiveHistogramEqualizationImageFilter     Self;
+  typedef MovingHistogramImageFilter< TImageType,
+                                     TImageType,
+                                     TKernel,
+                                     typename Function::AdaptiveEqualizationHistogram< typename TImageType::PixelType,
+                                                                                       typename TImageType::PixelType > >
+                                                       Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
-  static constexpr unsigned int ImageDimension = TImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImageType::ImageDimension);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -100,10 +99,10 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(AdaptiveHistogramEqualizationImageFilter, ImageToImageFilter);
 
-  /** Image type type alias support */
-  using ImageType = TImageType;
-  using InputPixelType = typename ImageType::PixelType;
-  using ImageSizeType = typename ImageType::SizeType;
+  /** Image type typedef support. */
+  typedef TImageType                    ImageType;
+  typedef typename ImageType::PixelType InputPixelType;
+  typedef typename ImageType::SizeType  ImageSizeType;
 
   /** Set/Get the value of alpha. Alpha = 0 produces the adaptive
    * histogram equalization (provided beta=0). Alpha = 1 produces an
@@ -118,41 +117,39 @@ public:
   itkSetMacro(Beta, float);
   itkGetConstMacro(Beta, float);
 
-#if !defined(ITK_FUTURE_LEGACY_REMOVE)
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   /** Set/Get whether an optimized lookup table for the intensity
    * mapping function is used.  Default is off.
    * \deprecated
    */
-  virtual void
-  SetUseLookupTable(const bool _arg)
-  {
-    itkDebugMacro("setting UseLookupTable to " << _arg);
-    itkGenericLegacyReplaceBodyMacro("UseLookupTable", "", "nothing");
-    if (this->m_UseLookupTable != _arg)
+  virtual void SetUseLookupTable( const bool _arg )
     {
-      this->m_UseLookupTable = _arg;
-      this->Modified();
+  itkDebugMacro("setting UseLookupTable to " << _arg );
+  itkGenericLegacyReplaceBodyMacro( "UseLookupTable", "", "nothing" );
+  if (this->m_UseLookupTable != _arg)
+    {
+    this->m_UseLookupTable = _arg;
+  this->Modified();
     }
   }
   itkGetConstMacro(UseLookupTable, bool);
   itkBooleanMacro(UseLookupTable);
 #endif
 
-  void
-  ConfigureHistogram(typename Superclass::HistogramType & h) override
-  {
-    h.SetAlpha(this->m_Alpha);
-    h.SetBeta(this->m_Beta);
-    h.SetMinimum(this->m_InputMinimum);
-    h.SetMaximum(this->m_InputMaximum);
-
-    typename Superclass::HistogramType::RealType kernelSize = 1;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+  virtual void ConfigureHistogram( typename Superclass::HistogramType &h) ITK_OVERRIDE
     {
-      kernelSize *= (2 * this->GetRadius()[i] + 1);
+      h.SetAlpha( this->m_Alpha );
+      h.SetBeta( this->m_Beta );
+      h.SetMinimum( this->m_InputMinimum );
+      h.SetMaximum( this->m_InputMaximum );
+
+      typename Superclass::HistogramType::RealType kernelSize = 1;
+      for ( unsigned int i = 0; i < ImageDimension; i++ )
+        {
+        kernelSize *= ( 2 * this->GetRadius()[i] + 1 );
+        }
+      h.SetKernelSize(kernelSize);
     }
-    h.SetKernelSize(kernelSize);
-  }
 
 protected:
   AdaptiveHistogramEqualizationImageFilter()
@@ -162,23 +159,23 @@ protected:
 
     this->SetRadius(5);
 
-    m_InputMinimum = NumericTraits<InputPixelType>::min();
-    m_InputMaximum = NumericTraits<InputPixelType>::max();
+    m_InputMinimum = NumericTraits< InputPixelType >::min();
+    m_InputMaximum = NumericTraits< InputPixelType >::max();
 
     m_UseLookupTable = false;
   }
 
-  ~AdaptiveHistogramEqualizationImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~AdaptiveHistogramEqualizationImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /**
    * Standard pipeline method
    */
-  void
-  BeforeThreadedGenerateData() override;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AdaptiveHistogramEqualizationImageFilter);
+
   float m_Alpha;
   float m_Beta;
 
@@ -186,11 +183,12 @@ private:
   InputPixelType m_InputMaximum;
 
   bool m_UseLookupTable;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAdaptiveHistogramEqualizationImageFilter.hxx"
+#include "itkAdaptiveHistogramEqualizationImageFilter.hxx"
 #endif
 
 #endif

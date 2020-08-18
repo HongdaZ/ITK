@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,17 +21,16 @@
 #include <iostream>
 
 //  Example taken from 'Fundamentals of the Finite ELement Method' - Grandin
-int
-itkFEMElement2DC0LinearQuadrilateralStrainItpackTest(int argc, char * argv[])
+int itkFEMElement2DC0LinearQuadrilateralStrainItpackTest(int argc, char *argv[])
 {
-  // Need to register default FEM object types,
-  // and setup SpatialReader to recognize FEM types
-  // which is all currently done as a HACK in
-  // the initialization of the itk::FEMFactoryBase::GetFactory()
+  //Need to register default FEM object types,
+  //and setup SpatialReader to recognize FEM types
+  //which is all currently done as a HACK in
+  //the initializaiton of the itk::FEMFactoryBase::GetFactory()
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
-  using SolverType = itk::fem::Solver<2>;
-  using SolverPointerType = SolverType *;
+  typedef itk::fem::Solver<2> SolverType;
+  typedef SolverType *        SolverPointerType;
   SolverPointerType m_Solver = new SolverType;
   // std::ifstream     fileInput;
 

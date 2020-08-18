@@ -1,13 +1,14 @@
-#include <iostream>
-#include <cstdlib>
+#include <stdio.h>
+#include <fstream>
+#include <ctype.h>
 
 #include <metaArray.h>
 
 int main(int, char * [])
-{
+  {
   MetaArray tObj;
 
-  tObj.InitializeEssential(10, MET_DOUBLE, 1, nullptr, true);
+  tObj.InitializeEssential(10, MET_DOUBLE, 1, NULL, true);
   tObj.FileName("testArray.mvh");
   tObj.Comment("TestArray");
   tObj.FormTypeName("Array");
@@ -33,13 +34,13 @@ int main(int, char * [])
   tObj_ascii.FileName("testArray.mvh");
   tObj_binary.FileName("testArray.mva");
 
-  tObj_ascii.Read(nullptr, true, nullptr, true);
-  tObj_binary.Read(nullptr, true, nullptr, true);
+  tObj_ascii.Read();
+  tObj_binary.Read();
 
   tObj_ascii.PrintInfo();
   tObj_binary.PrintInfo();
 
-  std::cout << "PASSED!" << std::endl;
+  METAIO_STREAM::cout << "PASSED!" << METAIO_STREAM::endl;
 
-  return EXIT_SUCCESS;
-}
+  return 1;
+  }

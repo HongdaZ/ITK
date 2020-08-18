@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,43 +29,46 @@ namespace itk
  * \ingroup QEMeshModifierFunctions
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh, typename TQEType>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshZipMeshFunction
-  : public QuadEdgeMeshFunctionBase<TMesh, typename TQEType::OriginRefType>
+template< typename TMesh, typename TQEType >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshZipMeshFunction:
+  public QuadEdgeMeshFunctionBase< TMesh, typename TQEType::OriginRefType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshZipMeshFunction);
+  /** Standard class typedefs. */
+  typedef QuadEdgeMeshZipMeshFunction Self;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = QuadEdgeMeshZipMeshFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using Superclass = QuadEdgeMeshFunctionBase<TMesh, typename TQEType::OriginRefType>;
+  typedef QuadEdgeMeshFunctionBase< TMesh,
+                                    typename TQEType::OriginRefType >  Superclass;
 
   itkNewMacro(Self);
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadEdgeMeshZipMeshFunction, QuadEdgeMeshFunctionBase);
 
   /** Type of QuadEdge with which to apply slicing. */
-  using QEType = TQEType;
+  typedef TQEType QEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::MeshType   MeshType;
+  typedef typename Superclass::OutputType OutputType;
 
   /**
    * \return The OriginRefType of the point that will be removed during the
    * zipping process.
    */
-  virtual OutputType
-  Evaluate(QEType * e);
+  virtual OutputType Evaluate(QEType *e);
 
 protected:
-  QuadEdgeMeshZipMeshFunction() = default;
-  ~QuadEdgeMeshZipMeshFunction() override = default;
+  QuadEdgeMeshZipMeshFunction(){}
+  ~QuadEdgeMeshZipMeshFunction() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshZipMeshFunction);
 };
-} // end namespace itk
+} // namespace itk
 
 #include "itkQuadEdgeMeshZipMeshFunction.hxx"
 
 #endif
+
+// eof - itkQuadEdgeMeshZipMeshFunction.h

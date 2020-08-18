@@ -48,7 +48,7 @@ namespace METAIO_NAMESPACE {
 #endif
 
 class METAIO_EXPORT MetaArray : public MetaForm
-{
+  {
   /////
   //
   // PUBLIC
@@ -72,22 +72,22 @@ class METAIO_EXPORT MetaArray : public MetaForm
     MetaArray(int _length,
               MET_ValueEnumType _elementType,
               int _elementNumberOfChannels=1,
-              void *_elementData=nullptr,
+              void *_elementData=NULL,
               bool _allocateElementData=false,
               bool _autoFreeElementData=false);
 
-    ~MetaArray(void) override;
+    ~MetaArray(void) MET_OVERRIDE;
 
-    void  PrintInfo(void) const override;
+    void  PrintInfo(void) const MET_OVERRIDE;
 
-    void  CopyInfo(const MetaForm * _form) override;
+    void  CopyInfo(const MetaForm * _form) MET_OVERRIDE;
 
-    void  Clear(void) override;
+    void  Clear(void) MET_OVERRIDE;
 
     bool  InitializeEssential(int _nDims,
                               MET_ValueEnumType _elementType,
                               int _elementNumberOfChannels=1,
-                              void *_elementData=nullptr,
+                              void *_elementData=NULL,
                               bool _allocateElementData=false,
                               bool _autoFreeElementData=true);
 
@@ -144,28 +144,28 @@ class METAIO_EXPORT MetaArray : public MetaForm
     //
     //
     //
-    virtual bool CanRead(const char *_headerName=nullptr) const;
+    virtual bool CanRead(const char *_headerName=NULL) const;
 
-    virtual bool Read(const char *_headerName=nullptr,
+    virtual bool Read(const char *_headerName=NULL,
                       bool _readElements=true,
-                      void * _elementDataBuffer=nullptr,
+                      void * _elementDataBuffer=NULL,
                       bool _autoFreeElementData=false);
 
-    virtual bool CanReadStream(std::ifstream * _stream) const;
+    virtual bool CanReadStream(METAIO_STREAM::ifstream * _stream) const;
 
-    virtual bool ReadStream(std::ifstream * _stream,
+    virtual bool ReadStream(METAIO_STREAM::ifstream * _stream,
                             bool _readElements=true,
-                            void * _elementDataBuffer=nullptr,
+                            void * _elementDataBuffer=NULL,
                             bool _autoFreeElementData=false);
 
-    virtual bool Write(const char *_headName=nullptr,
-                       const char *_dataName=nullptr,
+    virtual bool Write(const char *_headName=NULL,
+                       const char *_dataName=NULL,
                        bool _writeElements=true,
-                       const void * _constElementData=nullptr);
+                       const void * _constElementData=NULL);
 
-    virtual bool WriteStream(std::ofstream * _stream,
+    virtual bool WriteStream(METAIO_STREAM::ofstream * _stream,
                              bool _writeElements=true,
-                             const void * _constElementData=nullptr);
+                             const void * _constElementData=NULL);
 
   ////
   //
@@ -182,27 +182,27 @@ class METAIO_EXPORT MetaArray : public MetaForm
 
     bool               m_AutoFreeElementData;
 
-    std::streamoff m_CompressedElementDataSize;
+    METAIO_STL::streamoff m_CompressedElementDataSize;
 
-    std::string        m_ElementDataFileName;
+    char               m_ElementDataFileName[255];
 
     void *             m_ElementData;
 
-    void  M_Destroy(void) override;
+    void  M_Destroy(void) MET_OVERRIDE;
 
-    void  M_SetupReadFields(void) override;
+    void  M_SetupReadFields(void) MET_OVERRIDE;
 
-    void  M_SetupWriteFields(void) override;
+    void  M_SetupWriteFields(void) MET_OVERRIDE;
 
-    bool  M_Read(void) override;
+    bool  M_Read(void) MET_OVERRIDE;
 
-    bool  M_ReadElements(std::ifstream * _fstream,
+    bool  M_ReadElements(METAIO_STREAM::ifstream * _fstream,
                          void * _data,
                          int _dataQuantity);
 
-    bool  M_WriteElements(std::ofstream * _fstream,
+    bool  M_WriteElements(METAIO_STREAM::ofstream * _fstream,
                           const void * _data,
-                          std::streamoff _dataQuantity);
+                          METAIO_STL::streamoff _dataQuantity);
 
     };
 

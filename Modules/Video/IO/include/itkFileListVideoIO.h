@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class FileListVideoIO
+/** \class FileListVideoIO
  *
  * \brief VideoIO object for reading and writing videos as a sequence of frame
  *  files.
@@ -40,13 +39,11 @@ namespace itk
 class ITKVideoIO_EXPORT FileListVideoIO : public VideoIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FileListVideoIO);
-
-  /** Standard class type aliases. */
-  using Self = FileListVideoIO;
-  using Superclass = VideoIOBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FileListVideoIO             Self;
+  typedef VideoIOBase                 Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,144 +58,118 @@ public:
   itkGetConstMacro(FileNames, std::vector<std::string>);
 
   /** Override SetFileName to do parsing. */
-  void
-  SetFileName(const std::string & fileList) override;
-  void
-  SetFileName(const char * fileList) override;
+  virtual void SetFileName(const std::string& fileList) ITK_OVERRIDE;
+  virtual void SetFileName(const char* fileList) ITK_OVERRIDE;
 
   /** Close the reader and writer and reset members. */
-  void
-  FinishReadingOrWriting() override;
+  virtual void FinishReadingOrWriting() ITK_OVERRIDE;
 
   /** Split up the input file names using comma (',') as the separator character.
    * This method is made public so that places where FileListVideoIO is used
    * can access the individual file names. This is mostly an issue for testing. */
-  static std::vector<std::string>
-  SplitFileNames(const std::string & fileList);
+  static std::vector<std::string> SplitFileNames(const std::string& fileList);
 
   /** Set to reading from file. */
-  void
-  SetReadFromFile() override;
+  virtual void SetReadFromFile() ITK_OVERRIDE;
 
   /** Set to reading from a camera. */
-  void
-  SetReadFromCamera() override;
+  virtual void SetReadFromCamera() ITK_OVERRIDE;
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   /** Return whether or not the VideoIO can read from a camera. */
-  bool
-  CanReadCamera(CameraIDType cameraID) const override;
+  virtual bool CanReadCamera( CameraIDType cameraID )const ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /** Set the next frame that should be read. Return true if you operation
    * successful. */
-  bool
-  SetNextFrameToRead(FrameOffsetType frameNumber) override;
+  virtual bool SetNextFrameToRead(FrameOffsetType frameNumber) ITK_OVERRIDE;
 
   /** Accessor functions for video specific information. */
-  TemporalOffsetType
-  GetPositionInMSec() const override
-  {
+  virtual TemporalOffsetType GetPositionInMSec() const ITK_OVERRIDE
+    {
     return this->m_PositionInMSec;
-  }
-  TemporalOffsetType
-  GetRatio() const override
-  {
+    }
+  virtual TemporalOffsetType GetRatio() const ITK_OVERRIDE
+    {
     return this->m_Ratio;
-  }
-  FrameOffsetType
-  GetFrameTotal() const override
-  {
+    }
+  virtual FrameOffsetType GetFrameTotal() const ITK_OVERRIDE
+    {
     return this->m_FrameTotal;
-  }
-  TemporalRatioType
-  GetFramesPerSecond() const override
-  {
+    }
+  virtual TemporalRatioType GetFramesPerSecond() const ITK_OVERRIDE
+    {
     return this->m_FramesPerSecond;
-  }
-  FrameOffsetType
-  GetCurrentFrame() const override
-  {
+    }
+  virtual FrameOffsetType GetCurrentFrame() const ITK_OVERRIDE
+    {
     return this->m_CurrentFrame;
-  }
-  itkGetConstMacro(IFrameInterval, FrameOffsetType);
-  FrameOffsetType
-  GetLastIFrame() const override
-  {
+    }
+  itkGetConstMacro(IFrameInterval,FrameOffsetType);
+  virtual FrameOffsetType GetLastIFrame() const ITK_OVERRIDE
+    {
     return this->m_LastIFrame;
-  }
+    }
 
   /** Override accessors to pass through to internal image reader. */
-  double
-  GetSpacing(unsigned int i) const override;
+  virtual double GetSpacing(unsigned int i) const ITK_OVERRIDE;
 
-  double
-  GetOrigin(unsigned int i) const override;
+  virtual double GetOrigin(unsigned int i) const ITK_OVERRIDE;
 
-  std::vector<double>
-  GetDirection(unsigned int i) const override;
+  virtual std::vector< double > GetDirection(unsigned int i) const ITK_OVERRIDE;
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation() ITK_OVERRIDE;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
   /** Set Writer parameters. */
-  void
-  SetWriterParameters(TemporalRatioType                  framesPerSecond,
-                      const std::vector<SizeValueType> & dim,
-                      const char *                       fourCC,
-                      unsigned int                       nChannels,
-                      IOComponentEnum                    componentType) override;
+  virtual void SetWriterParameters( TemporalRatioType framesPerSecond,
+                                    const std::vector<SizeValueType>& dim,
+                                    const char* fourCC,
+                                    unsigned int nChannels,
+                                    IOComponentType componentType ) ITK_OVERRIDE;
 
 protected:
   FileListVideoIO();
-  ~FileListVideoIO() override;
+  ~FileListVideoIO() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Reset member variables to empty state closed. */
-  void
-  ResetMembers();
+  void ResetMembers();
 
   /** Open the reader if the reader and writer are not open. */
-  void
-  OpenReader();
+  void OpenReader();
 
   /** Open the writer if the reader and reader are not open. */
-  void
-  OpenWriter();
+  void OpenWriter();
 
   /** Verify that all file names in the have the same extension. */
-  bool
-  VerifyExtensions(const std::vector<std::string> & fileList) const;
+  bool VerifyExtensions( const std::vector<std::string>& fileList ) const;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FileListVideoIO);
+
   ImageIOBase::Pointer m_ImageIO;
 
   std::vector<std::string> m_FileNames;
+
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,17 +40,16 @@ namespace itk
  * \ingroup ITKEigen
  */
 
-template <typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage>
-class ITK_TEMPLATE_EXPORT EigenAnalysis2DImageFilter : public ImageToImageFilter<TInputImage, TEigenValueImage>
+template< typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage >
+class ITK_TEMPLATE_EXPORT EigenAnalysis2DImageFilter:
+  public ImageToImageFilter< TInputImage, TEigenValueImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EigenAnalysis2DImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = EigenAnalysis2DImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TEigenValueImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef EigenAnalysis2DImageFilter                          Self;
+  typedef ImageToImageFilter< TInputImage, TEigenValueImage > Superclass;
+  typedef SmartPointer< Self >                                Pointer;
+  typedef SmartPointer< const Self >                          ConstPointer;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(EigenAnalysis2DImageFilter, ImageToImageFilter);
@@ -59,78 +58,75 @@ public:
   itkNewMacro(Self);
 
   /** Typedef for the vector type representing the eigen vectors */
-  using EigenVectorType = typename TEigenVectorImage::PixelType;
-  using VectorComponentType = typename EigenVectorType::ValueType;
+  typedef typename TEigenVectorImage::PixelType EigenVectorType;
+  typedef typename EigenVectorType::ValueType   VectorComponentType;
 
-  /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
 
-  /** Some convenient type alias. */
-  using EigenValueImageType = TEigenValueImage;
-  using EigenValueImagePointer = typename EigenValueImageType::Pointer;
-  using EigenValueImageRegionType = typename EigenValueImageType::RegionType;
-  using EigenValueImagePixelType = typename EigenValueImageType::PixelType;
-  using EigenVectorImageType = TEigenVectorImage;
-  using EigenVectorImagePointer = typename EigenVectorImageType::Pointer;
-  using EigenVectorImageRegionType = typename EigenVectorImageType::RegionType;
-  using EigenVectorImagePixelType = typename EigenVectorImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TEigenValueImage                          EigenValueImageType;
+  typedef typename EigenValueImageType::Pointer     EigenValueImagePointer;
+  typedef typename EigenValueImageType::RegionType  EigenValueImageRegionType;
+  typedef typename EigenValueImageType::PixelType   EigenValueImagePixelType;
+  typedef TEigenVectorImage                         EigenVectorImageType;
+  typedef typename EigenVectorImageType::Pointer    EigenVectorImagePointer;
+  typedef typename EigenVectorImageType::RegionType EigenVectorImageRegionType;
+  typedef typename EigenVectorImageType::PixelType  EigenVectorImagePixelType;
 
   /** Image dimension. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Connect the image containing the elements [0,0]
+  /** Connect the image containting the elements [0,0]
    * of the input 2D matrix */
-  void
-  SetInput1(TInputImage * image1);
+  void SetInput1(TInputImage *image1);
 
-  /** Connect the image containing the elements [0,1]
+  /** Connect the image containting the elements [0,1]
    * of the input 2D matrix. This is the same [1,0]
    * element given that the input matrix is expected
    * to be symmetric */
-  void
-  SetInput2(TInputImage * image2);
+  void SetInput2(TInputImage *image2);
 
-  /** Connect the image containing the elements [1,1]
+  /** Connect the image containting the elements [1,1]
    * of the input 2D matrix */
-  void
-  SetInput3(TInputImage * image3);
+  void SetInput3(TInputImage *image3);
 
   /** Get the Output image with the greatest eigenvalue */
-  EigenValueImageType *
-  GetMaxEigenValue();
+  EigenValueImageType * GetMaxEigenValue();
 
   /** Get the Output image with the smallest eigenvalue */
-  EigenValueImageType *
-  GetMinEigenValue();
+  EigenValueImageType * GetMinEigenValue();
 
   /** Get the Output image with the eigen vector associated with
    * the greatest eigen value */
-  EigenVectorImageType *
-  GetMaxEigenVector();
+  EigenVectorImageType * GetMaxEigenVector();
 
   /**  Create the Output */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObject::Pointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(VectorComponentHasNumericTraitsCheck, (Concept::HasNumericTraits<VectorComponentType>));
+  itkConceptMacro( VectorComponentHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< VectorComponentType > ) );
   // End concept checking
 #endif
 
 protected:
   EigenAnalysis2DImageFilter();
-  ~EigenAnalysis2DImageFilter() override = default;
+  virtual ~EigenAnalysis2DImageFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
+  void GenerateData(void) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EigenAnalysis2DImageFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEigenAnalysis2DImageFilter.hxx"
+#include "itkEigenAnalysis2DImageFilter.hxx"
 #endif
 
 #endif

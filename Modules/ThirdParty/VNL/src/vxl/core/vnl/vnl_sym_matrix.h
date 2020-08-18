@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_sym_matrix.h
 #ifndef vnl_sym_matrix_h_
 #define vnl_sym_matrix_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Contains class for symmetric matrices
@@ -8,33 +11,31 @@
 // \date   6 Dec 2001
 
 #include <iosfwd>
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_vector.h"
-#include "vnl_matrix.h"
-#include "vnl_c_vector.h"
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
+#include <vnl/vnl_vector.h>
+#include <vnl/vnl_matrix.h>
+#include <vnl/vnl_c_vector.h>
 #include "vnl/vnl_export.h"
 
-template <class T> class vnl_sym_matrix;
+VCL_TEMPLATE_EXPORT template <class T> class vnl_sym_matrix;
 
 //: stores a symmetric matrix as just the diagonal and lower triangular part
 //  vnl_sym_matrix stores a symmetric matrix for time and space efficiency.
 //  Specifically, only the diagonal and lower triangular elements are stored.
 
 template <class T>
-class VNL_EXPORT vnl_sym_matrix
+class VNL_TEMPLATE_EXPORT vnl_sym_matrix
 {
  public:
   //: Construct an empty symmetric matrix.
-   vnl_sym_matrix() : data_(nullptr), index_(nullptr) {}
+  vnl_sym_matrix(): data_(0), index_(0), nn_(0) {}
 
-   //: Construct a symmetric matrix of size nn by nn.
-   explicit vnl_sym_matrix(unsigned nn)
-       : data_(vnl_c_vector<T>::allocate_T(nn * (nn + 1) / 2)),
-         index_(vnl_c_vector<T>::allocate_Tptr(nn)), nn_(nn) {
-     setup_index(); }
+  //: Construct a symmetric matrix of size nn by nn.
+  explicit vnl_sym_matrix(unsigned nn):
+  data_(vnl_c_vector<T>::allocate_T(nn * (nn + 1) / 2)),
+  index_(vnl_c_vector<T>::allocate_Tptr(nn)),
+  nn_(nn) { setup_index(); }
 
   //: Construct a symmetric matrix with elements equal to data
   // Value should be stored row-wise, and contain the
@@ -164,20 +165,20 @@ class VNL_EXPORT vnl_sym_matrix
   vnl_sym_matrix<T>& update (vnl_sym_matrix<T> const& m, unsigned diag_start=0);
 
   //: Swap contents of m with THIS
-  void swap(vnl_sym_matrix &m) noexcept;
+  void swap(vnl_sym_matrix &m);
 
  protected:
 //: Set up the index array
   void setup_index();
 
-  T* data_{nullptr};
-  T** index_{nullptr};
-  unsigned nn_{0};
+  T* data_;
+  T** index_;
+  unsigned nn_;
 };
 
 //:
 // \relatesalso vnl_sym_matrix
-template <class T> VNL_EXPORT std::ostream& operator<< (std::ostream&, vnl_sym_matrix<T> const&);
+template <class T> VNL_TEMPLATE_EXPORT std::ostream& operator<< (std::ostream&, vnl_sym_matrix<T> const&);
 
 
 template <class T>
@@ -220,8 +221,9 @@ inline vnl_sym_matrix<T>::vnl_sym_matrix(vnl_matrix<T> const& that):
 }
 
 template <class T>
-inline vnl_sym_matrix<T>::vnl_sym_matrix(vnl_sym_matrix<T> const &that)
-    : data_(nullptr), index_(nullptr) {
+inline vnl_sym_matrix<T>::vnl_sym_matrix(vnl_sym_matrix<T> const& that):
+  data_(0), index_(0), nn_(0)
+{
   set_size(that.rows());
   update(that);
 }
@@ -253,19 +255,19 @@ inline void vnl_sym_matrix<T>::set_size(int n)
   setup_index();
 }
 
-template <class T> VNL_EXPORT
+template <class T> VNL_TEMPLATE_EXPORT
 bool operator==(const vnl_sym_matrix<T> &a, const vnl_sym_matrix<T> &b);
 
-template <class T> VNL_EXPORT
+template <class T> VNL_TEMPLATE_EXPORT
 bool operator==(const vnl_sym_matrix<T> &a, const vnl_matrix<T> &b);
 
-template <class T> VNL_EXPORT
+template <class T> VNL_TEMPLATE_EXPORT
 bool operator==(const vnl_matrix<T> &a, const vnl_sym_matrix<T> &b);
 
 //: Swap the contents of a and b.
 // \relatesalso vnl_sym_matrix
-template <class T>
-inline void swap(vnl_sym_matrix<T> &a, vnl_sym_matrix<T> &b) noexcept
+template <class T> VNL_TEMPLATE_EXPORT
+void swap(vnl_sym_matrix<T> &a, vnl_sym_matrix<T> &b)
 { a.swap(b); }
 
 #endif // vnl_sym_matrix_h_

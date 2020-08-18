@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,15 +51,13 @@ namespace itk
  * \ingroup ITKIOPhilipsREC
  */
 
-class ITKIOPhilipsREC_EXPORT PhilipsRECImageIO : public ImageIOBase
+class ITKIOPhilipsREC_EXPORT PhilipsRECImageIO:public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PhilipsRECImageIO);
-
-  /** Standard class type aliases. */
-  using Self = PhilipsRECImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef PhilipsRECImageIO    Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,98 +66,93 @@ public:
   itkTypeMacro(PhilipsRECImageIO, Superclass);
 
   /** Special types used for Philips PAR meta data. */
-  using EchoTimesContainerType = VectorContainer<unsigned int, double>;
-  using TriggerTimesContainerType = VectorContainer<unsigned int, double>;
-  using RepetitionTimesContainerType = VectorContainer<unsigned int, double>;
-  using ScanResolutionType = vnl_vector_fixed<int, 2>;
-  using FOVType = vnl_vector_fixed<float, 3>;
-  using AngulationMidSliceType = vnl_vector_fixed<double, 3>;
-  using OffCentreMidSliceType = vnl_vector_fixed<double, 3>;
-  using PhaseEncodingVelocityType = vnl_vector_fixed<float, 3>;
+  typedef VectorContainer< unsigned int, double > EchoTimesContainerType;
+  typedef VectorContainer< unsigned int, double > TriggerTimesContainerType;
+  typedef VectorContainer< unsigned int, double > RepetitionTimesContainerType;
+  typedef vnl_vector_fixed< int, 2 >              ScanResolutionType;
+  typedef vnl_vector_fixed< float, 3 >            FOVType;
+  typedef vnl_vector_fixed< double, 3 >           AngulationMidSliceType;
+  typedef vnl_vector_fixed< double, 3 >           OffCentreMidSliceType;
+  typedef vnl_vector_fixed< float, 3 >            PhaseEncodingVelocityType;
   /** Image types:
    * 0 = Magnitude,
    * 1 = Real,
    * 2 = Imaginary,
    * 3 = Phase,
    * 4 = Special/Processed. */
-  using ImageTypesType = vnl_vector_fixed<int, 8>;
-  using ScanningSequencesType = vnl_vector_fixed<int, 8>;
-  using IndexValueType = Superclass::IndexValueType;
-  using SliceIndexType = std::vector<IndexValueType>;
-  using ImageTypeRescaleValuesType = vnl_vector_fixed<double, 3>;
+  typedef vnl_vector_fixed< int, 8 >    ImageTypesType;
+  typedef vnl_vector_fixed< int, 8 >    ScanningSequencesType;
+  typedef Superclass::IndexValueType    IndexValueType;
+  typedef std::vector< IndexValueType > SliceIndexType;
+  typedef vnl_vector_fixed< double, 3 > ImageTypeRescaleValuesType;
 
-  using ImageTypeRescaleValuesContainerType = VectorContainer<unsigned int, ImageTypeRescaleValuesType>;
-  using ImageTypeRescaleValuesContainerTypePtr = ImageTypeRescaleValuesContainerType::Pointer;
-  using ScanningSequenceImageTypeRescaleValuesContainerType =
-    VectorContainer<unsigned int, ImageTypeRescaleValuesContainerTypePtr>;
-  using GradientBvalueType = double;
-  using GradientBvalueContainerType = VectorContainer<unsigned int, GradientBvalueType>;
-  using GradientDirectionType = vnl_vector_fixed<double, 3>;
-  using GradientDirectionContainerType = VectorContainer<unsigned int, GradientDirectionType>;
-  using LabelTypesASLContainerType = VectorContainer<unsigned int, int>;
+  typedef VectorContainer< unsigned int, ImageTypeRescaleValuesType > ImageTypeRescaleValuesContainerType;
+  typedef ImageTypeRescaleValuesContainerType::Pointer
+  ImageTypeRescaleValuesContainerTypePtr;
+  typedef VectorContainer< unsigned int,
+                           ImageTypeRescaleValuesContainerTypePtr > ScanningSequenceImageTypeRescaleValuesContainerType;
+  typedef double                                                 GradientBvalueType;
+  typedef VectorContainer< unsigned int, GradientBvalueType >    GradientBvalueContainerType;
+  typedef vnl_vector_fixed< double, 3 >                          GradientDirectionType;
+  typedef VectorContainer< unsigned int, GradientDirectionType > GradientDirectionContainerType;
+  typedef VectorContainer< unsigned int, int >                   LabelTypesASLContainerType;
 
   /*-------- This part of the interfaces deals with reading data. ----- */
 
   /** Determine if the file can be read with this ImageIO implementation.
-   * \author Don C. Bigler
-   * \param FileNameToRead The name of the file to test for reading.
-   * \return Returns true if this ImageIO can read the file specified.
-   */
-  bool
-  CanReadFile(const char * FileNameToRead) override;
+       * \author Don C. Bigler
+       * \param FileNameToRead The name of the file to test for reading.
+       * \return Returns true if this ImageIO can read the file specified.
+       */
+  virtual bool CanReadFile(const char *FileNameToRead) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine if the file can be written with this ImageIO implementation.
-   * FileNameToWrite The name of the file to test for writing.
-   * \author Don C. Bigler
-   * \post This function will always return false (Not implemented).
-   * \return Returns true if this ImageIO can write the file specified.
-   */
-  bool
-  CanWriteFile(const char * itkNotUsed(FileNameToWrite)) override
+       * FileNameToWrite The name of the file to test for writing.
+       * \author Don C. Bigler
+       * \post This function will always return false (Not implemented).
+       * \return Returns true if this ImageIO can write the file specified.
+       */
+  virtual bool CanWriteFile( const char *itkNotUsed(FileNameToWrite) ) ITK_OVERRIDE
   {
     return false;
   }
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  WriteImageInformation() override
+  virtual void WriteImageInformation() ITK_OVERRIDE
   {
     return;
   }
 
   /** Writes the data to disk from the memory buffer provided. Make sure
-   * that the IORegions has been set properly. */
-  void
-  Write(const void * itkNotUsed(buffer)) override
+       * that the IORegions has been set properly. */
+  virtual void Write( const void *itkNotUsed(buffer) ) ITK_OVERRIDE
   {
     return;
   }
 
 protected:
   PhilipsRECImageIO();
-  ~PhilipsRECImageIO() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~PhilipsRECImageIO() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  void
-  SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels);
 
-  IndexValueType
-  GetSliceIndex(IndexValueType index) const;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhilipsRECImageIO);
 
-  SliceIndexType * m_SliceIndex;
-  IOByteOrderEnum  m_MachineByteOrder;
+  void SwapBytesIfNecessary(void *buffer, SizeValueType numberOfPixels);
+
+  IndexValueType GetSliceIndex(IndexValueType index) const;
+
+  SliceIndexType *       m_SliceIndex;
+  ImageIOBase::ByteOrder m_MachineByteOrder;
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class ShapeSignedDistanceFunction
+/** \class ShapeSignedDistanceFunction
  * \brief Base class for functions which evaluates the signed distance
  * from a shape.
  *
@@ -49,84 +48,75 @@ namespace itk
  *
  * \ingroup ITKSignedDistanceFunction
  */
-template <typename TCoordRep, unsigned int VSpaceDimension>
-class ShapeSignedDistanceFunction : public SpatialFunction<double, VSpaceDimension, Point<TCoordRep, VSpaceDimension>>
+template< typename TCoordRep, unsigned int VSpaceDimension >
+class ShapeSignedDistanceFunction:
+  public SpatialFunction< double, VSpaceDimension, Point< TCoordRep, VSpaceDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeSignedDistanceFunction);
+  /** Standard class typedefs. */
+  typedef ShapeSignedDistanceFunction Self;
+  typedef SpatialFunction< double, VSpaceDimension,
+                           Point< TCoordRep, VSpaceDimension > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ShapeSignedDistanceFunction;
-  using Superclass = SpatialFunction<double, VSpaceDimension, Point<TCoordRep, VSpaceDimension>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ShapeSignedDistanceFunction, SpatialFunction);
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** InputType type alias support */
-  using InputType = typename Superclass::InputType;
+  /** InputType typedef support. */
+  typedef typename Superclass::InputType InputType;
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int SpaceDimension = VSpaceDimension;
+  itkStaticConstMacro(SpaceDimension, unsigned int, VSpaceDimension);
 
-  /** CoordRep type alias support */
-  using CoordRepType = TCoordRep;
+  /** CoordRep typedef support. */
+  typedef TCoordRep CoordRepType;
 
-  /** Point type alias support */
-  using PointType = InputType;
+  /** Point typedef support. */
+  typedef InputType PointType;
 
   /** Type of the shape parameters. */
-  using ParametersType = OptimizerParameters<double>;
+  typedef OptimizerParameters< double > ParametersType;
 
   /** A shape is defined by a set of shape parameters. */
-  virtual void
-  SetParameters(const ParametersType &) = 0;
+  virtual void SetParameters(const ParametersType &) = 0;
 
-  virtual ParametersType &
-  GetParameters()
-  {
-    return m_Parameters;
-  }
-  virtual unsigned int
-  GetNumberOfShapeParameters() const = 0;
+  virtual ParametersType & GetParameters(void)
+  { return m_Parameters; }
+  virtual unsigned int GetNumberOfShapeParameters(void) const = 0;
 
-  virtual unsigned int
-  GetNumberOfPoseParameters() const = 0;
+  virtual unsigned int GetNumberOfPoseParameters(void) const = 0;
 
-  virtual unsigned int
-  GetNumberOfParameters() const
-  {
-    return this->GetNumberOfShapeParameters() + this->GetNumberOfPoseParameters();
-  }
+  virtual unsigned int GetNumberOfParameters(void) const
+  { return this->GetNumberOfShapeParameters() + this->GetNumberOfPoseParameters(); }
 
   /** Evaluate the signed distance from a shape at a given position. */
-  OutputType
-  Evaluate(const PointType & point) const override = 0;
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE = 0;
 
   /** Initialize must be called before the first call of SetParameters() or
    Evaluate() to allow the class to validate any inputs. */
-  virtual void
-  Initialize()
-  {}
+  virtual void Initialize() {}
 
 protected:
-  ShapeSignedDistanceFunction() = default;
 
-  ~ShapeSignedDistanceFunction() override = default;
+  ShapeSignedDistanceFunction() {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
+  ~ShapeSignedDistanceFunction() ITK_OVERRIDE {}
+
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     Superclass::PrintSelf(os, indent);
-    // FIX    os << indent << "Parameters: " << m_Parameters << std::endl;
+//FIX    os << indent << "Parameters: " << m_Parameters << std::endl;
   }
 
   ParametersType m_Parameters;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeSignedDistanceFunction);
 };
 } // end namespace itk
 

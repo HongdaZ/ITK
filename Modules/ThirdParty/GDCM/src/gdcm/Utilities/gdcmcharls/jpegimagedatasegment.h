@@ -2,28 +2,27 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
-#ifndef CHARLS_JPEGIMAGEDATASEGMENT
-#define CHARLS_JPEGIMAGEDATASEGMENT
+#pragma once
 
+#include "util.h"
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
+#include <vector>
 
 class JpegImageDataSegment : public JpegSegment
 {
 public:
-    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) :
-        _componentCount(componentCount),
-        _rawStreamInfo(rawStream),
-        _params(params)
-    {
-    }
+	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, int ccompScan) :
+		_ccompScan(ccompScan),
+		_rawStreamInfo(rawStream),
+		_info(info)
+	{
+	}
 
-    void Serialize(JpegStreamWriter& streamWriter) override;
+	void Serialize(JpegStreamWriter& streamWriter);
 
 private:
-    int _componentCount;
-    ByteStreamInfo _rawStreamInfo;
-    JlsParameters _params;
+	int _ccompScan;
+	ByteStreamInfo _rawStreamInfo;
+	JlsParameters _info;
 };
-
-#endif

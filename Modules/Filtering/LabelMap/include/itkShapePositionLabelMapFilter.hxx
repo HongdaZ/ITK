@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@
 #include "itkLabelMapUtilities.h"
 #include "itkShapeLabelObjectAccessors.h"
 
-namespace itk
-{
+namespace itk {
 
 template <typename TImage>
-ShapePositionLabelMapFilter<TImage>::ShapePositionLabelMapFilter()
+ShapePositionLabelMapFilter<TImage>
+::ShapePositionLabelMapFilter()
 {
   m_Attribute = LabelObjectType::CENTROID;
 }
@@ -34,32 +34,33 @@ ShapePositionLabelMapFilter<TImage>::ShapePositionLabelMapFilter()
 
 template <typename TImage>
 void
-ShapePositionLabelMapFilter<TImage>::ThreadedProcessLabelObject(LabelObjectType * labelObject)
+ShapePositionLabelMapFilter<TImage>
+::ThreadedProcessLabelObject( LabelObjectType * labelObject )
 {
-  switch (m_Attribute)
-  {
-    case LabelObjectType::CENTROID:
+  switch( m_Attribute )
     {
-      using AccessorType = typename Functor::CentroidLabelObjectAccessor<LabelObjectType>;
+    case LabelObjectType::CENTROID:
+      {
+      typedef typename Functor::CentroidLabelObjectAccessor< LabelObjectType > AccessorType;
       AccessorType accessor;
       this->TemplatedThreadedProcessLabelObject(accessor, true, labelObject);
       break;
-    }
+      }
     default:
       itkExceptionMacro(<< "Unknown attribute type");
       break;
-  }
+    }
 }
 
 template <typename TImage>
 void
-ShapePositionLabelMapFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
+ShapePositionLabelMapFilter<TImage>
+::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Attribute: " << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")"
-     << std::endl;
+  os << indent << "Attribute: "  << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")" << std::endl;
 }
 
-} // end namespace itk
+}// end namespace itk
 #endif

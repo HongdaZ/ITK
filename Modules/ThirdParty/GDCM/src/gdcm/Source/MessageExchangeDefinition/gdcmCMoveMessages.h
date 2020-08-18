@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class CMoveRQ : public BaseCompositeMessage {
     public:
       std::vector<PresentationDataValue> ConstructPDV(
         const ULConnection &inConnection,
-        const BaseRootQuery* inRootQuery) override;
+        const BaseRootQuery* inRootQuery);
     };
 
 /**

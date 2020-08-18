@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -161,7 +161,7 @@ EStateID ULActionAE6::PerformAction(Subject *, ULEvent& inEvent, ULConnection& i
   AAssociateRQPDU* rqpdu;
   if (acceptable){
     rqpdu = dynamic_cast<AAssociateRQPDU*>(inEvent.GetPDUs()[0]);
-    if (rqpdu == nullptr){
+    if (rqpdu == NULL){
       acceptable = false;
     }
   }

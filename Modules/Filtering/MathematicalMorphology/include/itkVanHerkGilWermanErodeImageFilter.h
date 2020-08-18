@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,45 +24,50 @@
 
 namespace itk
 {
-template <typename TPixel>
+template< typename TPixel >
 class MinFunctor
 {
 public:
-  MinFunctor() = default;
-  ~MinFunctor() = default;
-  inline TPixel
-  operator()(const TPixel & A, const TPixel & B) const
+  MinFunctor(){}
+  ~MinFunctor(){}
+  inline TPixel operator()(const TPixel & A, const TPixel & B) const
   {
     return std::min(A, B);
   }
 };
 
-template <typename TImage, typename TKernel>
-class VanHerkGilWermanErodeImageFilter
-  : public VanHerkGilWermanErodeDilateImageFilter<TImage, TKernel, MinFunctor<typename TImage::PixelType>>
+template< typename TImage, typename TKernel >
+class VanHerkGilWermanErodeImageFilter:
+  public VanHerkGilWermanErodeDilateImageFilter< TImage, TKernel, MinFunctor< typename TImage::PixelType > >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VanHerkGilWermanErodeImageFilter);
-
-  using Self = VanHerkGilWermanErodeImageFilter;
-  using Superclass = VanHerkGilWermanErodeDilateImageFilter<TImage, TKernel, MinFunctor<typename TImage::PixelType>>;
+  typedef VanHerkGilWermanErodeImageFilter Self;
+  typedef VanHerkGilWermanErodeDilateImageFilter< TImage, TKernel,
+                                                  MinFunctor< typename TImage::PixelType > > Superclass;
 
   /** Runtime information support. */
-  itkTypeMacro(VanHerkGilWermanErodeImageFilter, VanHerkGilWermanErodeDilateImageFilter);
+  itkTypeMacro(VanHerkGilWermanErodeImageFilter,
+               VanHerkGilWermanErodeDilateImageFilter);
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using PixelType = typename TImage::PixelType;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
+  typedef typename TImage::PixelType PixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
 protected:
-  VanHerkGilWermanErodeImageFilter() { this->m_Boundary = NumericTraits<PixelType>::max(); }
-  ~VanHerkGilWermanErodeImageFilter() override = default;
+
+  VanHerkGilWermanErodeImageFilter()
+  {
+    this->m_Boundary = NumericTraits< PixelType >::max();
+  }
+  virtual ~VanHerkGilWermanErodeImageFilter() ITK_OVERRIDE {}
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(VanHerkGilWermanErodeImageFilter);
 };
 } // namespace itk
 

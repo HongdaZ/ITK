@@ -36,15 +36,15 @@ class PVRGCodec : public ImageCodec
 {
 public:
   PVRGCodec();
-  ~PVRGCodec() override;
-  bool CanDecode(TransferSyntax const &ts) const override;
-  bool CanCode(TransferSyntax const &ts) const override;
+  ~PVRGCodec();
+  bool CanDecode(TransferSyntax const &ts) const;
+  bool CanCode(TransferSyntax const &ts) const;
 
-  bool Decode(DataElement const &is, DataElement &os) override;
-  bool Code(DataElement const &in, DataElement &out) override;
+  bool Decode(DataElement const &is, DataElement &os);
+  bool Code(DataElement const &in, DataElement &out);
   void SetLossyFlag( bool l );
 
-  ImageCodec * Clone() const override;
+  virtual ImageCodec * Clone() const;
 private:
 };
 

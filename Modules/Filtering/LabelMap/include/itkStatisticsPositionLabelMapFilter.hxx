@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@
  *
  */
 
-namespace itk
-{
+namespace itk {
 
 template <typename TImage>
-StatisticsPositionLabelMapFilter<TImage>::StatisticsPositionLabelMapFilter()
+StatisticsPositionLabelMapFilter<TImage>
+::StatisticsPositionLabelMapFilter()
 {
   this->m_Attribute = LabelObjectType::CENTER_OF_GRAVITY;
 }
@@ -44,36 +44,37 @@ StatisticsPositionLabelMapFilter<TImage>::StatisticsPositionLabelMapFilter()
 
 template <typename TImage>
 void
-StatisticsPositionLabelMapFilter<TImage>::ThreadedProcessLabelObject(LabelObjectType * labelObject)
+StatisticsPositionLabelMapFilter<TImage>
+::ThreadedProcessLabelObject( LabelObjectType * labelObject )
 {
-  switch (this->m_Attribute)
-  {
+  switch( this->m_Attribute )
+    {
     case LabelObjectType::MAXIMUM_INDEX:
-    {
-      using AccessorType = typename Functor::MaximumIndexLabelObjectAccessor<LabelObjectType>;
+      {
+      typedef typename Functor::MaximumIndexLabelObjectAccessor< LabelObjectType > AccessorType;
       AccessorType accessor;
       this->TemplatedThreadedProcessLabelObject(accessor, false, labelObject);
       break;
-    }
+      }
     case LabelObjectType::MINIMUM_INDEX:
-    {
-      using AccessorType = typename Functor::MinimumIndexLabelObjectAccessor<LabelObjectType>;
+      {
+      typedef typename Functor::MinimumIndexLabelObjectAccessor< LabelObjectType > AccessorType;
       AccessorType accessor;
       this->TemplatedThreadedProcessLabelObject(accessor, false, labelObject);
       break;
-    }
+      }
     case LabelObjectType::CENTER_OF_GRAVITY:
-    {
-      using AccessorType = typename Functor::CenterOfGravityLabelObjectAccessor<LabelObjectType>;
+      {
+      typedef typename Functor::CenterOfGravityLabelObjectAccessor< LabelObjectType > AccessorType;
       AccessorType accessor;
       this->TemplatedThreadedProcessLabelObject(accessor, true, labelObject);
       break;
-    }
+      }
     default:
-      Superclass::ThreadedProcessLabelObject(labelObject);
+      Superclass::ThreadedProcessLabelObject( labelObject );
       break;
-  }
+    }
 }
 
-} // end namespace itk
+}// end namespace itk
 #endif

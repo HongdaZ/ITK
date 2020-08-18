@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,18 +36,19 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double, unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT ElasticBodySplineKernelTransform : public KernelTransform<TParametersValueType, NDimensions>
+template<typename TParametersValueType=double,
+          unsigned int NDimensions=3>
+class ITK_TEMPLATE_EXPORT ElasticBodySplineKernelTransform:
+  public KernelTransform<TParametersValueType, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ElasticBodySplineKernelTransform);
+  /** Standard class typedefs. */
+  typedef ElasticBodySplineKernelTransform Self;
+  typedef KernelTransform<TParametersValueType,
+                           NDimensions>    Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ElasticBodySplineKernelTransform;
-  using Superclass = KernelTransform<TParametersValueType, NDimensions>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ElasticBodySplineKernelTransform, KernelTransform);
@@ -56,19 +57,17 @@ public:
   itkNewMacro(Self);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = Superclass::SpaceDimension;
+  itkStaticConstMacro(SpaceDimension, unsigned int, Superclass::SpaceDimension);
 
   /** Set alpha.  Alpha is related to Poisson's Ratio (\f$\nu\f$) as
    * \f$\alpha = 12 ( 1 - \nu ) - 1\f$
@@ -78,20 +77,19 @@ public:
   /** Get alpha */
   itkGetConstMacro(Alpha, TParametersValueType);
 
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
 
 protected:
   ElasticBodySplineKernelTransform();
-  ~ElasticBodySplineKernelTransform() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ElasticBodySplineKernelTransform() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  using GMatrixType = typename Superclass::GMatrixType;
+  typedef typename Superclass::GMatrixType GMatrixType;
   /** Compute G(x)
    * For the elastic body spline, this is:
    * \f$ G(x) = [alpha*r(x)^2*I - 3*x*x']*r(x) \f$
@@ -103,18 +101,20 @@ protected:
    * \f[ r(x) = \sqrt{ x_1^2 + x_2^2 + x_3^2 }  \f]
    * I = identity matrix
    */
-  void
-  ComputeG(const InputVectorType & landmarkVector, GMatrixType & gmatrix) const override;
+  virtual void ComputeG(const InputVectorType & landmarkVector, GMatrixType & gmatrix) const ITK_OVERRIDE;
 
   /** alpha,  Alpha is related to Poisson's Ratio (\f$\nu\f$) as
    * \f$ \alpha = 12 ( 1 - \nu ) - 1\f$
    */
   TParametersValueType m_Alpha;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElasticBodySplineKernelTransform);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkElasticBodySplineKernelTransform.hxx"
+#include "itkElasticBodySplineKernelTransform.hxx"
 #endif
 
 #endif // itkElasticBodySplineKernelTransform_h

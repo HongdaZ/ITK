@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@
 #include "itkImageToImageMetricv4.h"
 #include "itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.h"
 
-namespace itk
-{
+namespace itk {
 
 /** \class ANTSNeighborhoodCorrelationImageToImageMetricv4
  *
@@ -58,9 +57,9 @@ namespace itk
  *
  *  Example of usage:
  *
- *  using MetricType = itk::ANTSNeighborhoodCorrelationImageToImageMetricv4
- *    <ImageType, ImageType>;
- *  using MetricTypePointer = MetricType::Pointer;
+ *  typedef itk::ANTSNeighborhoodCorrelationImageToImageMetricv4
+ *    <ImageType, ImageType> MetricType;
+ *  typedef MetricType::Pointer MetricTypePointer;
  *  MetricTypePointer metric = MetricType::New();
  *
  *  // set all parameters
@@ -85,30 +84,27 @@ namespace itk
  * value that measures the similarity between the two objects.
  *
  * \note Sparse sampling is not supported by this metric. An exception will be
- * thrown if m_UseSampledPointSet is set. Support for sparse sampling
+ * thrown if m_UseFixedSampledPointSet is set. Support for sparse sampling
  * will require a parallel implementation of the neighborhood scanning, which
  * currently caches information as the neighborhood window moves.
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TFixedImage,
-          typename TMovingImage,
-          typename TVirtualImage = TFixedImage,
+template<typename TFixedImage, typename TMovingImage, typename TVirtualImage = TFixedImage,
           typename TInternalComputationValueType = double,
-          typename TMetricTraits =
-            DefaultImageToImageMetricTraitsv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType>>
-class ITK_TEMPLATE_EXPORT ANTSNeighborhoodCorrelationImageToImageMetricv4
-  : public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
+          typename TMetricTraits = DefaultImageToImageMetricTraitsv4<TFixedImage,TMovingImage,TVirtualImage,TInternalComputationValueType>
+          >
+class ITK_TEMPLATE_EXPORT ANTSNeighborhoodCorrelationImageToImageMetricv4 :
+  public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ANTSNeighborhoodCorrelationImageToImageMetricv4);
 
-  /** Standard class type aliases. */
-  using Self = ANTSNeighborhoodCorrelationImageToImageMetricv4;
-  using Superclass =
-    ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ANTSNeighborhoodCorrelationImageToImageMetricv4                  Self;
+  typedef ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage,
+                             TInternalComputationValueType,TMetricTraits>  Superclass;
+  typedef SmartPointer<Self>                                               Pointer;
+  typedef SmartPointer<const Self>                                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -117,47 +113,52 @@ public:
   itkTypeMacro(Self, Superclass);
 
   /** superclass types */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
-  using FixedImageJacobianType = typename FixedTransformType::JacobianType;
+  typedef typename Superclass::MeasureType                    MeasureType;
+  typedef typename Superclass::DerivativeType                 DerivativeType;
+  typedef typename Superclass::DerivativeValueType            DerivativeValueType;
+  typedef typename Superclass::VirtualPointType               VirtualPointType;
+  typedef typename Superclass::FixedImagePointType            FixedImagePointType;
+  typedef typename Superclass::FixedImagePixelType            FixedImagePixelType;
+  typedef typename Superclass::FixedTransformType             FixedTransformType;
+  typedef typename Superclass::FixedImageGradientType         FixedImageGradientType;
+  typedef typename FixedTransformType::JacobianType           FixedImageJacobianType;
 
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using MovingImageJacobianType = typename MovingTransformType::JacobianType;
-  using JacobianType = typename Superclass::JacobianType;
+  typedef typename Superclass::MovingImagePointType           MovingImagePointType;
+  typedef typename Superclass::MovingImagePixelType           MovingImagePixelType;
+  typedef typename Superclass::MovingImageGradientType        MovingImageGradientType;
+  typedef typename Superclass::MovingTransformType            MovingTransformType;
+  typedef typename MovingTransformType::JacobianType          MovingImageJacobianType;
+  typedef typename Superclass::JacobianType                   JacobianType;
 
-  using VirtualImageGradientType = typename Superclass::VirtualImageGradientType;
+  typedef typename Superclass::VirtualImageGradientType       VirtualImageGradientType;
 
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using VirtualImageType = typename Superclass::VirtualImageType;
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
+  typedef typename Superclass::FixedImageType                 FixedImageType;
+  typedef typename Superclass::MovingImageType                MovingImageType;
+  typedef typename Superclass::VirtualImageType               VirtualImageType;
+  typedef typename Superclass::FixedOutputPointType           FixedOutputPointType;
+  typedef typename Superclass::MovingOutputPointType          MovingOutputPointType;
 
-  using FixedTransformJacobianType = typename Superclass::FixedTransformType::JacobianType;
-  using MovingTransformJacobianType = typename Superclass::MovingTransformType::JacobianType;
+  typedef typename Superclass::FixedTransformType::JacobianType
+                            FixedTransformJacobianType;
+  typedef typename Superclass::MovingTransformType::JacobianType
+                            MovingTransformJacobianType;
 
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
-  using ImageDimensionType = typename Superclass::ImageDimensionType;
+  typedef typename Superclass::NumberOfParametersType         NumberOfParametersType;
+  typedef typename Superclass::ImageDimensionType             ImageDimensionType;
 
-  using ImageRegionType = typename VirtualImageType::RegionType;
-  using RadiusType = typename VirtualImageType::SizeType;
-  using IndexType = typename VirtualImageType::IndexType;
+  typedef typename VirtualImageType::RegionType               ImageRegionType;
+  typedef typename VirtualImageType::SizeType                 RadiusType;
+  typedef typename VirtualImageType::IndexType                IndexType;
 
   /* Image dimension accessors */
-  static constexpr ImageDimensionType FixedImageDimension = FixedImageType::ImageDimension;
+  itkStaticConstMacro(FixedImageDimension, ImageDimensionType,
+      FixedImageType::ImageDimension);
 
-  static constexpr ImageDimensionType MovingImageDimension = MovingImageType::ImageDimension;
+  itkStaticConstMacro(MovingImageDimension, ImageDimensionType,
+        MovingImageType::ImageDimension);
 
-  static constexpr ImageDimensionType VirtualImageDimension = VirtualImageType::ImageDimension;
+  itkStaticConstMacro(VirtualImageDimension, ImageDimensionType,
+        VirtualImageType::ImageDimension);
 
   // Set the radius of the neighborhood window centered at each pixel.
   // See the note above about using a radius less than 2.
@@ -167,36 +168,25 @@ public:
   itkGetMacro(Radius, RadiusType);
   itkGetConstMacro(Radius, RadiusType);
 
-  void
-  Initialize() override;
+  void Initialize(void) ITK_OVERRIDE;
 
 protected:
   ANTSNeighborhoodCorrelationImageToImageMetricv4();
-  ~ANTSNeighborhoodCorrelationImageToImageMetricv4() override = default;
+  virtual ~ANTSNeighborhoodCorrelationImageToImageMetricv4() ITK_OVERRIDE;
 
-  friend class ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
-    ThreadedImageRegionPartitioner<VirtualImageDimension>,
-    Superclass,
-    Self>;
-  using ANTSNeighborhoodCorrelationImageToImageMetricv4DenseGetValueAndDerivativeThreaderType =
-    ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
-      ThreadedImageRegionPartitioner<VirtualImageDimension>,
-      Superclass,
-      Self>;
+  friend class ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedImageRegionPartitioner< VirtualImageDimension >, Superclass, Self >;
+  typedef ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedImageRegionPartitioner< VirtualImageDimension >, Superclass, Self >
+    ANTSNeighborhoodCorrelationImageToImageMetricv4DenseGetValueAndDerivativeThreaderType;
 
-  friend class ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
-    ThreadedIndexedContainerPartitioner,
-    Superclass,
-    Self>;
-  using ANTSNeighborhoodCorrelationImageToImageMetricv4SparseGetValueAndDerivativeThreaderType =
-    ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<ThreadedIndexedContainerPartitioner,
-                                                                                 Superclass,
-                                                                                 Self>;
+  friend class ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedIndexedContainerPartitioner, Superclass, Self >;
+  typedef ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedIndexedContainerPartitioner, Superclass, Self >
+    ANTSNeighborhoodCorrelationImageToImageMetricv4SparseGetValueAndDerivativeThreaderType;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ANTSNeighborhoodCorrelationImageToImageMetricv4);
+
   // Radius of the neighborhood window centered at each pixel
   RadiusType m_Radius;
 };
@@ -204,7 +194,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkANTSNeighborhoodCorrelationImageToImageMetricv4.hxx"
+#include "itkANTSNeighborhoodCorrelationImageToImageMetricv4.hxx"
 #endif
 
 #endif

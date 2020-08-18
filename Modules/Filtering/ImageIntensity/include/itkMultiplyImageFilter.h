@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkMultiplyImageFilter_h
 #define itkMultiplyImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 #include "itkArithmeticOpsFunctors.h"
 
 namespace itk
@@ -34,50 +34,54 @@ namespace itk
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageIntensity/MultiplyTwoImages,Multiply Two Images}
- * \sphinxexample{Filtering/ImageIntensity/MultiplyImageByScalar,Multiply Image By Scalar}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/MultiplyImageFilter,Multiply two images together}
+ * \wikiexample{ImageProcessing/MultiplyByConstantImageFilter,Multiply every pixel in an image by a constant}
+ * \endwiki
  */
-template <typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1>
-class ITK_TEMPLATE_EXPORT MultiplyImageFilter
-  : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
+class ITK_TEMPLATE_EXPORT MultiplyImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::Mult<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MultiplyImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
-
-  using FunctorType =
-    Functor::Mult<typename TInputImage1::PixelType, typename TInputImage2::PixelType, typename TOutputImage::PixelType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultiplyImageFilter Self;
+  typedef BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                                    Functor::Mult<
+                                      typename TInputImage1::PixelType,
+                                      typename TInputImage2::PixelType,
+                                      typename TOutputImage::PixelType >
+                                    >                                 Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(MultiplyImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(MultiplyImageFilter,
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(Input1Input2OutputMultiplyOperatorCheck,
-                  (Concept::MultiplyOperator<typename TInputImage1::PixelType,
-                                             typename TInputImage2::PixelType,
-                                             typename TOutputImage::PixelType>));
+  itkConceptMacro( Input1Input2OutputMultiplyOperatorCheck,
+                   ( Concept::MultiplyOperator< typename TInputImage1::PixelType,
+                                                typename TInputImage2::PixelType,
+                                                typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  MultiplyImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
-  ~MultiplyImageFilter() override = default;
+  MultiplyImageFilter() {}
+  virtual ~MultiplyImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyImageFilter);
 };
 } // end namespace itk
 

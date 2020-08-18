@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,56 +24,57 @@ namespace itk
 {
 /**
  * \class BackwardDifferenceOperator
- *
  * \brief Operator whose inner product with a neighborhood returns
  * a "half" derivative at the center of the neighborhood.
  *
  * BackwardDifferenceOperator uses backward differences
- * i.e. \f$ F(x) - F(x-1) \f$ to calculate a "half" derivative useful, among
+ * i.e. F(x) - F(x-1) to calculate a "half" derivative useful, among
  * other things, in solving differential equations. It is a directional
  * NeighborhoodOperator that should be applied to a Neighborhood using the
  * inner product.
  *
- * \note BackwardDifferenceOperator does not have any user-declared "special member function",
- * following the C++ Rule of Zero: the compiler will generate them if necessary.
- *
  * \ingroup Operators
+ *
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/CreateABackwardDifferenceOperator,Create A Backward Difference Operator}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Operators/BackwardDifferenceOperator,Create a backward difference kernel}
+ * \endwiki
  */
-template <typename TPixel, unsigned int TDimension = 2, typename TAllocator = NeighborhoodAllocator<TPixel>>
-class ITK_TEMPLATE_EXPORT BackwardDifferenceOperator : public NeighborhoodOperator<TPixel, TDimension, TAllocator>
+template< typename TPixel, unsigned int TDimension = 2,
+          typename TAllocator = NeighborhoodAllocator< TPixel > >
+class ITK_TEMPLATE_EXPORT BackwardDifferenceOperator:
+  public NeighborhoodOperator< TPixel, TDimension, TAllocator >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = BackwardDifferenceOperator;
-  using Superclass = NeighborhoodOperator<TPixel, TDimension, TAllocator>;
+  /** Standard class typedefs. */
+  typedef BackwardDifferenceOperator                             Self;
+  typedef NeighborhoodOperator< TPixel, TDimension, TAllocator > Superclass;
 
   /** From Superclass */
-  using PixelType = typename Superclass::PixelType;
+  typedef typename Superclass::PixelType PixelType;
+
+  /** Constructor. */
+  BackwardDifferenceOperator() {}
 
 protected:
   /** Necessary to work around a compiler bug in VC++. */
-  using CoefficientVector = typename Superclass::CoefficientVector;
+  typedef typename Superclass::CoefficientVector CoefficientVector;
 
   /** Calculates operator coefficients. */
-  CoefficientVector
-  GenerateCoefficients() override;
+  CoefficientVector GenerateCoefficients();
 
   /** Arranges coefficients spatially in the memory buffer. */
-  void
-  Fill(const CoefficientVector & coeff) override
-  {
-    this->FillCenteredDirectional(coeff);
-  }
+  void Fill(const CoefficientVector & coeff)
+  { this->FillCenteredDirectional(coeff); }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceOperator);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBackwardDifferenceOperator.hxx"
+#include "itkBackwardDifferenceOperator.hxx"
 #endif
 
 #endif

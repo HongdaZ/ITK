@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,53 +34,53 @@ namespace itk
  * \ingroup ImageObjects
  * \ingroup ITKCommon
  */
-template <typename TInputImage, typename TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT PeriodicBoundaryCondition : public ImageBoundaryCondition<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage = TInputImage >
+class ITK_TEMPLATE_EXPORT PeriodicBoundaryCondition:
+    public ImageBoundaryCondition< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = PeriodicBoundaryCondition;
-  using Superclass = ImageBoundaryCondition<TInputImage, TOutputImage>;
+  /** Standard class typedefs. */
+  typedef PeriodicBoundaryCondition                           Self;
+  typedef ImageBoundaryCondition< TInputImage, TOutputImage > Superclass;
 
   /** Extract information from the image type. */
-  using PixelType = typename Superclass::PixelType;
-  using PixelPointerType = typename Superclass::PixelPointerType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using RegionType = typename Superclass::RegionType;
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
+  typedef typename Superclass::PixelType        PixelType;
+  typedef typename Superclass::PixelPointerType PixelPointerType;
+  typedef typename Superclass::OutputPixelType  OutputPixelType;
+  typedef typename Superclass::RegionType       RegionType;
+  typedef typename Superclass::IndexType        IndexType;
+  typedef typename Superclass::SizeType         SizeType;
+  typedef typename Superclass::OffsetType       OffsetType;
+  typedef typename Superclass::NeighborhoodType NeighborhoodType;
 
-  using NeighborhoodAccessorFunctorType = typename Superclass::NeighborhoodAccessorFunctorType;
+  typedef typename Superclass::NeighborhoodAccessorFunctorType
+  NeighborhoodAccessorFunctorType;
 
   /** Extract information from the image type. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
   /** Default constructor. */
-  PeriodicBoundaryCondition() = default;
+  PeriodicBoundaryCondition() {}
 
   /** Runtime information support. */
-  const char *
-  GetNameOfClass() const override
+  virtual const char * GetNameOfClass() const
   {
     return "itkPeriodicBoundaryCondition";
   }
 
   /** Computes and returns a neighborhood of appropriate values from
    * neighborhood iterator data.. */
-  OutputPixelType
-  operator()(const OffsetType &       point_index,
-             const OffsetType &       boundary_offset,
-             const NeighborhoodType * data) const override;
+  virtual OutputPixelType operator()(const OffsetType & point_index,
+                                     const OffsetType & boundary_offset,
+                                     const NeighborhoodType *data) const;
 
   /** Computes and returns the appropriate pixel value from
    * neighborhood iterator data, using the functor. */
-  OutputPixelType
-  operator()(const OffsetType &                      point_index,
-             const OffsetType &                      boundary_offset,
-             const NeighborhoodType *                data,
-             const NeighborhoodAccessorFunctorType & neighborhoodAccessorFunctor) const override;
+  virtual OutputPixelType operator()(
+    const OffsetType & point_index,
+    const OffsetType & boundary_offset,
+    const NeighborhoodType *data,
+    const NeighborhoodAccessorFunctorType & neighborhoodAccessorFunctor) const;
 
   /** Determines the necessary input region for the output region.
    * For this boundary condition, the output region is mapped into the
@@ -95,9 +95,8 @@ public:
    * \return The necessary input region required to determine the
    * pixel values in the outputRequestedRegion.
    */
-  RegionType
-  GetInputRequestedRegion(const RegionType & inputLargestPossibleRegion,
-                          const RegionType & outputRequestedRegion) const override;
+  virtual RegionType GetInputRequestedRegion( const RegionType & inputLargestPossibleRegion,
+                                              const RegionType & outputRequestedRegion ) const;
 
   /** Returns a value for a given pixel at an index. If the index is inside the
    * bounds of the input image, then the pixel value is obtained from
@@ -107,13 +106,13 @@ public:
    * \param index The index of the desired pixel.
    * \param image The image from which pixel values should be determined.
    */
-  OutputPixelType
-  GetPixel(const IndexType & index, const TInputImage * image) const override;
+  OutputPixelType GetPixel( const IndexType & index, const TInputImage * image ) const;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPeriodicBoundaryCondition.hxx"
+#include "itkPeriodicBoundaryCondition.hxx"
 #endif
 
 #endif

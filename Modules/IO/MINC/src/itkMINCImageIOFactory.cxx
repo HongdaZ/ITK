@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,11 +23,16 @@ namespace itk
 {
 MINCImageIOFactory::MINCImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkMINCImageIO", "MINC Image IO", true, CreateObjectFunction<MINCImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkMINCImageIO",
+                          "MINC Image IO",
+                          1,
+                          CreateObjectFunction< MINCImageIO >::New() );
 }
 
-MINCImageIOFactory::~MINCImageIOFactory() = default;
+MINCImageIOFactory::~MINCImageIOFactory()
+{
+}
 
 const char *
 MINCImageIOFactory::GetITKSourceVersion() const
@@ -46,14 +51,13 @@ MINCImageIOFactory::GetDescription() const
 
 static bool MINCImageIOFactoryHasBeenRegistered;
 
-void ITKIOMINC_EXPORT
-     MINCImageIOFactoryRegister__Private()
+void ITKIOMINC_EXPORT MINCImageIOFactoryRegister__Private(void)
 {
-  if (!MINCImageIOFactoryHasBeenRegistered)
-  {
+  if( !MINCImageIOFactoryHasBeenRegistered )
+    {
     MINCImageIOFactoryHasBeenRegistered = true;
     MINCImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

@@ -43,8 +43,8 @@ class GDCM_EXPORT Directory
 {
   friend std::ostream& operator<<(std::ostream &_os, const Directory &d);
 public :
-  Directory() = default;
-  ~Directory() = default;
+  Directory() {}
+  ~Directory() {}
   typedef std::string FilenameType;
   typedef std::vector<FilenameType> FilenamesType;
 

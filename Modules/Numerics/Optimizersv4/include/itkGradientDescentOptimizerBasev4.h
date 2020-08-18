@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@
 
 namespace itk
 {
-/**
- *\class GradientDescentOptimizerBasev4
+/** \class GradientDescentOptimizerBasev4
  *  \brief Abstract base class for gradient descent-style optimizers.
  *
  * Gradient modification is threaded in \c ModifyGradient.
@@ -36,122 +35,107 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-template <typename TInternalComputationValueType>
+template<typename TInternalComputationValueType>
 class ITK_TEMPLATE_EXPORT GradientDescentOptimizerBasev4Template
   : public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4Template);
-
-  /** Standard class type aliases. */
-  using Self = GradientDescentOptimizerBasev4Template;
-  using Superclass = ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GradientDescentOptimizerBasev4Template                       Self;
+  typedef ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType> Superclass;
+  typedef SmartPointer< Self >                                         Pointer;
+  typedef SmartPointer< const Self >                                   ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GradientDescentOptimizerBasev4Template, Superclass);
 
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum MAXIMUM_NUMBER_OF_ITERATIONS =
-    itk::StopConditionObjectToObjectOptimizerEnum::MAXIMUM_NUMBER_OF_ITERATIONS;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum COSTFUNCTION_ERROR =
-    itk::StopConditionObjectToObjectOptimizerEnum::COSTFUNCTION_ERROR;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum UPDATE_PARAMETERS_ERROR =
-    itk::StopConditionObjectToObjectOptimizerEnum::UPDATE_PARAMETERS_ERROR;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum STEP_TOO_SMALL =
-    itk::StopConditionObjectToObjectOptimizerEnum::STEP_TOO_SMALL;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum CONVERGENCE_CHECKER_PASSED =
-    itk::StopConditionObjectToObjectOptimizerEnum::CONVERGENCE_CHECKER_PASSED;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum GRADIENT_MAGNITUDE_TOLEARANCE =
-    itk::StopConditionObjectToObjectOptimizerEnum::GRADIENT_MAGNITUDE_TOLEARANCE;
-  static constexpr itk::StopConditionObjectToObjectOptimizerEnum OTHER_ERROR =
-    itk::StopConditionObjectToObjectOptimizerEnum::OTHER_ERROR;
-#endif
+  /** Codes of stopping conditions. */
+  typedef enum {
+    MAXIMUM_NUMBER_OF_ITERATIONS,
+    COSTFUNCTION_ERROR,
+    UPDATE_PARAMETERS_ERROR,
+    STEP_TOO_SMALL,
+    CONVERGENCE_CHECKER_PASSED,
+    GRADIENT_MAGNITUDE_TOLEARANCE,
+    OTHER_ERROR
+    } StopConditionType;
 
   /** Stop condition return string type */
-  using StopConditionReturnStringType = typename Superclass::StopConditionReturnStringType;
+  typedef typename Superclass::StopConditionReturnStringType StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  using StopConditionDescriptionType = typename Superclass::StopConditionDescriptionType;
+  typedef typename Superclass::StopConditionDescriptionType  StopConditionDescriptionType;
 
   /** It should be possible to derive the internal computation type from the class object. */
-  using InternalComputationValueType = TInternalComputationValueType;
+  typedef TInternalComputationValueType          InternalComputationValueType;
 
   /** Metric type over which this class is templated */
-  using MetricType = typename Superclass::MetricType;
-  using MetricTypePointer = typename MetricType::Pointer;
+  typedef typename Superclass::MetricType                    MetricType;
+  typedef typename MetricType::Pointer                       MetricTypePointer;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType                DerivativeType;
 
   /** Measure type */
-  using MeasureType = typename Superclass::MeasureType;
+  typedef typename Superclass::MeasureType                   MeasureType;
 
-  using ScalesType = typename Superclass::ScalesType;
+  typedef typename Superclass::ScalesType                    ScalesType;
 
-  using ParametersType = typename Superclass::ParametersType;
+  typedef typename Superclass::ParametersType                ParametersType;
 
   /** Type for the convergence checker */
-  using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<TInternalComputationValueType>;
+  typedef itk::Function::WindowConvergenceMonitoringFunction<TInternalComputationValueType>
+  ConvergenceMonitoringType;
 
   /** Get the most recent gradient values. */
-  itkGetConstReferenceMacro(Gradient, DerivativeType);
+  itkGetConstReferenceMacro( Gradient, DerivativeType );
 
   /** Get stop condition enum */
-  itkGetConstReferenceMacro(StopCondition, StopConditionObjectToObjectOptimizerEnum);
+  itkGetConstReferenceMacro(StopCondition, StopConditionType);
 
   /** Set the number of iterations. */
-  void
-  SetNumberOfIterations(const SizeValueType numberOfIterations) override
-  {
-    itkDebugMacro("setting NumberOfIterations to " << numberOfIterations);
-    if (this->m_NumberOfIterations != numberOfIterations)
+  virtual void SetNumberOfIterations( const SizeValueType numberOfIterations ) ITK_OVERRIDE
     {
+    itkDebugMacro("setting NumberOfIterations to " << numberOfIterations );
+    if ( this->m_NumberOfIterations != numberOfIterations)
+      {
       this->m_NumberOfIterations = numberOfIterations;
       this->Modified();
+      }
     }
-  }
 
   /** Get the number of iterations. */
-  SizeValueType
-  GetNumberOfIterations() const override
-  {
+  virtual SizeValueType GetNumberOfIterations() const ITK_OVERRIDE
+    {
     return this->m_NumberOfIterations;
-  }
+    }
 
   /** Get the current iteration number. */
-  SizeValueType
-  GetCurrentIteration() const override
-  {
+  virtual SizeValueType GetCurrentIteration() const ITK_OVERRIDE
+    {
     return this->m_CurrentIteration;
-  }
+    }
 
   /** Start and run the optimization */
-  void
-  StartOptimization(bool doOnlyInitialization = false) override;
+  virtual void StartOptimization( bool doOnlyInitialization = false ) ITK_OVERRIDE;
 
   /** Resume optimization.
    * This runs the optimization loop, and allows continuation
    * of stopped optimization */
-  virtual void
-  ResumeOptimization() = 0;
+  virtual void ResumeOptimization() = 0;
 
   /** Stop optimization. The object is left in a state so the
    * optimization can be resumed by calling ResumeOptimization. */
-  virtual void
-  StopOptimization();
+  virtual void StopOptimization();
 
   /** Get the reason for termination */
-  const StopConditionReturnStringType
-  GetStopConditionDescription() const override;
+  virtual const StopConditionReturnStringType GetStopConditionDescription() const ITK_OVERRIDE;
 
   /** Modify the gradient in place, to advance the optimization.
    * This call performs a threaded modification for transforms with
    * local support (assumed to be dense). Otherwise the modification
    * is performed w/out threading.
-   * See EstimateLearningRate() to perform optionally learning rate
+   * See EstimateLearningRate() to perform optionaly learning rate
    * estimation.
    * At completion, m_Gradient can be used to update the transform
    * parameters. Derived classes may hold additional results in
@@ -159,20 +143,17 @@ public:
    *
    * \sa EstimateLearningRate()
    */
-  virtual void
-  ModifyGradientByScales();
-  virtual void
-  ModifyGradientByLearningRate();
+  virtual void ModifyGradientByScales();
+  virtual void ModifyGradientByLearningRate();
 
-  using IndexRangeType = ThreadedIndexedContainerPartitioner::IndexRangeType;
+  typedef ThreadedIndexedContainerPartitioner::IndexRangeType IndexRangeType;
 
   /** Derived classes define this worker method to modify the gradient by scales.
    * Modifications must be performed over the index range defined in
    * \c subrange.
    * Called from ModifyGradientByScales(), either directly or via threaded
    * operation. */
-  virtual void
-  ModifyGradientByScalesOverSubRange(const IndexRangeType & subrange) = 0;
+  virtual void ModifyGradientByScalesOverSubRange( const IndexRangeType& subrange ) = 0;
 
   /** Derived classes define this worker method to modify the gradient by learning rates.
    * Modifications must be performed over the index range defined in
@@ -182,13 +163,13 @@ public:
    * This function is used in GradientDescentOptimizerBasev4ModifyGradientByScalesThreaderTemplate
    * and GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate classes.
    */
-  virtual void
-  ModifyGradientByLearningRateOverSubRange(const IndexRangeType & subrange) = 0;
+  virtual void ModifyGradientByLearningRateOverSubRange( const IndexRangeType& subrange ) = 0;
 
 protected:
+
   /** Default constructor */
   GradientDescentOptimizerBasev4Template();
-  ~GradientDescentOptimizerBasev4Template() override = default;
+  virtual ~GradientDescentOptimizerBasev4Template() ITK_OVERRIDE;
 
   /** Flag to control use of the ScalesEstimator (if set) for
    * automatic learning step estimation at *each* iteration.
@@ -206,7 +187,7 @@ protected:
    * manually or by using m_ScalesEstimator automatically, and the former has
    * higher priority than the latter. See main documentation.
    */
-  TInternalComputationValueType m_MaximumStepSizeInPhysicalUnits;
+  TInternalComputationValueType  m_MaximumStepSizeInPhysicalUnits;
 
   /** Flag to control using the convergence monitoring for stop condition.
    *  This flag should be always set to true except for regular step gradient
@@ -227,25 +208,27 @@ protected:
   typename DomainThreader<ThreadedIndexedContainerPartitioner, Self>::Pointer m_ModifyGradientByLearningRateThreader;
 
   /* Common variables for optimization control and reporting */
-  bool                                     m_Stop{ false };
-  StopConditionObjectToObjectOptimizerEnum m_StopCondition;
-  StopConditionDescriptionType             m_StopConditionDescription;
+  bool                          m_Stop;
+  StopConditionType             m_StopCondition;
+  StopConditionDescriptionType  m_StopConditionDescription;
 
   /** Current gradient */
-  DerivativeType m_Gradient;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  DerivativeType     m_Gradient;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4Template);
+
 };
 
 /** This helps to meet backward compatibility */
-using GradientDescentOptimizerBasev4 = GradientDescentOptimizerBasev4Template<double>;
+typedef GradientDescentOptimizerBasev4Template<double> GradientDescentOptimizerBasev4;
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGradientDescentOptimizerBasev4.hxx"
+#include "itkGradientDescentOptimizerBasev4.hxx"
 #endif
 
 #endif

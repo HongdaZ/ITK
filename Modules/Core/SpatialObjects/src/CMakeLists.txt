@@ -1,9 +1,8 @@
 set(ITKSpatialObjects_SRCS
   itkMetaEvent.cxx
+  itkCylinderSpatialObject.cxx
   itkSpatialObjectFactoryBase.cxx
-  itkSpatialObjectProperty.cxx
-  itkDTITubeSpatialObjectPoint.cxx
-  itkContourSpatialObject.cxx
+  itkArrowSpatialObject.cxx
  )
 
 itk_module_add_library(ITKSpatialObjects ${ITKSpatialObjects_SRCS})

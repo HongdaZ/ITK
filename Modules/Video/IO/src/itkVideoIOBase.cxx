@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#if defined(_MSC_VER)
-#  pragma warning(disable : 4786)
+#if defined( _MSC_VER )
+#pragma warning ( disable : 4786 )
 #endif
 
 #include "itkVideoIOBase.h"
@@ -24,36 +24,27 @@
 namespace itk
 {
 
-VideoIOBase::VideoIOBase()
-  : m_FrameTotal(NumericTraits<SizeValueType>::ZeroValue())
-  , m_CurrentFrame(NumericTraits<SizeValueType>::ZeroValue())
-  , m_IFrameInterval(NumericTraits<SizeValueType>::ZeroValue())
-  , m_LastIFrame(NumericTraits<SizeValueType>::ZeroValue())
-
-{}
-
-VideoIOBase::~VideoIOBase() = default;
-
-void
-VideoIOBase::PrintSelf(std::ostream & os, Indent indent) const
+VideoIOBase::VideoIOBase() :
+  m_ReadType(ReadFromFile),
+  m_FramesPerSecond(0.0),
+  m_FrameTotal(NumericTraits<SizeValueType>::ZeroValue()),
+  m_CurrentFrame(NumericTraits<SizeValueType>::ZeroValue()),
+  m_IFrameInterval(NumericTraits<SizeValueType>::ZeroValue()),
+  m_LastIFrame(NumericTraits<SizeValueType>::ZeroValue()),
+  m_Ratio(0.0),
+  m_PositionInMSec(0.0),
+  m_WriterOpen(false),
+  m_ReaderOpen(false)
 {
-  Superclass::PrintSelf(os, indent);
 }
 
-/** Print enum values */
-std::ostream &
-operator<<(std::ostream & out, const VideoIOBaseEnums::ReadFrom value)
+VideoIOBase::~VideoIOBase()
 {
-  return out << [value] {
-    switch (value)
-    {
-      case VideoIOBaseEnums::ReadFrom::ReadFromFile:
-        return "itk::VideoIOBaseEnums::ReadFrom::ReadFromFile";
-      case VideoIOBaseEnums::ReadFrom::ReadFromCamera:
-        return "itk::VideoIOBaseEnums::ReadFrom::ReadFromCamera";
-      default:
-        return "INVALID VALUE FOR itk::VideoIOBaseEnums::ReadFrom";
-    }
-  }();
 }
-} // namespace itk
+
+void VideoIOBase::PrintSelf(std::ostream & os, Indent indent) const
+{
+  Superclass::PrintSelf(os,indent);
+}
+
+} //namespace itk end

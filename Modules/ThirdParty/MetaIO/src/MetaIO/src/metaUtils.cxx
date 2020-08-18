@@ -29,9 +29,9 @@ inline bool IsBlank(int c)
 #include "metaUtils.h"
 
 #include <cassert>
-#include <cctype>
-#include <cstddef>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
+#include <stddef.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -45,9 +45,9 @@ inline bool IsBlank(int c)
 #endif
 
 #include <algorithm>
-#include <cstdlib>
-#include <cstring>
 #include <limits>
+#include <stdlib.h>
+#include <string.h>
 #include <string>
 
 #if defined (__BORLANDC__) && (__BORLANDC__ >= 0x0580)
@@ -62,13 +62,13 @@ int META_DEBUG = 0;
 
 static char MET_SeperatorChar = '=';
 
-static const std::streamoff MET_MaxChunkSize = 1024*1024*1024;
+static const METAIO_STL::streamoff MET_MaxChunkSize = 1024*1024*1024;
 
 MET_FieldRecordType *
 MET_GetFieldRecord(const char * _fieldName,
-                   std::vector<MET_FieldRecordType *> * _fields)
-{
-  std::vector<MET_FieldRecordType *>::iterator fieldIter;
+                   METAIO_STL::vector<MET_FieldRecordType *> * _fields)
+  {
+  METAIO_STL::vector<MET_FieldRecordType *>::iterator fieldIter;
   for(fieldIter=_fields->begin(); fieldIter!=_fields->end(); ++fieldIter)
     {
     if(!strcmp((*fieldIter)->name, _fieldName))
@@ -76,14 +76,14 @@ MET_GetFieldRecord(const char * _fieldName,
       return *fieldIter;
       }
     }
-  return nullptr;
-}
+  return NULL;
+  }
 
 
 int
 MET_GetFieldRecordNumber(const char * _fieldName,
-                         std::vector<MET_FieldRecordType *> * _fields)
-{
+                         METAIO_STL::vector<MET_FieldRecordType *> * _fields)
+  {
   int i;
   for(i=0; i<(int)_fields->size(); i++)
     {
@@ -93,14 +93,14 @@ MET_GetFieldRecordNumber(const char * _fieldName,
       }
     }
   return -1;
-}
+  }
 
 
 //
 // Sizeof METTYPE
 //
 bool MET_SizeOfType(MET_ValueEnumType _vType, int *s)
-{
+  {
   *s = MET_ValueTypeSize[_vType];
   if(_vType < MET_STRING)
     {
@@ -110,11 +110,14 @@ bool MET_SizeOfType(MET_ValueEnumType _vType, int *s)
     {
     return false;
     }
-}
+  }
 
 
-bool MET_SystemByteOrderMSB()
-{
+//
+//
+//
+bool MET_SystemByteOrderMSB(void)
+  {
   const int l = 1;
   const char * u = (const char *) & l;
 
@@ -122,20 +125,20 @@ bool MET_SystemByteOrderMSB()
     {
     return false;
     }
-  else
+   else
     {
     return true;
     }
-}
+  }
 
 
 //
 // Read the type of the object
 //
-std::string MET_ReadForm(std::istream &_fp)
-{
-  std::streampos pos = _fp.tellg();
-  std::vector<MET_FieldRecordType *> fields;
+METAIO_STL::string MET_ReadForm(METAIO_STREAM::istream &_fp)
+  {
+  METAIO_STL::streampos pos = _fp.tellg();
+  METAIO_STL::vector<MET_FieldRecordType *> fields;
   MET_FieldRecordType* mF = new MET_FieldRecordType;
   MET_InitReadField(mF, "FormTypeName", MET_STRING, false);
   mF->required = false;
@@ -147,22 +150,22 @@ std::string MET_ReadForm(std::istream &_fp)
 
   if(mF->defined)
     {
-    std::string value = (char *)(mF->value);
+    METAIO_STL::string value = (char *)(mF->value);
     delete mF;
     return value;
     }
 
   delete mF;
-  return std::string();
-}
+  return METAIO_STL::string();
+  }
 
 //
 // Read the type of the object
 //
-std::string MET_ReadType(std::istream &_fp)
-{
-  std::streampos pos = _fp.tellg();
-  std::vector<MET_FieldRecordType *> fields;
+METAIO_STL::string MET_ReadType(METAIO_STREAM::istream &_fp)
+  {
+  METAIO_STL::streampos pos = _fp.tellg();
+  METAIO_STL::vector<MET_FieldRecordType *> fields;
   MET_FieldRecordType* mF = new MET_FieldRecordType;
   MET_InitReadField(mF, "ObjectType", MET_STRING, false);
   mF->required = false;
@@ -174,22 +177,22 @@ std::string MET_ReadType(std::istream &_fp)
 
   if(mF->defined)
     {
-    std::string value  = (char *)(mF->value);
+    METAIO_STL::string value  = (char *)(mF->value);
     delete mF;
     return value;
     }
 
   delete mF;
-  return std::string();
-}
+  return METAIO_STL::string();
+  }
 
 //
 // Read the subtype of the object
 //
-char* MET_ReadSubType(std::istream &_fp)
-{
-  std::streampos pos = _fp.tellg();
-  std::vector<MET_FieldRecordType *> fields;
+char* MET_ReadSubType(METAIO_STREAM::istream &_fp)
+  {
+  METAIO_STL::streampos pos = _fp.tellg();
+  METAIO_STL::vector<MET_FieldRecordType *> fields;
   MET_FieldRecordType* mF;
   mF = new MET_FieldRecordType;
   MET_InitReadField(mF, "ObjectType", MET_STRING, false);
@@ -201,9 +204,9 @@ char* MET_ReadSubType(std::istream &_fp)
   // Find the line right after the ObjectType
   char s[1024];
   _fp.getline( s, 500 );
-  std::string value = s;
-  size_t position = value.find('=');
-  if(position!=std::string::npos)
+  METAIO_STL::string value = s;
+  size_t position = value.find("=");
+  if(position!=METAIO_STL::string::npos)
     {
     value = value.substr(position+2,value.size()-position);
     }
@@ -214,14 +217,14 @@ char* MET_ReadSubType(std::istream &_fp)
   ret[value.size()] = '\0';
   delete mF;
   return ret;
-}
+  }
 
 
 //
 // String To Type
 //
 bool MET_StringToType(const char *_s, MET_ValueEnumType *_vType)
-{
+  {
   int i;
   for(i=0; i<MET_NUM_VALUE_TYPES; i++)
     {
@@ -234,13 +237,13 @@ bool MET_StringToType(const char *_s, MET_ValueEnumType *_vType)
 
   *_vType = MET_OTHER;
   return false;
-}
+  }
 
 //
 // METType To String
 //
 bool MET_TypeToString(MET_ValueEnumType _vType, char *_s)
-{
+  {
   assert(_vType>=0);
   if(_vType<MET_NUM_VALUE_TYPES)
     {
@@ -249,7 +252,7 @@ bool MET_TypeToString(MET_ValueEnumType _vType, char *_s)
     }
 
   return false;
-}
+  }
 
 
 
@@ -257,9 +260,9 @@ bool MET_TypeToString(MET_ValueEnumType _vType, char *_s)
 // Value to Double
 //
 bool MET_ValueToDouble(MET_ValueEnumType _type, const void *_data,
-                       std::streamoff _index,
+                       METAIO_STL::streamoff _index,
                        double *_value)
-{
+  {
   switch(_type)
     {
     case MET_ASCII_CHAR:
@@ -327,13 +330,13 @@ bool MET_ValueToDouble(MET_ValueEnumType _type, const void *_data,
       *_value = 0;
       return false;
     }
-}
+  }
 
 bool MET_DoubleToValue(double _value,
                        MET_ValueEnumType _type,
                        void *_data,
-                       std::streamoff _index)
-{
+                       METAIO_STL::streamoff _index)
+  {
   switch(_type)
     {
     case MET_ASCII_CHAR:
@@ -394,14 +397,14 @@ bool MET_DoubleToValue(double _value,
     default:
       return false;
     }
-}
+  }
 
 bool MET_ValueToValue(MET_ValueEnumType _fromType, const void *_fromData,
-                      std::streamoff _index,
+                      METAIO_STL::streamoff _index,
                       MET_ValueEnumType _toType, void *_toData,
                       double _fromMin, double _fromMax,
                       double _toMin, double _toMax)
-{
+  {
   double tf;
   MET_ValueToDouble(_fromType, _fromData, _index, &tf);
   if(_toMin != _toMax && _fromMin != _fromMax)
@@ -476,33 +479,33 @@ bool MET_ValueToValue(MET_ValueEnumType _fromType, const void *_fromData,
     default:
       return false;
     }
-}
+  }
 
 // Uncompress a stream given an uncompressedSeekPosition
 METAIO_EXPORT
-std::streamoff MET_UncompressStream(std::ifstream * stream,
-                          std::streamoff uncompressedSeekPosition,
+METAIO_STL::streamoff MET_UncompressStream(METAIO_STREAM::ifstream * stream,
+                          METAIO_STL::streamoff uncompressedSeekPosition,
                           unsigned char * uncompressedData,
-                          std::streamoff uncompressedDataSize,
-                          std::streamoff compressedDataSize,
+                          METAIO_STL::streamoff uncompressedDataSize,
+                          METAIO_STL::streamoff compressedDataSize,
                           MET_CompressionTableType * compressionTable
                           )
 {
   // Keep the currentpos of the string
-  std::streampos currentPos = stream->tellg();
-  if(currentPos == std::streampos(-1))
+  METAIO_STL::streampos currentPos = stream->tellg();
+  if(currentPos == METAIO_STL::streampos(-1))
     {
-    std::cout << "MET_UncompressStream: ERROR Stream is not valid!" << std::endl;
+    METAIO_STREAM::cout << "MET_UncompressStream: ERROR Stream is not valid!" << METAIO_STREAM::endl;
     return -1;
     }
 
-  std::streamoff read = 0;
+  METAIO_STL::streamoff read = 0;
 
-  //std::cout << "Wanted Seek = " << uncompressedSeekPosition << std::endl;
-  //std::cout << "Wanted size = " << uncompressedDataSize << std::endl;
+  //METAIO_STREAM::cout << "Wanted Seek = " << uncompressedSeekPosition << METAIO_STREAM::endl;
+  //METAIO_STREAM::cout << "Wanted size = " << uncompressedDataSize << METAIO_STREAM::endl;
 
   // Size of the output buffer
-  std::streamoff buffersize = 1000;
+  METAIO_STL::streamoff buffersize = 1000;
 
   // We try to guess the compression rate
   // Note that sometime the size of the input buffer
@@ -510,18 +513,18 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
   // We assume that they are equal
   double compressionRate = 1;
 
-  std::streamoff zseekpos = 0;
-  std::streamoff seekpos = 0;
+  METAIO_STL::streamoff zseekpos = 0;
+  METAIO_STL::streamoff seekpos = 0;
   bool firstchunk = true;
 
   // Allocate the stream if necessary
   z_stream* d_stream = compressionTable->compressedStream;
-  if(compressionTable->compressedStream == nullptr)
+  if(compressionTable->compressedStream == NULL)
     {
     d_stream = new z_stream;
-    d_stream->zalloc = (alloc_func)nullptr;
-    d_stream->zfree = (free_func)nullptr;
-    d_stream->opaque = (voidpf)nullptr;
+    d_stream->zalloc = (alloc_func)0;
+    d_stream->zfree = (free_func)0;
+    d_stream->opaque = (voidpf)0;
     inflateInit2(d_stream,47); // allow both gzip and zlib compression headers
     compressionTable->compressedStream = d_stream;
     compressionTable->buffer = new char[1001];
@@ -541,17 +544,17 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
       {
       if((*it).uncompressedOffset-uncompressedSeekPosition > compressionTable->bufferSize)
         {
-        std::cout << "ERROR: Cannot go backward by more than the buffer size (1000)"
-                  << std::endl;
+        METAIO_STREAM::cout << "ERROR: Cannot go backward by more than the buffer size (1000)"
+                  << METAIO_STREAM::endl;
         return 0;
         }
 
       char* buffer = compressionTable->buffer;
-      std::streamoff start = uncompressedSeekPosition-((*it).uncompressedOffset-compressionTable->bufferSize);
+      METAIO_STL::streamoff start = uncompressedSeekPosition-((*it).uncompressedOffset-compressionTable->bufferSize);
       buffer += start;
 
-      std::streamoff readSize = uncompressedDataSize;
-      std::streamoff sizeInBuffer = compressionTable->bufferSize-start;
+      METAIO_STL::streamoff readSize = uncompressedDataSize;
+      METAIO_STL::streamoff sizeInBuffer = compressionTable->bufferSize-start;
       if(readSize>sizeInBuffer)
         {
         memcpy(uncompressedData,buffer,(size_t)sizeInBuffer);
@@ -574,7 +577,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
       }
     }
 
-  //std::cout << "Using = " << seekpos << " : " << zseekpos << std::endl;
+  //METAIO_STREAM::cout << "Using = " << seekpos << " : " << zseekpos << METAIO_STREAM::endl;
 
   while(seekpos < uncompressedSeekPosition+uncompressedDataSize)
     {
@@ -590,7 +593,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
     d_stream->avail_out = (uInt)( buffersize );
 
     // How many byte from compressed streamed should we read
-    std::streamoff inputBufferSize = (std::streamoff)(buffersize/compressionRate);
+    METAIO_STL::streamoff inputBufferSize = (METAIO_STL::streamoff)(buffersize/compressionRate);
 
     if(inputBufferSize == 0)
       {
@@ -602,7 +605,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
       }
 
     unsigned char* inputBuffer = new unsigned char[static_cast<size_t>(inputBufferSize)];
-    stream->seekg(currentPos+zseekpos,std::ios::beg);
+    stream->seekg(currentPos+zseekpos,METAIO_STREAM::ios::beg);
     stream->read((char *)inputBuffer, (size_t)inputBufferSize);
 
     d_stream->next_in  = inputBuffer;
@@ -615,14 +618,14 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
       return -1;
       }
 
-    std::streampos previousSeekpos = seekpos;
+    METAIO_STL::streampos previousSeekpos = seekpos;
 
     seekpos += buffersize-d_stream->avail_out;
     zseekpos += stream->gcount()-d_stream->avail_in;
 
     // Store the last buffer into memory in case we need it
     // in the near future.
-    std::streamoff previousBufferSize = seekpos-previousSeekpos;
+    METAIO_STL::streamoff previousBufferSize = seekpos-previousSeekpos;
     if(previousBufferSize>1000)
       {
       // WARNING: We probably need to offset outdata at some point...
@@ -632,7 +635,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
     memcpy(compressionTable->buffer,outdata,(size_t)previousBufferSize);
     compressionTable->bufferSize = previousBufferSize;
 
-    //std::cout << "Current pos = " << seekpos << " : " << zseekpos << std::endl;
+    //METAIO_STREAM::cout << "Current pos = " << seekpos << " : " << zseekpos << METAIO_STREAM::endl;
 
     // If go further than the uncompressedSeekPosition we start writing the stream
     if(seekpos >= uncompressedSeekPosition)
@@ -640,7 +643,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
       if(firstchunk)
         {
         outdata += uncompressedSeekPosition-previousSeekpos;
-        std::streamoff writeSize = seekpos-uncompressedSeekPosition;
+        METAIO_STL::streamoff writeSize = seekpos-uncompressedSeekPosition;
 
         if(writeSize > uncompressedDataSize)
           {
@@ -659,7 +662,7 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
         }
       else // read everything
         {
-        std::streamoff writeSize = seekpos-previousSeekpos;
+        METAIO_STL::streamoff writeSize = seekpos-previousSeekpos;
         memcpy(uncompressedData,outdata,(size_t)writeSize);
         if(writeSize > uncompressedDataSize)
           {
@@ -680,34 +683,40 @@ std::streamoff MET_UncompressStream(std::ifstream * stream,
   compressionTable->offsetList.push_back(offset);
 
   // Seek to the current position
-  stream->seekg(currentPos,std::ios::beg);
+  stream->seekg(currentPos,METAIO_STREAM::ios::beg);
   return read;
 }
 
 
+//
+//
+//
 unsigned char * MET_PerformCompression(const unsigned char * source,
-                                       std::streamoff sourceSize,
-                                       std::streamoff * compressedDataSize,
-                                       int compressionLevel)
-{
+                                       METAIO_STL::streamoff sourceSize,
+                                       METAIO_STL::streamoff * compressedDataSize)
+  {
 
   z_stream  z;
-  z.zalloc  = (alloc_func)nullptr;
-  z.zfree   = (free_func)nullptr;
-  z.opaque  = (voidpf)nullptr;
+  z.zalloc  = (alloc_func)0;
+  z.zfree   = (free_func)0;
+  z.opaque  = (voidpf)0;
 
-  std::streamoff buffer_out_size = sourceSize;
-  std::streamoff max_chunk_size = MET_MaxChunkSize;
-  std::streamoff chunk_size  = std::min(sourceSize, max_chunk_size);
+  // Compression rate
+  // Choices are Z_BEST_SPEED,Z_BEST_COMPRESSION,Z_DEFAULT_COMPRESSION
+  int compression_rate = Z_DEFAULT_COMPRESSION;
+
+  METAIO_STL::streamoff buffer_out_size = sourceSize;
+  METAIO_STL::streamoff max_chunk_size = MET_MaxChunkSize;
+  METAIO_STL::streamoff chunk_size  = std::min(sourceSize, max_chunk_size);
   unsigned char * input_buffer      = const_cast<unsigned char *>(source);
   unsigned char * output_buffer     = new unsigned char[chunk_size];
   unsigned char * compressed_data   = new unsigned char[buffer_out_size];
 
-  /*int ret =*/ deflateInit(&z, compressionLevel);
+  /*int ret =*/ deflateInit(&z, compression_rate);
   //assert(ret == Z_OK);
 
-  std::streamoff cur_in_start = 0;
-  std::streamoff cur_out_start = 0;
+  METAIO_STL::streamoff cur_in_start = 0;
+  METAIO_STL::streamoff cur_out_start = 0;
   int flush;
   do
     {
@@ -722,7 +731,7 @@ unsigned char * MET_PerformCompression(const unsigned char * source,
       z.next_out  = output_buffer;
       /*ret =*/ deflate(&z, flush);
       //assert(ret != Z_STREAM_ERROR);
-      std::streamoff count_out = chunk_size - z.avail_out;
+      METAIO_STL::streamoff count_out = chunk_size - z.avail_out;
       if ( (cur_out_start + count_out) >= buffer_out_size )
         {
         // if we don't have enough allocation for the output buffer
@@ -745,24 +754,27 @@ unsigned char * MET_PerformCompression(const unsigned char * source,
   *compressedDataSize = cur_out_start;  // don't use z.total_out, it's limited to 2^32!
   deflateEnd(&z);
   return compressed_data;
-}
+  }
 
+//
+//
+//
 bool MET_PerformUncompression(const unsigned char * sourceCompressed,
-                              std::streamoff sourceCompressedSize,
+                              METAIO_STL::streamoff sourceCompressedSize,
                               unsigned char * uncompressedData,
-                              std::streamoff uncompressedDataSize)
-{
+                              METAIO_STL::streamoff uncompressedDataSize)
+  {
   z_stream d_stream;
 
-  d_stream.zalloc = (alloc_func)nullptr;
-  d_stream.zfree = (free_func)nullptr;
-  d_stream.opaque = (voidpf)nullptr;
+  d_stream.zalloc = (alloc_func)0;
+  d_stream.zfree = (free_func)0;
+  d_stream.opaque = (voidpf)0;
 
   inflateInit2(&d_stream,47); // allow both gzip and zlib compression headers
 
-  std::streamoff max_chunk_size = MET_MaxChunkSize;
-  std::streamoff source_pos = 0;
-  std::streamoff dest_pos = 0;
+  METAIO_STL::streamoff max_chunk_size = MET_MaxChunkSize;
+  METAIO_STL::streamoff source_pos = 0;
+  METAIO_STL::streamoff dest_pos = 0;
   int err;
   do
     {
@@ -784,7 +796,7 @@ bool MET_PerformUncompression(const unsigned char * sourceCompressed,
         if (err != Z_STREAM_END &&
             err != Z_BUF_ERROR) // Z_BUF_ERROR means there is still data to uncompress,
           {                     // but no space left in buffer; non-fatal
-          std::cerr << "Uncompress failed" << std::endl;
+          METAIO_STREAM::cerr << "Uncompress failed" << METAIO_STREAM::endl;
           }
           break;
         }
@@ -796,8 +808,11 @@ bool MET_PerformUncompression(const unsigned char * sourceCompressed,
   while (err != Z_STREAM_END && err >= 0);
   inflateEnd(&d_stream);
   return true;
-}
+  }
 
+//
+//
+//
 bool MET_StringToWordArray(const char *s, int *n, char ***val)
 {
   ptrdiff_t l = strlen(s);
@@ -864,22 +879,40 @@ bool MET_StringToWordArray(const char *s, int *n, char ***val)
   return true;
 }
 
-bool MET_GetFilePath(const std::string& _fName, std::string& _fPath)
-{
-  auto const pos = _fName.find_last_of("/\\");
-  if (pos == std::string::npos)
+//
+//
+//
+bool MET_GetFilePath(const char *_fName, char *_fPath)
+  {
+  long i;
+
+  size_t l = strlen(_fName);
+
+  for(i=(long)l-1; i>=0; i--)
     {
-    _fPath = "";
-    return false;
+    if(_fName[i] == '\\' || _fName[i] == '/')
+      break;
     }
 
-  _fPath = _fName.substr(0, pos + 1);
-  return true;
-}
+  if(i >= 0 && (_fName[i] == '/' || _fName[i] == '\\'))
+    {
+    strcpy(_fPath, _fName);
+    _fPath[i+1] = '\0';
+    return true;
+    }
+  else
+    {
+    _fPath[0] = '\0';
+    return false;
+    }
+  }
 
-bool MET_GetFileSuffixPtr(const std::string& _fName, int *i)
-{
-  *i = static_cast<int>( _fName.length() );
+//
+//
+//
+bool MET_GetFileSuffixPtr(const char *_fName, int *i)
+  {
+  *i = static_cast<int>( strlen(_fName) );
   int j = *i - 5;
   if(j<0)
     {
@@ -898,39 +931,43 @@ bool MET_GetFileSuffixPtr(const std::string& _fName, int *i)
     }
   *i = 0;
   return false;
-}
+  }
 
-bool MET_SetFileSuffix(std::string& _fName, const std::string& _suf)
-{
+//
+//
+//
+bool MET_SetFileSuffix(char *_fName, const char *_suf)
+  {
   int i;
   MET_GetFileSuffixPtr(_fName, &i);
   if(i>0)
     {
-    const char * suffixStart;
     if(_suf[0] == '.')
-      suffixStart = &_suf[1];
+      _fName[i-1] = '\0';
     else
-      suffixStart = &_suf[0];
-    _fName.resize(i);
-    _fName.append(suffixStart);
+      _fName[i] = '\0';
+    strcat(_fName, _suf);
     return true;
     }
   else
     {
     if( _suf[0] != '.')
       {
-      _fName.append(1, '.');
+      strcat(_fName, ".");
       }
-    _fName.append(_suf);
+    strcat(_fName, _suf);
     return true;
     }
-}
+  }
 
+//
+//
+//
 bool MET_InitWriteField(MET_FieldRecordType * _mf,
                         const char *_name,
                         MET_ValueEnumType _type,
                         double _v)
-{
+  {
   strcpy(_mf->name, _name);
   _mf->type = _type;
   _mf->defined = true;
@@ -940,7 +977,7 @@ bool MET_InitWriteField(MET_FieldRecordType * _mf,
   _mf->terminateRead = false;
   _mf->value[0] = _v;
   return true;
-}
+  }
 
 bool MET_InitReadField(MET_FieldRecordType * _mf,
                                   const char *_name,
@@ -948,7 +985,7 @@ bool MET_InitReadField(MET_FieldRecordType * _mf,
                                   bool _required,
                                   int _dependsOn,
                                   size_t _length)
-{
+  {
   strcpy(_mf->name, _name);
   _mf->type = _type;
   _mf->defined = false;
@@ -958,10 +995,13 @@ bool MET_InitReadField(MET_FieldRecordType * _mf,
   _mf->length = static_cast<int>(_length);
   _mf->value[0] = 0;
   return true;
-}
+  }
 
-static bool MET_SkipToVal(std::istream &fp)
-{
+//
+//
+//
+static bool MET_SkipToVal(METAIO_STREAM::istream &fp)
+  {
   int c;
   if( fp.eof() )
     {
@@ -982,43 +1022,46 @@ static bool MET_SkipToVal(std::istream &fp)
 
   if( fp.eof() )
     {
-    std::cerr << "Incomplete file record definition"
-                        << std::endl;
+    METAIO_STREAM::cerr << "Incomplete file record definition"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
   fp.putback(static_cast<char>(c));
 
   return true;
-}
+  }
 
-static bool MET_IsComplete(std::vector<MET_FieldRecordType *> * fields)
-{
-  std::vector<MET_FieldRecordType *>::iterator fieldIter;
+//
+//
+//
+static bool MET_IsComplete(METAIO_STL::vector<MET_FieldRecordType *> * fields)
+  {
+  METAIO_STL::vector<MET_FieldRecordType *>::iterator fieldIter;
   for(fieldIter=fields->begin(); fieldIter!=fields->end(); ++fieldIter)
     {
     if((*fieldIter)->required && !(*fieldIter)->defined)
       {
-      std::cerr << (*fieldIter)->name << " required and not defined."
-                << std::endl;
+      METAIO_STREAM::cerr << (*fieldIter)->name << " required and not defined."
+                << METAIO_STREAM::endl;
       return false;
       }
     }
   return true;
-}
+  }
 
 //
-bool MET_Read(std::istream &fp,
-              std::vector<MET_FieldRecordType *> * fields,
+bool MET_Read(METAIO_STREAM::istream &fp,
+              METAIO_STL::vector<MET_FieldRecordType *> * fields,
               char _MET_SeperatorChar, bool oneLine, bool display_warnings,
-              std::vector<MET_FieldRecordType *> * newFields)
-{
+              METAIO_STL::vector<MET_FieldRecordType *> * newFields)
+  {
 
   char s[1024];
   int i;
   size_t j;
 
-  std::vector<MET_FieldRecordType *>::iterator fieldIter;
+  METAIO_STL::vector<MET_FieldRecordType *>::iterator fieldIter;
 
   MET_SeperatorChar = _MET_SeperatorChar;
 
@@ -1049,7 +1092,7 @@ bool MET_Read(std::istream &fp,
 
     // trim white space on name
     i--;
-    while(i>0 && IsBlank(s[i]))
+    while(IsBlank(s[i]) && i>0)
       {
       s[i--] = '\0';
       }
@@ -1062,10 +1105,10 @@ bool MET_Read(std::istream &fp,
         if((*fieldIter)->dependsOn >= 0)
           if(!(*fields)[(*fieldIter)->dependsOn]->defined)
             {
-            std::cerr << (*fieldIter)->name
+            METAIO_STREAM::cerr << (*fieldIter)->name
                                 << " defined prior to defining ";
-            std::cerr << (*fields)[(*fieldIter)->dependsOn]->name
-                                << std::endl;
+            METAIO_STREAM::cerr << (*fields)[(*fieldIter)->dependsOn]->name
+                                << METAIO_STREAM::endl;
             return false;
             }
         switch((*fieldIter)->type)
@@ -1153,9 +1196,9 @@ bool MET_Read(std::istream &fp,
               {
               if((*fieldIter)->length <= 0)
                 {
-                std::cerr <<
+                METAIO_STREAM::cerr <<
                   "Arrays must have dependency or pre-specified lengths"
-                  << std::endl;
+                  << METAIO_STREAM::endl;
                 return false;
                 }
               for(j=0; j<(size_t)(*fieldIter)->length; j++)
@@ -1187,9 +1230,9 @@ bool MET_Read(std::istream &fp,
               {
               if((*fieldIter)->length <= 0)
                 {
-                std::cerr <<
+                METAIO_STREAM::cerr <<
                   "Arrays must have dependency or pre-specified lengths"
-                  << std::endl;
+                  << METAIO_STREAM::endl;
                 return false;
                 }
               for(j=0; j<(size_t)(*fieldIter)->length*(*fieldIter)->length; j++)
@@ -1217,7 +1260,7 @@ bool MET_Read(std::istream &fp,
       }
     if(!found)
       {
-      if( newFields != nullptr )
+      if( newFields != NULL )
         {
         MET_SkipToVal(fp);
         if(fp.eof())
@@ -1236,8 +1279,8 @@ bool MET_Read(std::istream &fp,
         {
         if(display_warnings)
           {
-          std::cerr << "Skipping unrecognized field "
-                              << s << std::endl;
+          METAIO_STREAM::cerr << "Skipping unrecognized field "
+                              << s << METAIO_STREAM::endl;
           }
         fp.getline( s, 500 );
         }
@@ -1249,12 +1292,12 @@ bool MET_Read(std::istream &fp,
     }
 
   return MET_IsComplete(fields);
-}
+  }
 
 // Workaround for ancient compilers.
 #if defined(_MSC_VER) || defined(__HP_aCC)
 static std::string convert_ulonglong_to_string(MET_ULONG_LONG_TYPE val)
-{
+  {
   std::string result;
   while (val > 0)
     {
@@ -1262,18 +1305,18 @@ static std::string convert_ulonglong_to_string(MET_ULONG_LONG_TYPE val)
     val /= 10;
     }
   return result;
-}
+  }
 #endif
 
 //
-bool MET_Write(std::ostream &fp,
-               std::vector<MET_FieldRecordType *> * fields,
+bool MET_Write(METAIO_STREAM::ostream &fp,
+               METAIO_STL::vector<MET_FieldRecordType *> * fields,
                char _MET_SeperatorChar)
-{
+  {
   MET_SeperatorChar = _MET_SeperatorChar;
 
   int j;
-  std::vector<MET_FieldRecordType *>::iterator fieldIter;
+  METAIO_STL::vector<MET_FieldRecordType *>::iterator fieldIter;
   for(fieldIter=fields->begin(); fieldIter!=fields->end(); ++fieldIter)
     {
     switch((*fieldIter)->type)
@@ -1281,13 +1324,13 @@ bool MET_Write(std::ostream &fp,
       case MET_NONE:
         {
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " "
-           << std::endl;
+           << METAIO_STREAM::endl;
         break;
         }
       case MET_ASCII_CHAR:
         {
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
-        fp << (MET_CHAR_TYPE)(*fieldIter)->value[0] << std::endl;
+        fp << (MET_CHAR_TYPE)(*fieldIter)->value[0] << METAIO_STREAM::endl;
         break;
         }
       case MET_CHAR:
@@ -1296,7 +1339,7 @@ bool MET_Write(std::ostream &fp,
       case MET_INT:
         {
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
-        fp << (MET_LONG_TYPE)((*fieldIter)->value[0]) << std::endl;
+        fp << (MET_LONG_TYPE)((*fieldIter)->value[0]) << METAIO_STREAM::endl;
         break;
         }
       case MET_LONG_LONG:
@@ -1304,15 +1347,15 @@ bool MET_Write(std::ostream &fp,
 #if defined(_MSC_VER) || defined(__HP_aCC)
         // NOTE: you cannot use __int64 in an ostream in MSV6 or HPUX
         fp << (double)((MET_LONG_LONG_TYPE)((*fieldIter)->value[0]))
-           << std::endl;
-        std::cerr << "Programs compiled using MSV6 or HPUX cannot"
-                            << " write 64 bit ints" << std::endl;
-        std::cerr << "  Writing as double instead."
+           << METAIO_STREAM::endl;
+        METAIO_STREAM::cerr << "Programs compiled using MSV6 or HPUX cannot"
+                            << " write 64 bit ints" << METAIO_STREAM::endl;
+        METAIO_STREAM::cerr << "  Writing as double instead."
                             << "  Loss of precision results."
-                            << std::endl;
+                            << METAIO_STREAM::endl;
 #else
         fp << (MET_LONG_LONG_TYPE)((*fieldIter)->value[0])
-           << std::endl;
+           << METAIO_STREAM::endl;
 #endif
         break;
         }
@@ -1322,7 +1365,7 @@ bool MET_Write(std::ostream &fp,
       case MET_ULONG:
         {
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
-        fp << (MET_ULONG_TYPE)((*fieldIter)->value[0]) << std::endl;
+        fp << (MET_ULONG_TYPE)((*fieldIter)->value[0]) << METAIO_STREAM::endl;
         break;
         }
       case MET_ULONG_LONG:
@@ -1330,9 +1373,9 @@ bool MET_Write(std::ostream &fp,
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
 #if defined(_MSC_VER) || defined(__HP_aCC)
         // NOTE: you cannot use __int64 in an ostream in MSV6 or HPUX
-        fp << convert_ulonglong_to_string((MET_ULONG_LONG_TYPE)((*fieldIter)->value[0])) << std::endl;
+        fp << convert_ulonglong_to_string((MET_ULONG_LONG_TYPE)((*fieldIter)->value[0])) << METAIO_STREAM::endl;
 #else
-        fp << (MET_ULONG_LONG_TYPE)((*fieldIter)->value[0]) << std::endl;
+        fp << (MET_ULONG_LONG_TYPE)((*fieldIter)->value[0]) << METAIO_STREAM::endl;
 #endif
         break;
         }
@@ -1340,18 +1383,18 @@ bool MET_Write(std::ostream &fp,
       case MET_DOUBLE:
         {
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
-        fp << (MET_DOUBLE_TYPE)(*fieldIter)->value[0] << std::endl;
+        fp << (MET_DOUBLE_TYPE)(*fieldIter)->value[0] << METAIO_STREAM::endl;
         break;
         }
       case MET_STRING:
         {
         if ( (*fieldIter)->length == 0 )
           {
-          std::cerr << "Warning:";
-          std::cerr << "The field " << (*fieldIter)->name
+          METAIO_STREAM::cerr << "Warning:";
+          METAIO_STREAM::cerr << "The field " << (*fieldIter)->name
                               << "has zero length. "
                               << "Refusing to write empty string value.";
-          std::cerr << std::endl;
+          METAIO_STREAM::cerr << METAIO_STREAM::endl;
           }
         fp << (*fieldIter)->name << " " << MET_SeperatorChar << " ";
         if((*fieldIter)->dependsOn >= 0)
@@ -1359,14 +1402,14 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning:";
-            std::cerr << "length and dependsOn values not equal"
+            METAIO_STREAM::cerr << "Warning:";
+            METAIO_STREAM::cerr << "length and dependsOn values not equal"
                                 << " in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         fp.write( (char *)((*fieldIter)->value), (*fieldIter)->length );
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
       case MET_CHAR_ARRAY:
@@ -1380,17 +1423,17 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "Length and dependsOn values not equal"
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "Length and dependsOn values not equal"
                                 << " in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length; j++)
           {
           fp << " " << (MET_LONG_TYPE)((*fieldIter)->value[j]);
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
       case MET_LONG_LONG_ARRAY:
@@ -1401,10 +1444,10 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "Length and dependsOn values not equal"
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "Length and dependsOn values not equal"
                                 << " in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length; j++)
@@ -1412,17 +1455,17 @@ bool MET_Write(std::ostream &fp,
 #if defined(_MSC_VER) || defined(__HP_aCC)
           // NOTE: you cannot use __int64 in an ostream in MSV6 or HPUX
           fp << " " << (double)((MET_LONG_LONG_TYPE)((*fieldIter)->value[j]));
-          std::cerr << "Programs compiled using MSV6 cannot"
+          METAIO_STREAM::cerr << "Programs compiled using MSV6 cannot"
                               << " write 64 bit ints"
-                              << std::endl;
-          std::cerr << "  Writing as double instead."
+                              << METAIO_STREAM::endl;
+          METAIO_STREAM::cerr << "  Writing as double instead."
                               << " Loss of precision results."
-                              << std::endl;
+                              << METAIO_STREAM::endl;
 #else
           fp << " " << (MET_LONG_LONG_TYPE)((*fieldIter)->value[j]);
 #endif
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
 
@@ -1437,17 +1480,17 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "Length and dependsOn values not equal"
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "Length and dependsOn values not equal"
                                 << " in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length; j++)
           {
           fp << " " << (MET_ULONG_TYPE)((*fieldIter)->value[j]);
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
       case MET_ULONG_LONG_ARRAY:
@@ -1458,10 +1501,10 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "Length and dependsOn values not equal"
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "Length and dependsOn values not equal"
                                 << " in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length; j++)
@@ -1470,17 +1513,17 @@ bool MET_Write(std::ostream &fp,
           // NOTE: you cannot use __int64 in an ostream in MSV6
           fp << " " << (double)((MET_LONG_LONG_TYPE)((MET_ULONG_LONG_TYPE)
                                 ((*fieldIter)->value[j])));
-          std::cerr << "Programs compiled using MSV6 or HPUX"
+          METAIO_STREAM::cerr << "Programs compiled using MSV6 or HPUX"
                               << " cannot write 64 bit ints"
-                              << std::endl;
-          std::cerr << " Writing as double instead."
+                              << METAIO_STREAM::endl;
+          METAIO_STREAM::cerr << " Writing as double instead."
                               << " Loss of precision results."
-                              << std::endl;
+                              << METAIO_STREAM::endl;
 #else
           fp << " " << (MET_ULONG_LONG_TYPE)((*fieldIter)->value[j]);
 #endif
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
 
@@ -1493,16 +1536,16 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "length and dependsOn values not equal in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "length and dependsOn values not equal in write";
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length; j++)
           {
           fp << " " << (double)(*fieldIter)->value[j];
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
       case MET_FLOAT_MATRIX:
@@ -1513,16 +1556,16 @@ bool MET_Write(std::ostream &fp,
           if((*fieldIter)->length !=
              (*fields)[(*fieldIter)->dependsOn]->value[0])
             {
-            std::cerr << "Warning: ";
-            std::cerr << "length and dependsOn values not equal in write";
-            std::cerr << std::endl;
+            METAIO_STREAM::cerr << "Warning: ";
+            METAIO_STREAM::cerr << "length and dependsOn values not equal in write";
+            METAIO_STREAM::cerr << METAIO_STREAM::endl;
             }
           }
         for(j=0; j<(*fieldIter)->length*(*fieldIter)->length; j++)
           {
           fp << " " << (double)(*fieldIter)->value[j];
           }
-        fp << std::endl;
+        fp << METAIO_STREAM::endl;
         break;
         }
       case MET_OTHER:
@@ -1534,13 +1577,13 @@ bool MET_Write(std::ostream &fp,
   return true;
 }
 
-bool MET_WriteFieldToFile(std::ostream & _fp, const char *_fieldName,
+bool MET_WriteFieldToFile(METAIO_STREAM::ostream & _fp, const char *_fieldName,
                           MET_ValueEnumType _pType, size_t _n, const void *_v)
-{
+  {
   size_t i;
   MET_FieldRecordType f;
 
-  snprintf(f.name, sizeof(f.name), "%s", _fieldName);
+  sprintf(f.name, "%s", _fieldName);
   f.defined = false;
   f.dependsOn = -1;
   f.length = static_cast<int>(_n);
@@ -1655,20 +1698,20 @@ bool MET_WriteFieldToFile(std::ostream & _fp, const char *_fieldName,
       break;
     }
 
-  std::vector<MET_FieldRecordType *> l;
+  METAIO_STL::vector<MET_FieldRecordType *> l;
   l.clear();
   l.push_back(&f);
   MET_Write(_fp, &l);
 
   return true;
-}
+  }
 
-bool MET_WriteFieldToFile(std::ostream & _fp, const char *_fieldName,
+bool MET_WriteFieldToFile(METAIO_STREAM::ostream & _fp, const char *_fieldName,
   MET_ValueEnumType _pType, double _v)
-{
+  {
   MET_FieldRecordType f;
 
-  snprintf(f.name, sizeof(f.name), "%s", _fieldName);
+  sprintf(f.name, "%s", _fieldName);
   f.defined = false;
   f.dependsOn = -1;
   f.length = 1;
@@ -1676,17 +1719,17 @@ bool MET_WriteFieldToFile(std::ostream & _fp, const char *_fieldName,
   f.type = _pType;
   f.value[0] = _v;
 
-  std::vector<MET_FieldRecordType *> l;
+  METAIO_STL::vector<MET_FieldRecordType *> l;
   l.clear();
   l.push_back(&f);
   MET_Write(_fp, &l);
 
   return true;
-}
+  }
 
 bool MET_StringToInterpolationType(const char * _str,
                                MET_InterpolationEnumType * _type)
-{
+  {
   int i;
 
   for(i=0; i<MET_NUM_INTERPOLATION_TYPES; i++)
@@ -1699,14 +1742,14 @@ bool MET_StringToInterpolationType(const char * _str,
   *_type = MET_NO_INTERPOLATION;
 
   return false;
-}
+  }
 
 bool MET_InterpolationTypeToString(MET_InterpolationEnumType _type,
                                char * _str)
-{
+  {
   strcpy(_str, MET_InterpolationTypeName[(int)_type]);
   return true;
-}
+  }
 
 /** Make sure that all the byte are read and written as LSB */
 void MET_SwapByteIfSystemMSB(void* val, MET_ValueEnumType _type)

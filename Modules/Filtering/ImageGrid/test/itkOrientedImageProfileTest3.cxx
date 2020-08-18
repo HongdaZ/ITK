@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,77 +20,76 @@
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkTimeProbesCollectorBase.h"
 
-int
-itkOrientedImageProfileTest3(int, char *[])
+int itkOrientedImageProfileTest3( int , char *[] )
 {
 
-  constexpr unsigned int Dimension = 3;
-  using PixelType = unsigned char;
+  const unsigned int Dimension = 3;
+  typedef unsigned char PixelType;
 
   //
   //  Yes, on purpose we are using here the itk::VectorImage, so we can compare it
   //  against the itk::Image used in itkOrientedImageProfileTest1.
   //
-  using ImageType = itk::VectorImage<PixelType, Dimension>;
+  typedef itk::VectorImage<PixelType, Dimension>      ImageType;
 
-  using IndexType = ImageType::IndexType;
-  using SizeType = ImageType::SizeType;
-  using PointType = ImageType::PointType;
-  using RegionType = ImageType::RegionType;
-  using SpacingType = ImageType::SpacingType;
+  typedef ImageType::IndexType                        IndexType;
+  typedef ImageType::SizeType                         SizeType;
+  typedef ImageType::PointType                        PointType;
+  typedef ImageType::RegionType                       RegionType;
+  typedef ImageType::SpacingType                      SpacingType;
 
   IndexType start;
   SizeType  size;
 
-  start.Fill(0);
-  size.Fill(300);
+  start.Fill( 0 );
+  size.Fill( 300 );
 
   RegionType region;
 
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   ImageType::Pointer image = ImageType::New();
 
-  image->SetVectorLength(2);
-  image->SetRegions(region);
+  image->SetVectorLength( 2 );
+  image->SetRegions( region );
   image->Allocate();
 
   SpacingType spacing;
 
-  spacing.Fill(1.5);
+  spacing.Fill( 1.5 );
 
-  image->SetSpacing(spacing);
+  image->SetSpacing( spacing );
 
   PointType origin;
 
-  origin.Fill(1.3);
+  origin.Fill( 1.3 );
 
-  image->SetOrigin(origin);
+  image->SetOrigin( origin );
 
-  using IteratorType = itk::ImageRegionConstIteratorWithIndex<ImageType>;
+  typedef itk::ImageRegionConstIteratorWithIndex< ImageType > IteratorType;
 
-  IteratorType itr(image, region);
+  IteratorType itr( image, region );
 
   itr.GoToBegin();
 
-  itk::TimeProbesCollectorBase chronometer;
+  itk::TimeProbesCollectorBase  chronometer;
 
   chronometer.Start("Transform");
 
   IndexType index;
   PointType point;
 
-  while (!itr.IsAtEnd())
-  {
-    image->TransformIndexToPhysicalPoint(itr.GetIndex(), point);
-    image->TransformPhysicalPointToIndex(point, index);
+  while( !itr.IsAtEnd() )
+    {
+    image->TransformIndexToPhysicalPoint( itr.GetIndex(), point );
+    image->TransformPhysicalPointToIndex( point, index );
     ++itr;
-  }
+    }
 
   chronometer.Stop("Transform");
 
-  chronometer.Report(std::cout);
+  chronometer.Report( std::cout );
 
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,64 +22,66 @@
 #include <fstream>
 
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkGDCMImageIONoCrashTest(int ac, char * av[])
+int itkGDCMImageIONoCrashTest(int ac, char* av[])
 {
 
-  if (ac < 2)
-  {
+  if(ac < 2)
+    {
     std::cerr << "Usage: " << av[0] << " DicomImage\n";
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using InputPixelType = unsigned char;
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef unsigned char                           InputPixelType;
+  typedef itk::Image< InputPixelType, 2 >         InputImageType;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
 
-  using ImageIOType = itk::GDCMImageIO;
+  typedef itk::GDCMImageIO                        ImageIOType;
   ImageIOType::Pointer gdcmImageIO = ImageIOType::New();
 
-  const std::string inputFile{ av[1] };
-
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(inputFile);
-  reader->SetImageIO(gdcmImageIO);
-  if (!gdcmImageIO->CanReadFile(inputFile.c_str()))
-  {
-    std::cerr << "exception in file reader " << inputFile << " not supported by itk::GDCMImageIO." << std::endl;
-    return EXIT_FAILURE;
-  }
+  reader->SetFileName( av[1] );
+  reader->SetImageIO( gdcmImageIO );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Exercise the get methods
-  std::cout << "InternalComponentType: " << gdcmImageIO->GetInternalComponentType() << std::endl;
-  std::cout << "RescaleSlope: " << gdcmImageIO->GetRescaleSlope() << std::endl;
-  std::cout << "RescaleIntercept: " << gdcmImageIO->GetRescaleIntercept() << std::endl;
-  std::cout << "UIDPrefix: " << gdcmImageIO->GetUIDPrefix() << std::endl;
-  std::cout << "StudyInstanceUID: " << gdcmImageIO->GetStudyInstanceUID() << std::endl;
-  std::cout << "SeriesInstanceUID: " << gdcmImageIO->GetSeriesInstanceUID() << std::endl;
-  std::cout << "FrameOfReferenceInstanceUID: " << gdcmImageIO->GetFrameOfReferenceInstanceUID() << std::endl;
-  std::cout << "KeepOriginalUID: " << gdcmImageIO->GetKeepOriginalUID() << std::endl;
-#ifndef ITK_LEGACY_REMOVE
-  std::cout << "LoadSequences: " << gdcmImageIO->GetLoadSequences() << std::endl;
-#endif
-  std::cout << "LoadPrivateTags: " << gdcmImageIO->GetLoadPrivateTags() << std::endl;
-  std::cout << "CompressionType: " << gdcmImageIO->GetCompressionType() << std::endl;
+  std::cout << "InternalComponentType: "
+    << gdcmImageIO->GetInternalComponentType() << std::endl;
+  std::cout << "RescaleSlope: "
+    << gdcmImageIO->GetRescaleSlope() << std::endl;
+  std::cout << "RescaleIntercept: "
+    << gdcmImageIO->GetRescaleIntercept() << std::endl;
+  std::cout << "UIDPrefix: "
+    << gdcmImageIO->GetUIDPrefix() << std::endl;
+  std::cout << "StudyInstanceUID: "
+    << gdcmImageIO->GetStudyInstanceUID() << std::endl;
+  std::cout << "SeriesInstanceUID: "
+    << gdcmImageIO->GetSeriesInstanceUID() << std::endl;
+  std::cout << "FrameOfReferenceInstanceUID: "
+    << gdcmImageIO->GetFrameOfReferenceInstanceUID() << std::endl;
+  std::cout << "KeepOriginalUID: "
+    << gdcmImageIO->GetKeepOriginalUID() << std::endl;
+  std::cout << "LoadSequences: "
+    << gdcmImageIO->GetLoadSequences() << std::endl;
+  std::cout << "LoadPrivateTags: "
+    << gdcmImageIO->GetLoadPrivateTags() << std::endl;
+  std::cout << "CompressionType: "
+    << gdcmImageIO->GetCompressionType() << std::endl;
 
-  gdcmImageIO->Print(std::cout);
+  gdcmImageIO->Print( std::cout );
 
   return EXIT_SUCCESS;
+
 }

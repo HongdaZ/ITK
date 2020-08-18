@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class ImageClassifierBase
+/** \class ImageClassifierBase
  * \brief Base class for the ImageClassifierBase object.
  *
  * itkImageClassifierBase is the base class for algorithms
@@ -67,17 +66,17 @@ namespace itk
  * \ingroup ITKClassifiers
  */
 
-template <typename TInputImage, typename TClassifiedImage>
-class ITK_TEMPLATE_EXPORT ImageClassifierBase : public ClassifierBase<TInputImage>
+template< typename TInputImage,
+          typename TClassifiedImage >
+class ITK_TEMPLATE_EXPORT ImageClassifierBase:
+  public ClassifierBase< TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageClassifierBase);
-
-  /** Standard class type aliases. */
-  using Self = ImageClassifierBase;
-  using Superclass = ClassifierBase<TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageClassifierBase           Self;
+  typedef ClassifierBase< TInputImage > Superclass;
+  typedef SmartPointer< Self >          Pointer;
+  typedef SmartPointer< const Self >    ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -86,27 +85,29 @@ public:
   itkTypeMacro(ImageClassifierBase, ClassifierBase);
 
   /** Type definition for the input image. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename TInputImage::Pointer;
-  using InputImageConstPointer = typename TInputImage::ConstPointer;
+  typedef TInputImage                        InputImageType;
+  typedef typename TInputImage::Pointer      InputImagePointer;
+  typedef typename TInputImage::ConstPointer InputImageConstPointer;
 
   /** Type definitions for the classified image pixel type. */
-  using ClassifiedImagePointer = typename TClassifiedImage::Pointer;
+  typedef typename TClassifiedImage::Pointer ClassifiedImagePointer;
 
   /** Type definitions from the Superclass */
 
   /**Set the decision rule */
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
+  typedef typename Superclass::MeasurementVectorType MeasurementVectorType;
 
-  /** Typedefs for membership function */
-  using MembershipFunctionType = typename Superclass::MembershipFunctionType;
+  /** Typedefs for membership funciton */
+  typedef typename Superclass::MembershipFunctionType MembershipFunctionType;
 
-  using MembershipFunctionPointer = typename Superclass::MembershipFunctionPointer;
+  typedef typename Superclass::MembershipFunctionPointer
+  MembershipFunctionPointer;
 
-  using MembershipFunctionPointerVector = typename Superclass::MembershipFunctionPointerVector;
+  typedef typename Superclass::MembershipFunctionPointerVector
+  MembershipFunctionPointerVector;
 
   /** Type alias for decision rule */
-  using DecisionRuleType = typename Superclass::DecisionRuleType;
+  typedef typename Superclass::DecisionRuleType DecisionRuleType;
 
   /** Get/Set the input image. */
   itkSetConstObjectMacro(InputImage, InputImageType);
@@ -119,49 +120,49 @@ public:
   itkGetConstMacro(ClassifiedImage, ClassifiedImagePointer);
 
   /** Type definition for the vector associated with
-   * input image pixel type. */
-  using InputImagePixelType = typename TInputImage::PixelType;
+    * input image pixel type. */
+  typedef typename TInputImage::PixelType InputImagePixelType;
 
   /** Type definitions for the vector holding
    * training image pixel type. */
-  using ClassifiedImagePixelType = typename TClassifiedImage::PixelType;
+  typedef typename TClassifiedImage::PixelType ClassifiedImagePixelType;
 
   /** Type definition for the input image/training iterator */
-  using InputImageConstIterator = ImageRegionConstIterator<TInputImage>;
-  using ClassifiedImageIterator = ImageRegionIterator<TClassifiedImage>;
+  typedef
+  ImageRegionConstIterator< TInputImage >    InputImageConstIterator;
+  typedef
+  ImageRegionIterator< TClassifiedImage >    ClassifiedImageIterator;
 
   /** Method to get the membership of a given pixel to the different classes */
-  std::vector<double>
+  std::vector< double >
   GetPixelMembershipValue(const InputImagePixelType inputImagePixel);
 
 protected:
-  ImageClassifierBase() = default;
-  ~ImageClassifierBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ImageClassifierBase();
+  ~ImageClassifierBase() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Allocate memory for the classified image. */
-  void
-  Allocate();
+  void Allocate();
 
   /** Starts the classification process */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
-  using InputImageSizeType = typename TInputImage::SizeType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageClassifierBase);
+
+  typedef typename TInputImage::SizeType InputImageSizeType;
 
   InputImageConstPointer m_InputImage;
   ClassifiedImagePointer m_ClassifiedImage;
 
   /** Define a virtual Classifier function to classify the whole image. */
-  virtual void
-  Classify();
+  virtual void Classify();
 }; // class ImageClassifierBase
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageClassifierBase.hxx"
+#include "itkImageClassifierBase.hxx"
 #endif
 
 #endif

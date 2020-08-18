@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
  *
  *=========================================================================*/
 #include "lsmrDense.h"
-#include "vcl_compiler_detection.h"
 
 lsmrDense::lsmrDense()
 {
-  this->A = nullptr;
+  this->A = 0;
 }
 
 
-lsmrDense::~lsmrDense() = default;
+lsmrDense::~lsmrDense()
+{
+}
 
 
 void

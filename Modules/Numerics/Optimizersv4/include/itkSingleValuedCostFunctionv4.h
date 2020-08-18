@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class SingleValuedCostFunctionv4Template
+/** \class SingleValuedCostFunctionv4Template
  * \brief This class is a base for a CostFunction that returns a
  * single value.
  *
@@ -46,51 +45,52 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizersv4
  */
-template <typename TInternalComputationValueType>
-class SingleValuedCostFunctionv4Template : public CostFunctionTemplate<TInternalComputationValueType>
+template< typename TInternalComputationValueType >
+class SingleValuedCostFunctionv4Template:
+  public CostFunctionTemplate< TInternalComputationValueType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedCostFunctionv4Template);
-
-  /** Standard class type aliases. */
-  using Self = SingleValuedCostFunctionv4Template;
-  using Superclass = CostFunctionTemplate<TInternalComputationValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SingleValuedCostFunctionv4Template                    Self;
+  typedef CostFunctionTemplate< TInternalComputationValueType > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SingleValuedCostFunctionv4Template, CostFunctionTemplate);
 
-  /**  MeasureType type alias.
+  /**  MeasureType typedef.
    *  It defines a type used to return the cost function value. */
-  using MeasureType = TInternalComputationValueType;
+  typedef TInternalComputationValueType                  MeasureType;
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersType = typename Superclass::ParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
 
-  /** DerivativeType type alias.
+  /** DerivativeType typedef.
    *  It defines a type used to return the cost function derivative.  */
-  using DerivativeType = Array<TInternalComputationValueType>;
+  typedef Array< TInternalComputationValueType > DerivativeType;
 
   /** This method returns the value of the cost function corresponding
-   * to the specified parameters.    */
-  virtual MeasureType
-  GetValue() const = 0;
+    * to the specified parameters.    */
+  virtual MeasureType GetValue() const = 0;
 
   /** This method returns the value and derivative of the cost function.
    * \c derivative will be sized and allocated as needed by metric.
    * If it's already proper size, no new allocation is done. */
-  virtual void
-  GetValueAndDerivative(MeasureType & value, DerivativeType & derivative) const = 0;
+  virtual void GetValueAndDerivative(MeasureType & value,
+                                     DerivativeType & derivative) const = 0;
 
 protected:
-  SingleValuedCostFunctionv4Template() = default;
-  ~SingleValuedCostFunctionv4Template() override = default;
+  SingleValuedCostFunctionv4Template() {}
+  virtual ~SingleValuedCostFunctionv4Template() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedCostFunctionv4Template);
 };
 
 /** This helps to meet backward compatibility */
-using SingleValuedCostFunctionv4 = SingleValuedCostFunctionv4Template<double>;
+typedef SingleValuedCostFunctionv4Template<double> SingleValuedCostFunctionv4;
 
 } // end namespace itk
 

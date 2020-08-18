@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,51 +20,50 @@
 #include "itkSimpleFilterWatcher.h"
 
 #include "itkSumProjectionImageFilter.h"
-#include "itkTestingMacros.h"
 
-int
-itkSumProjectionImageFilterTest(int argc, char * argv[])
+int itkSumProjectionImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Missing Parameters " << std::endl;
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << "Usage: " << argv[0];
     std::cerr << " InputImage OutputImage  " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr int dim = 3;
+  const int dim = 3;
 
-  using InputPixelType = unsigned char;
-  using InputImageType = itk::Image<InputPixelType, dim>;
+  typedef unsigned char                     InputPixelType;
+  typedef itk::Image< InputPixelType, dim > InputImageType;
 
-  using OutpuPixelType = unsigned short;
-  using OutputImageType = itk::Image<OutpuPixelType, dim>;
+  typedef unsigned short                    OutpuPixelType;
+  typedef itk::Image< OutpuPixelType, dim > OutputImageType;
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using FilterType = itk::SumProjectionImageFilter<InputImageType, OutputImageType>;
+  typedef itk::SumProjectionImageFilter< InputImageType, OutputImageType >
+                                                                 FilterType;
   FilterType::Pointer filter = FilterType::New();
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
 
   itk::SimpleFilterWatcher watcher(filter, "filter");
 
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch ( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

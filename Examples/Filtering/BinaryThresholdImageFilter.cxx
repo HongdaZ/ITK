@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,17 +60,16 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 7)
-  {
+  if( argc < 7 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputImageFile ";
     std::cerr << " lowerThreshold upperThreshold ";
-    std::cerr << " outsideValue insideValue   " << std::endl;
+    std::cerr << " outsideValue insideValue   "  << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -80,8 +79,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
+  typedef  unsigned char  InputPixelType;
+  typedef  unsigned char  OutputPixelType;
   // Software Guide : EndCodeSnippet
 
 
@@ -93,8 +92,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  typedef itk::Image< InputPixelType,  2 >   InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -106,7 +105,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>;
+  typedef itk::BinaryThresholdImageFilter<
+               InputImageType, OutputImageType >  FilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -120,7 +120,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
   // Software Guide : EndCodeSnippet
 
 
@@ -133,7 +133,7 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -150,8 +150,8 @@ main(int argc, char * argv[])
   // Software Guide : EndCodeSnippet
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  reader->SetFileName(argv[1]);
+  writer->SetInput( filter->GetOutput() );
+  reader->SetFileName( argv[1] );
 
 
   //  Software Guide : BeginLatex
@@ -165,7 +165,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -184,12 +184,12 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const OutputPixelType outsideValue = std::stoi(argv[5]);
-  const OutputPixelType insideValue = std::stoi(argv[6]);
+  const OutputPixelType outsideValue = atoi( argv[5] );
+  const OutputPixelType insideValue  = atoi( argv[6] );
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOutsideValue(outsideValue);
-  filter->SetInsideValue(insideValue);
+  filter->SetOutsideValue( outsideValue );
+  filter->SetInsideValue(  insideValue  );
   // Software Guide : EndCodeSnippet
 
 
@@ -203,12 +203,12 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const InputPixelType lowerThreshold = std::stoi(argv[3]);
-  const InputPixelType upperThreshold = std::stoi(argv[4]);
+  const InputPixelType lowerThreshold = atoi( argv[3] );
+  const InputPixelType upperThreshold = atoi( argv[4] );
 
   // Software Guide : BeginCodeSnippet
-  filter->SetLowerThreshold(lowerThreshold);
-  filter->SetUpperThreshold(upperThreshold);
+  filter->SetLowerThreshold( lowerThreshold );
+  filter->SetUpperThreshold( upperThreshold );
   // Software Guide : EndCodeSnippet
 
 
@@ -231,9 +231,10 @@ main(int argc, char * argv[])
   // \center
   // \includegraphics[width=0.44\textwidth]{BrainProtonDensitySlice}
   // \includegraphics[width=0.44\textwidth]{BinaryThresholdImageFilterOutput}
-  // \itkcaption[BinaryThresholdImageFilter output]{Effect of the
-  // BinaryThresholdImageFilter on a slice from a MRI proton density image  of the
-  // brain.} \label{fig:BinaryThresholdImageFilterInputOutput} \end{figure}
+  // \itkcaption[BinaryThresholdImageFilter output]{Effect of the BinaryThresholdImageFilter on a slice from a MRI
+  // proton density image  of the brain.}
+  // \label{fig:BinaryThresholdImageFilterInputOutput}
+  // \end{figure}
   //
   //  Figure \ref{fig:BinaryThresholdImageFilterInputOutput} illustrates the
   //  effect of this filter on a MRI proton density image of the brain. This
@@ -249,7 +250,7 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
   writer->Update();
 
   return EXIT_SUCCESS;

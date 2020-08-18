@@ -18,10 +18,12 @@ namespace gdcm
 {
 
 PDFCodec::PDFCodec()
-= default;
+{
+}
 
 PDFCodec::~PDFCodec()
-= default;
+{
+}
 
 bool PDFCodec::Decode(DataElement const &is, DataElement &os)
 {

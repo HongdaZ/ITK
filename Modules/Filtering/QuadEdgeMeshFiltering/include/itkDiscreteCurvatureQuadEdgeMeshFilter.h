@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,54 +31,50 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template <typename TInputMesh, typename TOutputMesh = TInputMesh>
-class DiscreteCurvatureQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh=TInputMesh >
+class DiscreteCurvatureQuadEdgeMeshFilter:
+  public QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteCurvatureQuadEdgeMeshFilter);
+  typedef DiscreteCurvatureQuadEdgeMeshFilter                         Self;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
+  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh > Superclass;
 
-  using Self = DiscreteCurvatureQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
+  typedef TInputMesh                      InputMeshType;
+  typedef typename InputMeshType::Pointer InputMeshPointer;
 
-  using InputMeshType = TInputMesh;
-  using InputMeshPointer = typename InputMeshType::Pointer;
+  typedef TOutputMesh                                      OutputMeshType;
+  typedef typename OutputMeshType::Pointer                 OutputMeshPointer;
+  typedef typename OutputMeshType::PointsContainerPointer  OutputPointsContainerPointer;
+  typedef typename OutputMeshType::PointsContainerIterator OutputPointsContainerIterator;
+  typedef typename OutputMeshType::PointType               OutputPointType;
+  typedef typename OutputPointType::CoordRepType           OutputCoordType;
+  typedef typename OutputMeshType::PointIdentifier         OutputPointIdentifier;
+  typedef typename OutputMeshType::CellIdentifier          OutputCellIdentifier;
+  typedef typename OutputMeshType::QEType                  OutputQEType;
+  typedef typename OutputMeshType::MeshTraits              OutputMeshTraits;
+  typedef typename OutputMeshTraits::PixelType             OutputCurvatureType;
 
-  using OutputMeshType = TOutputMesh;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using OutputPointsContainerPointer = typename OutputMeshType::PointsContainerPointer;
-  using OutputPointsContainerIterator = typename OutputMeshType::PointsContainerIterator;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputCoordType = typename OutputPointType::CoordRepType;
-  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
-  using OutputCellIdentifier = typename OutputMeshType::CellIdentifier;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputMeshTraits = typename OutputMeshType::MeshTraits;
-  using OutputCurvatureType = typename OutputMeshTraits::PixelType;
-
-  using TriangleType = TriangleHelper<OutputPointType>;
+  typedef TriangleHelper< OutputPointType > TriangleType;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(DiscreteCurvatureQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputCurvatureType>));
+  itkConceptMacro( OutputIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< OutputCurvatureType > ) );
   // End concept checking
 #endif
 
 protected:
-  DiscreteCurvatureQuadEdgeMeshFilter()
-    : m_OutputMesh(nullptr)
-  {}
-  ~DiscreteCurvatureQuadEdgeMeshFilter() override = default;
+  DiscreteCurvatureQuadEdgeMeshFilter() : m_OutputMesh(ITK_NULLPTR) {}
+  virtual ~DiscreteCurvatureQuadEdgeMeshFilter() ITK_OVERRIDE {}
 
-  virtual OutputCurvatureType
-  EstimateCurvature(const OutputPointType & iP) = 0;
+  virtual OutputCurvatureType EstimateCurvature(const OutputPointType & iP) = 0;
 
-  OutputCurvatureType
-  ComputeMixedArea(OutputQEType * iQE1, OutputQEType * iQE2)
+  OutputCurvatureType ComputeMixedArea(OutputQEType *iQE1, OutputQEType *iQE2)
   {
 
     OutputPointIdentifier id[3];
@@ -89,16 +85,15 @@ protected:
 
     OutputPointType p[3];
 
-    for (int i = 0; i < 3; i++)
-    {
+    for ( int i = 0; i < 3; i++ )
+      {
       p[i] = this->m_OutputMesh->GetPoint(id[i]);
-    }
+      }
 
-    return static_cast<OutputCurvatureType>(TriangleType::ComputeMixedArea(p[0], p[1], p[2]));
+    return static_cast< OutputCurvatureType >( TriangleType::ComputeMixedArea( p[0], p[1], p[2] ) );
   }
 
-  void
-  GenerateData() override
+  virtual void GenerateData() ITK_OVERRIDE
   {
     this->CopyInputMeshToOutputMesh();
 
@@ -110,17 +105,18 @@ protected:
     OutputCurvatureType curvature;
 
     this->m_OutputMesh = this->GetOutput();
-    while (p_it != points->End())
-    {
-      curvature = this->EstimateCurvature(p_it->Value());
+    while ( p_it != points->End() )
+      {
+      curvature = this->EstimateCurvature( p_it->Value() );
       output->SetPointData(p_it->Index(), curvature);
       ++p_it;
-    }
+      }
   }
 
 private:
   /** Cache output pointer to avoid calls in inner loop to GetOutput() */
-  OutputMeshType * m_OutputMesh;
+  OutputMeshType *m_OutputMesh;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteCurvatureQuadEdgeMeshFilter);
 };
 } // end namespace itk
 

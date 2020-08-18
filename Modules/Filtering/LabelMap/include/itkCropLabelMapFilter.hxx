@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,16 +32,17 @@
 
 namespace itk
 {
-template <typename TInputImage>
+template< typename TInputImage >
 void
-CropLabelMapFilter<TInputImage>::GenerateOutputInformation()
+CropLabelMapFilter< TInputImage >
+::GenerateOutputInformation()
 {
-  const TInputImage * inputPtr = this->GetInput();
+  const TInputImage *inputPtr = this->GetInput();
 
-  if (!inputPtr)
-  {
+  if ( !inputPtr )
+    {
     return;
-  }
+    }
 
   // Compute the new region size.
   RegionType croppedRegion;
@@ -54,7 +55,7 @@ CropLabelMapFilter<TInputImage>::GenerateOutputInformation()
   SizeType originalCropSize = m_UpperBoundaryCropSize + m_LowerBoundaryCropSize;
 
   index = inputIndex + m_LowerBoundaryCropSize;
-  size = inputSize - (originalCropSize);
+  size  = inputSize  - ( originalCropSize );
 
   croppedRegion.SetSize(size);
   croppedRegion.SetIndex(index);
@@ -65,9 +66,10 @@ CropLabelMapFilter<TInputImage>::GenerateOutputInformation()
   Superclass::GenerateOutputInformation();
 }
 
-template <typename TInputImage>
+template< typename TInputImage >
 void
-CropLabelMapFilter<TInputImage>::PrintSelf(std::ostream & os, Indent indent) const
+CropLabelMapFilter< TInputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

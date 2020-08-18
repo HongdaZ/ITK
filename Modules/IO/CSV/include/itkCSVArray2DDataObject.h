@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@
 
 namespace itk
 {
-/**
- *\class CSVArray2DDataObject
+/** \class CSVArray2DDataObject
  * \brief Stores parsed data from csv files.
  *
  * CSVArray2DDataObject contains methods for accessing data from the
@@ -44,16 +43,14 @@ namespace itk
  */
 
 template <typename TData>
-class ITK_TEMPLATE_EXPORT CSVArray2DDataObject : public DataObject
+class ITK_TEMPLATE_EXPORT CSVArray2DDataObject:public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVArray2DDataObject);
-
-  /* Standard class type aliases */
-  using Self = CSVArray2DDataObject;
-  using Superclass = DataObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /* Standard class typedefs */
+  typedef CSVArray2DDataObject        Self;
+  typedef DataObject                  Superclass;
+  typedef SmartPointer<Self>          Pointer;
+  typedef SmartPointer<const Self>    ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -61,16 +58,16 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CSVArray2DDataObject, DataObject);
 
-  /* Vector type alias. */
-  using NumericVectorType = typename std::vector<TData>;
-  using StringVectorType = typename std::vector<std::string>;
+  /* Vector typedefs. */
+  typedef typename std::vector<TData>              NumericVectorType;
+  typedef typename std::vector<std::string>        StringVectorType;
 
   /** Typedef for the Array2D object. */
-  using MatrixType = typename itk::Array2D<TData>;
+  typedef typename itk::Array2D<TData>  MatrixType;
 
   /** Set macros */
-  itkSetMacro(HasColumnHeaders, bool);
-  itkSetMacro(HasRowHeaders, bool);
+  itkSetMacro(HasColumnHeaders,bool);
+  itkSetMacro(HasRowHeaders,bool);
   itkBooleanMacro(HasColumnHeaders);
   itkBooleanMacro(HasRowHeaders);
 
@@ -79,114 +76,96 @@ public:
   itkGetConstMacro(HasRowHeaders, bool);
 
   /** Get macro for the matrix. */
-  itkGetMacro(Matrix, MatrixType);
+  itkGetMacro(Matrix,MatrixType);
 
   /** Returns the Column Headers. */
-  StringVectorType
-  GetColumnHeaders() const;
+  StringVectorType GetColumnHeaders() const;
 
   /** Returns the Row Headers. */
-  StringVectorType
-  GetRowHeaders() const;
+  StringVectorType GetRowHeaders() const;
 
   /** Returns a Row index by name. */
-  unsigned int
-  GetRowIndexByName(const std::string &) const;
+  unsigned int GetRowIndexByName(const std::string &) const;
 
   /** Returns a Column index by name. */
-  unsigned int
-  GetColumnIndexByName(const std::string &) const;
+  unsigned int GetColumnIndexByName(const std::string &) const;
 
   /** Returns a row. Input to the method is a row header string. */
-  NumericVectorType
-  GetRow(const std::string &) const;
+  NumericVectorType GetRow(const std::string &) const;
 
   /** Returns a Row. Input to the method is a row index. */
-  NumericVectorType
-  GetRow(const unsigned int &) const;
+  NumericVectorType GetRow(const unsigned int & ) const;
 
   /** Returns a Column. Input to the method is a column header string. */
-  NumericVectorType
-  GetColumn(const std::string &) const;
+  NumericVectorType GetColumn(const std::string & ) const;
 
   /** Get Column method. Input to the method is a column index. */
-  NumericVectorType
-  GetColumn(const unsigned int &) const;
+  NumericVectorType GetColumn(const unsigned int &) const;
 
   /** Method to access a data field from the Array2D object. Inputs are row and
-   *  column header strings in that order. */
-  TData
-  GetData(const std::string &, const std::string &) const;
+  *  column header strings in that order. */
+  TData GetData(const std::string &, const std::string &) const;
 
   /** Method to access a data field from the Array2D object. Inputs are row and
-   *  column indices in that order. */
-  TData
-  GetData(const unsigned int &, const unsigned int &) const;
+  *  column indices in that order. */
+  TData GetData(const unsigned int &, const unsigned int &) const;
 
   /** Method to access a data field from a particular column. Inputs are the
-   *  column header string and the row index. */
-  TData
-  GetColumnData(const std::string &, const unsigned int &) const;
+  *  column header string and the row index. */
+  TData GetColumnData(const std::string &, const unsigned int &) const;
 
   /** Method to access a data field from a particular row. Inputs are the row
-   *  header string and the column index. */
-  TData
-  GetRowData(const std::string &, const unsigned int &) const;
+  *  header string and the column index. */
+  TData GetRowData(const std::string &, const unsigned int &) const;
 
   /** Method to access a data field from the Array2D object using the ()
-   *  operator.Inputs are the row and column header strings in that order. */
-  TData
-  operator()(const std::string &, const std::string &) const;
+  *  operator.Inputs are the row and column header strings in that order. */
+  TData operator()(const std::string &, const std::string &) const;
 
   /** Method to access a data field from the Array2D object using the ()
-   *  operator. Inputs are the row and column indices in that order. */
-  TData
-  operator()(const unsigned int &, const unsigned int &) const;
+  *  operator. Inputs are the row and column indices in that order. */
+  TData operator()(const unsigned int &, const unsigned int &) const;
 
   /** Method to set the size of the Array2D object. */
-  void
-  SetMatrixSize(unsigned int, unsigned int);
+  void SetMatrixSize(unsigned int, unsigned int);
 
   /** Method to fill the Array2D object with a value. */
-  void
-  FillMatrix(TData value);
+  void FillMatrix(TData value);
 
   /** Method to set the Array2D object with data at particular row and column
-   *  indices. */
-  void
-  SetMatrixData(unsigned int, unsigned int, TData);
+  *  indices. */
+  void SetMatrixData(unsigned int, unsigned int, TData);
 
   /** Method to add a row header to the vector of row headers. */
-  void
-  RowHeadersPushBack(const std::string &);
+  void RowHeadersPushBack(const std::string &);
 
   /** Method to add a column header to the vector of column headers. */
-  void
-  ColumnHeadersPushBack(const std::string &);
+  void ColumnHeadersPushBack(const std::string &);
 
   /** Method to erase the first column header if it is the name of the table. */
-  void
-  EraseFirstColumnHeader();
+  void EraseFirstColumnHeader();
 
 protected:
+
   CSVArray2DDataObject();
-  ~CSVArray2DDataObject() override = default;
+  virtual ~CSVArray2DDataObject() ITK_OVERRIDE {}
   /** Print method */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  MatrixType       m_Matrix;
-  StringVectorType m_ColumnHeaders;
-  StringVectorType m_RowHeaders;
-  bool             m_HasRowHeaders;
-  bool             m_HasColumnHeaders;
+  MatrixType             m_Matrix;
+  StringVectorType       m_ColumnHeaders;
+  StringVectorType       m_RowHeaders;
+  bool                   m_HasRowHeaders;
+  bool                   m_HasColumnHeaders;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(CSVArray2DDataObject);
 };
 
-} // end namespace itk
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCSVArray2DDataObject.hxx"
+#include "itkCSVArray2DDataObject.hxx"
 #endif
 
 #endif

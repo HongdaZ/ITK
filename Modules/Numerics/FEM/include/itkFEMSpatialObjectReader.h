@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,17 +29,16 @@ namespace itk
  *
  * \ingroup ITKFEM
  */
-template <unsigned int NDimensions = 3,
+template< unsigned int NDimensions = 3,
           typename PixelType = unsigned char,
-          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, NDimensions, NDimensions>>
-class FEMSpatialObjectReader : public SpatialObjectReader<NDimensions, PixelType, TMeshTraits>
+          typename TMeshTraits = DefaultStaticMeshTraits< PixelType, NDimensions, NDimensions >
+          >
+class FEMSpatialObjectReader : public SpatialObjectReader<NDimensions,PixelType,TMeshTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FEMSpatialObjectReader);
-
-  using Self = FEMSpatialObjectReader;
-  using Superclass = SpatialObjectReader<NDimensions, PixelType, TMeshTraits>;
-  using Pointer = SmartPointer<Self>;
+  typedef FEMSpatialObjectReader                                 Self;
+  typedef SpatialObjectReader<NDimensions,PixelType,TMeshTraits> Superclass;
+  typedef SmartPointer< Self >                                   Pointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Superclass, Self);
@@ -48,18 +47,25 @@ public:
   itkNewMacro(Self);
 
 protected:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FEMSpatialObjectReader);
+
   std::string m_FileName;
 
   FEMSpatialObjectReader();
-  ~FEMSpatialObjectReader() override = default;
+  virtual ~FEMSpatialObjectReader() ITK_OVERRIDE {}
+
 };
 
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-FEMSpatialObjectReader<NDimensions, PixelType, TMeshTraits>::FEMSpatialObjectReader()
+template< unsigned int NDimensions,
+          typename PixelType,
+          typename TMeshTraits >
+FEMSpatialObjectReader< NDimensions, PixelType, TMeshTraits >
+::FEMSpatialObjectReader()
 {
-  this->RegisterMetaConverter("FEMObject", "FEMObjectSpatialObject", MetaFEMObjectConverter<NDimensions>::New());
+  this->RegisterMetaConverter("FEMObject","FEMObjectSpatialObject",
+                              MetaFEMObjectConverter<NDimensions>::New());
 }
 
-} // namespace itk
+}
 
 #endif // itkFEMSpatialObjectReader_h

@@ -36,8 +36,8 @@
 #include "metaTubeGraph.h"
 #include "metaFEMObject.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -53,7 +53,7 @@ MetaScene()
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene()" << std::endl;
+    METAIO_STREAM::cout << "MetaScene()" << METAIO_STREAM::endl;
     }
   Clear();
 }
@@ -66,7 +66,7 @@ MetaScene::
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene()" << std::endl;
+    METAIO_STREAM::cout << "MetaScene()" << METAIO_STREAM::endl;
     }
   Clear();
   CopyInfo(_scene);
@@ -79,7 +79,7 @@ MetaScene::
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene()" << std::endl;
+    METAIO_STREAM::cout << "MetaScene()" << METAIO_STREAM::endl;
     }
   Clear();
 }
@@ -98,7 +98,7 @@ void MetaScene::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "Number of Objects = " << m_NObjects << std::endl;
+  METAIO_STREAM::cout << "Number of Objects = " << m_NObjects << METAIO_STREAM::endl;
 }
 
 void MetaScene::
@@ -115,7 +115,7 @@ NObjects(int nobjects)
 }
 
 int MetaScene::
-NObjects() const
+NObjects(void) const
 {
   return m_NObjects;
 }
@@ -131,7 +131,7 @@ Read(const char *_headerName)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene: Read" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: Read" << METAIO_STREAM::endl;
     }
 
   int i = 0;
@@ -148,38 +148,38 @@ Read(const char *_headerName)
 
   M_SetupReadFields();
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
-    m_FileName = _headerName;
+    strcpy(m_FileName, _headerName);
     }
 
-  if(META_DEBUG) std::cout << "MetaScene: Read: Opening stream" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaScene: Read: Opening stream" << METAIO_STREAM::endl;
 
   M_PrepareNewReadStream();
 
 #ifdef __sgi
-  m_ReadStream->open(m_FileName, std::ios::in);
+  m_ReadStream->open(m_FileName, METAIO_STREAM::ios::in);
 #else
-  m_ReadStream->open(m_FileName, std::ios::binary
-                                 | std::ios::in);
+  m_ReadStream->open(m_FileName, METAIO_STREAM::ios::binary
+                                 | METAIO_STREAM::ios::in);
 #endif
 
   if(!m_ReadStream->rdbuf()->is_open())
     {
-    std::cout << "MetaScene: Read: Cannot open file" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: Read: Cannot open file" << METAIO_STREAM::endl;
     return false;
     }
 
   if(!M_Read())
     {
-    std::cout << "MetaScene: Read: Cannot parse file" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: Read: Cannot parse file" << METAIO_STREAM::endl;
     m_ReadStream->close();
     return false;
     }
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
-    m_FileName = _headerName;
+    strcpy(m_FileName, _headerName);
     }
 
   if(m_Event)
@@ -192,8 +192,8 @@ Read(const char *_headerName)
     {
     if(META_DEBUG)
       {
-      std::cout << MET_ReadType(*m_ReadStream).c_str()
-        << std::endl;
+      METAIO_STREAM::cout << MET_ReadType(*m_ReadStream).c_str()
+        << METAIO_STREAM::endl;
       }
 
     if(m_Event)
@@ -201,7 +201,7 @@ Read(const char *_headerName)
       m_Event->SetCurrentIteration(i+1);
       }
 
-    const std::string objectType = MET_ReadType(*m_ReadStream);
+    const METAIO_STL::string objectType = MET_ReadType(*m_ReadStream);
     if(!strncmp(objectType.c_str(),"Tube",4) ||
       ((objectType.size()==0) && !strcmp(suf, "tre")))
       {
@@ -374,15 +374,18 @@ Read(const char *_headerName)
 }
 
 
+//
+//
+//
 bool MetaScene::
 Write(const char *_headName)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene: Write" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: Write" << METAIO_STREAM::endl;
     }
 
-  if(_headName != nullptr)
+  if(_headName != NULL)
     {
     FileName(_headName);
     }
@@ -395,25 +398,25 @@ Write(const char *_headName)
 
   if(!m_WriteStream)
     {
-    m_WriteStream = new std::ofstream;
+    m_WriteStream = new METAIO_STREAM::ofstream;
     }
 
 #ifdef __sgi
   // Create the file. This is required on some older sgi's
     {
-    std::ofstream tFile(m_FileName, std::ios::out);
+    METAIO_STREAM::ofstream tFile(m_FileName, METAIO_STREAM::ios::out);
     tFile.close();
     }
-  m_WriteStream->open(m_FileName, std::ios::out);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::out);
 #else
-  m_WriteStream->open(m_FileName, std::ios::binary
-    | std::ios::out);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::binary
+    | METAIO_STREAM::ios::out);
 #endif
 
   if(!m_WriteStream->rdbuf()->is_open())
     {
     delete m_WriteStream;
-    m_WriteStream = nullptr;
+    m_WriteStream = 0;
     return false;
     }
 
@@ -421,7 +424,7 @@ Write(const char *_headName)
 
   m_WriteStream->close();
   delete m_WriteStream;
-  m_WriteStream = nullptr;
+  m_WriteStream = 0;
 
   /** Then we write all the objects in the scene */
   ObjectListType::iterator it = m_ObjectList.begin();
@@ -437,17 +440,13 @@ Write(const char *_headName)
 
 /** Clear tube information */
 void MetaScene::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene: Clear" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: Clear" << METAIO_STREAM::endl;
     }
-
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Scene");
-  //
   // Delete the list of pointers to objects in the scene.
   ObjectListType::iterator it = m_ObjectList.begin();
   while(it != m_ObjectList.end())
@@ -463,18 +462,18 @@ Clear()
 
 /** Destroy tube information */
 void MetaScene::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaScene::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaScene: M_SetupReadFields" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: M_SetupReadFields" << METAIO_STREAM::endl;
     }
 
   MetaObject::M_SetupReadFields();
@@ -492,7 +491,7 @@ M_SetupReadFields()
 }
 
 void MetaScene::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
   this->ClearFields();
 
@@ -505,6 +504,7 @@ M_SetupWriteFields()
     m_Fields.push_back(mF);
     }
 
+  strcpy(m_ObjectTypeName,"Scene");
   mF = new MET_FieldRecordType;
   MET_InitWriteField(mF, "ObjectType", MET_STRING, strlen(m_ObjectTypeName),
     m_ObjectTypeName);
@@ -522,14 +522,14 @@ M_SetupWriteFields()
 
 
 bool MetaScene::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
-    std::cout<<"MetaScene: M_Read: Loading Header"<<std::endl;
+    METAIO_STREAM::cout<<"MetaScene: M_Read: Loading Header"<<METAIO_STREAM::endl;
     }
 
-  if(strncmp(MET_ReadType(*m_ReadStream).c_str(),"Scene",5) != 0)
+  if(strncmp(MET_ReadType(*m_ReadStream).c_str(),"Scene",5))
     {
     m_NObjects = 1;
     return true;
@@ -537,13 +537,13 @@ M_Read()
 
   if(!MetaObject::M_Read())
     {
-    std::cout << "MetaScene: M_Read: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
   if(META_DEBUG)
     {
-    std::cout << "MetaScene: M_Read: Parsing Header" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: M_Read: Parsing Header" << METAIO_STREAM::endl;
     }
 
   MET_FieldRecordType * mF;
@@ -558,11 +558,11 @@ M_Read()
 }
 
 bool MetaScene::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
-    std::cout << "MetaScene: M_Write: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaScene: M_Write: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 

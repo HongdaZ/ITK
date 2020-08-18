@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class NearestNeighborInterpolateImageFunction
+/** \class NearestNeighborInterpolateImageFunction
  * \brief Nearest neighbor interpolation of a scalar image.
  *
  * NearestNeighborInterpolateImageFunction interpolates image intensity at
@@ -35,42 +34,38 @@ namespace itk
  * \ingroup ImageFunctions ImageInterpolators
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = double>
-class ITK_TEMPLATE_EXPORT NearestNeighborInterpolateImageFunction
-  : public InterpolateImageFunction<TInputImage, TCoordRep>
+template< typename TInputImage, typename TCoordRep = double >
+class ITK_TEMPLATE_EXPORT NearestNeighborInterpolateImageFunction:
+  public InterpolateImageFunction< TInputImage, TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NearestNeighborInterpolateImageFunction);
-
-  /** Standard class type aliases. */
-  using Self = NearestNeighborInterpolateImageFunction;
-  using Superclass = InterpolateImageFunction<TInputImage, TCoordRep>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NearestNeighborInterpolateImageFunction            Self;
+  typedef InterpolateImageFunction< TInputImage, TCoordRep > Superclass;
+  typedef SmartPointer< Self >                               Pointer;
+  typedef SmartPointer< const Self >                         ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(NearestNeighborInterpolateImageFunction, InterpolateImageFunction);
+  itkTypeMacro(NearestNeighborInterpolateImageFunction,
+               InterpolateImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
-
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Evaluate the function at a ContinuousIndex position
    *
@@ -80,29 +75,23 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE
   {
     IndexType nindex;
 
     this->ConvertContinuousIndexToNearestIndex(index, nindex);
-    return static_cast<OutputType>(this->GetInputImage()->GetPixel(nindex));
-  }
-
-  SizeType
-  GetRadius() const override
-  {
-    return SizeType(); // zeroes by default
+    return static_cast< OutputType >( this->GetInputImage()->GetPixel(nindex) );
   }
 
 protected:
-  NearestNeighborInterpolateImageFunction() = default;
-  ~NearestNeighborInterpolateImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  NearestNeighborInterpolateImageFunction(){}
+  ~NearestNeighborInterpolateImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  { Superclass::PrintSelf(os, indent); }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NearestNeighborInterpolateImageFunction);
 };
 } // end namespace itk
 

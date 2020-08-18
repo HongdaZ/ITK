@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,19 +22,31 @@
 
 namespace itk
 {
-
-template <typename TImage>
-void
-LevelSetDomainPartition<TImage>::PopulateListImage()
+template< typename TImage >
+LevelSetDomainPartition< TImage >::
+LevelSetDomainPartition()
 {
-  ListPixelType  pixelList;
-  IdentifierType i = NumericTraits<IdentifierType>::ZeroValue();
-  while (i < this->m_NumberOfLevelSetFunctions)
-  {
-    pixelList.push_back(i++);
-  }
-  this->m_NearestNeighborListImage->FillBuffer(pixelList);
 }
 
-} // namespace itk
+template< typename TImage >
+LevelSetDomainPartition< TImage >::
+~LevelSetDomainPartition()
+{
+}
+
+template< typename TImage >
+void
+LevelSetDomainPartition< TImage >::
+PopulateListImage()
+{
+  ListPixelType pixelList;
+  IdentifierType i = NumericTraits< IdentifierType >::ZeroValue();
+  while( i < this->m_NumberOfLevelSetFunctions )
+    {
+    pixelList.push_back(i++);
+    }
+  this->m_NearestNeighborListImage->FillBuffer( pixelList );
+}
+
+}
 #endif

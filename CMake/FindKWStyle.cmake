@@ -39,12 +39,12 @@ if(KWSTYLE_EXECUTABLE)
       KWSTYLE_VERSION_STRING
       ${KWSTYLE_VERSION_STRING}
       )
-  else()
+  else(KWSTYLE_VERSION_STRING)
     # CMake's find_package_handle_standard_args has a bug where the
     # version empty string ("") is always acceptable
     set(KWSTYLE_VERSION_STRING "?")
-  endif()
-endif()
+  endif(KWSTYLE_VERSION_STRING)
+endif(KWSTYLE_EXECUTABLE)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(

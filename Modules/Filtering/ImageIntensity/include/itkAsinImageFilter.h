@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkAsinImageFilter_h
 #define itkAsinImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,34 +30,33 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class Asin
 {
 public:
-  Asin() = default;
-  ~Asin() = default;
-  bool
-  operator!=(const Asin &) const
+  Asin() {}
+  ~Asin() {}
+  bool operator!=(const Asin &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Asin & other) const
+  bool operator==(const Asin & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(std::asin(static_cast<double>(A)));
+    return static_cast< TOutput >(
+             std::asin(
+               static_cast< double >( A )
+               )
+             );
   }
 };
-} // namespace Functor
-
-/**
- *\class AsinImageFilter
+}
+/** \class AsinImageFilter
  * \brief Computes the sine of each pixel.
  *
  * This filter is templated over the pixel type of the input image
@@ -79,41 +78,48 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage, typename TOutputImage>
-class AsinImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class AsinImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::Asin<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AsinImageFilter);
+  /** Standard class typedefs. */
+  typedef AsinImageFilter Self;
+  typedef UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                                   Functor::Asin<
+                                     typename TInputImage::PixelType,
+                                     typename TOutputImage::PixelType >
+                                   >                                 Superclass;
 
-  /** Standard class type aliases. */
-  using Self = AsinImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::Asin<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AsinImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(AsinImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( InputConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  AsinImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  AsinImageFilter() {}
+  virtual ~AsinImageFilter() ITK_OVERRIDE {}
 
-  ~AsinImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AsinImageFilter);
 };
 } // end namespace itk
 

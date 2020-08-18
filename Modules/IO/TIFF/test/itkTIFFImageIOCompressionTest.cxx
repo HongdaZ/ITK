@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,144 +23,99 @@
 #include "itkTestingMacros.h"
 #include <fstream>
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
 
 namespace
 {
 
-template <typename TImage>
-int
-itkTIFFImageIOCompressionTestHelper(int, char * argv[], int JPEGQuality)
+template< typename TImage >
+int itkTIFFImageIOCompressionTestHelper( int, char * argv[], int JPEGQuality )
 {
-  using ImageType = TImage;
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef TImage                            ImageType;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   typename ReaderType::Pointer reader = ReaderType::New();
   typename WriterType::Pointer writer = WriterType::New();
 
-
-  itk::TIFFImageIO::Pointer imageIO = itk::TIFFImageIO::New();
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor(""));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "");
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("JPEG"));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "JPEG");
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("PackBits"));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "PackBits");
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("LZW"));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "LZW");
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("SomethingThatDoesNotExist"));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "");
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("Deflate"));
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "Deflate");
-
-  imageIO->SetCompressionLevel(2);
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressionLevel(), 2);
-
-  imageIO->SetCompressionLevel(110);
-  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressionLevel(), 100);
-
   itk::TIFFImageIO::Pointer io = itk::TIFFImageIO::New();
-  reader->SetFileName(argv[1]);
-  reader->SetImageIO(io);
+  reader->SetFileName( argv[1] );
+  reader->SetImageIO( io );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
   std::string compression = argv[3];
 
   // Write out a compressed version
-  writer->SetInput(reader->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( reader->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  if (compression == "Deflate")
-  {
-
+  if( compression == "Deflate" )
+    {
     io->SetCompressionToDeflate();
-
-    ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
-    ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
-  }
-  else if (compression == "LZW")
-  {
+    }
+  else if( compression == "LZW" )
+    {
     io->SetCompressionToLZW();
-
-    ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
-    ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
-  }
-  else if (compression == "JPEG")
-  {
-
+    }
+  else if( compression == "JPEG" )
+    {
     io->SetCompressionToJPEG();
-    io->SetJPEGQuality(JPEGQuality);
-
-    ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
-    ITK_TEST_EXPECT_EQUAL(io->GetCompressionLevel(), JPEGQuality);
-    ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
-  }
-  else if (compression == "PackBits")
-  {
-
+    io->SetJPEGQuality( JPEGQuality );
+    }
+  else if( compression == "PackBits" )
+    {
     io->SetCompressionToPackBits();
-
-    ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
-    ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
-  }
-  else if (compression == "NoCompression")
-  {
-
+    }
+  else if( compression == "NoCompression" )
+    {
     io->SetCompressionToNoCompression();
-
-    ITK_TEST_EXPECT_TRUE(!io->GetUseCompression());
-  }
+    }
   else
-  {
+    {
     std::cerr << "Test failed!" << std::endl;
     std::cerr << "Unknown compression type: " << compression << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  writer->SetImageIO(io);
+  writer->SetImageIO( io );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }
-} // namespace
+}
 
-int
-itkTIFFImageIOCompressionTest(int argc, char * argv[])
+int itkTIFFImageIOCompressionTest( int argc, char* argv[] )
 {
   int JPEGQuality = 75;
-  if (argc < 4)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputFile"
-              << " outputFile"
-              << "compression"
-              << "[JPEGQuality]" << std::endl;
+  if (argc < 4 )
+    {
+    std::cerr << "Usage: " << argv[0]
+      << " inputFile"
+      << " outputFile"
+      << "compression"
+      << "[JPEGQuality]"
+      << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  if (argc > 4)
-  {
-    JPEGQuality = std::stoi(argv[4]);
-  }
+  if( argc > 4 )
+    {
+    JPEGQuality = atoi( argv[4] );
+    }
 
   std::string inputFilename = argv[1];
 
-  using ScalarPixelType = itk::IOComponentEnum;
+  typedef itk::ImageIOBase::IOComponentType ScalarPixelType;
 
   itk::TIFFImageIO::Pointer imageIO = itk::TIFFImageIO::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(imageIO, TIFFImageIO, ImageIOBase);
+  EXERCISE_BASIC_OBJECT_METHODS( imageIO, TIFFImageIO, ImageIOBase );
 
-  imageIO->SetFileName(inputFilename);
+  imageIO->SetFileName( inputFilename );
   imageIO->ReadImageInformation();
 
   std::cout << "Input Filename: " << inputFilename << std::endl;
@@ -168,124 +123,125 @@ itkTIFFImageIOCompressionTest(int argc, char * argv[])
   std::cout << "Compression: " << argv[3] << std::endl;
   std::cout << "JPEGQuality: " << JPEGQuality << std::endl;
 
-  std::cout << " Pixel type (string): " << imageIO->GetPixelTypeAsString(imageIO->GetPixelType()) << std::endl;
+  std::cout << " Pixel type (string): "
+    << imageIO->GetPixelTypeAsString( imageIO->GetPixelType() ) << std::endl;
 
   const ScalarPixelType componentType = imageIO->GetComponentType();
-  std::cout << " Component Type is " << imageIO->GetComponentTypeAsString(componentType) << std::endl;
+  std::cout << " Component Type is "
+    << imageIO->GetComponentTypeAsString( componentType ) << std::endl;
 
   std::cout << " Component size: " << imageIO->GetComponentSize() << std::endl;
 
   const size_t numDimensions = imageIO->GetNumberOfDimensions();
   std::cout << " Number of dimensions: " << numDimensions << std::endl;
 
-  switch (imageIO->GetPixelType())
-  {
-    case itk::IOPixelEnum::SCALAR:
-      switch (componentType)
-      {
-        case itk::IOComponentEnum::UCHAR:
+  switch( imageIO->GetPixelType() )
+    {
+    case itk::ImageIOBase::SCALAR:
+      switch( componentType )
         {
-          using PixelType = unsigned char;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
-        }
-        case itk::IOComponentEnum::CHAR:
+        case itk::ImageIOBase::UCHAR:
         {
-          using PixelType = char;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef unsigned char PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::USHORT:
+        case itk::ImageIOBase::CHAR:
         {
-          using PixelType = unsigned short;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef char PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::SHORT:
+        case itk::ImageIOBase::USHORT:
         {
-          using PixelType = short;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef unsigned short PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::FLOAT:
+        case itk::ImageIOBase::SHORT:
         {
-          using PixelType = float;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef short PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::UNKNOWNCOMPONENTTYPE:
+        case itk::ImageIOBase::FLOAT:
+        {
+        typedef float PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
+        }
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
         default:
           std::cout << "unknown component type" << std::endl;
           break;
-      }
+        }
       break;
-    case itk::IOPixelEnum::RGB:
-      switch (componentType)
-      {
-        case itk::IOComponentEnum::UCHAR:
+    case itk::ImageIOBase::RGB:
+      switch( componentType )
         {
-          using PixelType = itk::RGBPixel<unsigned char>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
-        }
-        case itk::IOComponentEnum::CHAR:
+        case itk::ImageIOBase::UCHAR:
         {
-          using PixelType = itk::RGBPixel<char>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBPixel< unsigned char > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::USHORT:
+        case itk::ImageIOBase::CHAR:
         {
-          using PixelType = itk::RGBPixel<unsigned short>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBPixel< char > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::SHORT:
+        case itk::ImageIOBase::USHORT:
         {
-          using PixelType = itk::RGBPixel<short>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBPixel< unsigned short > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::FLOAT:
+        case itk::ImageIOBase::SHORT:
         {
-          using PixelType = itk::RGBPixel<float>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBPixel<short> PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::UNKNOWNCOMPONENTTYPE:
+        case itk::ImageIOBase::FLOAT:
+        {
+        typedef itk::RGBPixel< float > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
+        }
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
         default:
           std::cout << "unknown component type" << std::endl;
           break;
-      }
+        }
       break;
-    case itk::IOPixelEnum::RGBA:
-      switch (componentType)
-      {
-        case itk::IOComponentEnum::UCHAR:
+    case itk::ImageIOBase::RGBA:
+      switch( componentType )
         {
-          using PixelType = itk::RGBAPixel<unsigned char>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
-        }
-        case itk::IOComponentEnum::CHAR:
+        case itk::ImageIOBase::UCHAR:
         {
-          using PixelType = itk::RGBAPixel<char>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBAPixel< unsigned char > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::USHORT:
+        case itk::ImageIOBase::CHAR:
         {
-          using PixelType = itk::RGBAPixel<unsigned short>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBAPixel< char > PixelType;
+        return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::SHORT:
+        case itk::ImageIOBase::USHORT:
         {
-          using PixelType = itk::RGBAPixel<short>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBAPixel< unsigned short > PixelType;
+        return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::FLOAT:
+        case itk::ImageIOBase::SHORT:
         {
-          using PixelType = itk::RGBAPixel<float>;
-          return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
+        typedef itk::RGBAPixel< short > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
         }
-        case itk::IOComponentEnum::UNKNOWNCOMPONENTTYPE:
+        case itk::ImageIOBase::FLOAT:
+        {
+        typedef itk::RGBAPixel< float > PixelType;
+        return itkTIFFImageIOCompressionTestHelper< itk::Image<PixelType, 2> >( argc, argv, JPEGQuality );
+        }
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
         default:
           std::cout << "unknown component type" << std::endl;
           break;
-      }
+        }
       break;
     default:
       std::cout << "unknown pixel type" << std::endl;
       break;
-  }
-
+    }
   return EXIT_FAILURE;
 }

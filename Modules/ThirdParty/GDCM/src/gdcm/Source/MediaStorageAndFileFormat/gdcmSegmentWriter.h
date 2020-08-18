@@ -33,10 +33,10 @@ public:
 
   SegmentWriter();
 
-  ~SegmentWriter() override;
+  virtual ~SegmentWriter();
 
   /// Write
-  bool Write() override; // Set to protected ?
+  bool Write(); // Set to protected ?
 
   //**        Segment getters/setters     **//
   unsigned int GetNumberOfSegments() const;

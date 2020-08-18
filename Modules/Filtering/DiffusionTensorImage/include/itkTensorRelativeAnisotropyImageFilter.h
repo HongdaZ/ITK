@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,32 +27,29 @@ namespace itk
 // every pixel.
 namespace Functor
 {
-template <typename TInput>
+template< typename TInput >
 class TensorRelativeAnisotropyFunction
 {
 public:
-  using RealValueType = typename TInput::RealValueType;
-  TensorRelativeAnisotropyFunction() = default;
-  ~TensorRelativeAnisotropyFunction() = default;
-  bool
-  operator!=(const TensorRelativeAnisotropyFunction &) const
+  typedef typename TInput::RealValueType RealValueType;
+  TensorRelativeAnisotropyFunction() {}
+  ~TensorRelativeAnisotropyFunction() {}
+  bool operator!=(const TensorRelativeAnisotropyFunction &) const
   {
     return false;
   }
 
-  bool
-  operator==(const TensorRelativeAnisotropyFunction & other) const
+  bool operator==(const TensorRelativeAnisotropyFunction & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline RealValueType
-  operator()(const TInput & x) const
+  inline RealValueType operator()(const TInput & x) const
   {
     return x.GetRelativeAnisotropy();
   }
 };
-} // end namespace Functor
+}  // end namespace functor
 
 /** \class TensorRelativeAnisotropyImageFilter
  * \brief Computes the Relative Anisotropy for every pixel of a input tensor image.
@@ -69,31 +66,30 @@ public:
  *
  * \ingroup ITKDiffusionTensorImage
  */
-template <typename TInputImage,
-          typename TOutputImage =
-            Image<typename NumericTraits<typename TInputImage::PixelType::ValueType>::RealType, TInputImage::Dimension>>
-class TensorRelativeAnisotropyImageFilter
-  : public UnaryFunctorImageFilter<TInputImage,
-                                   TOutputImage,
-                                   Functor::TensorRelativeAnisotropyFunction<typename TInputImage::PixelType>>
+template< typename  TInputImage, typename  TOutputImage = Image<
+    typename NumericTraits< typename TInputImage::PixelType::ValueType >::RealType,
+    TInputImage::Dimension > >
+class TensorRelativeAnisotropyImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::TensorRelativeAnisotropyFunction<
+                             typename TInputImage::PixelType > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TensorRelativeAnisotropyImageFilter);
+  /** Standard class typedefs. */
+  typedef TensorRelativeAnisotropyImageFilter Self;
+  typedef UnaryFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::TensorRelativeAnisotropyFunction<
+      typename TInputImage::PixelType > >       Superclass;
 
-  /** Standard class type aliases. */
-  using Self = TensorRelativeAnisotropyImageFilter;
-  using Superclass =
-    UnaryFunctorImageFilter<TInputImage,
-                            TOutputImage,
-                            Functor::TensorRelativeAnisotropyFunction<typename TInputImage::PixelType>>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputValueType = typename InputPixelType::ValueType;
+  typedef typename Superclass::OutputImageType OutputImageType;
+  typedef typename TOutputImage::PixelType     OutputPixelType;
+  typedef typename TInputImage::PixelType      InputPixelType;
+  typedef typename InputPixelType::ValueType   InputValueType;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(TensorRelativeAnisotropyImageFilter, UnaryFunctorImageFilter);
@@ -102,21 +98,22 @@ public:
   itkNewMacro(Self);
 
   /** Print internal ivars */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    this->Superclass::PrintSelf(os, indent);
-  }
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  { this->Superclass::PrintSelf(os, indent); }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputValueType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputValueType > ) );
   // End concept checking
 #endif
 
 protected:
-  TensorRelativeAnisotropyImageFilter() = default;
-  ~TensorRelativeAnisotropyImageFilter() override = default;
+  TensorRelativeAnisotropyImageFilter() {}
+  virtual ~TensorRelativeAnisotropyImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TensorRelativeAnisotropyImageFilter);
 };
 } // end namespace itk
 

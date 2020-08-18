@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ namespace itk
 /**
  * Instantiate object.
  */
-MeshRegion ::MeshRegion()
+MeshRegion
+::MeshRegion()
 {
   m_NumberOfRegions = 0;
   m_Region = 0;
@@ -31,5 +32,7 @@ MeshRegion ::MeshRegion()
 /**
  * Destructor for the MeshRegion class.
  */
-MeshRegion ::~MeshRegion() = default;
+MeshRegion
+::~MeshRegion()
+{}
 } // end namespace itk

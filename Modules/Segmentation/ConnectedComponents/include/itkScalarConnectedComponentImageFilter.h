@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@
 
 namespace itk
 {
-/**
- *\class ScalarConnectedComponentImageFilter
+/** \class ScalarConnectedComponentImageFilter
  *
  *  \brief A connected components filter that labels the
  *         objects in an arbitrary image.  Two pixels are
@@ -43,63 +42,63 @@ namespace itk
  *         Uses ConnectedComponentFunctorImageFilter.
  * \ingroup ITKConnectedComponents
  *
- * \sphinx
- * \sphinxexample{Segmentation/ConnectedComponents/LabelConnectComponentsInGrayscaleImage,Label Connect Components In
- * Grayscale Image} \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/ScalarConnectedComponentImageFilter,Label connected components in a grayscale image}
+ * \endwiki
  */
 
 namespace Functor
 {
-template <typename TInput>
+template< typename TInput >
 class SimilarPixelsFunctor
 {
 public:
-  SimilarPixelsFunctor() { m_Threshold = NumericTraits<TInput>::ZeroValue(); }
-
-  ~SimilarPixelsFunctor() = default;
-
-  bool
-  operator!=(const SimilarPixelsFunctor & other) const
+  SimilarPixelsFunctor()
   {
-    if (m_Threshold != other.m_Threshold)
-    {
+    m_Threshold = NumericTraits< TInput >::ZeroValue();
+  }
+
+  ~SimilarPixelsFunctor()
+  {}
+
+  bool operator!=(const SimilarPixelsFunctor & other) const
+  {
+    if ( m_Threshold != other.m_Threshold )
+      {
       return true;
-    }
+      }
     return false;
   }
 
-  bool
-  operator==(const SimilarPixelsFunctor & other) const
+  bool operator==(const SimilarPixelsFunctor & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  void
-  SetDistanceThreshold(const TInput & thresh)
+  void SetDistanceThreshold(const TInput & thresh)
   {
     m_Threshold = thresh;
   }
 
-  TInput
-  GetDistanceThreshold()
+  TInput GetDistanceThreshold()
   {
-    return (m_Threshold);
+    return ( m_Threshold );
   }
 
-  bool
-  operator()(const TInput & a, const TInput & b) const
+  bool operator()(const TInput & a, const TInput & b) const
   {
-    using InputRealType = typename NumericTraits<TInput>::RealType;
-    auto absDifference =
-      static_cast<TInput>(itk::Math::abs(static_cast<InputRealType>(a) - static_cast<InputRealType>(b)));
-    if (absDifference <= m_Threshold)
-    {
+    typedef typename NumericTraits< TInput >::RealType InputRealType;
+    TInput absDifference = static_cast< TInput >( itk::Math::abs(
+                                                    static_cast< InputRealType >( a )
+                                                    - static_cast< InputRealType >( b ) ) );
+    if ( absDifference <= m_Threshold )
+      {
       return true;
-    }
+      }
     else
-    {
+      {
       return false;
-    }
+      }
   }
 
 protected:
@@ -107,26 +106,22 @@ protected:
 };
 } // end namespace Functor
 
-template <typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage>
-class ScalarConnectedComponentImageFilter
-  : public ConnectedComponentFunctorImageFilter<TInputImage,
-                                                TOutputImage,
-                                                Functor::SimilarPixelsFunctor<typename TInputImage::ValueType>,
-                                                TMaskImage>
+template< typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage >
+class ScalarConnectedComponentImageFilter:
+  public ConnectedComponentFunctorImageFilter< TInputImage, TOutputImage,
+                                               Functor::SimilarPixelsFunctor< typename TInputImage::ValueType >,
+                                               TMaskImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarConnectedComponentImageFilter);
+  /** Standard class typedefs. */
+  typedef ScalarConnectedComponentImageFilter Self;
+  typedef ConnectedComponentFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::SimilarPixelsFunctor< typename TInputImage::ValueType >,
+    TMaskImage >                               Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ScalarConnectedComponentImageFilter;
-  using Superclass =
-    ConnectedComponentFunctorImageFilter<TInputImage,
-                                         TOutputImage,
-                                         Functor::SimilarPixelsFunctor<typename TInputImage::ValueType>,
-                                         TMaskImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -134,33 +129,33 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ScalarConnectedComponentImageFilter, ConnectedComponentFunctorImageFilter);
 
-  using InputPixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType InputPixelType;
 
-  virtual void
-  SetDistanceThreshold(const InputPixelType & thresh)
-  {
-    this->GetFunctor().SetDistanceThreshold(thresh);
-  }
+  virtual void SetDistanceThreshold(const InputPixelType & thresh)
+  { this->GetFunctor().SetDistanceThreshold(thresh); }
 
-  virtual InputPixelType
-  GetDistanceThreshold()
-  {
-    return (this->GetFunctor().GetDistanceThreshold());
-  }
+  virtual InputPixelType GetDistanceThreshold()
+  { return ( this->GetFunctor().GetDistanceThreshold() ); }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputEqualityComparableCheck, (Concept::EqualityComparable<InputPixelType>));
-  itkConceptMacro(OutputEqualityComparableCheck, (Concept::EqualityComparable<typename TOutputImage::PixelType>));
-  itkConceptMacro(MaskEqualityComparableCheck, (Concept::EqualityComparable<typename TMaskImage::PixelType>));
-  itkConceptMacro(OutputIncrementDecrementOperatorsCheck,
-                  (Concept::IncrementDecrementOperators<typename TOutputImage::PixelType>));
+  itkConceptMacro( InputEqualityComparableCheck,
+                   ( Concept::EqualityComparable< InputPixelType > ) );
+  itkConceptMacro( OutputEqualityComparableCheck,
+                   ( Concept::EqualityComparable< typename TOutputImage::PixelType > ) );
+  itkConceptMacro( MaskEqualityComparableCheck,
+                   ( Concept::EqualityComparable< typename TMaskImage::PixelType > ) );
+  itkConceptMacro( OutputIncrementDecrementOperatorsCheck,
+                   ( Concept::IncrementDecrementOperators< typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  ScalarConnectedComponentImageFilter() = default;
-  ~ScalarConnectedComponentImageFilter() override = default;
+  ScalarConnectedComponentImageFilter() {}
+  virtual ~ScalarConnectedComponentImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarConnectedComponentImageFilter);
 };
 } // end namespace itk
 

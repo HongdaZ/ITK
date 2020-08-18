@@ -2,7 +2,8 @@
 #define vcl_atomic_count_h_
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 //:
@@ -78,6 +79,7 @@
 //      with respect to shared mutable object OBJ; OBJ destructors
 //      are called driven by smart_ptr interface...
 //
+#include <vcl_config_manual.h>
 
 #if defined( __GNUC__ ) && ( defined( __i386__ ) || defined( __x86_64__ ) )
 

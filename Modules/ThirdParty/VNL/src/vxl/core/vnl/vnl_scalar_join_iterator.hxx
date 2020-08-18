@@ -12,17 +12,15 @@
 #include <list>
 #include <iostream>
 #include "vnl_scalar_join_iterator.h"
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 #define VNL_SCALAR_JOIN_ITERATOR_INSTANTIATE(T) \
 template class VNL_EXPORT vnl_scalar_join_iterator_indexed_pair<T >;\
 template class VNL_EXPORT vnl_scalar_join_iterator<T >; \
 template VNL_EXPORT std::ostream& operator<<(std::ostream& s, const vnl_scalar_join_iterator_indexed_pair<T >& p);\
 
-#include <cassert>
-#include "vnl_matrix.h"
+#include <vcl_cassert.h>
+#include <vnl/vnl_matrix.h>
 
 // Helper class to hold the sorted arrays of indices.
 

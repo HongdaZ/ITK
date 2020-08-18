@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,33 +22,39 @@
 
 namespace itk
 {
-template <typename TImage, typename TKernel>
-class AnchorErodeImageFilter
-  : public AnchorErodeDilateImageFilter<TImage, TKernel, std::less<typename TImage::PixelType>>
+template< typename TImage, typename TKernel >
+class AnchorErodeImageFilter:
+  public AnchorErodeDilateImageFilter< TImage, TKernel, std::less< typename TImage::PixelType > >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorErodeImageFilter);
-
-  using Self = AnchorErodeImageFilter;
-  using Superclass = AnchorErodeDilateImageFilter<TImage, TKernel, std::less<typename TImage::PixelType>>;
+  typedef AnchorErodeImageFilter Self;
+  typedef AnchorErodeDilateImageFilter< TImage, TKernel, std::less< typename TImage::PixelType > >
+                                 Superclass;
 
   /** Runtime information support. */
-  itkTypeMacro(AnchorErodeImageFilter, AnchorErodeDilateImageFilter);
+  itkTypeMacro(AnchorErodeImageFilter,
+               AnchorErodeDilateImageFilter);
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using PixelType = typename TImage::PixelType;
+  typedef typename TImage::PixelType PixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-protected:
-  AnchorErodeImageFilter() { this->m_Boundary = NumericTraits<PixelType>::max(); }
-  ~AnchorErodeImageFilter() override = default;
+  protected:
+
+  AnchorErodeImageFilter()
+  {
+    this->m_Boundary = NumericTraits< PixelType >::max();
+  }
+  virtual ~AnchorErodeImageFilter() ITK_OVERRIDE {}
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorErodeImageFilter);
 };
 } // namespace itk
 

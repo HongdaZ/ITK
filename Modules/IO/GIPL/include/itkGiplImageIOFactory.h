@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,28 +24,23 @@
 
 namespace itk
 {
-/**
- *\class GiplImageIOFactory
+/** \class GiplImageIOFactory
  * \brief Create instances of GiplImageIO objects using an object factory.
  * \ingroup ITKIOGIPL
  */
-class ITKIOGIPL_EXPORT GiplImageIOFactory : public ObjectFactoryBase
+class ITKIOGIPL_EXPORT GiplImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GiplImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = GiplImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GiplImageIOFactory         Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription(void) const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -54,8 +49,7 @@ public:
   itkTypeMacro(GiplImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     GiplImageIOFactory::Pointer GiplFactory = GiplImageIOFactory::New();
 
@@ -64,7 +58,10 @@ public:
 
 protected:
   GiplImageIOFactory();
-  ~GiplImageIOFactory() override;
+  ~GiplImageIOFactory() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GiplImageIOFactory);
 };
 } // end namespace itk
 

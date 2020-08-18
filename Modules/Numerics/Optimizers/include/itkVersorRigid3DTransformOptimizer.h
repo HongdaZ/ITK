@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace itk
  * parameter space.
  *
  * VersorRigid3DTransformOptimizer is a variant of the gradient descent
- * optimizer implemented in RegularStepGradientDescentOptimizer.
+ * optimizer implmented in RegularStepGradientDescentOptimizer.
  *
  * Versors are not in a vector space, for that reason, the classical gradient
  * descent algorithm has to be modified in order to be applicable to Versors
@@ -48,37 +48,40 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT VersorRigid3DTransformOptimizer : public RegularStepGradientDescentBaseOptimizer
+class ITKOptimizers_EXPORT VersorRigid3DTransformOptimizer:
+  public RegularStepGradientDescentBaseOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VersorRigid3DTransformOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = VersorRigid3DTransformOptimizer;
-  using Superclass = RegularStepGradientDescentBaseOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef VersorRigid3DTransformOptimizer         Self;
+  typedef RegularStepGradientDescentBaseOptimizer Superclass;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VersorRigid3DTransformOptimizer, RegularStepGradientDescentBaseOptimizer);
+  itkTypeMacro(VersorRigid3DTransformOptimizer,
+               RegularStepGradientDescentBaseOptimizer);
 
   /** This class is specialized for 3D  */
-  static constexpr unsigned int SpaceDimension = 6;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 6);
 
   /**  Versor Type  */
-  using VersorType = Versor<double>;
-  using VectorType = VersorType::VectorType;
+  typedef Versor< double >       VersorType;
+  typedef VersorType::VectorType VectorType;
 
   /** Advance one step following the gradient direction. */
-  void
-  StepAlongGradient(double factor, const DerivativeType & transformedGradient) override;
+  virtual void StepAlongGradient(double factor,
+                                 const DerivativeType & transformedGradient) ITK_OVERRIDE;
 
 protected:
-  VersorRigid3DTransformOptimizer() = default;
-  ~VersorRigid3DTransformOptimizer() override = default;
+  VersorRigid3DTransformOptimizer() {}
+  virtual ~VersorRigid3DTransformOptimizer() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VersorRigid3DTransformOptimizer);
 };
 } // end namespace itk
 

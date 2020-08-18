@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,40 +31,42 @@ namespace itk
  * \ingroup QuadEdgeMeshModifierFunctions
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh, typename TQEType>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorSplitFacetFunction
-  : public QuadEdgeMeshFunctionBase<TMesh, TQEType *>
+template< typename TMesh, typename TQEType >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorSplitFacetFunction:
+  public QuadEdgeMeshFunctionBase< TMesh, TQEType * >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorSplitFacetFunction);
-
-  /** Standard class type aliases. */
-  using Self = QuadEdgeMeshEulerOperatorSplitFacetFunction;
-  using Superclass = QuadEdgeMeshFunctionBase<TMesh, TQEType *>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef QuadEdgeMeshEulerOperatorSplitFacetFunction  Self;
+  typedef QuadEdgeMeshFunctionBase< TMesh, TQEType * > Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
   itkNewMacro(Self);
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadEdgeMeshEulerOperatorSplitFacetFunction, QuadEdgeMeshFunctionBase);
 
   /** Type of QuadEdge with which to apply slicing. */
-  using QEType = TQEType;
+  typedef TQEType QEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
-  using EdgeCellType = typename Superclass::EdgeCellType;
+  typedef typename Superclass::MeshType     MeshType;
+  typedef typename Superclass::OutputType   OutputType;
+  typedef typename Superclass::EdgeCellType EdgeCellType;
 
   /** Evaluate at the specified input position */
-  virtual OutputType
-  Evaluate(QEType * h, QEType * g);
+  virtual OutputType Evaluate(QEType *h, QEType *g);
 
 protected:
-  QuadEdgeMeshEulerOperatorSplitFacetFunction() = default;
-  ~QuadEdgeMeshEulerOperatorSplitFacetFunction() override = default;
+  QuadEdgeMeshEulerOperatorSplitFacetFunction(){}
+  ~QuadEdgeMeshEulerOperatorSplitFacetFunction() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorSplitFacetFunction);
 };
-} // end namespace itk
+} // namespace itk
 
 #include "itkQuadEdgeMeshEulerOperatorSplitFacetFunction.hxx"
 
 #endif
+
+// eof - itkQuadEdgeMeshEulerOperatorSplitFacetFunction.h

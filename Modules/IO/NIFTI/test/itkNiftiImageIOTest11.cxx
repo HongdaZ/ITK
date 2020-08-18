@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,35 +19,34 @@
 #include "itkNiftiImageIOTest.h"
 
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkNiftiImageIOTest11(int ac, char * av[])
+int itkNiftiImageIOTest11(int ac, char *av[])
 {
   std::string testfilename;
-  if (ac > 1)
-  {
-    char * testdir = *++av;
+  if(ac > 1)
+    {
+    char *testdir = *++av;
     itksys::SystemTools::ChangeDirectory(testdir);
-  }
+    }
   else
-  {
+    {
     return EXIT_FAILURE;
-  }
-  if (ac > 2)
-  {
+    }
+  if(ac > 2)
+    {
     testfilename = *++av;
-  }
+    }
   else
-  {
+    {
     return EXIT_FAILURE;
-  }
-  using ImageType = itk::Image<char, 3>;
-  ImageType::RegionType    imageRegion;
-  ImageType::SizeType      size;
-  ImageType::IndexType     index;
-  ImageType::SpacingType   spacing;
-  ImageType::PointType     origin;
+    }
+  typedef  itk::Image<char,3> ImageType;
+  ImageType::RegionType imageRegion;
+  ImageType::SizeType size;
+  ImageType::IndexType index;
+  ImageType::SpacingType spacing;
+  ImageType::PointType origin;
   ImageType::DirectionType myDirection;
 
   size[0] = static_cast<long int>(itk::NumericTraits<short>::max()) * 2;
@@ -60,23 +59,24 @@ itkNiftiImageIOTest11(int ac, char * av[])
 
   imageRegion.SetSize(size);
   imageRegion.SetIndex(index);
-  ImageType::Pointer       im = itk::IOTestHelper::AllocateImageFromRegionAndSpacing<ImageType>(imageRegion, spacing);
+  ImageType::Pointer im =
+    itk::IOTestHelper::AllocateImageFromRegionAndSpacing<ImageType>(imageRegion,spacing);
   ImageType::DirectionType dir(CORDirCosines<ImageType>());
   std::cout << "itkNiftiImageIOTest11" << std::endl;
   std::cout << "Direction = " << dir << std::endl;
   im->SetDirection(dir);
   try
-  {
-    itk::IOTestHelper::WriteImage<ImageType, itk::NiftiImageIO>(im, testfilename);
+    {
+    itk::IOTestHelper::WriteImage<ImageType,itk::NiftiImageIO>(im,testfilename);
     std::cerr << "FAILED to catch expected exception" << std::endl;
     return EXIT_FAILURE;
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cout << "EXPECTED exception in file writer " << std::endl;
     std::cout << e.GetDescription() << std::endl;
     std::cout << e.GetLocation() << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

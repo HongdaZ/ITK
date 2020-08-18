@@ -1,4 +1,7 @@
 // This is core/vnl/algo/vnl_sparse_symmetric_eigensystem.cxx
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma implementation
+#endif
 //:
 // \file
 
@@ -6,25 +9,29 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <cassert>
 #include "vnl_sparse_symmetric_eigensystem.h"
 #include "vnl_sparse_lu.h"
-#include "vnl/vnl_vector_ref.h"
+#include <vnl/vnl_vector_ref.h>
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
 
 #include <vnl/algo/vnl_netlib.h> // dnlaso_() dseupd_() dsaupd_()
 
-static vnl_sparse_symmetric_eigensystem * current_system = nullptr;
+static vnl_sparse_symmetric_eigensystem * current_system = VXL_NULLPTR;
 
 //------------------------------------------------------------
 //: Callback for multiplying our matrix by a number of vectors.
 //  The input is p, which is an NxM matrix.
 //  This function returns q = A p, where A is the current sparse matrix.
-static void
-sse_op_callback(const long * n, const long * m, const double * p, double * q)
+static
+void sse_op_callback(const long* n,
+                     const long* m,
+                     const double* p,
+                     double* q)
 {
-  assert(current_system != nullptr);
+  assert(current_system != 0);
 
-  current_system->CalculateProduct(*n, *m, p, q);
+  current_system->CalculateProduct(*n,*m,p,q);
 }
 
 //------------------------------------------------------------
@@ -32,29 +39,32 @@ sse_op_callback(const long * n, const long * m, const double * p, double * q)
 // If k=0, save the m columns of q as the (j-m+1)th through jth
 // vectors.  If k=1 then return the (j-m+1)th through jth vectors in
 // q.
-static void
-sse_iovect_callback(const long * n, const long * m, double * q, const long * j, const long * k)
+static
+void sse_iovect_callback(const long* n,
+                         const long* m,
+                         double* q,
+                         const long* j,
+                         const long* k)
 {
-  assert(current_system != nullptr);
+  assert(current_system != 0);
 
-  if (*k == 0)
-    current_system->SaveVectors(*n, *m, q, *j - *m);
-  else if (*k == 1)
-    current_system->RestoreVectors(*n, *m, q, *j - *m);
+  if (*k==0)
+    current_system->SaveVectors(*n,*m,q,*j-*m);
+  else if (*k==1)
+    current_system->RestoreVectors(*n,*m,q,*j-*m);
 }
 
 vnl_sparse_symmetric_eigensystem::vnl_sparse_symmetric_eigensystem()
-
-    = default;
+  : nvalues(0), vectors(VXL_NULLPTR), values(VXL_NULLPTR)
+{
+}
 
 vnl_sparse_symmetric_eigensystem::~vnl_sparse_symmetric_eigensystem()
 {
-  delete[] vectors;
-  vectors = nullptr;
-  delete[] values;
-  values = nullptr;
-  for (auto & i : temp_store)
-    delete i;
+  delete[] vectors; vectors = VXL_NULLPTR;
+  delete[] values; values = VXL_NULLPTR;
+  for (unsigned i=0; i<temp_store.size(); ++i)
+    delete temp_store[i];
   temp_store.clear();
 }
 
@@ -65,72 +75,62 @@ vnl_sparse_symmetric_eigensystem::~vnl_sparse_symmetric_eigensystem()
 // smallest is true (the default).  Otherwise the n largest eigenpairs
 // are found.  The accuracy of the eigenvalues is to nfigures decimal
 // digits.  Returns 0 if successful, non-zero otherwise.
-int
-vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & M, int n, bool smallest, long nfigures)
+int vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double>& M,
+                                                      int n,
+                                                      bool smallest,
+                                                      long nfigures)
 {
   mat = &M;
 
   // Clear current vectors.
-  if (vectors)
-  {
-    delete[] vectors;
-    vectors = nullptr;
-    delete[] values;
-    values = nullptr;
+  if (vectors) {
+    delete[] vectors; vectors = VXL_NULLPTR;
+    delete[] values; values = VXL_NULLPTR;
   }
   nvalues = 0;
 
   current_system = this;
 
   long dim = mat->columns();
-  long nvals = (smallest) ? -n : n;
+  long nvals = (smallest)?-n:n;
   long nperm = 0;
   long nmval = n;
   long nmvec = dim;
-  std::vector<double> temp_vals(n * 4);
-  std::vector<double> temp_vecs(n * dim);
+  std::vector<double> temp_vals(n*4);
+  std::vector<double> temp_vecs(n*dim);
 
   // set nblock = std::max(10, dim/6) :
-  long nblock = (dim < 60) ? dim / 6 : 10;
+  long nblock = (dim<60) ? dim/6 : 10;
 
   // isn't this rather a lot ? -- fsm
-  long maxop = dim * 10; // dim*20;
+  long maxop = dim*10;      // dim*20;
 
   // set maxj = std::max(40, maxop*nblock, 6*nblock+1) :
-  long maxj = maxop * nblock; // 2*n+1;
-  long t1 = 6 * nblock + 1;
-  if (maxj < t1)
-    maxj = t1;
-  if (maxj < 40)
-    maxj = 40;
+  long maxj = maxop*nblock; // 2*n+1;
+  long t1 = 6*nblock+1;
+  if (maxj < t1) maxj = t1;
+  if (maxj < 40) maxj = 40;
 
   // Calculate size of workspace needed.  These expressions come from
   // the LASO documentation.
-  int work_size = dim * nblock;
-  int t2 = maxj * (2 * nblock + 3) + 2 * n + 6 + (2 * nblock + 2) * (nblock + 1);
-  if (work_size < t2)
-    work_size = t2;
-  work_size += 2 * dim * nblock + maxj * (nblock + n + 2) + 2 * nblock * nblock + 3 * n;
-  std::vector<double> work(work_size + 10);
+  int work_size = dim*nblock;
+  int t2 = maxj*(2*nblock+3) + 2*n + 6 + (2*nblock+2)*(nblock+1);
+  if (work_size < t2) work_size = t2;
+  work_size += 2*dim*nblock + maxj*(nblock + n + 2) + 2*nblock*nblock + 3*n;
+  std::vector<double> work(work_size+10);
 
   // Set starting vectors to zero.
-  for (int i = 0; i < dim * nblock; ++i)
+  for (int i=0; i<dim*nblock; ++i)
     work[i] = 0.0;
 
   std::vector<long> ind(n);
 
   long ierr = 0;
 
-  v3p_netlib_dnlaso_(sse_op_callback,
-                     sse_iovect_callback,
-                     &dim,
-                     &nvals,
-                     &nfigures,
-                     &nperm,
-                     &nmval,
-                     &temp_vals[0],
-                     &nmvec,
-                     &temp_vecs[0],
+  v3p_netlib_dnlaso_(sse_op_callback, sse_iovect_callback,
+                     &dim, &nvals, &nfigures, &nperm,
+                     &nmval, &temp_vals[0],
+                     &nmvec, &temp_vecs[0],
                      &nblock,
                      &maxop,
                      &maxj,
@@ -164,32 +164,32 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & M,
   {
     if (ierr == -1)
       std::cerr << "Error: vnl_sparse_symmetric_eigensystem:\n"
-                << "  poor initial vectors chosen\n";
+               << "  poor initial vectors chosen\n";
     else if (ierr == -2)
       std::cerr << "Error: vnl_sparse_symmetric_eigensystem:\n"
-                << "  reached maximum operations " << maxop << " without finding all eigenvalues,\n"
-                << "  found " << nperm << " eigenvalues\n";
+               << "  reached maximum operations " << maxop
+               << " without finding all eigenvalues,\n"
+               << "  found " << nperm << " eigenvalues\n";
     else if (ierr == -8)
       std::cerr << "Error: vnl_sparse_symmetric_eigensystem:\n"
-                << "  disastrous loss of orthogonality - internal error\n";
+               << "  disastrous loss of orthogonality - internal error\n";
   }
 
   // Copy the eigenvalues and vectors.
   nvalues = n;
   vectors = new vnl_vector<double>[n];
   values = new double[n];
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i=0; i<n; ++i) {
     values[i] = temp_vals[i];
-    vnl_vector<double> vec(dim, 0.0);
-    for (int j = 0; j < dim; ++j)
-      vec[j] = temp_vecs[j + dim * i];
+    vnl_vector<double> vec(dim,0.0);
+    for (int j=0; j<dim; ++j)
+      vec[j] = temp_vecs[j + dim*i];
     vectors[i] = vec;
   }
 
   // Delete temporary space.
-  for (auto & i : temp_store)
-    delete[] i;
+  for (unsigned i=0; i<temp_store.size(); ++i)
+    delete [] temp_store[i];
   temp_store.clear();
 
   return ierr;
@@ -205,31 +205,24 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & M,
 // !smallest and  magnitude - compute the N largest (magnitude) eigenvalues
 //  smallest and  magnitude - compute the nev smallest (magnitude) eigenvalues
 // set sigma for shift/invert mode
-int
-vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
-                                                  vnl_sparse_matrix<double> & B,
-                                                  int nEV,
-                                                  double tolerance,
-                                                  int numberLanczosVecs,
-                                                  bool smallest,
-                                                  bool magnitude,
-                                                  int maxIterations,
-                                                  double sigma)
+int vnl_sparse_symmetric_eigensystem::CalculateNPairs(
+                      vnl_sparse_matrix<double>& A, vnl_sparse_matrix<double>& B, int nEV,
+                      double tolerance, int numberLanczosVecs,
+                      bool smallest, bool magnitude,
+                      int maxIterations,
+                      double sigma)
 {
   mat = &A;
   Bmat = &B;
 
   // Clear current vectors.
-  if (vectors)
-  {
-    delete[] vectors;
-    vectors = nullptr;
-    delete[] values;
-    values = nullptr;
+  if (vectors) {
+    delete[] vectors; vectors = VXL_NULLPTR;
+    delete[] values; values = VXL_NULLPTR;
   }
   nvalues = 0;
 
-  constexpr long whichLength = 2;
+  const long whichLength = 2;
   char which[whichLength + 1];
   which[whichLength] = '\0';
   if (smallest)
@@ -242,42 +235,42 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
   else
     which[1] = 'A';
 
-  long matSize = mat->columns(); // Dimension of the eigenproblem.
-  long ido = 0;                  // ido == 0 means initialization
+  long  matSize = mat->columns();          // Dimension of the eigenproblem.
+  long  ido = 0;        // ido == 0 means initialization
 
-  long nconv = 0L;                             // Number of "converged" Ritz values.
-  long numberLanczosVecsL = numberLanczosVecs; // number of vectors to calc
-  long nEVL = nEV;                             // long number of EVs to calc
+  long  nconv = 0L;     // Number of "converged" Ritz values.
+  long  numberLanczosVecsL = numberLanczosVecs;    // number of vectors to calc
+  long  nEVL = nEV;    // long number of EVs to calc
 
-  auto * resid = new double[matSize];
-  std::memset((void *)resid, 0, sizeof(double) * matSize);
+  double *resid = new double[matSize];
+  std::memset((void*) resid, 0, sizeof(double)*matSize);
 
   if (maxIterations <= 0)
-    maxIterations = nEVL * 100;
+    maxIterations =  nEVL * 100;
 
   if (numberLanczosVecsL <= 0)
     numberLanczosVecsL = 2 * nEVL + 1;
   numberLanczosVecsL = (numberLanczosVecsL > matSize ? matSize : numberLanczosVecsL);
-  auto * V = new double[matSize * numberLanczosVecsL + 1];
+  double *V = new double[matSize * numberLanczosVecsL + 1];
 
 #define DONE 99
-  constexpr int genEigProblemLength = 1;
+  const int genEigProblemLength = 1;
   char genEigProblem = 'G';
-  long info = 0; // Initialization info (INPUT) and error flag (OUTPUT)
+  long    info = 0;   // Initialization info (INPUT) and error flag (OUTPUT)
 
 #define IPARAMSIZE 12
   long iParam[IPARAMSIZE];
   // for the sake of consistency with parameter indices in FORTRAN,
   // start at index 1...
   iParam[0] = 0;
-  iParam[1] = 1; //  always auto-shift
-  iParam[2] = 0; //  no longer referenced
+  iParam[1] = 1;   //  always auto-shift
+  iParam[2] = 0;   //  no longer referenced
   iParam[3] = maxIterations;
-  iParam[4] = 1; // NB: blocksize to be used in the recurrence.
-                 // The code currently works only for NB = 1.
+  iParam[4] = 1;   // NB: blocksize to be used in the recurrence.
+                   // The code currently works only for NB = 1.
 
-  iParam[5] = 0; // output - number of converged Ritz values
-  iParam[6] = 0; // No longer referenced. Implicit restarting is ALWAYS used
+  iParam[5] = 0;   // output - number of converged Ritz values
+  iParam[6] = 0;   // No longer referenced. Implicit restarting is ALWAYS used
 
   long mode;
 
@@ -296,7 +289,7 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
     OP = B;
     OP *= sigma;
     OP = A - OP;
-    // vsl_print_summary(std::cout, OP);
+//vsl_print_summary(std::cout, OP);
   }
   else
   {
@@ -311,75 +304,61 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
   // decompose for using in "multiplying" intermediate results
   vnl_sparse_lu opLU(OP);
 
-  // std::cout << opLU << std::endl;
+//std::cout << opLU << std::endl;
 
-  iParam[8] = 0; //  parameter for user supplied shifts - not used here
+  iParam[8] = 0;   //  parameter for user supplied shifts - not used here
 
   // iParam 9 - 11 are output
-  iParam[9] = 0;  // total number of OP*x operations
-  iParam[10] = 0; // total number of B*x operations if BMAT='G'
-  iParam[11] = 0; // total number of steps of re-orthogonalization
+  iParam[9] = 0;   // total number of OP*x operations
+  iParam[10] = 0;   // total number of B*x operations if BMAT='G'
+  iParam[11] = 0;   // total number of steps of re-orthogonalization
 
   // output vector filled with address information for intermediate data used
   // by the solver
   // use FORTRAN indexing again...
   long iPntr[IPARAMSIZE];
-  for (long & clrIx : iPntr)
-    clrIx = 0;
+  for (int clrIx = 0; clrIx < IPARAMSIZE; clrIx++)
+    iPntr[clrIx]= 0;
 
   // Double precision work array of length 3*N.
-  auto * workd = new double[3 * matSize + 1];
+  double *workd = new double[3 * matSize + 1];
 
   // Double precision work array of length 3*N.
-  long lworkl = numberLanczosVecsL * (numberLanczosVecsL + 9);
+  long lworkl = numberLanczosVecsL * (numberLanczosVecsL+9);
 
   // Double precision work array of length at least NCV**2 + 8*NCV
-  auto * workl = new double[lworkl + 1];
+  double *workl = new double[lworkl + 1];
 
   vnl_vector<double> workVector;
 
   while (true)
   {
     // Calling arpack routine dsaupd.
-    v3p_netlib_dsaupd_(&ido,
-                       &genEigProblem,
-                       &matSize,
-                       which,
-                       &nEVL,
-                       &tolerance,
-                       resid,
-                       &numberLanczosVecsL,
-                       &V[1],
-                       &matSize,
-                       &iParam[1],
-                       &iPntr[1],
-                       &workd[1],
-                       &workl[1],
-                       &lworkl,
-                       &info,
-                       genEigProblemLength,
-                       whichLength);
+    v3p_netlib_dsaupd_(
+      &ido, &genEigProblem, &matSize, which,
+      &nEVL, &tolerance, resid, &numberLanczosVecsL, &V[1], &matSize,
+          &iParam[1], &iPntr[1], &workd[1], &workl[1], &lworkl, &info,
+          genEigProblemLength, whichLength);
 
     // Checking if aupp is done
-    if (ido == DONE)
+    if (ido==DONE)
     {
       nconv = iParam[5];
       break;
     }
     else
     {
-      switch (info)
-      {
-        case -8:    // Could not perform LAPACK eigenvalue calculation
-        case -9:    // Starting vector is zero
-        case -9999: // Could not build an Arnoldi factorization
+      switch (info) {
+        case    -8:  // Could not perform LAPACK eigenvalue calculation
+        case    -9:  // Starting vector is zero
+        case -9999:  // Could not build an Arnoldi factorization
           return info;
           break;
-        case 0: // success
-        case 1: // hit maxIterations - should be DONE
-        case 3: // No shifts could be applied during a cycle of IRAM iteration
+        case     0:  // success
+        case     1:  // hit maxIterations - should be DONE
+        case     3:  // No shifts could be applied during a cycle of IRAM iteration
           break;
-        default: // unknown ARPACK error
+        default   :  // unknown ARPACK error
           return info;
       }
 
@@ -389,40 +368,40 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
 
       vnl_vector_ref<double> x(matSize, &workd[iPntr[1]]);
       vnl_vector_ref<double> y(matSize, &workd[iPntr[2]]);
-      vnl_vector_ref<double> z(matSize, &workd[iPntr[3]]); // z = Bx
+      vnl_vector_ref<double> z(matSize, &workd[iPntr[3]]);  // z = Bx
 
       switch (ido)
       {
         case -1:
-          // Performing y <- OP*x for the first time when mode != 2.
-          if (mode != 2)
-            B.mult(x, z);
-          // no "break;" - initialization continues below
-        case 1:
-          // Performing y <- OP*w.
-          if (mode != 2)
-            opLU.solve(z, &y);
-          else
-          {
-            A.mult(x, workVector);
-            x.update(workVector);
-            opLU.solve(x, &y);
-          }
+            // Performing y <- OP*x for the first time when mode != 2.
+            if (mode != 2)
+              B.mult(x, z);
+            // no "break;" - initialization continues below
+        case  1:
+            // Performing y <- OP*w.
+            if (mode != 2)
+              opLU.solve(z, &y);
+            else
+              {
+              A.mult(x, workVector);
+              x.update(workVector);
+              opLU.solve(x, &y);
+              }
           break;
-        case 2:
-          B.mult(x, y);
+        case  2:
+            B.mult(x, y);
           break;
         default:
-          break;
+            break;
       }
     }
   }
 
-  long rvec = 1; // get the values and vectors
+  long rvec   = 1;  // get the values and vectors
 
   // which Ritz vctors do we want?
-  constexpr int howMnyLength = 1;
-  char howMny = 'A'; // all
+  const int howMnyLength = 1;
+  char howMny = 'A';  // all
 
   // selection vector for which Ritz vectors to calc.
   // we want them all, so allocate the space (dseupd uses it)
@@ -434,33 +413,12 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
   vectors = new vnl_vector<double>[nvalues];
 
   // hold the eigenvectors
-  auto * Z = new double[nvalues * matSize];
+  double *Z = new double[nvalues * matSize];
 
-  v3p_netlib_dseupd_(&rvec,
-                     &howMny,
-                     select.data_block(),
-                     values,
-                     Z,
-                     &matSize,
-                     &sigma,
-                     &genEigProblem,
-                     &matSize,
-                     which,
-                     &nEVL,
-                     &tolerance,
-                     resid,
-                     &numberLanczosVecsL,
-                     &V[1],
-                     &matSize,
-                     &iParam[1],
-                     &iPntr[1],
-                     &workd[1],
-                     &workl[1],
-                     &lworkl,
-                     &info,
-                     howMnyLength,
-                     genEigProblemLength,
-                     whichLength);
+  v3p_netlib_dseupd_(&rvec, &howMny, select.data_block(), values, Z, &matSize, &sigma, &genEigProblem,
+                     &matSize, which, &nEVL, &tolerance, resid, &numberLanczosVecsL, &V[1], &matSize, &iParam[1],
+                     &iPntr[1], &workd[1], &workl[1], &lworkl, &info,
+                     howMnyLength, genEigProblemLength, whichLength);
 
   // Copy the eigenvectors
   int evIx;
@@ -483,33 +441,34 @@ vnl_sparse_symmetric_eigensystem::CalculateNPairs(vnl_sparse_matrix<double> & A,
 
 //------------------------------------------------------------
 //: Callback from solver to calculate the product A p.
-int
-vnl_sparse_symmetric_eigensystem::CalculateProduct(int n, int m, const double * p, double * q)
+int vnl_sparse_symmetric_eigensystem::CalculateProduct(int n, int m,
+                                                       const double* p,
+                                                       double* q)
 {
   // Call the special multiply method on the matrix.
-  mat->mult(n, m, p, q);
+  mat->mult(n,m,p,q);
 
   return 0;
 }
 
 //------------------------------------------------------------
 //: Callback to store vectors for dnlaso.
-int
-vnl_sparse_symmetric_eigensystem::SaveVectors(int n, int m, const double * q, int base)
+int vnl_sparse_symmetric_eigensystem::SaveVectors(int n, int m,
+                                                  const double* q,
+                                                  int base)
 {
   // Store the contents of q.  Basically this is a fifo.  When a write
   // with base=0 is called, we start another fifo.
-  if (base == 0)
-  {
-    for (auto & i : temp_store)
-      delete i;
+  if (base == 0) {
+    for (unsigned i=0; i<temp_store.size(); ++i)
+      delete temp_store[i];
     temp_store.clear();
   }
 
-  auto * temp = new double[n * m];
-  std::memcpy(temp, q, n * m * sizeof(double));
+  double* temp = new double[n*m];
+  std::memcpy(temp,q,n*m*sizeof(double));
 #ifdef DEBUG
-  std::cout << "Save vectors " << base << ' ' << temp << '\n';
+    std::cout << "Save vectors " << base << ' ' << temp << '\n';
 #endif
 
   temp_store.push_back(temp);
@@ -519,8 +478,9 @@ vnl_sparse_symmetric_eigensystem::SaveVectors(int n, int m, const double * q, in
 
 //------------------------------------------------------------
 //: Callback to restore vectors for dnlaso.
-int
-vnl_sparse_symmetric_eigensystem::RestoreVectors(int n, int m, double * q, int base)
+int vnl_sparse_symmetric_eigensystem::RestoreVectors(int n, int m,
+                                                     double* q,
+                                                     int base)
 {
   // Store the contents of q.  Basically this is a fifo.  When a read
   // with base=0 is called, we start another fifo.
@@ -528,10 +488,10 @@ vnl_sparse_symmetric_eigensystem::RestoreVectors(int n, int m, double * q, int b
   if (base == 0)
     read_idx = 0;
 
-  double * temp = temp_store[read_idx];
-  std::memcpy(q, temp, n * m * sizeof(double));
+  double* temp = temp_store[read_idx];
+  std::memcpy(q,temp,n*m*sizeof(double));
 #ifdef DEBUG
-  std::cout << "Restore vectors " << base << ' ' << temp << '\n';
+    std::cout << "Restore vectors " << base << ' ' << temp << '\n';
 #endif
 
   read_idx++;
@@ -540,16 +500,14 @@ vnl_sparse_symmetric_eigensystem::RestoreVectors(int n, int m, double * q, int b
 
 //------------------------------------------------------------
 //: Return a calculated eigenvector.
-vnl_vector<double>
-vnl_sparse_symmetric_eigensystem::get_eigenvector(int i) const
+vnl_vector<double> vnl_sparse_symmetric_eigensystem::get_eigenvector(int i) const
 {
-  assert(i >= 0 && i < nvalues);
+  assert(i>=0 && i<nvalues);
   return vectors[i];
 }
 
-double
-vnl_sparse_symmetric_eigensystem::get_eigenvalue(int i) const
+double vnl_sparse_symmetric_eigensystem::get_eigenvalue(int i) const
 {
-  assert(i >= 0 && i < nvalues);
+  assert(i>=0 && i<nvalues);
   return values[i];
 }

@@ -9,10 +9,8 @@
 #include <iostream>
 #include <complex>
 #include "vnl_qr.h"
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
 #include <vnl/vnl_math.h>
 #include <vnl/vnl_complex.h>  // vnl_math::squared_magnitude()
 #include <vnl/vnl_matlab_print.h>
@@ -38,8 +36,8 @@ vnl_qr<T>::vnl_qr(vnl_matrix<T> const& M):
   qrdc_out_(M.columns(), M.rows()),
   qraux_(M.columns()),
   jpvt_(M.rows()),
-  Q_(nullptr),
-  R_(nullptr)
+  Q_(VXL_NULLPTR),
+  R_(VXL_NULLPTR)
 {
   assert(! M.empty());
 
@@ -201,10 +199,10 @@ vnl_vector<T> vnl_qr<T>::solve(const vnl_vector<T>& b) const
   vnl_linpack_qrsl(qrdc_out_.data_block(),
                    &n, &n, &p,
                    qraux_.data_block(),
-                   b_data, (T*)nullptr, Qt_B.data_block(),
+                   b_data, (T*)0, Qt_B.data_block(),
                    x.data_block(),
-                   (T*)nullptr/*residual*/,
-                   (T*)nullptr/*Ax*/,
+                   (T*)0/*residual*/,
+                   (T*)0/*Ax*/,
                    &JOB,
                    &info);
 
@@ -232,11 +230,11 @@ vnl_vector<T> vnl_qr<T>::QtB(const vnl_vector<T>& b) const
                    &n, &n, &p,
                    qraux_.data_block(),
                    b_data,
-                   (T*)nullptr,               // A: Qb
+                   (T*)0,               // A: Qb
                    Qt_B.data_block(),   // B: Q'b
-                   (T*)nullptr,               // C: x
-                   (T*)nullptr,               // D: residual
-                   (T*)nullptr,               // E: Ax
+                   (T*)0,               // C: x
+                   (T*)0,               // D: residual
+                   (T*)0,               // E: Ax
                    &JOB,
                    &info);
 
@@ -306,6 +304,6 @@ vnl_matrix<T> vnl_qr<T>::solve(vnl_matrix<T> const& rhs) const
 
 #define VNL_QR_INSTANTIATE(T) \
  template class VNL_ALGO_EXPORT vnl_qr<T >; \
- /*template VNL_EXPORT T vnl_qr_determinant(vnl_matrix<T > const&) */
+ VCL_INSTANTIATE_INLINE(T vnl_qr_determinant(vnl_matrix<T > const&))
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,11 +54,10 @@
 //
 // Software Guide : EndLatex
 
-int
-main(int, char *[])
+int main(int, char*[])
 {
   // Software Guide : BeginCodeSnippet
-  using MeasurementVectorType = itk::Array<float>;
+  typedef itk::Array< float > MeasurementVectorType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -69,8 +68,8 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using DistanceMetricType =
-    itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
+  typedef itk::Statistics::EuclideanDistanceMetric< MeasurementVectorType >
+    DistanceMetricType;
   DistanceMetricType::Pointer distanceMetric = DistanceMetricType::New();
   // Software Guide : EndCodeSnippet
 
@@ -92,12 +91,12 @@ main(int, char *[])
   // \code{SetMeasurementVectorSize()} method.
   //
   // Software Guide : EndLatex
-  distanceMetric->SetMeasurementVectorSize(2);
+  distanceMetric->SetMeasurementVectorSize( 2 );
 
   // Software Guide : BeginCodeSnippet
-  DistanceMetricType::OriginType originPoint(2);
-  MeasurementVectorType          queryPointA(2);
-  MeasurementVectorType          queryPointB(2);
+  DistanceMetricType::OriginType originPoint( 2 );
+  MeasurementVectorType queryPointA( 2 );
+  MeasurementVectorType queryPointB( 2 );
 
   originPoint[0] = 0;
   originPoint[1] = 0;
@@ -118,16 +117,19 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  distanceMetric->SetOrigin(originPoint);
+  distanceMetric->SetOrigin( originPoint );
   std::cout << "Euclidean distance between the origin and the query point A = "
-            << distanceMetric->Evaluate(queryPointA) << std::endl;
+            << distanceMetric->Evaluate( queryPointA )
+            << std::endl;
 
   std::cout << "Euclidean distance between the two query points (A and B) = "
-            << distanceMetric->Evaluate(queryPointA, queryPointB) << std::endl;
+            << distanceMetric->Evaluate( queryPointA, queryPointB )
+            << std::endl;
 
   std::cout << "Coordinate distance between "
             << "the first components of the two query points = "
-            << distanceMetric->Evaluate(queryPointA[0], queryPointB[0]) << std::endl;
+            << distanceMetric->Evaluate( queryPointA[0], queryPointB[0] )
+            << std::endl;
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

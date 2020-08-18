@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,14 +25,13 @@
 #include "vtkSmartPointer.h"
 
 #ifndef vtkFloatingPointType
-#  define vtkFloatingPointType float
+#define vtkFloatingPointType float
 #endif
 
 namespace itk
 {
 
-/**
- *\class VTKImageToImageFilter
+/** \class VTKImageToImageFilter
  * \brief Converts a VTK image into an ITK image and plugs a
  *  VTK data pipeline to an ITK datapipeline.
  *
@@ -43,21 +42,16 @@ namespace itk
  *  output.
  *
  * \ingroup ITKVtkGlue
- * \sphinx
- * \sphinxexample{Bridge/VtkGlue/VTKImageToITKImage,VTK Image To ITK Image}
- * \endsphinx
  */
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT VTKImageToImageFilter : public VTKImageImport<TOutputImage>
+template <typename TOutputImage >
+class ITK_TEMPLATE_EXPORT VTKImageToImageFilter : public VTKImageImport< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VTKImageToImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = VTKImageToImageFilter;
-  using Superclass = VTKImageImport<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef VTKImageToImageFilter             Self;
+  typedef VTKImageImport< TOutputImage >    Superclass;
+  typedef SmartPointer<Self>                Pointer;
+  typedef SmartPointer<const Self>          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,41 +59,41 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(VTKImageToImageFilter, VTKImageImport);
 
-  /** Some type alias. */
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::ConstPointer;
+  /** Some typedefs. */
+  typedef TOutputImage                              OutputImageType;
+  typedef typename    OutputImageType::ConstPointer OutputImagePointer;
 
   /** Set the input in the form of a vtkImageData */
-  void
-  SetInput(vtkImageData *);
+  void SetInput( vtkImageData * );
   using Superclass::SetInput;
 
   /** Return the internal VTK image exporter filter.
       This is intended to facilitate users the access
       to methods in the exporter */
-  vtkImageExport *
-  GetExporter() const;
+  vtkImageExport * GetExporter() const;
 
   /** Return the internal ITK image importer filter.
       This is intended to facilitate users the access
       to methods in the importer.
       */
-  const Superclass *
-  GetImporter() const;
+  const Superclass * GetImporter() const;
 
 protected:
   VTKImageToImageFilter();
-  ~VTKImageToImageFilter() override;
+  virtual ~VTKImageToImageFilter();
 
 private:
-  using ImageExportPointer = vtkSmartPointer<vtkImageExport>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VTKImageToImageFilter);
+
+  typedef vtkSmartPointer<vtkImageExport> ImageExportPointer;
   ImageExportPointer m_Exporter;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVTKImageToImageFilter.hxx"
+#include "itkVTKImageToImageFilter.hxx"
 #endif
 
 #endif

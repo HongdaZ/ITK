@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@
 
 namespace itk
 {
-/**
- *\class BSplineUpsampleImageFilter
+/** \class BSplineUpsampleImageFilter
  * \brief Uses B-Spline interpolation to upsample an image by a factor of 2.
  * This class is the public interface for spline upsampling as defined by the
  * ResamplerType.
@@ -80,19 +79,17 @@ namespace itk
  * \ingroup ITKImageGrid
  */
 
-template <typename TInputImage,
-          typename TOutputImage,
-          typename ResamplerType = BSplineResampleImageFilterBase<TInputImage, TOutputImage>>
-class ITK_TEMPLATE_EXPORT BSplineUpsampleImageFilter : public ResamplerType
+template< typename TInputImage, typename TOutputImage, typename ResamplerType =
+            BSplineResampleImageFilterBase< TInputImage, TOutputImage > >
+class ITK_TEMPLATE_EXPORT BSplineUpsampleImageFilter:
+  public ResamplerType
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineUpsampleImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BSplineUpsampleImageFilter;
-  using Superclass = ResamplerType;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BSplineUpsampleImageFilter Self;
+  typedef ResamplerType              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(BSplineUpsampleImageFilter, ReamplerType);
@@ -100,49 +97,49 @@ public:
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
 
-  /** InputImagePointer type alias support */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  /** InputImagePointer typedef support. */
+  typedef typename Superclass::InputImagePointer InputImagePointer;
 
-  /** OutputImageIterator type alias support */
-  using OutputImageIterator = typename Superclass::OutputImageIterator;
+  /** OutputImageIterator typedef support. */
+  typedef typename Superclass::OutputImageIterator OutputImageIterator;
 
-  /** OutputImagePointer type alias support */
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  /** OutputImagePointer typedef support. */
+  typedef typename Superclass::OutputImagePointer OutputImagePointer;
 
   /** Creates an image twice the size of the input image with spacing half the
-   * input image. */
-  void
-  GenerateOutputInformation() override;
+    * input image. */
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** This filter requires all of the input image */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  void
-  GenerateData() override;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  void GenerateData() ITK_OVERRIDE;
 
-  BSplineUpsampleImageFilter() = default;
-  ~BSplineUpsampleImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
+
+  BSplineUpsampleImageFilter();
+  virtual ~BSplineUpsampleImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineUpsampleImageFilter);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBSplineUpsampleImageFilter.hxx"
+#include "itkBSplineUpsampleImageFilter.hxx"
 #endif
 
 #endif

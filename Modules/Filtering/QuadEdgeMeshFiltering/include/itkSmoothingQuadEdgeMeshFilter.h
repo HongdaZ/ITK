@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ namespace itk
  *
  * For one iteration the location of one vertex is computed as follows:
  * \f[
- * \boldsymbol{ v' }_i = v_i + m_RelaxationFactor \cdot \frac{ \sum_j w_{ij} ( \boldsymbol{ v_j } - \boldsymbol{ v_i } )
- * }{ \sum_j w_{ij} } \f]
+ * \boldsymbol{ v' }_i = v_i + m_RelaxationFactor \cdot \frac{ \sum_j w_{ij} ( \boldsymbol{ v_j } - \boldsymbol{ v_i } ) }{ \sum_j w_{ij} }
+ * \f]
  *
  * where \f$ w_{ij} \f$ is computed by the means of the set functor
  * CoefficientsComputation
@@ -54,46 +54,44 @@ namespace itk
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 
-template <typename TInputMesh, typename TOutputMesh = TInputMesh>
-class ITK_TEMPLATE_EXPORT SmoothingQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh=TInputMesh >
+class ITK_TEMPLATE_EXPORT SmoothingQuadEdgeMeshFilter:
+  public QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SmoothingQuadEdgeMeshFilter);
-
-  using Self = SmoothingQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
+  typedef SmoothingQuadEdgeMeshFilter                                 Self;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
+  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh > Superclass;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(SmoothingQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using InputMeshType = TInputMesh;
-  using InputMeshPointer = typename InputMeshType::Pointer;
+  typedef TInputMesh                      InputMeshType;
+  typedef typename InputMeshType::Pointer InputMeshPointer;
 
-  using OutputMeshType = TOutputMesh;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using OutputEdgeCellType = typename OutputMeshType::EdgeCellType;
-  using OutputPolygonCellType = typename OutputMeshType::PolygonCellType;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputVectorType = typename OutputPointType::VectorType;
-  using OutputCoordType = typename OutputPointType::CoordRepType;
-  using OutputPointsContainer = typename OutputMeshType::PointsContainer;
-  using OutputPointsContainerPointer = typename OutputMeshType::PointsContainerPointer;
-  using OutputPointsContainerIterator = typename OutputMeshType::PointsContainerIterator;
-  using OutputCellsContainerPointer = typename OutputMeshType::CellsContainerPointer;
-  using OutputCellsContainerIterator = typename OutputMeshType::CellsContainerIterator;
+  typedef TOutputMesh                                      OutputMeshType;
+  typedef typename OutputMeshType::Pointer                 OutputMeshPointer;
+  typedef typename OutputMeshType::EdgeCellType            OutputEdgeCellType;
+  typedef typename OutputMeshType::PolygonCellType         OutputPolygonCellType;
+  typedef typename OutputMeshType::QEType                  OutputQEType;
+  typedef typename OutputMeshType::PointIdentifier         OutputPointIdentifier;
+  typedef typename OutputMeshType::PointType               OutputPointType;
+  typedef typename OutputPointType::VectorType             OutputVectorType;
+  typedef typename OutputPointType::CoordRepType           OutputCoordType;
+  typedef typename OutputMeshType::PointsContainer         OutputPointsContainer;
+  typedef typename OutputMeshType::PointsContainerPointer  OutputPointsContainerPointer;
+  typedef typename OutputMeshType::PointsContainerIterator OutputPointsContainerIterator;
+  typedef typename OutputMeshType::CellsContainerPointer   OutputCellsContainerPointer;
+  typedef typename OutputMeshType::CellsContainerIterator  OutputCellsContainerIterator;
 
-  static constexpr unsigned int PointDimension = OutputMeshType::PointDimension;
+  itkStaticConstMacro(PointDimension, unsigned int, OutputMeshType::PointDimension);
 
-  using CoefficientsComputation = MatrixCoefficients<OutputMeshType>;
+  typedef MatrixCoefficients< OutputMeshType > CoefficientsComputation;
 
-  void
-  SetCoefficientsMethod(CoefficientsComputation * iMethod);
+  void SetCoefficientsMethod(CoefficientsComputation *iMethod);
 
   /** Set/Get the number of iterations */
   itkSetMacro(NumberOfIterations, unsigned int);
@@ -109,19 +107,18 @@ public:
 
 protected:
   SmoothingQuadEdgeMeshFilter();
-  ~SmoothingQuadEdgeMeshFilter() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~SmoothingQuadEdgeMeshFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  CoefficientsComputation * m_CoefficientsMethod;
+  CoefficientsComputation *m_CoefficientsMethod;
 
-  using InputOutputDelaunayConformingType = DelaunayConformingQuadEdgeMeshFilter<InputMeshType, OutputMeshType>;
-  using InputOutputDelaunayConformingPointer = typename InputOutputDelaunayConformingType::Pointer;
+  typedef DelaunayConformingQuadEdgeMeshFilter< InputMeshType, OutputMeshType > InputOutputDelaunayConformingType;
+  typedef typename InputOutputDelaunayConformingType::Pointer                   InputOutputDelaunayConformingPointer;
 
   InputOutputDelaunayConformingPointer m_InputDelaunayFilter;
 
-  using OutputDelaunayConformingType = DelaunayConformingQuadEdgeMeshFilter<OutputMeshType, OutputMeshType>;
-  using OutputDelaunayConformingPointer = typename OutputDelaunayConformingType::Pointer;
+  typedef DelaunayConformingQuadEdgeMeshFilter< OutputMeshType, OutputMeshType > OutputDelaunayConformingType;
+  typedef typename OutputDelaunayConformingType::Pointer                         OutputDelaunayConformingPointer;
 
   OutputDelaunayConformingPointer m_OutputDelaunayFilter;
 
@@ -131,10 +128,13 @@ protected:
 
   OutputCoordType m_RelaxationFactor;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
+
+private:
+  SmoothingQuadEdgeMeshFilter(const Self &);
+  void operator=(const Self &);
 };
-} // namespace itk
+}
 
 #include "itkSmoothingQuadEdgeMeshFilter.hxx"
 #endif

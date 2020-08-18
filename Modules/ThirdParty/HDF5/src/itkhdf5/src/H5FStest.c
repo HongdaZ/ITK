@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
@@ -20,17 +22,15 @@
 /* Module Setup */
 /****************/
 
-#include "H5FSmodule.h"         /* This source code file is part of the H5FS module */
-#define H5FS_TESTING            /* Suppress warning about H5FS testing funcs */
-
+#define H5FS_PACKAGE		/*suppress error about including H5FSpkg  */
+#define H5FS_TESTING		/*suppress warning about H5FS testing funcs */
 
 /***********/
 /* Headers */
 /***********/
-#include "H5private.h"      /* Generic Functions                            */
-#include "H5Eprivate.h"     /* Error handling                               */
-#include "H5FSpkg.h"        /* Free-space manager                           */
-
+#include "H5private.h"		/* Generic Functions			*/
+#include "H5Eprivate.h"		/* Error handling		  	*/
+#include "H5FSpkg.h"		/* Free-space manager			*/
 
 /****************/
 /* Local Macros */
@@ -72,12 +72,13 @@
  * Function:    H5FS_get_cparam_test
  *
  * Purpose:     Retrieve the parameters used to create the free-space manager
- *              similar to H5HF_get_cparam_test()
  *
- * Return:      SUCCEED/FAIL
+ * Return:      Success:        non-negative
  *
- * Programmer:  Vailin Choi
- *              August 25th, 2008
+ *              Failure:        negative
+ *
+ * Programmer:  similar to H5HF_get_cparam_test()
+ *		Vailin Choi; August 25th, 2008
  *
  *-------------------------------------------------------------------------
  */
@@ -103,13 +104,13 @@ H5FS_get_cparam_test(const H5FS_t *frsp, H5FS_create_t *cparam)
 /*-------------------------------------------------------------------------
  * Function:    H5FS_cmp_cparam_test
  *
- * Purpose:     Compare the parameters used to create the free space manager
- *              similar to H5HF_cmp_cparam_test()
+ * Purpose:     Compare the parameters used to create the fractal heap
  *
- * Return:      SUCCEED/FAIL
+ * Return:      Success:        non-negative
+ *              Failure:        negative
  *
- * Programmer:  Vailin Choi
- *              August 25th, 2008
+ * Programmer:  similar to H5HF_cmp_cparam_test()
+ *		Vailin Choi; August 25th, 2008
  *
  *-------------------------------------------------------------------------
  */

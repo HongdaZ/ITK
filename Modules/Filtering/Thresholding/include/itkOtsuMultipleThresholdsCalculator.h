@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class OtsuMultipleThresholdsCalculator
+/** \class OtsuMultipleThresholdsCalculator
  * \brief Computes Otsu's multiple thresholds for a histogram.
  *
  * You plug in the target histogram using SetInputHistogram method and
@@ -46,88 +45,74 @@ namespace itk
  * \ingroup ITKThresholding
  */
 
-template <typename TInputHistogram>
-class ITK_TEMPLATE_EXPORT OtsuMultipleThresholdsCalculator : public HistogramAlgorithmBase<TInputHistogram>
+template< typename TInputHistogram >
+class ITK_TEMPLATE_EXPORT OtsuMultipleThresholdsCalculator:
+  public HistogramAlgorithmBase< TInputHistogram >
 {
 public:
-  /**Standard class type aliases. */
-  using Self = OtsuMultipleThresholdsCalculator;
-  using Superclass = HistogramAlgorithmBase<TInputHistogram>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /**Standard class typedefs. */
+  typedef OtsuMultipleThresholdsCalculator          Self;
+  typedef HistogramAlgorithmBase< TInputHistogram > Superclass;
+  typedef SmartPointer< Self >                      Pointer;
+  typedef SmartPointer< const Self >                ConstPointer;
 
-  using MeasurementType = typename TInputHistogram::MeasurementType;
-  using FrequencyType = typename TInputHistogram::AbsoluteFrequencyType;
+  typedef typename TInputHistogram::MeasurementType       MeasurementType;
+  typedef typename TInputHistogram::AbsoluteFrequencyType FrequencyType;
 
-  using MeanType = typename NumericTraits<MeasurementType>::RealType;
-  using VarianceType = typename NumericTraits<MeasurementType>::RealType;
-  using WeightType = typename NumericTraits<MeasurementType>::RealType;
+  typedef typename NumericTraits< MeasurementType >::RealType MeanType;
+  typedef typename NumericTraits< MeasurementType >::RealType VarianceType;
+  typedef typename NumericTraits< MeasurementType >::RealType WeightType;
 
-  using MeanVectorType = std::vector<MeanType>;
-  using FrequencyVectorType = std::vector<FrequencyType>;
-  using WeightVectorType = std::vector<WeightType>;
+  typedef std::vector< MeanType >      MeanVectorType;
+  typedef std::vector< FrequencyType > FrequencyVectorType;
+  typedef std::vector< WeightType >    WeightVectorType;
 
-  using InstanceIdentifierType = typename TInputHistogram::InstanceIdentifier;
-  using InstanceIdentifierVectorType = std::vector<InstanceIdentifierType>;
+  typedef typename TInputHistogram::InstanceIdentifier InstanceIdentifierType;
+  typedef std::vector< InstanceIdentifierType >        InstanceIdentifierVectorType;
 
   /**Standard Macros */
   itkTypeMacro(OtsuMultipleThresholdsCalculator, HistogramAlgorithmsBase);
   itkNewMacro(Self);
 
   /** Typedef for the thresholds output */
-  using OutputType = std::vector<MeasurementType>;
+  typedef std::vector< MeasurementType > OutputType;
 
   /** Returns the thresholds vector */
-  const OutputType &
-  GetOutput();
+  const OutputType & GetOutput();
 
   /** Set/Get the number of thresholds. */
-  itkSetClampMacro(NumberOfThresholds, SizeValueType, 1, NumericTraits<SizeValueType>::max());
+  itkSetClampMacro( NumberOfThresholds, SizeValueType, 1, NumericTraits< SizeValueType >::max() );
   itkGetConstMacro(NumberOfThresholds, SizeValueType);
 
   /** Calculates Otsu's thresholds and saves them. */
-  void
-  Compute() override;
+  void Compute() ITK_OVERRIDE;
 
   /** Set/Get the use of valley emphasis. Default is false. */
   itkSetMacro(ValleyEmphasis, bool);
   itkGetConstReferenceMacro(ValleyEmphasis, bool);
   itkBooleanMacro(ValleyEmphasis);
 
-  /** Should the threshold value be mid-point of the bin or the maximum?
-   * Default is to return bin maximum. */
-  itkSetMacro(ReturnBinMidpoint, bool);
-  itkGetConstReferenceMacro(ReturnBinMidpoint, bool);
-  itkBooleanMacro(ReturnBinMidpoint);
-
-
 protected:
   OtsuMultipleThresholdsCalculator();
-  ~OtsuMultipleThresholdsCalculator() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~OtsuMultipleThresholdsCalculator() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Increment the thresholds of one position along the histogram. */
-  bool
-  IncrementThresholds(InstanceIdentifierVectorType & thresholdIds,
-                      MeanType                       totalMean,
-                      MeanVectorType &               classMean,
-                      FrequencyVectorType &          classFrequency);
+  bool IncrementThresholds(InstanceIdentifierVectorType & thresholdIds,
+                           MeanType totalMean,
+                           MeanVectorType & classMean,
+                           FrequencyVectorType & classFrequency);
 
 private:
-  SizeValueType m_NumberOfThresholds{ 1 };
+
+  SizeValueType m_NumberOfThresholds;
   OutputType    m_Output;
-  bool          m_ValleyEmphasis{ false };
-#if defined(ITKV4_COMPATIBILITY)
-  bool m_ReturnBinMidpoint{ true };
-#else
-  bool m_ReturnBinMidpoint{ false };
-#endif
+  bool          m_ValleyEmphasis;
 };
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkOtsuMultipleThresholdsCalculator.hxx"
+#include "itkOtsuMultipleThresholdsCalculator.hxx"
 #endif
 
 #endif

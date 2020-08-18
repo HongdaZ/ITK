@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -151,64 +151,63 @@
 
 //  Software Guide : BeginCodeSnippet
 #include "itkCommand.h"
-template <class TOptimizer>
+template < class TOptimizer >
 class IterationCallback : public itk::Command
 {
 public:
-  using Self = IterationCallback;
-  using Superclass = itk::Command;
-  using Pointer = itk::SmartPointer<Self>;
-  using ConstPointer = itk::SmartPointer<const Self>;
+  typedef IterationCallback             Self;
+  typedef itk::Command                  Superclass;
+  typedef itk::SmartPointer<Self>       Pointer;
+  typedef itk::SmartPointer<const Self> ConstPointer;
 
-  itkTypeMacro(IterationCallback, Superclass);
-  itkNewMacro(Self);
+  itkTypeMacro( IterationCallback, Superclass );
+  itkNewMacro( Self );
 
   /** Type defining the optimizer. */
-  using OptimizerType = TOptimizer;
+  typedef    TOptimizer     OptimizerType;
 
   /** Method to specify the optimizer. */
-  void
-  SetOptimizer(OptimizerType * optimizer)
-  {
+  void SetOptimizer( OptimizerType * optimizer )
+    {
     m_Optimizer = optimizer;
-    m_Optimizer->AddObserver(itk::IterationEvent(), this);
-  }
+    m_Optimizer->AddObserver( itk::IterationEvent(), this );
+    }
 
   /** Execute method will print data at each iteration */
-  void
-  Execute(itk::Object * caller, const itk::EventObject & event) override
-  {
-    Execute((const itk::Object *)caller, event);
-  }
-
-  void
-  Execute(const itk::Object *, const itk::EventObject & event) override
-  {
-    if (typeid(event) == typeid(itk::StartEvent))
+  void Execute(itk::Object *caller,
+               const itk::EventObject & event) ITK_OVERRIDE
     {
+    Execute( (const itk::Object *)caller, event);
+    }
+
+  void Execute(const itk::Object *,
+               const itk::EventObject & event) ITK_OVERRIDE
+    {
+    if( typeid( event ) == typeid( itk::StartEvent ) )
+      {
       std::cout << std::endl << "Position              Value";
       std::cout << std::endl << std::endl;
-    }
-    else if (typeid(event) == typeid(itk::IterationEvent))
-    {
+      }
+    else if( typeid( event ) == typeid( itk::IterationEvent ) )
+      {
       std::cout << m_Optimizer->GetCurrentIteration() << "   ";
       std::cout << m_Optimizer->GetValue() << "   ";
       std::cout << m_Optimizer->GetCurrentPosition() << std::endl;
-    }
-    else if (typeid(event) == typeid(itk::EndEvent))
-    {
+      }
+    else if( typeid( event ) == typeid( itk::EndEvent ) )
+      {
       std::cout << std::endl << std::endl;
       std::cout << "After " << m_Optimizer->GetCurrentIteration();
       std::cout << "  iterations " << std::endl;
       std::cout << "Solution is    = " << m_Optimizer->GetCurrentPosition();
       std::cout << std::endl;
+      }
     }
-  }
-  //  Software Guide : EndCodeSnippet
+//  Software Guide : EndCodeSnippet
 
 protected:
-  IterationCallback() = default;
-  itk::WeakPointer<OptimizerType> m_Optimizer;
+  IterationCallback() {};
+  itk::WeakPointer<OptimizerType>   m_Optimizer;
 };
 
 //  Software Guide : BeginLatex
@@ -240,24 +239,25 @@ protected:
 
 //  Software Guide : BeginCodeSnippet
 template <typename TFixedImage, typename TMovingSpatialObject>
-class SimpleImageToSpatialObjectMetric
-  : public itk::ImageToSpatialObjectMetric<TFixedImage, TMovingSpatialObject>
+class SimpleImageToSpatialObjectMetric :
+  public itk::ImageToSpatialObjectMetric<TFixedImage,TMovingSpatialObject>
 {
-  //  Software Guide : EndCodeSnippet
+//  Software Guide : EndCodeSnippet
 
 public:
-  /** Standard class type aliases. */
-  using Self = SimpleImageToSpatialObjectMetric;
-  using Superclass = itk::ImageToSpatialObjectMetric<TFixedImage, TMovingSpatialObject>;
-  using Pointer = itk::SmartPointer<Self>;
-  using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SimpleImageToSpatialObjectMetric  Self;
+  typedef itk::ImageToSpatialObjectMetric<TFixedImage,TMovingSpatialObject>
+                                            Superclass;
+  typedef itk::SmartPointer<Self>           Pointer;
+  typedef itk::SmartPointer<const Self>     ConstPointer;
 
-  using PointType = itk::Point<double, 2>;
-  using PointListType = std::list<PointType>;
-  using MovingSpatialObjectType = TMovingSpatialObject;
-  using ParametersType = typename Superclass::ParametersType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using MeasureType = typename Superclass::MeasureType;
+  typedef itk::Point<double,2>                PointType;
+  typedef std::list<PointType>                PointListType;
+  typedef TMovingSpatialObject                MovingSpatialObjectType;
+  typedef typename Superclass::ParametersType ParametersType;
+  typedef typename Superclass::DerivativeType DerivativeType;
+  typedef typename Superclass::MeasureType    MeasureType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -265,46 +265,43 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SimpleImageToSpatialObjectMetric, ImageToSpatialObjectMetric);
 
-  static constexpr unsigned int ParametricSpaceDimension = 3;
+  itkStaticConstMacro( ParametricSpaceDimension, unsigned int, 3 );
 
   /** Specify the moving spatial object. */
-  void
-  SetMovingSpatialObject(const MovingSpatialObjectType * object) override
-  {
-    if (!this->m_FixedImage)
+  void SetMovingSpatialObject( const MovingSpatialObjectType * object) ITK_OVERRIDE
     {
-      std::cout << "Please set the image before the moving spatial object" << std::endl;
-      return;
+      if(!this->m_FixedImage)
+        {
+        std::cout << "Please set the image before the moving spatial object" << std::endl;
+        return;
+        }
+      this->m_MovingSpatialObject = object;
+      m_PointList.clear();
+      typedef itk::ImageRegionConstIteratorWithIndex<TFixedImage> myIteratorType;
+
+      myIteratorType it(this->m_FixedImage,this->m_FixedImage->GetBufferedRegion());
+
+      itk::Point<double,2> point;
+
+      while( !it.IsAtEnd() )
+        {
+        this->m_FixedImage->TransformIndexToPhysicalPoint( it.GetIndex(), point );
+
+        if(this->m_MovingSpatialObject->IsInside(point,99999))
+          {
+          m_PointList.push_back( point );
+          }
+        ++it;
+        }
+
+      std::cout << "Number of points in the metric = " << static_cast<unsigned long>( m_PointList.size() ) << std::endl;
     }
-    this->m_MovingSpatialObject = object;
-    m_PointList.clear();
-    using myIteratorType = itk::ImageRegionConstIteratorWithIndex<TFixedImage>;
-
-    myIteratorType it(this->m_FixedImage, this->m_FixedImage->GetBufferedRegion());
-
-    itk::Point<double, 2> point;
-
-    while (!it.IsAtEnd())
-    {
-      this->m_FixedImage->TransformIndexToPhysicalPoint(it.GetIndex(), point);
-
-      if (this->m_MovingSpatialObject->IsInsideInWorldSpace(point, 99999))
-      {
-        m_PointList.push_back(point);
-      }
-      ++it;
-    }
-
-    std::cout << "Number of points in the metric = "
-              << static_cast<unsigned long>(m_PointList.size()) << std::endl;
-  }
 
   /** Get the Derivatives of the Match Measure */
-  void
-  GetDerivative(const ParametersType &, DerivativeType &) const override
-  {
-    return;
-  }
+  void GetDerivative( const ParametersType &, DerivativeType & ) const ITK_OVERRIDE
+    {
+      return;
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -325,34 +322,32 @@ public:
 
   /** Get the value for SingleValue optimizers. */
   //  Software Guide : BeginCodeSnippet
-  MeasureType
-  GetValue(const ParametersType & parameters) const override
-  {
-    double value;
-    this->m_Transform->SetParameters(parameters);
-
-    value = 0;
-    for (auto it : m_PointList)
+  MeasureType GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
     {
-      PointType transformedPoint = this->m_Transform->TransformPoint(it);
-      if (this->m_Interpolator->IsInsideBuffer(transformedPoint))
-      {
-        value += this->m_Interpolator->Evaluate(transformedPoint);
-      }
+      double value;
+      this->m_Transform->SetParameters( parameters );
+
+      value = 0;
+      for(PointListType::const_iterator it = m_PointList.begin();
+                                                it != m_PointList.end(); ++it)
+         {
+         PointType transformedPoint = this->m_Transform->TransformPoint(*it);
+         if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
+           {
+           value += this->m_Interpolator->Evaluate( transformedPoint );
+           }
+         }
+      return value;
     }
-    return value;
-  }
   //  Software Guide : EndCodeSnippet
 
   /** Get Value and Derivatives for MultipleValuedOptimizers */
-  void
-  GetValueAndDerivative(const ParametersType & parameters,
-                        MeasureType &          Value,
-                        DerivativeType &       Derivative) const override
-  {
-    Value = this->GetValue(parameters);
-    this->GetDerivative(parameters, Derivative);
-  }
+  void GetValueAndDerivative( const ParametersType & parameters,
+       MeasureType & Value, DerivativeType  & Derivative ) const ITK_OVERRIDE
+    {
+      Value = this->GetValue(parameters);
+      this->GetDerivative(parameters,Derivative);
+    }
 
 private:
   PointListType m_PointList;
@@ -367,14 +362,13 @@ private:
 //  Software Guide : EndLatex
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc > 1)
-  {
+  if( argc > 1 )
+    {
     std::cerr << "Too many parameters " << std::endl;
     std::cerr << "Usage: " << argv[0] << std::endl;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -389,8 +383,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using GroupType = itk::GroupSpatialObject<2>;
-  using EllipseType = itk::EllipseSpatialObject<2>;
+  typedef itk::GroupSpatialObject< 2 >     GroupType;
+  typedef itk::EllipseSpatialObject< 2 >   EllipseType;
   //  Software Guide : EndCodeSnippet
 
 
@@ -405,7 +399,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using ImageType = itk::Image<float, 2>;
+  typedef itk::Image< float, 2 >      ImageType;
   //  Software Guide : EndCodeSnippet
 
 
@@ -438,9 +432,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  ellipse1->SetRadiusInObjectSpace(10.0);
-  ellipse2->SetRadiusInObjectSpace(10.0);
-  ellipse3->SetRadiusInObjectSpace(10.0);
+  ellipse1->SetRadius(  10.0  );
+  ellipse2->SetRadius(  10.0  );
+  ellipse3->SetRadius(  10.0  );
   //  Software Guide : EndCodeSnippet
 
 
@@ -460,21 +454,21 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   EllipseType::TransformType::OffsetType offset;
-  offset[0] = 100.0;
-  offset[1] = 40.0;
+  offset[ 0 ] = 100.0;
+  offset[ 1 ] =  40.0;
 
-  ellipse1->GetModifiableObjectToParentTransform()->SetOffset(offset);
-  ellipse1->Update();
+  ellipse1->GetObjectToParentTransform()->SetOffset(offset);
+  ellipse1->ComputeObjectToWorldTransform();
 
-  offset[0] = 40.0;
-  offset[1] = 150.0;
-  ellipse2->GetModifiableObjectToParentTransform()->SetOffset(offset);
-  ellipse2->Update();
+  offset[ 0 ] =  40.0;
+  offset[ 1 ] = 150.0;
+  ellipse2->GetObjectToParentTransform()->SetOffset(offset);
+  ellipse2->ComputeObjectToWorldTransform();
 
-  offset[0] = 150.0;
-  offset[1] = 150.0;
-  ellipse3->GetModifiableObjectToParentTransform()->SetOffset(offset);
-  ellipse3->Update();
+  offset[ 0 ] = 150.0;
+  offset[ 1 ] = 150.0;
+  ellipse3->GetObjectToParentTransform()->SetOffset(offset);
+  ellipse3->ComputeObjectToWorldTransform();
   //  Software Guide : EndCodeSnippet
 
 
@@ -505,9 +499,9 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   GroupType::Pointer group = GroupType::New();
-  group->AddChild(ellipse1);
-  group->AddChild(ellipse2);
-  group->AddChild(ellipse3);
+  group->AddSpatialObject( ellipse1 );
+  group->AddSpatialObject( ellipse2 );
+  group->AddSpatialObject( ellipse3 );
   //  Software Guide : EndCodeSnippet
 
 
@@ -525,8 +519,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using SpatialObjectToImageFilterType =
-    itk::SpatialObjectToImageFilter<GroupType, ImageType>;
+  typedef itk::SpatialObjectToImageFilter< GroupType, ImageType >
+    SpatialObjectToImageFilterType;
   //  Software Guide : EndCodeSnippet
 
 
@@ -555,7 +549,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  imageFilter->SetInput(group);
+  imageFilter->SetInput(  group  );
   //  Software Guide : EndCodeSnippet
 
 
@@ -571,9 +565,9 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   ImageType::SizeType size;
-  size[0] = 200;
-  size[1] = 200;
-  imageFilter->SetSize(size);
+  size[ 0 ] = 200;
+  size[ 1 ] = 200;
+  imageFilter->SetSize( size );
   //  Software Guide : EndCodeSnippet
 
 
@@ -602,8 +596,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using GaussianFilterType = itk::DiscreteGaussianImageFilter<ImageType, ImageType>;
-  GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
+  typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >
+    GaussianFilterType;
+  GaussianFilterType::Pointer   gaussianFilter =   GaussianFilterType::New();
   //  Software Guide : EndCodeSnippet
 
 
@@ -615,7 +610,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  gaussianFilter->SetInput(imageFilter->GetOutput());
+  gaussianFilter->SetInput(  imageFilter->GetOutput()  );
   //  Software Guide : EndCodeSnippet
 
 
@@ -628,7 +623,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  constexpr double variance = 20;
+  const double variance = 20;
   gaussianFilter->SetVariance(variance);
   gaussianFilter->Update();
   //  Software Guide : EndCodeSnippet
@@ -650,8 +645,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using RegistrationType =
-    itk::ImageToSpatialObjectRegistrationMethod<ImageType, GroupType>;
+  typedef itk::ImageToSpatialObjectRegistrationMethod< ImageType, GroupType >
+    RegistrationType;
   RegistrationType::Pointer registration = RegistrationType::New();
   // Software Guide : EndCodeSnippet
 
@@ -667,7 +662,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MetricType = SimpleImageToSpatialObjectMetric<ImageType, GroupType>;
+  typedef SimpleImageToSpatialObjectMetric< ImageType, GroupType > MetricType;
   MetricType::Pointer metric = MetricType::New();
   // Software Guide : EndCodeSnippet
 
@@ -680,7 +675,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
+  typedef itk::LinearInterpolateImageFunction< ImageType, double >
+    InterpolatorType;
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
   // Software Guide : EndCodeSnippet
 
@@ -694,8 +690,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using OptimizerType = itk::OnePlusOneEvolutionaryOptimizer;
-  OptimizerType::Pointer optimizer = OptimizerType::New();
+  typedef itk::OnePlusOneEvolutionaryOptimizer  OptimizerType;
+  OptimizerType::Pointer optimizer  = OptimizerType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -708,7 +704,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using TransformType = itk::Euler2DTransform<>;
+  typedef itk::Euler2DTransform<> TransformType;
   TransformType::Pointer transform = TransformType::New();
   // Software Guide : EndCodeSnippet
 
@@ -727,8 +723,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  itk::Statistics::NormalVariateGenerator::Pointer generator =
-    itk::Statistics::NormalVariateGenerator::New();
+  itk::Statistics::NormalVariateGenerator::Pointer generator
+    = itk::Statistics::NormalVariateGenerator::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -754,9 +750,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  optimizer->SetNormalVariateGenerator(generator);
-  optimizer->Initialize(10);
-  optimizer->SetMaximumIteration(400);
+  optimizer->SetNormalVariateGenerator( generator );
+  optimizer->Initialize( 10 );
+  optimizer->SetMaximumIteration( 400 );
   // Software Guide : EndCodeSnippet
 
 
@@ -764,9 +760,9 @@ main(int argc, char * argv[])
   //
   //  As in previous registration examples, we take care to normalize the
   //  dynamic range of the different transform parameters. In particular, the
-  //  we must compensate for the ranges of the angle and translations of the
-  //  Euler2DTransform. In order to achieve this goal, we provide an array of scales to
-  //  the optimizer.
+  //  we must compensate for the ranges of the angle and translations of the Euler2DTransform.
+  //  In order to achieve this goal, we provide an array
+  //  of scales to the optimizer.
   //
   //  Software Guide : EndLatex
 
@@ -775,11 +771,11 @@ main(int argc, char * argv[])
   parametersScale.set_size(3);
   parametersScale[0] = 1000; // angle scale
 
-  for (unsigned int i = 1; i < 3; i++)
-  {
+  for( unsigned int i=1; i<3; i++ )
+    {
     parametersScale[i] = 2; // offset scale
-  }
-  optimizer->SetScales(parametersScale);
+    }
+  optimizer->SetScales( parametersScale );
   // Software Guide : EndCodeSnippet
 
 
@@ -794,9 +790,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using IterationCallbackType = IterationCallback<OptimizerType>;
+  typedef IterationCallback< OptimizerType >   IterationCallbackType;
   IterationCallbackType::Pointer callback = IterationCallbackType::New();
-  callback->SetOptimizer(optimizer);
+  callback->SetOptimizer( optimizer );
   // Software Guide : EndCodeSnippet
 
 
@@ -819,12 +815,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  registration->SetFixedImage(gaussianFilter->GetOutput());
-  registration->SetMovingSpatialObject(group);
-  registration->SetTransform(transform);
-  registration->SetInterpolator(interpolator);
-  registration->SetOptimizer(optimizer);
-  registration->SetMetric(metric);
+  registration->SetFixedImage( gaussianFilter->GetOutput() );
+  registration->SetMovingSpatialObject( group );
+  registration->SetTransform( transform );
+  registration->SetInterpolator( interpolator );
+  registration->SetOptimizer( optimizer );
+  registration->SetMetric( metric );
   // Software Guide : EndCodeSnippet
 
 
@@ -839,11 +835,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  TransformType::ParametersType initialParameters(transform->GetNumberOfParameters());
+  TransformType::ParametersType initialParameters(
+    transform->GetNumberOfParameters() );
 
-  initialParameters[0] = 0.2; // Angle
-  initialParameters[1] = 7.0; // Offset X
-  initialParameters[2] = 6.0; // Offset Y
+  initialParameters[0] = 0.2;     // Angle
+  initialParameters[1] = 7.0;     // Offset X
+  initialParameters[2] = 6.0;     // Offset Y
   registration->SetInitialTransformParameters(initialParameters);
   // Software Guide : EndCodeSnippet
 
@@ -883,17 +880,17 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     registration->Update();
     std::cout << "Optimizer stop condition: "
               << registration->GetOptimizer()->GetStopConditionDescription()
               << std::endl;
-  }
-  catch (const itk::ExceptionObject & exp)
-  {
+    }
+  catch( itk::ExceptionObject & exp )
+    {
     std::cerr << "Exception caught ! " << std::endl;
     std::cerr << exp << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -911,8 +908,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  RegistrationType::ParametersType finalParameters =
-    registration->GetLastTransformParameters();
+  RegistrationType::ParametersType finalParameters
+    = registration->GetLastTransformParameters();
 
   std::cout << "Final Solution is : " << finalParameters << std::endl;
   // Software Guide : EndCodeSnippet

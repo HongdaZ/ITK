@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@
 #include "itkVector.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -61,9 +60,9 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeasurementVectorType = itk::Vector<float, 3>;
-  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
-  SampleType::Pointer   sample = SampleType::New();
+  typedef itk::Vector< float, 3 > MeasurementVectorType;
+  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
+  SampleType::Pointer sample = SampleType::New();
   MeasurementVectorType mv;
   mv[0] = 1.0;
   mv[1] = 2.0;
@@ -108,16 +107,18 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MembershipSampleType = itk::Statistics::MembershipSample<SampleType>;
+  typedef itk::Statistics::MembershipSample< SampleType >
+    MembershipSampleType;
 
-  MembershipSampleType::Pointer membershipSample = MembershipSampleType::New();
+  MembershipSampleType::Pointer membershipSample =
+    MembershipSampleType::New();
 
   membershipSample->SetSample(sample);
   membershipSample->SetNumberOfClasses(2);
 
-  membershipSample->AddInstance(0U, 0UL);
-  membershipSample->AddInstance(0U, 1UL);
-  membershipSample->AddInstance(1U, 2UL);
+  membershipSample->AddInstance(0U, 0UL );
+  membershipSample->AddInstance(0U, 1UL );
+  membershipSample->AddInstance(1U, 2UL );
   // Software Guide : EndCodeSnippet
 
 
@@ -130,8 +131,8 @@ main()
 
   // Software Guide : BeginCodeSnippet
   std::cout << "Size = " << membershipSample->Size() << std::endl;
-  std::cout << "Total frequency = " << membershipSample->GetTotalFrequency()
-            << std::endl;
+  std::cout << "Total frequency = "
+            << membershipSample->GetTotalFrequency() << std::endl;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -145,14 +146,18 @@ main()
 
   // Software Guide : BeginCodeSnippet
   MembershipSampleType::Iterator iter = membershipSample->Begin();
-  while (iter != membershipSample->End())
-  {
+  while ( iter != membershipSample->End() )
+    {
     std::cout << "instance identifier = " << iter.GetInstanceIdentifier()
-              << "\t measurement vector = " << iter.GetMeasurementVector()
-              << "\t frequency = " << iter.GetFrequency()
-              << "\t class label = " << iter.GetClassLabel() << std::endl;
+              << "\t measurement vector = "
+              << iter.GetMeasurementVector()
+              << "\t frequency = "
+              << iter.GetFrequency()
+              << "\t class label = "
+              << iter.GetClassLabel()
+              << std::endl;
     ++iter;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -187,14 +192,17 @@ main()
   // Software Guide : BeginCodeSnippet
   MembershipSampleType::ClassSampleType::Pointer classSample =
     membershipSample->GetClassSample(0);
-  MembershipSampleType::ClassSampleType::Iterator c_iter = classSample->Begin();
-  while (c_iter != classSample->End())
-  {
+  MembershipSampleType::ClassSampleType::Iterator c_iter =
+    classSample->Begin();
+  while ( c_iter != classSample->End() )
+    {
     std::cout << "instance identifier = " << c_iter.GetInstanceIdentifier()
-              << "\t measurement vector = " << c_iter.GetMeasurementVector()
-              << "\t frequency = " << c_iter.GetFrequency() << std::endl;
+              << "\t measurement vector = "
+              << c_iter.GetMeasurementVector()
+              << "\t frequency = "
+              << c_iter.GetFrequency() << std::endl;
     ++c_iter;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

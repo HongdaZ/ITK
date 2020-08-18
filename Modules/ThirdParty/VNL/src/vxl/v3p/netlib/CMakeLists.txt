@@ -445,10 +445,7 @@ if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 
-if(VXL_BUILD_EXAMPLES)
+# Disabled in ITK to avoid find_package(X11)
+if(BUILD_EXAMPLES AND 0)
   add_subdirectory(examples)
-endif()
-
-if (VXL_BUILD_OBJECT_LIBRARIES)
-  add_library(v3p_netlib-obj OBJECT ${v3p_netlib_sources})
 endif()

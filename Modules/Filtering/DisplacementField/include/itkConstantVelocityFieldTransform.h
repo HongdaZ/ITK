@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,206 +32,200 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
-class ITK_TEMPLATE_EXPORT ConstantVelocityFieldTransform
-  : public DisplacementFieldTransform<TParametersValueType, NDimensions>
+template
+<typename TParametersValueType, unsigned int NDimensions>
+class ITK_TEMPLATE_EXPORT ConstantVelocityFieldTransform :
+  public DisplacementFieldTransform<TParametersValueType, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConstantVelocityFieldTransform);
-
-  /** Standard class type aliases. */
-  using Self = ConstantVelocityFieldTransform;
-  using Superclass = DisplacementFieldTransform<TParametersValueType, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ConstantVelocityFieldTransform                                Self;
+  typedef DisplacementFieldTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                            Pointer;
+  typedef SmartPointer<const Self>                                      ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConstantVelocityFieldTransform, DisplacementFieldTransform);
+  itkTypeMacro( ConstantVelocityFieldTransform, DisplacementFieldTransform );
 
   /** New macro for creation of through a Smart Pointer */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  typedef typename Superclass:: InverseTransformBasePointer InverseTransformBasePointer;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Type of the input parameters. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  typedef typename Superclass::FixedParametersType      FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType FixedParametersValueType;
+  typedef typename Superclass::ParametersType           ParametersType;
+  typedef typename Superclass::ParametersValueType      ParametersValueType;
 
   /** Transform category type. */
-  using TransformCategoryEnum = typename Superclass::TransformCategoryEnum;
+  typedef typename Superclass::TransformCategoryType TransformCategoryType;
 
-  /** The number of parameters defining this transform. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  /** The number of parameters defininig this transform. */
+  typedef typename Superclass::NumberOfParametersType NumberOfParametersType;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::InputPointType  InputPointType;
+  typedef typename Superclass::OutputPointType OutputPointType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  typedef typename Superclass::InputVectorType  InputVectorType;
+  typedef typename Superclass::OutputVectorType OutputVectorType;
 
-  using InputVectorPixelType = typename Superclass::InputVectorPixelType;
-  using OutputVectorPixelType = typename Superclass::OutputVectorPixelType;
+  typedef typename Superclass::InputVectorPixelType  InputVectorPixelType;
+  typedef typename Superclass::OutputVectorPixelType OutputVectorPixelType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType DerivativeType;
 
   /** Dimension of the constant velocity field . */
-  static constexpr unsigned int ConstantVelocityFieldDimension = NDimensions;
+  itkStaticConstMacro( ConstantVelocityFieldDimension, unsigned int, NDimensions );
 
   /** Dimension of the vector spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  itkStaticConstMacro( Dimension, unsigned int, NDimensions );
 
   /** Define the displacement field type and corresponding interpolator type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
+  typedef typename Superclass::DisplacementFieldType   DisplacementFieldType;
+  typedef typename DisplacementFieldType::Pointer      DisplacementFieldPointer;
 
   /** Define the displacement field type and corresponding interpolator type. */
-  using ConstantVelocityFieldType = Image<OutputVectorType, ConstantVelocityFieldDimension>;
-  using ConstantVelocityFieldPointer = typename ConstantVelocityFieldType::Pointer;
+  typedef Image<OutputVectorType, ConstantVelocityFieldDimension>    ConstantVelocityFieldType;
+  typedef typename ConstantVelocityFieldType::Pointer                ConstantVelocityFieldPointer;
 
   /** Standard types for the velocity Field */
-  using IndexType = typename ConstantVelocityFieldType::IndexType;
-  using RegionType = typename ConstantVelocityFieldType::RegionType;
-  using SizeType = typename ConstantVelocityFieldType::SizeType;
-  using SpacingType = typename ConstantVelocityFieldType::SpacingType;
-  using DirectionType = typename ConstantVelocityFieldType::DirectionType;
-  using PointType = typename ConstantVelocityFieldType::PointType;
-  using PixelType = typename ConstantVelocityFieldType::PixelType;
+  typedef typename ConstantVelocityFieldType::IndexType      IndexType;
+  typedef typename ConstantVelocityFieldType::RegionType     RegionType;
+  typedef typename ConstantVelocityFieldType::SizeType       SizeType;
+  typedef typename ConstantVelocityFieldType::SpacingType    SpacingType;
+  typedef typename ConstantVelocityFieldType::DirectionType  DirectionType;
+  typedef typename ConstantVelocityFieldType::PointType      PointType;
+  typedef typename ConstantVelocityFieldType::PixelType      PixelType;
 
-  using VelocityFieldType = ConstantVelocityFieldType;
+  typedef ConstantVelocityFieldType                         VelocityFieldType;
 
-  using ConstantVelocityFieldInterpolatorType = VectorInterpolateImageFunction<ConstantVelocityFieldType, ScalarType>;
-  using ConstantVelocityFieldInterpolatorPointer = typename ConstantVelocityFieldInterpolatorType::Pointer;
+  typedef VectorInterpolateImageFunction<ConstantVelocityFieldType, ScalarType>
+    ConstantVelocityFieldInterpolatorType;
+  typedef typename ConstantVelocityFieldInterpolatorType::Pointer
+    ConstantVelocityFieldInterpolatorPointer;
 
   /** Define the internal parameter helper used to access the field */
-  using OptimizerParametersHelperType =
-    ImageVectorOptimizerParametersHelper<ScalarType, Dimension, ConstantVelocityFieldDimension>;
+  typedef ImageVectorOptimizerParametersHelper<ScalarType, Dimension, ConstantVelocityFieldDimension>
+    OptimizerParametersHelperType;
 
   /** Get/Set the velocity field.
    * Set the displacement field. Create special set accessor to update
    * interpolator and assign displacement field to transform parameters
    * container. */
-  virtual void
-  SetConstantVelocityField(ConstantVelocityFieldType *);
-  itkGetModifiableObjectMacro(ConstantVelocityField, ConstantVelocityFieldType);
+  virtual void SetConstantVelocityField( ConstantVelocityFieldType * );
+  itkGetModifiableObjectMacro(ConstantVelocityField, ConstantVelocityFieldType );
 
-  void
-  SetFixedParameters(const FixedParametersType &) override;
+  virtual void SetFixedParameters( const FixedParametersType & ) ITK_OVERRIDE;
 
   /** Get/Set the interpolator.
    * Create out own set accessor that assigns the velocity field */
-  virtual void
-  SetConstantVelocityFieldInterpolator(ConstantVelocityFieldInterpolatorType *);
-  itkGetModifiableObjectMacro(ConstantVelocityFieldInterpolator, ConstantVelocityFieldInterpolatorType);
+  virtual void SetConstantVelocityFieldInterpolator( ConstantVelocityFieldInterpolatorType * );
+  itkGetModifiableObjectMacro(ConstantVelocityFieldInterpolator, ConstantVelocityFieldInterpolatorType );
 
   /** Get the modification time of velocity field */
-  itkGetConstReferenceMacro(ConstantVelocityFieldSetTime, ModifiedTimeType);
+  itkGetConstReferenceMacro( ConstantVelocityFieldSetTime, ModifiedTimeType );
 
-  void
-  UpdateTransformParameters(const DerivativeType & update, ScalarType factor = 1.0) override;
-
-  /** Return an inverse of this transform. */
-  bool
-  GetInverse(Self * inverse) const;
+  virtual void UpdateTransformParameters( const DerivativeType & update, ScalarType factor = 1.0 ) ITK_OVERRIDE;
 
   /** Return an inverse of this transform. */
-  InverseTransformBasePointer
-  GetInverseTransform() const override;
+  bool GetInverse( Self *inverse ) const;
+
+  /** Return an inverse of this transform. */
+  virtual InverseTransformBasePointer GetInverseTransform() const ITK_OVERRIDE;
 
   /** Trigger the computation of the displacement field by integrating
    * the constant velocity field. */
-  virtual void
-  IntegrateVelocityField();
+  virtual void IntegrateVelocityField();
 
   // Set/get compute number of exp. integration steps automatically
-  itkSetMacro(CalculateNumberOfIntegrationStepsAutomatically, bool);
-  itkGetConstMacro(CalculateNumberOfIntegrationStepsAutomatically, bool);
-  itkBooleanMacro(CalculateNumberOfIntegrationStepsAutomatically);
+  itkSetMacro( CalculateNumberOfIntegrationStepsAutomatically, bool );
+  itkGetConstMacro( CalculateNumberOfIntegrationStepsAutomatically, bool );
+  itkBooleanMacro( CalculateNumberOfIntegrationStepsAutomatically );
 
   /**
    * Set the lower time bound defining the integration domain of the transform.
    * We assume that the total possible time domain is [0,1]
    */
-  itkSetClampMacro(LowerTimeBound, ScalarType, 0, 1);
+  itkSetClampMacro( LowerTimeBound, ScalarType, 0, 1 );
 
   /**
    * Get the lower time bound defining the integration domain of the transform.
    * We assume that the total possible time domain is [0,1]
    */
-  itkGetConstMacro(LowerTimeBound, ScalarType);
+  itkGetConstMacro( LowerTimeBound, ScalarType );
 
   /**
    * Set the upper time bound defining the integration domain of the transform.
    * We assume that the total possible time domain is [0,1]
    */
-  itkSetClampMacro(UpperTimeBound, ScalarType, 0, 1);
+  itkSetClampMacro( UpperTimeBound, ScalarType, 0, 1 );
 
   /**
    * Get the upper time bound defining the integration domain of the transform.
    * We assume that the total possible time domain is [0,1]
    */
-  itkGetConstMacro(UpperTimeBound, ScalarType);
+  itkGetConstMacro( UpperTimeBound, ScalarType );
 
   /**
    * Set the number of integration steps.  Default = 100;
    */
-  itkSetMacro(NumberOfIntegrationSteps, unsigned int);
+  itkSetMacro( NumberOfIntegrationSteps, unsigned int );
 
   /**
    * Get the number of integration steps.  Default = 100;
    */
-  itkGetConstMacro(NumberOfIntegrationSteps, unsigned int);
+  itkGetConstMacro( NumberOfIntegrationSteps, unsigned int );
 
 protected:
+
   ConstantVelocityFieldTransform();
-  ~ConstantVelocityFieldTransform() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ConstantVelocityFieldTransform() ITK_OVERRIDE;
+  void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
   /** Clone the current transform */
-  typename LightObject::Pointer
-  InternalClone() const override;
+  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
-  typename DisplacementFieldType::Pointer
-  CopyDisplacementField(const DisplacementFieldType *) const;
+  typename DisplacementFieldType::Pointer CopyDisplacementField( const DisplacementFieldType * ) const;
 
-  ConstantVelocityFieldPointer m_ConstantVelocityField;
+  ConstantVelocityFieldPointer              m_ConstantVelocityField;
 
-  bool m_CalculateNumberOfIntegrationStepsAutomatically{ false };
+  bool                                      m_CalculateNumberOfIntegrationStepsAutomatically;
 
   /** The interpolator. */
-  ConstantVelocityFieldInterpolatorPointer m_ConstantVelocityFieldInterpolator;
+  ConstantVelocityFieldInterpolatorPointer  m_ConstantVelocityFieldInterpolator;
 
   /** Track when the VELOCITY field was last set/assigned, as
    * distinct from when it may have had its contents modified. */
-  ModifiedTimeType m_ConstantVelocityFieldSetTime{ 0 };
+  ModifiedTimeType m_ConstantVelocityFieldSetTime;
 
-  ScalarType m_LowerTimeBound;
-  ScalarType m_UpperTimeBound;
+  ScalarType                                m_LowerTimeBound;
+  ScalarType                                m_UpperTimeBound;
 
-  unsigned int m_NumberOfIntegrationSteps;
+  unsigned int                              m_NumberOfIntegrationSteps;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConstantVelocityFieldTransform);
+
   /**
    * Convenience method which reads the information from the current
    * velocity field into m_FixedParameters.
    */
-  virtual void
-  SetFixedParametersFromConstantVelocityField() const;
+  virtual void SetFixedParametersFromConstantVelocityField() const;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkConstantVelocityFieldTransform.hxx"
+#include "itkConstantVelocityFieldTransform.hxx"
 #endif
 
 #endif // itkConstantVelocityFieldTransform_h

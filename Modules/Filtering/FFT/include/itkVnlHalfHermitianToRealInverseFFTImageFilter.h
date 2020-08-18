@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,26 +15,23 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "itkHalfHermitianToRealInverseFFTImageFilter.h"
-
 #ifndef itkVnlHalfHermitianToRealInverseFFTImageFilter_h
-#  define itkVnlHalfHermitianToRealInverseFFTImageFilter_h
+#define itkVnlHalfHermitianToRealInverseFFTImageFilter_h
 
-#  include "itkVnlFFTCommon.h"
+#include "itkHalfHermitianToRealInverseFFTImageFilter.h"
+#include "itkVnlFFTCommon.h"
 
-#  include "itkImage.h"
-#  include "vnl/algo/vnl_fft_base.h"
+#include "itkImage.h"
+#include "vnl/algo/vnl_fft_base.h"
 
 namespace itk
 {
-/**
- *\class VnlHalfHermitianToRealInverseFFTImageFilter
+/** \class VnlHalfHermitianToRealInverseFFTImageFilter
  *
  * \brief VNL-based reverse Fast Fourier Transform.
  *
  * The input image size must be a multiple of combinations of 2s, 3s,
- * and/or 5s in all dimensions (2, 3, and 5 should be the only prime
- * factors of the image size along each dimension).
+ * and/or 5s in all dimensions.
  *
  * \ingroup FourierTransform
  *
@@ -42,67 +39,70 @@ namespace itk
  * \ingroup ITKFFT
  *
  */
-template <typename TInputImage,
-          typename TOutputImage = Image<typename TInputImage::PixelType::value_type, TInputImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT VnlHalfHermitianToRealInverseFFTImageFilter
-  : public HalfHermitianToRealInverseFFTImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage=Image< typename TInputImage::PixelType::value_type, TInputImage::ImageDimension> >
+class ITK_TEMPLATE_EXPORT VnlHalfHermitianToRealInverseFFTImageFilter:
+  public HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VnlHalfHermitianToRealInverseFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::PixelType       InputPixelType;
+  typedef typename InputImageType::SizeType        InputSizeType;
+  typedef typename InputImageType::IndexType       InputIndexType;
+  typedef typename InputImageType::SizeValueType   InputSizeValueType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename OutputImageType::PixelType      OutputPixelType;
+  typedef typename OutputImageType::IndexType      OutputIndexType;
+  typedef typename OutputImageType::SizeType       OutputSizeType;
+  typedef typename OutputImageType::IndexValueType OutputIndexValueType;
 
-  /** Standard class type aliases. */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputIndexType = typename InputImageType::IndexType;
-  using InputSizeValueType = typename InputImageType::SizeValueType;
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using OutputIndexType = typename OutputImageType::IndexType;
-  using OutputSizeType = typename OutputImageType::SizeType;
-  using OutputIndexValueType = typename OutputImageType::IndexValueType;
-
-  using Self = VnlHalfHermitianToRealInverseFFTImageFilter;
-  using Superclass = HalfHermitianToRealInverseFFTImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef VnlHalfHermitianToRealInverseFFTImageFilter                           Self;
+  typedef HalfHermitianToRealInverseFFTImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                                  Pointer;
+  typedef SmartPointer< const Self >                                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VnlHalfHermitianToRealInverseFFTImageFilter, HalfHermitianToRealInverseFFTImageFilter);
+  itkTypeMacro(VnlHalfHermitianToRealInverseFFTImageFilter,
+               HalfHermitianToRealInverseFFTImageFilter);
 
   /** Extract the dimensionality of the images. They must be the
    * same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  SizeValueType
-  GetSizeGreatestPrimeFactor() const override;
+  SizeValueType GetSizeGreatestPrimeFactor() const ITK_OVERRIDE;
 
-#  ifdef ITK_USE_CONCEPT_CHECKING
+#ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(PixelUnsignedIntDivisionOperatorsCheck, (Concept::DivisionOperators<OutputPixelType, unsigned int>));
-  itkConceptMacro(ImageDimensionsMatchCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
+  itkConceptMacro( PixelUnsignedIntDivisionOperatorsCheck,
+                   ( Concept::DivisionOperators< OutputPixelType, unsigned int > ) );
+  itkConceptMacro( ImageDimensionsMatchCheck,
+                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
   // End concept checking
-#  endif
+#endif
 
 protected:
-  VnlHalfHermitianToRealInverseFFTImageFilter() = default;
-  ~VnlHalfHermitianToRealInverseFFTImageFilter() override = default;
+  VnlHalfHermitianToRealInverseFFTImageFilter()  {}
+  virtual ~VnlHalfHermitianToRealInverseFFTImageFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
-  using SignalVectorType = vnl_vector<InputPixelType>;
-};
-} // namespace itk
+  ITK_DISALLOW_COPY_AND_ASSIGN(VnlHalfHermitianToRealInverseFFTImageFilter);
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkVnlHalfHermitianToRealInverseFFTImageFilter.hxx"
-#  endif
+  typedef vnl_vector< InputPixelType  > SignalVectorType;
+};
+}
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkVnlHalfHermitianToRealInverseFFTImageFilter.hxx"
+#endif
 
 #endif

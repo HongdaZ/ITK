@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,28 +40,26 @@ namespace itk
  * direction cosines managed in itk::ImageBase.
  * \ingroup ITKCommon
  */
-template <typename OrientationType, unsigned int Dimension = 3>
+template< typename OrientationType, unsigned int Dimension = 3 >
 class ITK_TEMPLATE_EXPORT OrientationAdapterBase
 {
 public:
-  /** type alias for matching ImageBase */
-  using ImageType = ImageBase<Dimension>;
+  /** typedef for matching ImageBase */
+  typedef ImageBase< Dimension > ImageType;
 
-  /** type alias for matching Direction Cosines type */
-  using DirectionType = typename ImageType::DirectionType;
+  /** typedef for matching Direction Cosines type */
+  typedef typename ImageType::DirectionType DirectionType;
 
   /** Convert direction cosines to the Orientation type */
-  virtual OrientationType
-  FromDirectionCosines(const DirectionType & Dir) = 0;
+  virtual OrientationType FromDirectionCosines(const DirectionType & Dir) = 0;
 
   /** Convert Orientation type direction cosines */
-  virtual DirectionType
-  ToDirectionCosines(const OrientationType & Orient) = 0;
+  virtual DirectionType ToDirectionCosines(const OrientationType & Orient) = 0;
 
 protected:
   /** destructor, to silence "virtual class has non-virtual destructor()"
     warnings */
-  virtual ~OrientationAdapterBase() = default;
+  virtual ~OrientationAdapterBase() {}
 };
 } // namespace itk
 #endif // itkOrientationAdapterBase_h

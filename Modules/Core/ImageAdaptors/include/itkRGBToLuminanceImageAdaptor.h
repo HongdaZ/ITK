@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ namespace itk
 {
 namespace Accessor
 {
-/**
- *\class RGBToLuminancePixelAccessor
+/** \class RGBToLuminancePixelAccessor
  * \brief Give access to Luminance of a color pixel type.
  *
  * RGBToLuminancePixelAccessor is templated over an internal type and an
@@ -38,34 +37,27 @@ namespace Accessor
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TInternalType, typename TExternalType>
+template< typename TInternalType, typename TExternalType >
 class RGBToLuminancePixelAccessor
 {
 public:
-  /** External type alias. It defines the external aspect
+  /** External typedef. It defines the external aspect
    * that this class will exhibit. */
-  using ExternalType = TExternalType;
+  typedef TExternalType ExternalType;
 
-  /** Internal type alias. It defines the internal real
+  /** Internal typedef. It defines the internal real
    * representation of data. */
-  using InternalType = TInternalType;
+  typedef TInternalType InternalType;
 
-  static inline void
-  Set(TInternalType & output, const TExternalType & input)
-  {
-    output = static_cast<TInternalType>(input.GetLuminance());
-  }
+  static inline void Set(TInternalType & output, const TExternalType & input)
+  { output = static_cast< TInternalType >( input.GetLuminance() ); }
 
-  static inline TExternalType
-  Get(const TInternalType & input)
-  {
-    return static_cast<TExternalType>(input.GetLuminance());
-  }
+  static inline TExternalType Get(const TInternalType & input)
+  { return static_cast< TExternalType >( input.GetLuminance() ); }
 };
 } // end namespace Accessor
 
-/**
- *\class RGBToLuminanceImageAdaptor
+/** \class RGBToLuminanceImageAdaptor
  * \brief Presents a color image as being composed of the Luminance of its pixels.
  *
  * Additional casting is performed according to the input and output image
@@ -75,19 +67,21 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TImage, typename TOutputPixelType>
-class RGBToLuminanceImageAdaptor
-  : public ImageAdaptor<TImage, Accessor::RGBToLuminancePixelAccessor<typename TImage::PixelType, TOutputPixelType>>
+template< typename TImage, typename TOutputPixelType >
+class RGBToLuminanceImageAdaptor:public
+  ImageAdaptor< TImage,
+                Accessor::RGBToLuminancePixelAccessor<
+                  typename TImage::PixelType,
+                  TOutputPixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToLuminanceImageAdaptor);
-
-  /** Standard class type aliases. */
-  using Self = RGBToLuminanceImageAdaptor;
-  using Superclass =
-    ImageAdaptor<TImage, Accessor::RGBToLuminancePixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef RGBToLuminanceImageAdaptor Self;
+  typedef ImageAdaptor< TImage, Accessor::RGBToLuminancePixelAccessor<
+                          typename TImage::PixelType,
+                          TOutputPixelType > >  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -96,8 +90,11 @@ public:
   itkTypeMacro(RGBToLuminanceImageAdaptor, ImageAdaptor);
 
 protected:
-  RGBToLuminanceImageAdaptor() = default;
-  ~RGBToLuminanceImageAdaptor() override = default;
+  RGBToLuminanceImageAdaptor() {}
+  virtual ~RGBToLuminanceImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToLuminanceImageAdaptor);
 };
 } // end namespace itk
 

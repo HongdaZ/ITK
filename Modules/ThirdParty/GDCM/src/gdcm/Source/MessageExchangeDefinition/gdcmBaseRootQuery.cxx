@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright NumFOCUS
+*  Copyright Insight Software Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ namespace gdcm
 
   QueryBase * BaseRootQuery::Construct( ERootType inRootType, EQueryLevel qlevel )
   {
-    QueryBase* qb = nullptr;
+    QueryBase* qb = NULL;
     // Check no new extension:
     assert( inRootType == ePatientRootType || inRootType == eStudyRootType );
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ namespace itk
 {
 namespace Accessor
 {
-/**
- *\class ComplexToImaginaryPixelAccessor
+/** \class ComplexToImaginaryPixelAccessor
  * \brief Give access to the Imaginary part of a std::complex<> value.
  *
  * ComplexToImaginaryPixelAccessor is templated over an internal type and an
@@ -41,34 +40,27 @@ namespace Accessor
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TInternalType, typename TExternalType>
+template< typename TInternalType, typename TExternalType >
 class ComplexToImaginaryPixelAccessor
 {
 public:
-  /** External type alias. It defines the external aspect
+  /** External typedef. It defines the external aspect
    * that this class will exhibit. */
-  using ExternalType = TExternalType;
+  typedef TExternalType ExternalType;
 
-  /** Internal type alias. It defines the internal imaginary
+  /** Internal typedef. It defines the internal imaginary
    * representation of data. */
-  using InternalType = TInternalType;
+  typedef TInternalType InternalType;
 
-  static inline void
-  Set(TInternalType & output, const TExternalType & input)
-  {
-    output = (TInternalType)(input);
-  }
+  static inline void Set(TInternalType & output, const TExternalType & input)
+  { output = (TInternalType)( input ); }
 
-  static inline TExternalType
-  Get(const TInternalType & input)
-  {
-    return (TExternalType)(input.imag());
-  }
+  static inline TExternalType Get(const TInternalType & input)
+  { return (TExternalType)( input.imag() ); }
 };
 } // end namespace Accessor
 
-/**
- *\class ComplexToImaginaryImageAdaptor
+/** \class ComplexToImaginaryImageAdaptor
  * \brief Presents a complex image as being composed of imag() part of
  * its pixels.
  *
@@ -78,20 +70,22 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TImage, typename TOutputPixelType>
-class ComplexToImaginaryImageAdaptor
-  : public ImageAdaptor<TImage, Accessor::ComplexToImaginaryPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
+template< typename TImage, typename TOutputPixelType >
+class ComplexToImaginaryImageAdaptor:public
+  ImageAdaptor< TImage,
+                Accessor::ComplexToImaginaryPixelAccessor<
+                  typename TImage::PixelType,
+                  TOutputPixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ComplexToImaginaryImageAdaptor);
+  /** Standard class typedefs. */
+  typedef ComplexToImaginaryImageAdaptor Self;
+  typedef ImageAdaptor< TImage, Accessor::ComplexToImaginaryPixelAccessor<
+                          typename TImage::PixelType,
+                          TOutputPixelType > >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ComplexToImaginaryImageAdaptor;
-  using Superclass =
-    ImageAdaptor<TImage, Accessor::ComplexToImaginaryPixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -100,8 +94,11 @@ public:
   itkTypeMacro(ComplexToImaginaryImageAdaptor, ImageAdaptor);
 
 protected:
-  ComplexToImaginaryImageAdaptor() = default;
-  ~ComplexToImaginaryImageAdaptor() override = default;
+  ComplexToImaginaryImageAdaptor() {}
+  virtual ~ComplexToImaginaryImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ComplexToImaginaryImageAdaptor);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,52 +24,51 @@
 
 #include "itkTestingMacros.h"
 
-int
-itkLabelMapToRGBImageFilterTest1(int argc, char * argv[])
+int itkLabelMapToRGBImageFilterTest1(int argc, char * argv[])
 {
-  if (argc != 3)
-  {
+  if( argc != 3 )
+    {
     std::cerr << "usage: " << argv[0] << " input output" << std::endl;
     // std::cerr << "  : " << std::endl;
     exit(1);
-  }
+    }
 
-  constexpr int dim = 2;
+  const int dim = 2;
 
-  using IType = itk::Image<unsigned char, dim>;
+  typedef itk::Image< unsigned char, dim > IType;
 
-  using ReaderType = itk::ImageFileReader<IType>;
+  typedef itk::ImageFileReader< IType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using ConverterType = itk::LabelImageToLabelMapFilter<IType>;
+  typedef itk::LabelImageToLabelMapFilter< IType > ConverterType;
   ConverterType::Pointer converter = ConverterType::New();
-  converter->SetInput(reader->GetOutput());
+  converter->SetInput( reader->GetOutput() );
 
-  //  using RGBPixelType = itk::RGBPixel< unsigned char >;
-  //  using RGBImageType = itk::Image< RGBPixelType, dim >;
+//  typedef itk::RGBPixel< unsigned char > RGBPixelType;
+//  typedef itk::Image< RGBPixelType, dim > RGBImageType;
 
-  using ColorizerType = itk::LabelMapToRGBImageFilter<ConverterType::OutputImageType>;
+  typedef itk::LabelMapToRGBImageFilter< ConverterType::OutputImageType > ColorizerType;
   ColorizerType::Pointer colorizer = ColorizerType::New();
-  colorizer->SetInput(converter->GetOutput());
+  colorizer->SetInput( converter->GetOutput() );
 
   itk::SimpleFilterWatcher watcher(colorizer, "filter");
 
-  using WriterType = itk::ImageFileWriter<ColorizerType::OutputImageType>;
+  typedef itk::ImageFileWriter< ColorizerType::OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(colorizer->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( colorizer->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->Update();
 
   ColorizerType::FunctorType functor;
   functor.ResetColors();
   functor.AddColor(0, 0, 255);
 
-  ITK_TEST_EXPECT_TRUE(colorizer->GetFunctor() != functor);
-  colorizer->SetFunctor(functor);
-  ITK_TEST_EXPECT_TRUE(ColorizerType::ConstPointer(colorizer)->GetFunctor() == functor);
+  TEST_EXPECT_TRUE( colorizer->GetFunctor() != functor );
+  colorizer->SetFunctor( functor );
+  TEST_EXPECT_TRUE( ColorizerType::ConstPointer(colorizer)->GetFunctor() == functor );
   colorizer->GetFunctor().AddColor(0, 255, 0);
-  ITK_TEST_EXPECT_TRUE(colorizer->GetFunctor() != functor);
+  TEST_EXPECT_TRUE( colorizer->GetFunctor() != functor );
 
   return 0;
 }

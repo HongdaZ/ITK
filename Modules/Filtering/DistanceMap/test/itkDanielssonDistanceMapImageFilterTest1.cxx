@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,38 +20,37 @@
 
 #include "itkDanielssonDistanceMapImageFilter.h"
 
-int
-itkDanielssonDistanceMapImageFilterTest1(int argc, char * argv[])
+int itkDanielssonDistanceMapImageFilterTest1( int argc, char * argv[] )
 {
-  if (argc < 3)
-  {
+  if(argc < 3)
+    {
     std::cerr << "Usage: " << argv[0] << " InputImage OutputImage\n";
     return -1;
-  }
+    }
 
-  constexpr unsigned int ImageDimension = 2;
-  using InputPixelType = unsigned char;
-  using OutputPixelType = float;
+  const   unsigned int    ImageDimension = 2;
+  typedef unsigned char   InputPixelType;
+  typedef float           OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, ImageDimension>;
-  using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
+  typedef itk::Image<InputPixelType,  ImageDimension>  InputImageType;
+  typedef itk::Image<OutputPixelType, ImageDimension>  OutputImageType;
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader<InputImageType>    ReaderType;
+  typedef itk::ImageFileWriter<OutputImageType>   WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   reader->Update();
 
-  using FilterType = itk::DanielssonDistanceMapImageFilter<InputImageType, OutputImageType>;
+  typedef itk::DanielssonDistanceMapImageFilter <InputImageType, OutputImageType>  FilterType;
   FilterType::Pointer filter = FilterType::New();
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
   filter->Update();
   filter->Print(std::cout);
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
   writer->Update();
 

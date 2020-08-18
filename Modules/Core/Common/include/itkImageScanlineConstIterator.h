@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ namespace itk
  *
  * The following is sample usage:
  *
-   \code
+ * \code
 
 it = ImageScanlineConstIterator()
 while ( !it.IsAtEnd() )
@@ -47,7 +47,7 @@ while ( !it.IsAtEnd() )
    it.NextLine();
    }
 
-   \endcode
+ * \endcode
  *
  * Iterating beyond the end of a line results it undefined behavior.
  *
@@ -59,42 +59,44 @@ while ( !it.IsAtEnd() )
  * \ingroup ITKCommon
  *
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT ImageScanlineConstIterator : public ImageConstIterator<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT ImageScanlineConstIterator:
+    public ImageConstIterator< TImage >
 {
 public:
-  /** Standard class type alias. */
-  using Self = ImageScanlineConstIterator;
-  using Superclass = ImageConstIterator<TImage>;
+  /** Standard class typedef. */
+  typedef ImageScanlineConstIterator   Self;
+  typedef ImageConstIterator< TImage > Superclass;
 
   /** Dimension of the image that the iterator walks.  This constant is needed so
    * functions that are templated over image iterator type (as opposed to
    * being templated over pixel type and dimension) can have compile time
    * access to the dimension of the image that the iterator walks. */
-  static constexpr unsigned int ImageIteratorDimension = Superclass::ImageIteratorDimension;
+  itkStaticConstMacro(ImageIteratorDimension, unsigned int,
+                      Superclass::ImageIteratorDimension);
 
   /**
-   * Index type alias support While these were already typdef'ed in the superclass,
+   * Index typedef support. While these were already typdef'ed in the superclass,
    * they need to be redone here for this subclass to compile properly with gcc.
    */
   /** Types inherited from the Superclass */
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
-  using RegionType = typename Superclass::RegionType;
-  using ImageType = typename Superclass::ImageType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using PixelType = typename Superclass::PixelType;
-  using AccessorType = typename Superclass::AccessorType;
+  typedef typename Superclass::IndexType             IndexType;
+  typedef typename Superclass::SizeType              SizeType;
+  typedef typename Superclass::OffsetType            OffsetType;
+  typedef typename Superclass::RegionType            RegionType;
+  typedef typename Superclass::ImageType             ImageType;
+  typedef typename Superclass::PixelContainer        PixelContainer;
+  typedef typename Superclass::PixelContainerPointer PixelContainerPointer;
+  typedef typename Superclass::InternalPixelType     InternalPixelType;
+  typedef typename Superclass::PixelType             PixelType;
+  typedef typename Superclass::AccessorType          AccessorType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageScanlineConstIterator, ImageConstIterator);
 
   /** Default constructor. Needed since we provide a cast constructor. */
   ImageScanlineConstIterator()
-    : ImageConstIterator<TImage>()
+    :ImageConstIterator< TImage >()
   {
     m_SpanBeginOffset = 0;
     m_SpanEndOffset = 0;
@@ -102,11 +104,11 @@ public:
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. */
-  ImageScanlineConstIterator(const ImageType * ptr, const RegionType & region)
-    : ImageConstIterator<TImage>(ptr, region)
+  ImageScanlineConstIterator(const ImageType *ptr, const RegionType & region):
+    ImageConstIterator< TImage >(ptr, region)
   {
     m_SpanBeginOffset = this->m_BeginOffset;
-    m_SpanEndOffset = this->m_BeginOffset + static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanEndOffset   = this->m_BeginOffset + static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Constructor that can be used to cast from an ImageIterator to an
@@ -115,14 +117,15 @@ public:
    * provide overloaded APIs that return different types of Iterators, itk
    * returns ImageIterators and uses constructors to cast from an
    * ImageIterator to a ImageScanlineConstIterator. */
-  ImageScanlineConstIterator(const ImageIterator<TImage> & it)
+  ImageScanlineConstIterator(const ImageIterator< TImage > & it)
   {
-    this->ImageConstIterator<TImage>::operator=(it);
+    this->ImageConstIterator< TImage >::operator=(it);
 
     IndexType ind = this->GetIndex();
-    m_SpanEndOffset = this->m_Offset + static_cast<OffsetValueType>(this->m_Region.GetSize()[0]) -
-                      (ind[0] - this->m_Region.GetIndex()[0]);
-    m_SpanBeginOffset = m_SpanEndOffset - static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanEndOffset = this->m_Offset + static_cast< OffsetValueType >( this->m_Region.GetSize()[0] )
+                      - ( ind[0] - this->m_Region.GetIndex()[0] );
+    m_SpanBeginOffset = m_SpanEndOffset
+                        - static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Constructor that can be used to cast from an ImageConstIterator to an
@@ -131,26 +134,26 @@ public:
    * provide overloaded APIs that return different types of Iterators, itk
    * returns ImageIterators and uses constructors to cast from an
    * ImageIterator to a ImageScanlineConstIterator. */
-  ImageScanlineConstIterator(const ImageConstIterator<TImage> & it)
+  ImageScanlineConstIterator(const ImageConstIterator< TImage > & it)
   {
-    this->ImageConstIterator<TImage>::operator=(it);
+    this->ImageConstIterator< TImage >::operator=(it);
 
     IndexType ind = this->GetIndex();
-    m_SpanEndOffset = this->m_Offset + static_cast<OffsetValueType>(this->m_Region.GetSize()[0]) -
-                      (ind[0] - this->m_Region.GetIndex()[0]);
-    m_SpanBeginOffset = m_SpanEndOffset - static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanEndOffset = this->m_Offset + static_cast< OffsetValueType >( this->m_Region.GetSize()[0] )
+                      - ( ind[0] - this->m_Region.GetIndex()[0] );
+    m_SpanBeginOffset = m_SpanEndOffset
+                        - static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Move an iterator to the beginning of the region. "Begin" is
    * defined as the first pixel in the region. */
-  void
-  GoToBegin()
+  void GoToBegin()
   {
     Superclass::GoToBegin();
 
     // reset the span offsets
     m_SpanBeginOffset = this->m_BeginOffset;
-    m_SpanEndOffset = this->m_BeginOffset + static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanEndOffset   = this->m_BeginOffset + static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Move an iterator to the end of the region.
@@ -158,14 +161,13 @@ public:
    * "End" is defined as
    * one pixel past the last pixel of the region.
    */
-  void
-  GoToEnd()
+  void GoToEnd()
   {
     Superclass::GoToEnd();
 
     // reset the span offsets
     m_SpanEndOffset = this->m_EndOffset;
-    m_SpanBeginOffset = m_SpanEndOffset - static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanBeginOffset = m_SpanEndOffset - static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Go to the beginning pixel of the current line.
@@ -175,8 +177,7 @@ public:
    * \sa NextLine
    * \sa IsAtEndOfLine
    */
-  void
-  GoToBeginOfLine()
+  void GoToBeginOfLine(void)
   {
     this->m_Offset = m_SpanBeginOffset;
   }
@@ -189,16 +190,14 @@ public:
    * \sa NextLine
    * \sa IsAtEndOfLine
    */
-  void
-  GoToEndOfLine()
+  void GoToEndOfLine(void)
   {
     this->m_Offset = m_SpanEndOffset;
   }
 
   /** Test if the index is at the end of line
    */
-  inline bool
-  IsAtEndOfLine() const
+  inline bool IsAtEndOfLine(void)
   {
     return this->m_Offset >= m_SpanEndOffset;
   }
@@ -209,13 +208,12 @@ public:
    * This is overridden from the parent because we have an extra ivar.
    * \sa GetIndex
    */
-  void
-  SetIndex(const IndexType & ind) override
+  void SetIndex(const IndexType & ind) ITK_OVERRIDE
   {
     Superclass::SetIndex(ind);
-    m_SpanEndOffset = this->m_Offset + static_cast<OffsetValueType>(this->m_Region.GetSize()[0]) -
-                      (ind[0] - this->m_Region.GetIndex()[0]);
-    m_SpanBeginOffset = m_SpanEndOffset - static_cast<OffsetValueType>(this->m_Region.GetSize()[0]);
+    m_SpanEndOffset = this->m_Offset + static_cast< OffsetValueType >( this->m_Region.GetSize()[0] )
+                      - ( ind[0] - this->m_Region.GetIndex()[0] );
+    m_SpanBeginOffset = m_SpanEndOffset - static_cast< OffsetValueType >( this->m_Region.GetSize()[0] );
   }
 
   /** Go to the next line.
@@ -226,8 +224,7 @@ public:
    * \sa operator++
    * \sa IsAtEndOfLine
    */
-  inline void
-  NextLine()
+  inline void NextLine(void)
   {
     this->Increment();
   };
@@ -239,10 +236,9 @@ public:
    * means is may assert in debug mode or result in an undefined
    * iterator which may have unknown consequences if used.
    */
-  Self &
-  operator++()
+  Self& operator++()
   {
-    itkAssertInDebugAndIgnoreInReleaseMacro(!this->IsAtEndOfLine());
+    itkAssertInDebugAndIgnoreInReleaseMacro( !this->IsAtEndOfLine() );
     ++this->m_Offset;
     return *this;
   }
@@ -250,10 +246,9 @@ public:
   /** decrement (prefix) along the scanline the iterator's index.
    *
    */
-  Self &
-  operator--()
+  Self& operator--()
   {
-    itkAssertInDebugAndIgnoreInReleaseMacro(!this->IsAtEndOfLine());
+    itkAssertInDebugAndIgnoreInReleaseMacro( !this->IsAtEndOfLine() );
     --this->m_Offset;
     return *this;
   }
@@ -264,15 +259,16 @@ protected:
   OffsetValueType m_SpanEndOffset;   // one pixel past the end of the scanline
 
 private:
+
   /* Move to the beginning of the next scanline
    */
-  void
-  Increment();
+  void Increment();
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageScanlineConstIterator.hxx"
+#include "itkImageScanlineConstIterator.hxx"
 #endif
 
 #endif

@@ -227,8 +227,11 @@ public:
   /// Returns if the dataset is empty
   bool IsEmpty() const { return DES.empty(); };
 
-  DataSet& operator=(DataSet const &)
-  = default;
+  DataSet& operator=(DataSet const &val)
+  {
+    DES = val.DES;
+    return *this;
+  }
 
 /*
   template <typename TOperation>
@@ -307,7 +310,7 @@ protected:
 private:
   DataElementSet DES;
   static DataElement DEEnd;
-  friend std::ostream& operator<<(std::ostream &_os, const DataSet &);
+  friend std::ostream& operator<<(std::ostream &_os, const DataSet &val);
 };
 //-----------------------------------------------------------------------------
 inline std::ostream& operator<<(std::ostream &os, const DataSet &val)

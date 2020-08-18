@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 namespace itk
 {
 
-/**
- *\class TernaryOperatorImageFilter
+/** \class TernaryOperatorImageFilter
  * \brief Return the value of input 2 if input 1 is false, and that of input 3 otherwise.
  *
  * \author Davis Vigneault
@@ -48,58 +47,56 @@ namespace itk
  * A new image with the foreground object placed on the background can be obtained
  * as follows:
  *
-   \code
-
-   using TernaryType = itk::TernaryOperatorImageFilter< MaskType, ImageType >;
-   TernaryType::Pointer ternaryFilter = TernaryType::New();
-
-   ternaryFilter->SetInput1( maskImage );
-   ternaryFilter->SetInput2( foregroundImage );
-   ternaryFilter->SetInput3( backgroundImage );
-
-   ImageType::Pointer objectOnBackground = ternaryFilter->GetOutput();
-
-   \endcode
+ * \code
+ *
+ * typedef itk::TernaryOperatorImageFilter< MaskType, ImageType > TernaryType;
+ * TernaryType::Pointer ternaryFilter = TernaryType::New();
+ *
+ * ternaryFilter->SetInput1( maskImage );
+ * ternaryFilter->SetInput2( foregroundImage );
+ * ternaryFilter->SetInput3( backgroundImage );
+ *
+ * ImageType::Pointer objectOnBackground = ternaryFilter->GetOutput();
+ *
+ * \endcode
  *
  * \ingroup ITKImageIntensity
  */
-template <typename TMask, typename TImage>
-class TernaryOperatorImageFilter
-  : public TernaryFunctorImageFilter<TMask,
-                                     TImage,
-                                     TImage,
-                                     TImage,
-                                     Functor::TernaryOperator<typename TMask::PixelType,
-                                                              typename TImage::PixelType,
-                                                              typename TImage::PixelType,
-                                                              typename TImage::PixelType>>
+template< typename TMask, typename TImage >
+class TernaryOperatorImageFilter:
+  public
+  TernaryFunctorImageFilter< TMask, TImage, TImage, TImage,
+                             Functor::TernaryOperator< typename TMask::PixelType,
+                                                       typename TImage::PixelType,
+                                                       typename TImage::PixelType,
+                                                       typename TImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TernaryOperatorImageFilter);
+  /** Standard class typedefs. */
+  typedef TernaryOperatorImageFilter Self;
+  typedef TernaryFunctorImageFilter<
+    TMask, TImage, TImage, TImage,
+    Functor::TernaryOperator< typename TMask::PixelType,
+                              typename TImage::PixelType,
+                              typename TImage::PixelType,
+                              typename TImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = TernaryOperatorImageFilter;
-  using Superclass = TernaryFunctorImageFilter<TMask,
-                                               TImage,
-                                               TImage,
-                                               TImage,
-                                               Functor::TernaryOperator<typename TMask::PixelType,
-                                                                        typename TImage::PixelType,
-                                                                        typename TImage::PixelType,
-                                                                        typename TImage::PixelType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(TernaryOperatorImageFilter, TernaryFunctorImageFilter);
+  itkTypeMacro(TernaryOperatorImageFilter,
+               TernaryFunctorImageFilter);
 
 protected:
-  TernaryOperatorImageFilter() = default;
-  ~TernaryOperatorImageFilter() override = default;
+  TernaryOperatorImageFilter() {}
+  virtual ~TernaryOperatorImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TernaryOperatorImageFilter);
 };
 } // end namespace itk
 

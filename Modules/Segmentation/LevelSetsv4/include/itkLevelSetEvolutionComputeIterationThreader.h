@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,192 +28,177 @@
 namespace itk
 {
 
-/**
- *\class LevelSetEvolutionComputeIterationThreader
+/** \class LevelSetEvolutionComputeIterationThreader
  * \brief Thread the ComputeIteration method.
  *
  * Thread the \c ComputeIteration method of the LevelSetEvolution class
  *
  * \ingroup ITKLevelSetsv4
  */
-template <typename TLevelSet, typename TDomainPartitioner, typename TLevelSetEvolution>
+template< typename TLevelSet, typename TDomainPartitioner, typename TLevelSetEvolution >
 class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader
 {};
 
 // For dense image level set split by putting part of the level set region in
 // each thread.
-template <typename TImage, typename TLevelSetEvolution>
-class ITK_TEMPLATE_EXPORT
-  LevelSetEvolutionComputeIterationThreader<LevelSetDenseImage<TImage>,
-                                            ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                            TLevelSetEvolution>
-  : public DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>
+template< typename TImage, typename TLevelSetEvolution >
+class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader< LevelSetDenseImage< TImage >, ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution >
+  : public DomainThreader< ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
-
-  /** Standard class type aliases. */
-  using Self = LevelSetEvolutionComputeIterationThreader;
-  using Superclass = DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LevelSetEvolutionComputeIterationThreader                                                      Self;
+  typedef DomainThreader< ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution > Superclass;
+  typedef SmartPointer< Self >                                                                           Pointer;
+  typedef SmartPointer< const Self >                                                                     ConstPointer;
 
   /** Run time type information. */
-  itkTypeMacro(LevelSetEvolutionComputeIterationThreader, DomainThreader);
+  itkTypeMacro( LevelSetEvolutionComputeIterationThreader, DomainThreader );
 
   /** Standard New macro. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
   /** Types of the associate class. */
-  using LevelSetEvolutionType = TLevelSetEvolution;
-  using IdListType = typename LevelSetEvolutionType::IdListType;
-  using IdListConstIterator = typename LevelSetEvolutionType::IdListConstIterator;
-  using InputImageType = typename LevelSetEvolutionType::InputImageType;
-  using LevelSetType = typename LevelSetEvolutionType::LevelSetType;
-  using IndexType = typename LevelSetType::IndexType;
-  using RegionType = typename LevelSetType::RegionType;
-  using OffsetType = typename LevelSetType::OffsetType;
-  using LevelSetImageType = typename LevelSetEvolutionType::LevelSetImageType;
-  using LevelSetDataType = typename LevelSetEvolutionType::LevelSetDataType;
-  using LevelSetOutputRealType = typename LevelSetEvolutionType::LevelSetOutputRealType;
-  using LevelSetContainerType = typename LevelSetEvolutionType::LevelSetContainerType;
-  using EquationContainerType = typename LevelSetEvolutionType::EquationContainerType;
-  using TermContainerType = typename LevelSetEvolutionType::TermContainerType;
+  typedef TLevelSetEvolution                                     LevelSetEvolutionType;
+  typedef typename LevelSetEvolutionType::IdListType             IdListType;
+  typedef typename LevelSetEvolutionType::IdListConstIterator    IdListConstIterator;
+  typedef typename LevelSetEvolutionType::InputImageType         InputImageType;
+  typedef typename LevelSetEvolutionType::LevelSetType           LevelSetType;
+  typedef typename LevelSetType::IndexType                       IndexType;
+  typedef typename LevelSetType::RegionType                      RegionType;
+  typedef typename LevelSetType::OffsetType                      OffsetType;
+  typedef typename LevelSetEvolutionType::LevelSetImageType      LevelSetImageType;
+  typedef typename LevelSetEvolutionType::LevelSetDataType       LevelSetDataType;
+  typedef typename LevelSetEvolutionType::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename LevelSetEvolutionType::LevelSetContainerType  LevelSetContainerType;
+  typedef typename LevelSetEvolutionType::EquationContainerType  EquationContainerType;
+  typedef typename LevelSetEvolutionType::TermContainerType      TermContainerType;
 
 protected:
-  LevelSetEvolutionComputeIterationThreader() = default;
+  LevelSetEvolutionComputeIterationThreader();
 
-  void
-  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
+  virtual void ThreadedExecution( const DomainType & imageSubRegion, const ThreadIdType threadId ) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
 };
 
 // For dense image level set split by putting a level set domain in each thread.
-template <typename TImage, typename TLevelSetEvolution>
-class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader<
-  LevelSetDenseImage<TImage>,
-  ThreadedIteratorRangePartitioner<
-    typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator>,
-  TLevelSetEvolution>
-  : public DomainThreader<ThreadedIteratorRangePartitioner<
-                            typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator>,
-                          TLevelSetEvolution>
+template< typename TImage, typename TLevelSetEvolution >
+class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader< LevelSetDenseImage< TImage >,
+      ThreadedIteratorRangePartitioner< typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator >, TLevelSetEvolution >
+  : public DomainThreader< ThreadedIteratorRangePartitioner< typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator >, TLevelSetEvolution >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
+  typedef typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator DomainMapConstIteratorType;
+  typedef ThreadedIteratorRangePartitioner< DomainMapConstIteratorType >                       ThreadedDomainMapPartitionerType;
 
-  using DomainMapConstIteratorType =
-    typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator;
-  using ThreadedDomainMapPartitionerType = ThreadedIteratorRangePartitioner<DomainMapConstIteratorType>;
-
-  /** Standard class type aliases. */
-  using Self = LevelSetEvolutionComputeIterationThreader;
-  using Superclass = DomainThreader<ThreadedDomainMapPartitionerType, TLevelSetEvolution>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LevelSetEvolutionComputeIterationThreader                              Self;
+  typedef DomainThreader< ThreadedDomainMapPartitionerType, TLevelSetEvolution > Superclass;
+  typedef SmartPointer< Self >                                                   Pointer;
+  typedef SmartPointer< const Self >                                             ConstPointer;
 
   /** Run time type information. */
-  itkTypeMacro(LevelSetEvolutionComputeIterationThreader, DomainThreader);
+  itkTypeMacro( LevelSetEvolutionComputeIterationThreader, DomainThreader );
 
   /** Standard New macro. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
   /** Types of the associate class. */
-  using LevelSetEvolutionType = TLevelSetEvolution;
-  using IdListType = typename LevelSetEvolutionType::IdListType;
-  using IdListConstIterator = typename LevelSetEvolutionType::IdListConstIterator;
-  using InputImageType = typename LevelSetEvolutionType::InputImageType;
-  using LevelSetType = typename LevelSetEvolutionType::LevelSetType;
-  using IndexType = typename LevelSetType::IndexType;
-  using RegionType = typename LevelSetType::RegionType;
-  using OffsetType = typename LevelSetType::OffsetType;
-  using LevelSetImageType = typename LevelSetEvolutionType::LevelSetImageType;
-  using LevelSetDataType = typename LevelSetEvolutionType::LevelSetDataType;
-  using LevelSetOutputRealType = typename LevelSetEvolutionType::LevelSetOutputRealType;
-  using LevelSetContainerType = typename LevelSetEvolutionType::LevelSetContainerType;
-  using EquationContainerType = typename LevelSetEvolutionType::EquationContainerType;
-  using TermContainerType = typename LevelSetEvolutionType::TermContainerType;
+  typedef TLevelSetEvolution                                     LevelSetEvolutionType;
+  typedef typename LevelSetEvolutionType::IdListType             IdListType;
+  typedef typename LevelSetEvolutionType::IdListConstIterator    IdListConstIterator;
+  typedef typename LevelSetEvolutionType::InputImageType         InputImageType;
+  typedef typename LevelSetEvolutionType::LevelSetType           LevelSetType;
+  typedef typename LevelSetType::IndexType                       IndexType;
+  typedef typename LevelSetType::RegionType                      RegionType;
+  typedef typename LevelSetType::OffsetType                      OffsetType;
+  typedef typename LevelSetEvolutionType::LevelSetImageType      LevelSetImageType;
+  typedef typename LevelSetEvolutionType::LevelSetDataType       LevelSetDataType;
+  typedef typename LevelSetEvolutionType::LevelSetOutputRealType LevelSetOutputRealType;
+  typedef typename LevelSetEvolutionType::LevelSetContainerType  LevelSetContainerType;
+  typedef typename LevelSetEvolutionType::EquationContainerType  EquationContainerType;
+  typedef typename LevelSetEvolutionType::TermContainerType      TermContainerType;
 
 protected:
-  LevelSetEvolutionComputeIterationThreader() = default;
+  LevelSetEvolutionComputeIterationThreader();
 
-  void
-  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
+  virtual void ThreadedExecution( const DomainType & imageSubRegion, const ThreadIdType threadId ) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
 };
 
 // For Whitaker sparse level set split by putting part of the level set in each
 // thread.
-template <typename TOutput, unsigned int VDimension, typename TLevelSetEvolution>
+template< typename TOutput, unsigned int VDimension, typename TLevelSetEvolution >
 class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader<
-  WhitakerSparseLevelSetImage<TOutput, VDimension>,
-  ThreadedIteratorRangePartitioner<typename WhitakerSparseLevelSetImage<TOutput, VDimension>::LayerConstIterator>,
-  TLevelSetEvolution>
-  : public DomainThreader<
-      ThreadedIteratorRangePartitioner<typename WhitakerSparseLevelSetImage<TOutput, VDimension>::LayerConstIterator>,
-      TLevelSetEvolution>
+      WhitakerSparseLevelSetImage< TOutput, VDimension >,
+      ThreadedIteratorRangePartitioner< typename WhitakerSparseLevelSetImage< TOutput, VDimension >::LayerConstIterator >,
+      TLevelSetEvolution
+      >
+  : public DomainThreader< ThreadedIteratorRangePartitioner< typename WhitakerSparseLevelSetImage< TOutput, VDimension >::LayerConstIterator >, TLevelSetEvolution >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
-
-  /** Standard class type aliases. */
-  using Self = LevelSetEvolutionComputeIterationThreader;
-  using Superclass = DomainThreader<
-    ThreadedIteratorRangePartitioner<typename WhitakerSparseLevelSetImage<TOutput, VDimension>::LayerConstIterator>,
-    TLevelSetEvolution>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LevelSetEvolutionComputeIterationThreader                                                                                                                 Self;
+  typedef DomainThreader< ThreadedIteratorRangePartitioner< typename WhitakerSparseLevelSetImage< TOutput, VDimension >::LayerConstIterator >, TLevelSetEvolution > Superclass;
+  typedef SmartPointer< Self >                                                                                                                                      Pointer;
+  typedef SmartPointer< const Self >                                                                                                                                ConstPointer;
 
   /** Run time type information. */
-  itkTypeMacro(LevelSetEvolutionComputeIterationThreader, DomainThreader);
+  itkTypeMacro( LevelSetEvolutionComputeIterationThreader, DomainThreader );
 
   /** Standard New macro. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
   /** Types of the associate class. */
-  using LevelSetEvolutionType = TLevelSetEvolution;
-  using LevelSetType = typename LevelSetEvolutionType::LevelSetType;
-  using IndexType = typename LevelSetType::IndexType;
-  using RegionType = typename LevelSetType::RegionType;
-  using OffsetType = typename LevelSetType::OffsetType;
-  using LevelSetContainerType = typename LevelSetEvolutionType::LevelSetContainerType;
-  using LevelSetIdentifierType = typename LevelSetEvolutionType::LevelSetIdentifierType;
-  using LevelSetInputType = typename LevelSetEvolutionType::LevelSetInputType;
-  using LevelSetOutputType = typename LevelSetEvolutionType::LevelSetOutputType;
-  using LevelSetDataType = typename LevelSetEvolutionType::LevelSetDataType;
-  using TermContainerType = typename LevelSetEvolutionType::TermContainerType;
-  using NodePairType = typename LevelSetEvolutionType::NodePairType;
+  typedef TLevelSetEvolution                                     LevelSetEvolutionType;
+  typedef typename LevelSetEvolutionType::LevelSetType           LevelSetType;
+  typedef typename LevelSetType::IndexType                       IndexType;
+  typedef typename LevelSetType::RegionType                      RegionType;
+  typedef typename LevelSetType::OffsetType                      OffsetType;
+  typedef typename LevelSetEvolutionType::LevelSetContainerType  LevelSetContainerType;
+  typedef typename LevelSetEvolutionType::LevelSetIdentifierType LevelSetIdentifierType;
+  typedef typename LevelSetEvolutionType::LevelSetInputType      LevelSetInputType;
+  typedef typename LevelSetEvolutionType::LevelSetOutputType     LevelSetOutputType;
+  typedef typename LevelSetEvolutionType::LevelSetDataType       LevelSetDataType;
+  typedef typename LevelSetEvolutionType::TermContainerType      TermContainerType;
+  typedef typename LevelSetEvolutionType::NodePairType           NodePairType;
 
 protected:
-  LevelSetEvolutionComputeIterationThreader() = default;
+  LevelSetEvolutionComputeIterationThreader();
 
-  void
-  BeforeThreadedExecution() override;
+  virtual void BeforeThreadedExecution() ITK_OVERRIDE;
 
-  void
-  ThreadedExecution(const DomainType & iteratorSubRange, const ThreadIdType threadId) override;
+  virtual void ThreadedExecution( const DomainType & iteratorSubRange, const ThreadIdType threadId ) ITK_OVERRIDE;
 
-  void
-  AfterThreadedExecution() override;
+  virtual void AfterThreadedExecution() ITK_OVERRIDE;
 
-  using NodePairsPerThreadType = std::vector<std::vector<NodePairType>>;
+  typedef std::vector< std::vector< NodePairType > > NodePairsPerThreadType;
   NodePairsPerThreadType m_NodePairsPerThread;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
 };
 
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetEvolutionComputeIterationThreader.hxx"
+#include "itkLevelSetEvolutionComputeIterationThreader.hxx"
 #endif
 
 #endif

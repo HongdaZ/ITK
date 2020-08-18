@@ -6,11 +6,9 @@
 // \author fsm
 #include <iostream>
 #include "vnl_matrix_exp.h"
-#include <cassert>
+#include <vcl_cassert.h>
 #ifdef DEBUG
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 #endif
 
 template <class Matrix>

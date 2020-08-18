@@ -16,14 +16,14 @@ class vcl_test_vec
 template <class T>
 struct vcl_test_type_templ
 {
-  using type = vcl_test_vec<T>;
+  typedef vcl_test_vec<T> type;
 };
 
 template <class T>
 class vcl_test_typename
 {
  public:
-  using vector = typename vcl_test_type_templ<T>::type;
+  typedef typename vcl_test_type_templ<T>::type vector;
   vector v;
 
   vcl_test_typename() { if (vcl_test_typename_func(v) < 1) v = 1; }

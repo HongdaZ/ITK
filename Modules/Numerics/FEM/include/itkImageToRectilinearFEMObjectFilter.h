@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ namespace fem
 {
 /**
  * \class ImageToRectilinearFEMObjectFilter
- * \brief Generate a rectilinear mesh from an image. The result is stored
+ * \brief Generate a rectilinar mesh from an image. The result is stored
  *        in a FEMObject
  *
- * This class generates a Mesh consisting of quadrilateral elements in 2D
+ * This class generates a Mesh consiting of quadrilateral elements in 2D
  * and hexahedral elements in 3D. The resulting meshes can be used with
  * specific elements for solving membrane or linear elasticity problems.
  *
@@ -43,13 +43,11 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ImageToRectilinearFEMObjectFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToRectilinearFEMObjectFilter);
-
-  /** Standard class type aliases. */
-  using Self = ImageToRectilinearFEMObjectFilter;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageToRectilinearFEMObjectFilter Self;
+  typedef ProcessObject                     Superclass;
+  typedef SmartPointer<Self>                Pointer;
+  typedef SmartPointer<const Self>          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -57,30 +55,30 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToRectilinearFEMObjectFilter, ProcessObject);
 
-  static constexpr unsigned int NDimensions = TInputImage::ImageDimension;
+  itkStaticConstMacro(NDimensions, unsigned int, TInputImage::ImageDimension);
 
   /** Typedefs for Input Image */
-  using InputImageType = TInputImage;
-  using ImagePointer = typename InputImageType::Pointer;
-  using ImageConstPointer = typename InputImageType::ConstPointer;
-  using ImageRegionType = typename InputImageType::RegionType;
-  using ImageSizeType = typename InputImageType::SizeType;
-  using ImagePointType = typename InputImageType::PointType;
-  using ImageIndexType = typename InputImageType::IndexType;
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      ImagePointer;
+  typedef typename InputImageType::ConstPointer ImageConstPointer;
+  typedef typename InputImageType::RegionType   ImageRegionType;
+  typedef typename InputImageType::SizeType     ImageSizeType;
+  typedef typename InputImageType::PointType    ImagePointType;
+  typedef typename InputImageType::IndexType    ImageIndexType;
 
   /** Typedefs for Output FEMObject */
-  using FEMObjectType = typename itk::fem::FEMObject<NDimensions>;
-  using FEMObjectPointer = typename FEMObjectType::Pointer;
-  using FEMObjectConstPointer = typename FEMObjectType::ConstPointer;
-  using DataObjectPointer = typename DataObject::Pointer;
+  typedef typename itk::fem::FEMObject<NDimensions> FEMObjectType;
+  typedef typename FEMObjectType::Pointer           FEMObjectPointer;
+  typedef typename FEMObjectType::ConstPointer      FEMObjectConstPointer;
+  typedef typename DataObject::Pointer              DataObjectPointer;
 
-  /** Some convenient type alias. */
-  using MaterialType = itk::fem::MaterialLinearElasticity;
-  using MaterialPointerType = MaterialType::Pointer;
-  // using QuadElementBaseType = itk::fem::Element2DC0LinearQuadrilateral;
-  // using HexElementBaseType = itk::fem::Element3DC0LinearHexahedron;
-  using ElementBaseType = itk::fem::Element;
-  using ElementBasePointerType = itk::fem::Element::ConstPointer;
+  /** Some convenient typedefs. */
+  typedef itk::fem::MaterialLinearElasticity MaterialType;
+  typedef MaterialType::Pointer              MaterialPointerType;
+  // typedef itk::fem::Element2DC0LinearQuadrilateral  QuadElementBaseType;
+  // typedef itk::fem::Element3DC0LinearHexahedron     HexElementBaseType;
+  typedef itk::fem::Element               ElementBaseType;
+  typedef itk::fem::Element::ConstPointer ElementBasePointerType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -90,18 +88,17 @@ public:
 #endif
 
   /**Get/Set the number of voxels/pixels in each dimension used
-   *during the mesh generation
-   */
-  itkGetMacro(PixelsPerElement, vnl_vector<unsigned int>);
-  itkSetMacro(PixelsPerElement, vnl_vector<unsigned int>);
-  void
-  SetPixelsPerElement(unsigned int numPixels)
+    *during the mesh generation
+    */
+  itkGetMacro(PixelsPerElement, vnl_vector<unsigned int> );
+  itkSetMacro(PixelsPerElement, vnl_vector<unsigned int> );
+  void SetPixelsPerElement( unsigned int numPixels )
   {
-    this->m_PixelsPerElement.fill(numPixels);
+    this->m_PixelsPerElement.fill( numPixels );
   }
 
   /**Get the number of element in each dimension of the generated mesh*/
-  itkGetMacro(NumberOfElements, vnl_vector<unsigned int>);
+  itkGetMacro(NumberOfElements, vnl_vector<unsigned int> );
 
   /**Get/Set the material used for the mesh */
   itkGetMacro(Material, MaterialPointerType);
@@ -113,24 +110,19 @@ public:
 
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
-  void
-  SetInput(InputImageType * image);
+  void SetInput( InputImageType *image);
 
-  void
-  SetInput(unsigned int, InputImageType * image);
+  void SetInput( unsigned int, InputImageType *image);
 
-  InputImageType *
-  GetInput();
+  InputImageType * GetInput();
 
-  InputImageType *
-  GetInput(unsigned int idx);
+  InputImageType * GetInput(unsigned int idx);
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   /** Get the output data of this process object.  The output of this
    * function is not valid until an appropriate Update() method has
@@ -145,39 +137,36 @@ public:
    * types. Derived classes should have names get methods for these
    * outputs.
    */
-  FEMObjectType *
-  GetOutput();
+  FEMObjectType * GetOutput();
 
-  FEMObjectType *
-  GetOutput(unsigned int idx);
+  FEMObjectType * GetOutput(unsigned int idx);
 
 protected:
   ImageToRectilinearFEMObjectFilter();
-  ~ImageToRectilinearFEMObjectFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ImageToRectilinearFEMObjectFilter() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /** Method invoked by the pipeline in order to trigger mesh generation */
-  void
-  GenerateData() override;
+  virtual void  GenerateData() ITK_OVERRIDE;
 
-  void
-  Generate2DRectilinearMesh();
+  void Generate2DRectilinearMesh();
 
-  void
-  Generate3DRectilinearMesh();
+  void Generate3DRectilinearMesh();
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToRectilinearFEMObjectFilter);
+
   vnl_vector<unsigned int> m_NumberOfElements;
   vnl_vector<unsigned int> m_PixelsPerElement;
   MaterialPointerType      m_Material;
   ElementBasePointerType   m_Element;
 };
-} // end namespace fem
-} // end namespace itk
+
+}
+}  // end namespace itk::fem
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageToRectilinearFEMObjectFilter.hxx"
+#include "itkImageToRectilinearFEMObjectFilter.hxx"
 #endif
 
-#endif // itkImageToRectilinearFEMObjectFilter_h
+#endif // #ifndef itkImageToRectilinearFEMObjectFilter_h

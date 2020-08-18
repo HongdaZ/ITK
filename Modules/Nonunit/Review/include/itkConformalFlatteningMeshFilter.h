@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,31 +44,30 @@ namespace itk
  * \ingroup ITKReview
  */
 
-template <typename TInputMesh, typename TOutputMesh>
-class ITK_TEMPLATE_EXPORT ConformalFlatteningMeshFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh >
+class ITK_TEMPLATE_EXPORT ConformalFlatteningMeshFilter:
+  public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConformalFlatteningMeshFilter);
+  /** Standard class typedefs. */
+  typedef ConformalFlatteningMeshFilter Self;
 
-  /** Standard class type aliases. */
-  using Self = ConformalFlatteningMeshFilter;
+  typedef TInputMesh  InputMeshType;
+  typedef TOutputMesh OutputMeshType;
 
-  using InputMeshType = TInputMesh;
-  using OutputMeshType = TOutputMesh;
+  typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
 
-  using Superclass = MeshToMeshFilter<TInputMesh, TOutputMesh>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using InputMeshConstPointer = typename InputMeshType::ConstPointer;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using InputPointType = typename InputMeshType::PointType;
-  using OutputPointType = typename OutputMeshType::PointType;
+  typedef typename InputMeshType::ConstPointer InputMeshConstPointer;
+  typedef typename OutputMeshType::Pointer     OutputMeshPointer;
+  typedef typename InputMeshType::PointType    InputPointType;
+  typedef typename OutputMeshType::PointType   OutputPointType;
 
   /** Type for representing coordinates. */
-  // using CoordRepType = typename TInputMesh::CoordRepType;
-  using CoordRepType = double;
+  //typedef typename TInputMesh::CoordRepType          CoordRepType;
+  typedef double CoordRepType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -77,54 +76,52 @@ public:
   itkTypeMacro(ConformalFlatteningMeshFilter, MeshToMeshFilter);
 
   /** Convenient constants obtained from TMeshTraits template parameter. */
-  static constexpr unsigned int InputPointDimension = TInputMesh::PointDimension;
-  static constexpr unsigned int OutputPointDimension = TOutputMesh::PointDimension;
+  itkStaticConstMacro(InputPointDimension, unsigned int,
+                      TInputMesh::PointDimension);
+  itkStaticConstMacro(OutputPointDimension, unsigned int,
+                      TOutputMesh::PointDimension);
 
-  using PointsContainer = typename InputMeshType::PointsContainer;
-  using CellsContainer = typename InputMeshType::CellsContainer;
-  using PointIdentifier = typename InputMeshType::PointIdentifier;
-  using CellIdentifier = typename InputMeshType::CellIdentifier;
-  using PointIterator = typename PointsContainer::ConstIterator;
-  using CellIterator = typename CellsContainer::ConstIterator;
-  using CellType = typename InputMeshType::CellType;
-  using PointIdIterator = typename CellType::PointIdIterator;
-  using CellAutoPointer = typename CellType::CellAutoPointer;
+  typedef typename InputMeshType::PointsContainer PointsContainer;
+  typedef typename InputMeshType::CellsContainer  CellsContainer;
+  typedef typename InputMeshType::PointIdentifier PointIdentifier;
+  typedef typename InputMeshType::CellIdentifier  CellIdentifier;
+  typedef typename PointsContainer::ConstIterator PointIterator;
+  typedef typename CellsContainer::ConstIterator  CellIterator;
+  typedef typename InputMeshType::CellType        CellType;
+  typedef typename CellType::PointIdIterator      PointIdIterator;
+  typedef typename CellType::CellAutoPointer      CellAutoPointer;
 
   /** Select the cell that will be used as reference for the flattening.
    * This value must be the identifier of a cell existing in the input Mesh.
    * A point of this cell will be mapped to infinity on the plane, or it
    * will be mapped to the north-pole on the sphere. It is recommended to
    * select a cell whose curvature is relatively flat. */
-  void
-  SetPolarCellIdentifier(CellIdentifier cellId);
+  void SetPolarCellIdentifier(CellIdentifier cellId);
 
   /** Define the scale of the mapping. The largest coordinates of the
    * furthest point in the plane is m_MapScale. */
-  void
-  SetScale(double);
+  void SetScale(double);
 
   /** Define that the input surface will be mapped to a sphere */
-  void
-  MapToSphere();
+  void MapToSphere();
 
   /** Define that the input surface will be mapped to a plane.
    *  This skips the steps of the stereographic projection. */
-  void
-  MapToPlane();
+  void MapToPlane();
 
 protected:
   ConformalFlatteningMeshFilter();
-  ~ConformalFlatteningMeshFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ConformalFlatteningMeshFilter() {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate Requested Data */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
-  using VectorCoordType = vnl_vector<CoordRepType>;
-  using SparseMatrixCoordType = vnl_sparse_matrix<CoordRepType>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConformalFlatteningMeshFilter);
+
+  typedef vnl_vector< CoordRepType >        VectorCoordType;
+  typedef vnl_sparse_matrix< CoordRepType > SparseMatrixCoordType;
 
   /** Cell Id  in which the point P, which is used
    * to define the mapping, lies in. */
@@ -140,7 +137,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkConformalFlatteningMeshFilter.hxx"
+#include "itkConformalFlatteningMeshFilter.hxx"
 #endif
 
 #endif

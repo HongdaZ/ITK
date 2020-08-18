@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,17 +32,15 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT NonLinearOptimizer : public Optimizer
+class ITKOptimizers_EXPORT NonLinearOptimizer:public Optimizer
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NonLinearOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = NonLinearOptimizer;
-  using Superclass = Optimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NonLinearOptimizer         Self;
+  typedef Optimizer                  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,12 +49,15 @@ public:
   itkTypeMacro(NonLinearOptimizer, Optimizer);
 
   /**  Types inherited from the superclass */
-  using ParametersType = Superclass::ParametersType;
-  using ScalesType = Superclass::ScalesType;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::ScalesType     ScalesType;
 
 protected:
-  NonLinearOptimizer() = default;
-  ~NonLinearOptimizer() override;
+  NonLinearOptimizer() {}
+  virtual ~NonLinearOptimizer() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NonLinearOptimizer);
 };
 } // end namespace itk
 

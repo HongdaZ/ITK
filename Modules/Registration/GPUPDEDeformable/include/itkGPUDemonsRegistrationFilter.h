@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,115 +64,112 @@ namespace itk
  * \ingroup DeformableImageRegistration MultiThreaded
  * \ingroup ITKGPUPDEDeformableRegistration
  */
-template <typename TFixedImage,
-          typename TMovingImage,
-          typename TDisplacementField,
-          typename TParentImageFilter = itk::DemonsRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>>
-class ITK_TEMPLATE_EXPORT GPUDemonsRegistrationFilter
-  : public GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField, TParentImageFilter>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField,
+          typename TParentImageFilter = itk::DemonsRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+          >
+class ITK_TEMPLATE_EXPORT GPUDemonsRegistrationFilter :
+  public GPUPDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
+                                             TDisplacementField, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDemonsRegistrationFilter);
-
-  /** Standard class type aliases. */
-  using Self = GPUDemonsRegistrationFilter;
-  using GPUSuperclass =
-    GPUPDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField, TParentImageFilter>;
-  using CPUSuperclass = TParentImageFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GPUDemonsRegistrationFilter Self;
+  typedef GPUPDEDeformableRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField,
+                                              TParentImageFilter > GPUSuperclass;
+  typedef TParentImageFilter
+  CPUSuperclass;
+  typedef SmartPointer< Self >
+  Pointer;
+  typedef SmartPointer< const Self >
+  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GPUDemonsRegistrationFilter, GPUPDEDeformableRegistrationFilter);
+  itkTypeMacro(GPUDemonsRegistrationFilter,
+               GPUPDEDeformableRegistrationFilter);
 
   /** Inherit types from GPUSuperclass. */
-  using TimeStepType = typename GPUSuperclass::TimeStepType;
+  typedef typename GPUSuperclass::TimeStepType TimeStepType;
 
   /** FixedImage image type. */
-  using FixedImageType = typename GPUSuperclass::FixedImageType;
-  using FixedImagePointer = typename GPUSuperclass::FixedImagePointer;
+  typedef typename GPUSuperclass::FixedImageType    FixedImageType;
+  typedef typename GPUSuperclass::FixedImagePointer FixedImagePointer;
 
   /** MovingImage image type. */
-  using MovingImageType = typename GPUSuperclass::MovingImageType;
-  using MovingImagePointer = typename GPUSuperclass::MovingImagePointer;
+  typedef typename GPUSuperclass::MovingImageType    MovingImageType;
+  typedef typename GPUSuperclass::MovingImagePointer MovingImagePointer;
 
   /** Deformation field type. */
-  using DisplacementFieldType = typename GPUSuperclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename GPUSuperclass::DisplacementFieldPointer;
+  typedef typename GPUSuperclass::DisplacementFieldType
+  DisplacementFieldType;
+  typedef typename GPUSuperclass::DisplacementFieldPointer
+  DisplacementFieldPointer;
 
   /** FiniteDifferenceFunction type. */
-  using FiniteDifferenceFunctionType = typename GPUSuperclass::FiniteDifferenceFunctionType;
+  typedef typename GPUSuperclass::FiniteDifferenceFunctionType
+  FiniteDifferenceFunctionType;
 
   /** GPUDemonsRegistrationFilterFunction type. */
-  using GPUDemonsRegistrationFunctionType =
-    GPUDemonsRegistrationFunction<FixedImageType, MovingImageType, DisplacementFieldType>;
+  typedef GPUDemonsRegistrationFunction< FixedImageType, MovingImageType,
+                                         DisplacementFieldType >  GPUDemonsRegistrationFunctionType;
 
   /** Get the metric value. The metric value is the mean square difference
    * in intensity between the fixed image and transforming moving image
    * computed over the the overlapping region between the two images.
    * This is value is only available for the previous iteration and
    * NOT the current iteration. */
-  double
-  GetMetric() const override;
+  virtual double GetMetric() const ITK_OVERRIDE;
 
   /** Set/Get the threshold below which the absolute difference of
    * intensity yields a match. When the intensities match between a
    * moving and fixed image pixel, the update vector (for that
    * iteration) will be the zero vector. Default is 0.001. */
-  void
-  SetIntensityDifferenceThreshold(double) override;
+  virtual void SetIntensityDifferenceThreshold(double) ITK_OVERRIDE;
 
-  double
-  GetIntensityDifferenceThreshold() const override;
+  virtual double GetIntensityDifferenceThreshold() const ITK_OVERRIDE;
 
 protected:
   GPUDemonsRegistrationFilter();
-  ~GPUDemonsRegistrationFilter() override = default;
+  ~GPUDemonsRegistrationFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Initialize the state of filter and equation before each iteration. */
-  void
-  InitializeIteration() override;
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
   /** Apply update. */
-  void
-  ApplyUpdate(const TimeStepType & dt) override;
+  virtual void ApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDemonsRegistrationFilter);
+
   bool m_UseMovingImageGradient;
 };
 
 /** \class GPUDemonsRegistrationFilterFactory
  *
- * \brief Object Factory implementation for GPUDemonsRegistrationFilter
+ * \brief Object Factory implemenatation for GPUDemonsRegistrationFilter
  * \ingroup ITKGPUPDEDeformableRegistration
  */
 class GPUDemonsRegistrationFilterFactory : public itk::ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDemonsRegistrationFilterFactory);
-
-  using Self = GPUDemonsRegistrationFilterFactory;
-  using GPUSuperclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef GPUDemonsRegistrationFilterFactory Self;
+  typedef ObjectFactoryBase                  GPUSuperclass;
+  typedef SmartPointer<Self>                 Pointer;
+  typedef SmartPointer<const Self>           ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override
-  {
+  virtual const char* GetITKSourceVersion() const ITK_OVERRIDE
+    {
     return ITK_SOURCE_VERSION;
-  }
-  const char *
-  GetDescription() const override
-  {
+    }
+  const char* GetDescription() const ITK_OVERRIDE
+    {
     return "A Factory for GPUDemonsRegistrationFilter";
-  }
+    }
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -181,8 +178,7 @@ public:
   itkTypeMacro(GPUDemonsRegistrationFilterFactory, itk::ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     GPUDemonsRegistrationFilterFactory::Pointer factory = GPUDemonsRegistrationFilterFactory::New();
 
@@ -190,52 +186,54 @@ public:
   }
 
 private:
-#define OverrideDemonsRegistrationFilterTypeMacro(ipt, opt, dm)                                                        \
-  {                                                                                                                    \
-    using InputImageType = GPUImage<ipt, dm>;                                                                          \
-    using OutputImageType = GPUImage<opt, dm>;                                                                         \
-    using VectorPixelType = Vector<float, dm>;                                                                         \
-    using DisplacementFieldType = GPUImage<VectorPixelType, dm>;                                                       \
-    this->RegisterOverride(                                                                                            \
-      typeid(DemonsRegistrationFilter<InputImageType, OutputImageType, DisplacementFieldType>).name(),                 \
-      typeid(GPUDemonsRegistrationFilter<InputImageType, OutputImageType, DisplacementFieldType>).name(),              \
-      "GPU Demons Registration Filter Override",                                                                       \
-      true,                                                                                                            \
-      CreateObjectFunction<                                                                                            \
-        GPUDemonsRegistrationFilter<InputImageType, OutputImageType, DisplacementFieldType>>::New());                  \
-  }
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDemonsRegistrationFilterFactory);
+
+#define OverrideDemonsRegistrationFilterTypeMacro(ipt,opt,dm) \
+    { \
+    typedef GPUImage<ipt,dm>                 InputImageType; \
+    typedef GPUImage<opt,dm>                 OutputImageType; \
+    typedef Vector< float, dm >              VectorPixelType; \
+    typedef GPUImage<  VectorPixelType, dm > DisplacementFieldType; \
+    this->RegisterOverride( \
+      typeid(DemonsRegistrationFilter<InputImageType,OutputImageType,DisplacementFieldType>).name(), \
+      typeid(GPUDemonsRegistrationFilter<InputImageType,OutputImageType,DisplacementFieldType>).name(), \
+      "GPU Demons Registration Filter Override", \
+      true, \
+      CreateObjectFunction<GPUDemonsRegistrationFilter<InputImageType,OutputImageType,DisplacementFieldType> >::New() ); \
+    }
 
   GPUDemonsRegistrationFilterFactory()
   {
-    if (IsGPUAvailable())
-    {
+    if( IsGPUAvailable() )
+      {
       OverrideDemonsRegistrationFilterTypeMacro(unsigned char, unsigned char, 1);
       OverrideDemonsRegistrationFilterTypeMacro(char, char, 1);
-      OverrideDemonsRegistrationFilterTypeMacro(float, float, 1);
-      OverrideDemonsRegistrationFilterTypeMacro(int, int, 1);
-      OverrideDemonsRegistrationFilterTypeMacro(unsigned int, unsigned int, 1);
-      OverrideDemonsRegistrationFilterTypeMacro(double, double, 1);
+      OverrideDemonsRegistrationFilterTypeMacro(float,float,1);
+      OverrideDemonsRegistrationFilterTypeMacro(int,int,1);
+      OverrideDemonsRegistrationFilterTypeMacro(unsigned int,unsigned int,1);
+      OverrideDemonsRegistrationFilterTypeMacro(double,double,1);
 
       OverrideDemonsRegistrationFilterTypeMacro(unsigned char, unsigned char, 2);
       OverrideDemonsRegistrationFilterTypeMacro(char, char, 2);
-      OverrideDemonsRegistrationFilterTypeMacro(float, float, 2);
-      OverrideDemonsRegistrationFilterTypeMacro(int, int, 2);
-      OverrideDemonsRegistrationFilterTypeMacro(unsigned int, unsigned int, 2);
-      OverrideDemonsRegistrationFilterTypeMacro(double, double, 2);
+      OverrideDemonsRegistrationFilterTypeMacro(float,float,2);
+      OverrideDemonsRegistrationFilterTypeMacro(int,int,2);
+      OverrideDemonsRegistrationFilterTypeMacro(unsigned int,unsigned int,2);
+      OverrideDemonsRegistrationFilterTypeMacro(double,double,2);
 
       OverrideDemonsRegistrationFilterTypeMacro(unsigned char, unsigned char, 3);
       OverrideDemonsRegistrationFilterTypeMacro(char, char, 3);
-      OverrideDemonsRegistrationFilterTypeMacro(float, float, 3);
-      OverrideDemonsRegistrationFilterTypeMacro(int, int, 3);
-      OverrideDemonsRegistrationFilterTypeMacro(unsigned int, unsigned int, 3);
-      OverrideDemonsRegistrationFilterTypeMacro(double, double, 3);
-    }
+      OverrideDemonsRegistrationFilterTypeMacro(float,float,3);
+      OverrideDemonsRegistrationFilterTypeMacro(int,int,3);
+      OverrideDemonsRegistrationFilterTypeMacro(unsigned int,unsigned int,3);
+      OverrideDemonsRegistrationFilterTypeMacro(double,double,3);
+      }
   }
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUDemonsRegistrationFilter.hxx"
+#include "itkGPUDemonsRegistrationFilter.hxx"
 #endif
 
 #endif

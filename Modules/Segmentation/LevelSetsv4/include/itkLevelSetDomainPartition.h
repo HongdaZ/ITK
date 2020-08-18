@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,48 +23,49 @@
 
 namespace itk
 {
-/**
- *\class LevelSetDomainPartition
+/** \class LevelSetDomainPartition
  *
  * \brief Helper class used to share data in the ScalarChanAndVeseLevelSetFunction.
  * \ingroup ITKLevelSetsv4
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT LevelSetDomainPartition : public LevelSetDomainPartitionBase<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT LevelSetDomainPartition:
+  public LevelSetDomainPartitionBase< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartition);
 
-  using Self = LevelSetDomainPartition;
-  using Superclass = LevelSetDomainPartitionBase<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef LevelSetDomainPartition                 Self;
+  typedef LevelSetDomainPartitionBase< TImage >   Superclass;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
 
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  itkTypeMacro(LevelSetDomainPartition, LevelSetDomainPartitionBase);
+  itkTypeMacro(LevelSetDomainPartition, LevelSetDomainPartitionBase );
 
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
+  typedef TImage                                ImageType;
+  typedef typename ImageType::Pointer           ImagePointer;
 
-  using ListPixelType = typename Superclass::ListPixelType;
+  typedef typename Superclass::ListPixelType    ListPixelType;
 
   /** Populate a list image with each pixel being a list of overlapping
    *  level set support at that pixel */
-  void
-  PopulateListImage();
+  void PopulateListImage();
 
 protected:
-  LevelSetDomainPartition() = default;
-  ~LevelSetDomainPartition() = default;
+  LevelSetDomainPartition();
+  ~LevelSetDomainPartition();
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartition);
 };
-} // end namespace itk
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetDomainPartition.hxx"
+#include "itkLevelSetDomainPartition.hxx"
 #endif
 
 #endif

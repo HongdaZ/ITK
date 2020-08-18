@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -75,125 +75,115 @@ namespace itk
 /** Create a helper GPU Kernel class for GPUPDEDeformableRegistrationFilter */
 itkGPUKernelClassMacro(GPUPDEDeformableRegistrationFilterKernel);
 
-template <typename TFixedImage,
-          typename TMovingImage,
-          typename TDisplacementField,
-          typename TParentImageFilter = PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>>
-class ITK_TEMPLATE_EXPORT GPUPDEDeformableRegistrationFilter
-  : public GPUDenseFiniteDifferenceImageFilter<TDisplacementField, TDisplacementField, TParentImageFilter>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField,
+          typename TParentImageFilter = PDEDeformableRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+          >
+class ITK_TEMPLATE_EXPORT GPUPDEDeformableRegistrationFilter :
+  public GPUDenseFiniteDifferenceImageFilter< TDisplacementField, TDisplacementField, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUPDEDeformableRegistrationFilter);
-
-  /** Standard class type aliases. */
-  using Self = GPUPDEDeformableRegistrationFilter;
-  using GPUSuperclass = GPUDenseFiniteDifferenceImageFilter<TDisplacementField, TDisplacementField, TParentImageFilter>;
-  using CPUSuperclass = TParentImageFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GPUPDEDeformableRegistrationFilter                                                              Self;
+  typedef GPUDenseFiniteDifferenceImageFilter< TDisplacementField, TDisplacementField, TParentImageFilter > GPUSuperclass;
+  typedef TParentImageFilter                                                                              CPUSuperclass;
+  typedef SmartPointer< Self >                                                                            Pointer;
+  typedef SmartPointer< const Self >                                                                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(GPUPDEDeformableRegistrationFilter, GPUDenseFiniteDifferenceImageFilter);
+  itkTypeMacro(GPUPDEDeformableRegistrationFilter,
+               GPUDenseFiniteDifferenceImageFilter);
 
   /** FixedImage image type. */
-  using FixedImageType = TFixedImage;
-  using FixedImagePointer = typename FixedImageType::Pointer;
-  using FixedImageConstPointer = typename FixedImageType::ConstPointer;
+  typedef TFixedImage                           FixedImageType;
+  typedef typename FixedImageType::Pointer      FixedImagePointer;
+  typedef typename FixedImageType::ConstPointer FixedImageConstPointer;
 
   /** MovingImage image type. */
-  using MovingImageType = TMovingImage;
-  using MovingImagePointer = typename MovingImageType::Pointer;
-  using MovingImageConstPointer = typename MovingImageType::ConstPointer;
+  typedef TMovingImage                           MovingImageType;
+  typedef typename MovingImageType::Pointer      MovingImagePointer;
+  typedef typename MovingImageType::ConstPointer MovingImageConstPointer;
 
   /** Deformation field type. */
-  using DisplacementFieldType = TDisplacementField;
-  using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
-  using DeformationVectorType = typename TDisplacementField::PixelType;
-  using DeformationScalarType = typename TDisplacementField::PixelType::ValueType;
+  typedef TDisplacementField                      DisplacementFieldType;
+  typedef typename DisplacementFieldType::Pointer DisplacementFieldPointer;
+  typedef typename TDisplacementField::PixelType  DeformationVectorType;
+  typedef typename TDisplacementField::PixelType::ValueType
+                                                 DeformationScalarType;
 
-  /** Types inherited from the GPUSuperclass */
-  using OutputImageType = typename GPUSuperclass::OutputImageType;
+  /** Types inherithed from the GPUSuperclass */
+  typedef typename GPUSuperclass::OutputImageType OutputImageType;
 
   /** FiniteDifferenceFunction type. */
-  using FiniteDifferenceFunctionType = typename GPUSuperclass::FiniteDifferenceFunctionType;
+  typedef typename GPUSuperclass::FiniteDifferenceFunctionType
+  FiniteDifferenceFunctionType;
 
   /** PDEDeformableRegistrationFilterFunction type. */
   /** GPUPDEDeformableRegistrationFilterFunction type. */
-  using GPUPDEDeformableRegistrationFunctionType =
-    GPUPDEDeformableRegistrationFunction<FixedImageType, MovingImageType, DisplacementFieldType>;
+  typedef GPUPDEDeformableRegistrationFunction< FixedImageType, MovingImageType,
+                                                DisplacementFieldType >  GPUPDEDeformableRegistrationFunctionType;
 
-  /** Inherit some enums and type alias from the GPUSuperclass. */
-  static constexpr unsigned int ImageDimension = GPUSuperclass::ImageDimension;
+  /** Inherit some enums and typedefs from the GPUSuperclass. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      GPUSuperclass::ImageDimension);
 
   /** Get OpenCL Kernel source as a string, creates a GetOpenCLSource method */
   itkGetOpenCLSourceFromKernelMacro(GPUPDEDeformableRegistrationFilterKernel);
 
   /** Get output deformation field. */
-  DisplacementFieldType *
-  GetDisplacementField()
+  DisplacementFieldType * GetDisplacementField()
   {
     return this->GetOutput();
   }
 
-  using StandardDeviationsType = FixedArray<double, ImageDimension>;
+  typedef FixedArray< double, ImageDimension > StandardDeviationsType;
 
 protected:
   GPUPDEDeformableRegistrationFilter();
-  ~GPUPDEDeformableRegistrationFilter() override = default;
+  ~GPUPDEDeformableRegistrationFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** A simple method to copy the data from the input to the output.
    * If the input does not exist, a zero field is written to the output. */
-  void
-  CopyInputToOutput() override;
+  virtual void CopyInputToOutput() ITK_OVERRIDE;
 
   /** Initialize the state of filter and equation before each iteration.
-   * Progress feedback is implemented as part of this method. */
-  void
-  InitializeIteration() override;
+   * Progress feeback is implemented as part of this method. */
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
   /** Utility to smooth the deformation field (represented in the Output)
    * using a Gaussian operator. The amount of smoothing can be specified
    * by setting the StandardDeviations. */
-  void
-  SmoothDisplacementField() override;
+  virtual void SmoothDisplacementField() ITK_OVERRIDE;
 
   /** Smooth a vector field, which may be m_DisplacementField or
    * m_UpdateBuffer. */
-  virtual void
-  GPUSmoothVectorField(DisplacementFieldPointer         field,
-                       typename GPUDataManager::Pointer GPUSmoothingKernels[],
-                       int                              GPUSmoothingKernelSizes[]);
+  virtual void GPUSmoothVectorField(DisplacementFieldPointer field,
+    typename GPUDataManager::Pointer GPUSmoothingKernels[],
+    int GPUSmoothingKernelSizes[]);
 
-  virtual void
-  AllocateSmoothingBuffer();
+  virtual void AllocateSmoothingBuffer();
 
   /** Utility to smooth the UpdateBuffer using a Gaussian operator.
    * The amount of smoothing can be specified by setting the
    * UpdateFieldStandardDeviations. */
-  void
-  SmoothUpdateField() override;
+  virtual void SmoothUpdateField() ITK_OVERRIDE;
 
   /** This method is called after the solution has been generated. In this case,
    * the filter release the memory of the internal buffers. */
-  void
-  PostProcessOutput() override;
+  virtual void PostProcessOutput() ITK_OVERRIDE;
 
   /** This method is called before iterating the solution. */
-  void
-  Initialize() override;
+  virtual void Initialize() ITK_OVERRIDE;
 
   /** By default the output deformation field has the same Spacing, Origin
    * and LargestPossibleRegion as the input/initial deformation field.  If
    * the initial deformation field is not set, the output information is
    * copied from the fixed image. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** It is difficult to compute in advance the input moving image region
    * required to compute the requested output region. Thus the safest
@@ -201,10 +191,11 @@ protected:
    *
    * For the fixed image and deformation field, the input requested region
    * set to be the same as that of the output requested region. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUPDEDeformableRegistrationFilter);
+
   /** Temporary deformation field use for smoothing the
    * the deformation field. */
   DisplacementFieldPointer m_TempField;
@@ -212,24 +203,25 @@ private:
 private:
   /** Memory buffer for smoothing kernels of the displacement field. */
   int                              m_SmoothingKernelSizes[ImageDimension];
-  DeformationScalarType *          m_SmoothingKernels[ImageDimension];
+  DeformationScalarType*           m_SmoothingKernels[ImageDimension];
   typename GPUDataManager::Pointer m_GPUSmoothingKernels[ImageDimension];
 
   /** Memory buffer for smoothing kernels of the update field. */
   int                              m_UpdateFieldSmoothingKernelSizes[ImageDimension];
-  DeformationScalarType *          m_UpdateFieldSmoothingKernels[ImageDimension];
+  DeformationScalarType*           m_UpdateFieldSmoothingKernels[ImageDimension];
   typename GPUDataManager::Pointer m_UpdateFieldGPUSmoothingKernels[ImageDimension];
 
-  int *                            m_ImageSizes;
+  int*                             m_ImageSizes;
   typename GPUDataManager::Pointer m_GPUImageSizes;
 
   /* GPU kernel handle for GPUSmoothDisplacementField */
   int m_SmoothDisplacementFieldGPUKernelHandle;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUPDEDeformableRegistrationFilter.hxx"
+#include "itkGPUPDEDeformableRegistrationFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,72 +41,61 @@ namespace itk
  * \ingroup DataRepresentation
  * \ingroup ITKCommon
  */
-template <typename TElementIdentifier, typename TElement>
-class ITK_TEMPLATE_EXPORT MapContainer
-  : public Object
-  , private std::map<TElementIdentifier, TElement>
+template< typename TElementIdentifier, typename TElement >
+class ITK_TEMPLATE_EXPORT MapContainer:
+  public Object,
+  private std::map< TElementIdentifier, TElement >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MapContainer);
-
-  /** Standard class type aliases. */
-  using Self = MapContainer;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MapContainer               Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Standard part of every itk Object. */
   itkTypeMacro(MapContainer, Object);
 
   /** Save the template parameters. */
-  using ElementIdentifier = TElementIdentifier;
-  using Element = TElement;
+  typedef TElementIdentifier ElementIdentifier;
+  typedef TElement           Element;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MapContainer);
+
   /** Quick access to the STL map type that was inherited. */
-  using MapType = std::map<ElementIdentifier, Element>;
-  using MapIterator = typename MapType::iterator;
-  using MapConstIterator = typename MapType::const_iterator;
-  using MapKeyCompareType = typename MapType::key_compare;
+  typedef std::map< ElementIdentifier, Element > MapType;
+  typedef typename MapType::iterator             MapIterator;
+  typedef typename MapType::const_iterator       MapConstIterator;
+  typedef typename MapType::key_compare          MapKeyCompareType;
 
 public:
   /** Provide pass-through constructors corresponding to all the STL
    * map constructors.  These are for internal use only since this is also
    * an Object which must be constructed through the "New()" routine. */
-  MapContainer()
-    : MapType()
-  {}
-  MapContainer(const MapKeyCompareType & comp)
-    : MapType(comp)
-  {}
+  MapContainer():MapType() {}
+  MapContainer(const MapKeyCompareType & comp):MapType(comp) {}
   //  MapContainer(const Self& r):MapType(r) {}
-  template <typename TInputIterator>
-  MapContainer(TInputIterator first, TInputIterator last)
-    : MapType(first, last)
-  {}
-  template <typename TInputIterator>
-  MapContainer(TInputIterator first, TInputIterator last, const MapKeyCompareType & comp)
-    : MapType(first, last, comp)
-  {}
+  template< typename TInputIterator >
+  MapContainer(TInputIterator first, TInputIterator last):MapType(first, last) {}
+  template< typename TInputIterator >
+  MapContainer(TInputIterator first, TInputIterator last, const MapKeyCompareType & comp):
+    MapType(first, last, comp) {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** This type is provided to adapt this container as an STL container */
-  using STLContainerType = MapType;
+  typedef MapType STLContainerType;
 
   /** Cast the container to a STL container type */
-  STLContainerType &
-  CastToSTLContainer() ITK_NOEXCEPT
-  {
-    return *this;
-  }
+  STLContainerType & CastToSTLContainer()
+  { return dynamic_cast< STLContainerType & >( *this ); }
 
   /** Cast the container to a const STL container type */
-  const STLContainerType &
-  CastToSTLConstContainer() const ITK_NOEXCEPT
+  const STLContainerType & CastToSTLConstContainer() const
   {
-    return *this;
+    return dynamic_cast< const STLContainerType & >( *this );
   }
 
   using STLContainerType::begin;
@@ -165,92 +154,37 @@ public:
    */
   class Iterator
   {
-  public:
-    using iterator_category = typename MapIterator::iterator_category;
-    using value_type = typename MapIterator::value_type;
-    using difference_type = typename MapIterator::difference_type;
-    using pointer = typename MapIterator::pointer;
-    using reference = typename MapIterator::reference;
+public:
+    typedef typename MapIterator::iterator_category iterator_category;
+    typedef typename MapIterator::value_type        value_type;
+    typedef typename MapIterator::difference_type   difference_type;
+    typedef typename MapIterator::pointer           pointer;
+    typedef typename MapIterator::reference         reference;
 
-    Iterator() = default;
-    Iterator(const Iterator & i)
-      : m_Iter(i.m_Iter)
-    {}
-    Iterator(const MapIterator & i)
-      : m_Iter(i)
-    {}
-    Iterator &
-    operator=(const Iterator & r)
-    {
-      m_Iter = r.m_Iter;
-      return *this;
-    }
+    Iterator() {}
+    Iterator(const Iterator & i):m_Iter(i.m_Iter) {}
+    Iterator(const MapIterator & i):m_Iter(i) {}
+    Iterator & operator=(const Iterator & r ) { m_Iter = r.m_Iter; return *this; }
 
-    Iterator & operator*() { return *this; }
-    Iterator * operator->() { return this; }
-    Iterator &
-    operator++()
-    {
-      ++m_Iter;
-      return *this;
-    }
-    Iterator
-    operator++(int)
-    {
-      Iterator temp(*this);
-      ++m_Iter;
-      return temp;
-    }
-    Iterator &
-    operator--()
-    {
-      --m_Iter;
-      return *this;
-    }
-    Iterator
-    operator--(int)
-    {
-      Iterator temp(*this);
-      --m_Iter;
-      return temp;
-    }
+    Iterator & operator*()    { return *this; }
+    Iterator * operator->()   { return this; }
+    Iterator & operator++()   { ++m_Iter; return *this; }
+    Iterator operator++(int) { Iterator temp(*this);  ++m_Iter; return temp; }
+    Iterator & operator--()   { --m_Iter; return *this; }
+    Iterator operator--(int) { Iterator temp(*this); --m_Iter; return temp; }
 
-    bool
-    operator==(const Iterator & r) const
-    {
-      return m_Iter == r.m_Iter;
-    }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
-    bool
-    operator==(const ConstIterator & r) const
-    {
-      return m_Iter == r.m_Iter;
-    }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+    bool operator==(const Iterator & r) const { return m_Iter == r.m_Iter; }
+    bool operator!=(const Iterator & r) const { return m_Iter != r.m_Iter; }
+    bool operator==(const ConstIterator & r) const { return m_Iter == r.m_Iter; }
+    bool operator!=(const ConstIterator & r) const { return m_Iter != r.m_Iter; }
 
     /** Get the index into the MapContainer associated with this iterator.   */
-    ElementIdentifier
-    Index() const
-    {
-      return m_Iter->first;
-    }
+    ElementIdentifier Index(void) const { return m_Iter->first; }
 
     /** Get the value at this iterator's location in the MapContainer.   */
-    Element &
-    Value()
-    {
-      return m_Iter->second;
-    }
+    Element & Value(void) { return m_Iter->second; }
 
-  private:
+private:
     MapIterator m_Iter;
     friend class ConstIterator;
   };
@@ -261,92 +195,37 @@ public:
    */
   class ConstIterator
   {
-  public:
-    using iterator_category = typename MapConstIterator::iterator_category;
-    using value_type = typename MapConstIterator::value_type;
-    using difference_type = typename MapConstIterator::difference_type;
-    using pointer = typename MapConstIterator::pointer;
-    using reference = typename MapConstIterator::reference;
+public:
+    typedef typename MapConstIterator::iterator_category iterator_category;
+    typedef typename MapConstIterator::value_type        value_type;
+    typedef typename MapConstIterator::difference_type   difference_type;
+    typedef typename MapConstIterator::pointer           pointer;
+    typedef typename MapConstIterator::reference         reference;
 
-    ConstIterator() = default;
-    ConstIterator(const MapConstIterator & ci)
-      : m_Iter(ci)
-    {}
-    ConstIterator(const Iterator & r)
-      : m_Iter(r.m_Iter)
-    {}
-    ConstIterator &
-    operator=(const ConstIterator & r)
-    {
-      m_Iter = r.m_Iter;
-      return *this;
-    }
+    ConstIterator() {}
+    ConstIterator(const MapConstIterator & ci):m_Iter(ci) {}
+    ConstIterator(const Iterator & r) : m_Iter( r.m_Iter ) {}
+    ConstIterator & operator=(const ConstIterator & r ) { m_Iter = r.m_Iter; return *this; }
 
-    ConstIterator & operator*() { return *this; }
-    ConstIterator * operator->() { return this; }
-    ConstIterator &
-    operator++()
-    {
-      ++m_Iter;
-      return *this;
-    }
-    ConstIterator
-    operator++(int)
-    {
-      ConstIterator temp(*this);
-      ++m_Iter;
-      return temp;
-    }
-    ConstIterator &
-    operator--()
-    {
-      --m_Iter;
-      return *this;
-    }
-    ConstIterator
-    operator--(int)
-    {
-      ConstIterator temp(*this);
-      --m_Iter;
-      return temp;
-    }
+    ConstIterator & operator*()    { return *this; }
+    ConstIterator * operator->()   { return this; }
+    ConstIterator & operator++()   { ++m_Iter; return *this; }
+    ConstIterator operator++(int) { ConstIterator temp(*this);  ++m_Iter; return temp; }
+    ConstIterator & operator--()   { --m_Iter; return *this; }
+    ConstIterator operator--(int) { ConstIterator temp(*this); --m_Iter; return temp; }
 
-    bool
-    operator==(const Iterator & r) const
-    {
-      return m_Iter == r.m_Iter;
-    }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
-    bool
-    operator==(const ConstIterator & r) const
-    {
-      return m_Iter == r.m_Iter;
-    }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+    bool operator==(const Iterator & r) const { return m_Iter == r.m_Iter; }
+    bool operator!=(const Iterator & r) const { return m_Iter != r.m_Iter; }
+    bool operator==(const ConstIterator & r) const { return m_Iter == r.m_Iter; }
+    bool operator!=(const ConstIterator & r) const { return m_Iter != r.m_Iter; }
 
     /** Get the index into the MapContainer associated with this iterator.   */
-    ElementIdentifier
-    Index() const
-    {
-      return m_Iter->first;
-    }
+    ElementIdentifier Index(void) const { return m_Iter->first; }
 
     /** Get the value at this iterator's location in the MapContainer.   */
-    const Element &
-    Value() const
-    {
-      return m_Iter->second;
-    }
+    const Element & Value(void) const { return m_Iter->second; }
 
-  private:
+private:
     MapConstIterator m_Iter;
     friend class Iterator;
   };
@@ -406,8 +285,7 @@ public:
    * Otherwise, set the element through the pointer (if it isn't null), and
    * return true.
    */
-  bool
-  GetElementIfIndexExists(ElementIdentifier, Element *) const;
+  bool GetElementIfIndexExists(ElementIdentifier, Element *) const;
 
   /**
    * The map will create an entry for a given index through the indexing
@@ -425,32 +303,27 @@ public:
   /**
    * Get a begin const iterator for the map.
    */
-  ConstIterator
-  Begin() const;
+  ConstIterator Begin() const;
 
   /**
    * Get an end const iterator for the map.
    */
-  ConstIterator
-  End() const;
+  ConstIterator End() const;
 
   /**
    * Get a begin const iterator for the map.
    */
-  Iterator
-  Begin();
+  Iterator Begin();
 
   /**
    * Get an end const iterator for the map.
    */
-  Iterator
-  End();
+  Iterator End();
 
   /**
    * Get the number of elements currently stored in the map.
    */
-  ElementIdentifier
-  Size() const;
+  ElementIdentifier Size() const;
 
   /**
    * Tell the container to allocate enough memory to allow at least
@@ -465,20 +338,18 @@ public:
    * the current number of elements.  This is NOT guaranteed to decrease
    * memory usage.
    */
-  void
-  Squeeze();
+  void Squeeze();
 
   /**
    * Tell the container to release any memory it may have allocated and
    * return itself to its initial state.
    */
-  void
-  Initialize();
+  void Initialize();
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMapContainer.hxx"
+#include "itkMapContainer.hxx"
 #endif
 
 #endif

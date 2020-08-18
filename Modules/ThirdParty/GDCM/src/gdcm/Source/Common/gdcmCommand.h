@@ -27,9 +27,6 @@ class Event;
 class GDCM_EXPORT Command : public Subject
 {
 public :
-  Command(const Command&) = delete;
-  void operator=(const Command&) = delete;
-
   /// Abstract method that defines the action to be taken by the command.
   virtual void Execute(Subject *caller, const Event & event ) = 0;
 
@@ -41,7 +38,11 @@ public :
 
 protected:
   Command();
-  ~Command() override;
+  ~Command();
+
+private:
+  Command(const Command&);  // Not implemented.
+  void operator=(const Command&);  // Not implemented.
 };
 
 /** \class MemberCommand
@@ -55,7 +56,6 @@ template <class T>
 class MemberCommand : public Command
 {
 public:
-
   /** pointer to a member function that takes a Subject* and the event */
   typedef  void (T::*TMemberFunctionPointer)(Subject*, const Event &);
   typedef  void (T::*TConstMemberFunctionPointer)(const Subject*,
@@ -64,9 +64,6 @@ public:
   /** Standard class typedefs. */
   typedef MemberCommand       Self;
   //typedef SmartPointer<Self>  Pointer;
-
-  MemberCommand(const Self&) = delete;
-  void operator=(const Self&) = delete;
 
   /** Method for creation through the object factory. */
   static SmartPointer<MemberCommand> New()
@@ -93,7 +90,7 @@ public:
     }
 
   /**  Invoke the member function. */
-  void Execute(Subject *caller, const Event & event ) override
+  virtual void Execute(Subject *caller, const Event & event )
     {
     if( m_MemberFunction )
       {
@@ -102,7 +99,7 @@ public:
     }
 
   /**  Invoke the member function with a const object. */
-  void Execute( const Subject *caller, const Event & event ) override
+  virtual void Execute( const Subject *caller, const Event & event )
     {
     if( m_ConstMemberFunction )
       {
@@ -115,8 +112,12 @@ protected:
   T* m_This;
   TMemberFunctionPointer m_MemberFunction;
   TConstMemberFunctionPointer m_ConstMemberFunction;
-  MemberCommand():m_MemberFunction(nullptr),m_ConstMemberFunction(nullptr) {}
-  ~MemberCommand() override= default;
+  MemberCommand():m_MemberFunction(0),m_ConstMemberFunction(0) {}
+  virtual ~MemberCommand(){}
+
+private:
+  MemberCommand(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
 
 };
 
@@ -130,16 +131,12 @@ template <typename T>
 class SimpleMemberCommand : public Command
 {
 public:
-
   /** A method callback. */
   typedef  void (T::*TMemberFunctionPointer)();
 
   /** Standard class typedefs. */
   typedef SimpleMemberCommand   Self;
   //typedef SmartPointer<Self>    Pointer;
-
-  SimpleMemberCommand(const Self&) = delete;
-  void operator=(const Self&) = delete;
 
   /** Run-time type information (and related methods). */
   //gdcmTypeMacro(SimpleMemberCommand,Command);
@@ -159,14 +156,14 @@ public:
     }
 
   /** Invoke the callback function. */
-  void Execute(Subject *,const Event & ) override
+  virtual void Execute(Subject *,const Event & )
     {
     if( m_MemberFunction )
       {
       ((*m_This).*(m_MemberFunction))();
       }
     }
-  void Execute(const Subject *,const Event & ) override
+  virtual void Execute(const Subject *,const Event & )
     {
     if( m_MemberFunction )
       {
@@ -177,8 +174,12 @@ public:
 protected:
   T* m_This;
   TMemberFunctionPointer m_MemberFunction;
-  SimpleMemberCommand():m_This(nullptr),m_MemberFunction(nullptr) {}
-  ~SimpleMemberCommand() override = default;
+  SimpleMemberCommand():m_This(0),m_MemberFunction(0) {}
+  virtual ~SimpleMemberCommand() {}
+
+private:
+  SimpleMemberCommand(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace gdcm

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,66 +34,62 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT SingleValuedVnlCostFunctionAdaptor : public vnl_cost_function
+class ITKOptimizers_EXPORT SingleValuedVnlCostFunctionAdaptor:
+  public vnl_cost_function
 {
 public:
-  /** InternalParametersType type alias. */
-  using InternalParametersType = vnl_vector<double>;
 
-  /** InternalMeasureType type alias. */
-  using InternalMeasureType = double;
+  /** InternalParametersType typedef. */
+  typedef   vnl_vector< double > InternalParametersType;
 
-  /** InternalGradientType type alias. */
-  using InternalDerivativeType = vnl_vector<double>;
+  /** InternalMeasureType typedef. */
+  typedef   double InternalMeasureType;
+
+  /** InternalGradientType typedef. */
+  typedef   vnl_vector< double > InternalDerivativeType;
 
   /** Parameters of the SingleValuedCostFunction */
-  using ParametersType = SingleValuedCostFunction::ParametersType;
+  typedef SingleValuedCostFunction::ParametersType ParametersType;
 
   /** Derivatives of the SingleValuedCostFunction */
-  using DerivativeType = SingleValuedCostFunction::DerivativeType;
+  typedef SingleValuedCostFunction::DerivativeType DerivativeType;
 
   /** Type of the SingleValuedCostFunction value */
-  using MeasureType = SingleValuedCostFunction::MeasureType;
+  typedef SingleValuedCostFunction::MeasureType MeasureType;
 
-  /** Scales type alias */
-  using ScalesType = Array<double>;
+  /** Scales typedef */
+  typedef Array< double > ScalesType;
 
   /** Constructor with size */
   SingleValuedVnlCostFunctionAdaptor(unsigned int spaceDimension);
 
   /** Set the CostFunction deriving from SingleValuedCostFunction */
-  void
-  SetCostFunction(SingleValuedCostFunction * costFunction)
-  {
-    m_CostFunction = costFunction;
-  }
+  void SetCostFunction(SingleValuedCostFunction *costFunction)
+  { m_CostFunction = costFunction; }
 
   /** Get the CostFunction deriving from SingleValuedCostFunction */
-  const SingleValuedCostFunction *
-  GetCostFunction() const
-  {
-    return m_CostFunction;
-  }
+  const SingleValuedCostFunction * GetCostFunction(void) const
+  { return m_CostFunction; }
 
   /**  Delegate computation of the value to the CostFunction. */
-  InternalMeasureType
-  f(const InternalParametersType & inparameters) override;
+  virtual InternalMeasureType f(const InternalParametersType & inparameters) ITK_OVERRIDE;
 
   /**  Delegate computation of the gradient to the costFunction.  */
-  void
-  gradf(const InternalParametersType & inparameters, InternalDerivativeType & gradient) override;
+  virtual void gradf(const InternalParametersType   & inparameters,
+                     InternalDerivativeType   & gradient) ITK_OVERRIDE;
 
   /**  Delegate computation of value and gradient to the costFunction.     */
-  void
-  compute(const InternalParametersType & x, InternalMeasureType * f, InternalDerivativeType * g) override;
+  virtual void compute(const InternalParametersType   & x,
+                       InternalMeasureType      *f,
+                       InternalDerivativeType   *g) ITK_OVERRIDE;
 
-  /**  Convert external derivative measures into internal type   */
-  void
-  ConvertExternalToInternalGradient(const DerivativeType & input, InternalDerivativeType & output) const;
+  /**  Convert external derviative measures into internal type   */
+  void ConvertExternalToInternalGradient(
+    const DerivativeType         & input,
+    InternalDerivativeType & output) const;
 
   /** Set current parameters scaling. */
-  void
-  SetScales(const ScalesType & scales);
+  void SetScales(const ScalesType & scales);
 
   /** Set/Get Negate cost function. The purpose of this boolean flag is to make
    * possible to take certain VNL optimizers that are only minimizers, and use
@@ -103,50 +99,37 @@ public:
    * operations will be done for the gradf() and compute() methods. When the
    * boolean flag is set to false, then the values returned by the ITK cost
    * function will be passed unchanged to the VNL optimizers. */
-  void
-  SetNegateCostFunction(bool value);
+  void SetNegateCostFunction(bool value);
 
-  bool
-  GetNegateCostFunction() const;
+  bool GetNegateCostFunction() const;
 
-  void
-  NegateCostFunctionOn()
-  {
-    m_NegateCostFunction = true;
-  }
-  void
-  NegateCostFunctionOff()
-  {
-    m_NegateCostFunction = false;
-  }
+  void NegateCostFunctionOn() { m_NegateCostFunction = true; }
+  void NegateCostFunctionOff() { m_NegateCostFunction = false; }
 
   /** This AddObserver method allows to simulate that this class derives from
    * an itkObject for the purpose of reporting iteration events. The goal of
    * this method is to allow ITK-vnl optimizer adaptors to get iteration events
    * despite the fact that VNL does not provide callbacks. */
-  unsigned long
-  AddObserver(const EventObject & event, Command *) const;
+  unsigned long AddObserver(const EventObject & event, Command *) const;
 
   /** Return the value of the last evaluation to the value of the cost function.
    *  Note that this method DOES NOT triggers a computation of the function or
    *  the derivatives, it only returns previous values. Therefore the values here
    *  are only valid after you invoke the f() or gradf() methods. */
-  const MeasureType &
-  GetCachedValue() const;
+  const MeasureType & GetCachedValue() const;
 
-  const DerivativeType &
-  GetCachedDerivative() const;
+  const DerivativeType & GetCachedDerivative() const;
 
-  const ParametersType &
-  GetCachedCurrentParameters() const;
+  const ParametersType & GetCachedCurrentParameters() const;
 
 protected:
+
   /** This method is intended to be called by the derived classes in order to
    * notify of an iteration event to any Command/Observers */
-  void
-  ReportIteration(const EventObject & event) const;
+  void ReportIteration(const EventObject & event) const;
 
 private:
+
   /** Get current parameters scaling. */
   itkGetConstReferenceMacro(InverseScales, ScalesType);
 
@@ -159,7 +142,7 @@ private:
   mutable MeasureType    m_CachedValue;
   mutable DerivativeType m_CachedDerivative;
   mutable ParametersType m_CachedCurrentParameters;
-}; // end of Class CostFunction
+};  // end of Class CostFunction
 } // end namespace itk
 
 #endif

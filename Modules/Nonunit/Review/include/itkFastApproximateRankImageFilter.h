@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,25 +41,21 @@ namespace itk
  * \ingroup ITKReview
  */
 
-template <typename TInputImage, typename TOutputImage>
-class FastApproximateRankImageFilter
-  : public MiniPipelineSeparableImageFilter<
-      TInputImage,
-      TOutputImage,
-      RankImageFilter<TInputImage, TInputImage, FlatStructuringElement<TInputImage::ImageDimension>>>
+template< typename TInputImage, typename TOutputImage >
+class FastApproximateRankImageFilter:
+  public MiniPipelineSeparableImageFilter< TInputImage, TOutputImage,
+                                           RankImageFilter< TInputImage, TInputImage,
+                                                            FlatStructuringElement< TInputImage::ImageDimension > > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastApproximateRankImageFilter);
+  /** Standard class typedefs. */
+  typedef FastApproximateRankImageFilter Self;
+  typedef MiniPipelineSeparableImageFilter< TInputImage, TOutputImage,
+          RankImageFilter< TInputImage, TInputImage,
+                      FlatStructuringElement< TInputImage::ImageDimension > > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = FastApproximateRankImageFilter;
-  using Superclass = MiniPipelineSeparableImageFilter<
-    TInputImage,
-    TOutputImage,
-    RankImageFilter<TInputImage, TInputImage, FlatStructuringElement<TInputImage::ImageDimension>>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -67,32 +63,32 @@ public:
   /** Runtime information support. */
   itkTypeMacro(FastApproximateRankImageFilter, MiniPipelineSeparableImageFilter);
 
-  /** Image related type alias. */
-  using InputImageType = TInputImage;
-  using RegionType = typename TInputImage::RegionType;
-  using SizeType = typename TInputImage::SizeType;
-  using IndexType = typename TInputImage::IndexType;
-  using PixelType = typename TInputImage::PixelType;
-  using OffsetType = typename TInputImage::OffsetType;
-  using FilterType = typename Superclass::FilterType;
+  /** Image related typedefs. */
+  typedef TInputImage                      InputImageType;
+  typedef typename TInputImage::RegionType RegionType;
+  typedef typename TInputImage::SizeType   SizeType;
+  typedef typename TInputImage::IndexType  IndexType;
+  typedef typename TInputImage::PixelType  PixelType;
+  typedef typename TInputImage::OffsetType OffsetType;
+  typedef typename Superclass::FilterType  FilterType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
   /** n-dimensional Kernel radius. */
-  using RadiusType = typename TInputImage::SizeType;
+  typedef typename TInputImage::SizeType RadiusType;
 
-  void
-  SetRank(float rank)
+  void SetRank(float rank)
   {
-    if (m_Rank != rank)
-    {
-      m_Rank = rank;
-      for (unsigned i = 0; i < TInputImage::ImageDimension - 1; i++)
+    if ( m_Rank != rank )
       {
+      m_Rank = rank;
+      for ( unsigned i = 0; i < TInputImage::ImageDimension - 1; i++ )
+        {
         this->m_Filters[i]->SetRank(m_Rank);
-      }
+        }
       this->Modified();
-    }
+      }
   }
 
   itkGetConstMacro(Rank, float);
@@ -105,18 +101,19 @@ protected:
     this->SetRank(0.5);
   }
 
-  ~FastApproximateRankImageFilter() override = default;
+  ~FastApproximateRankImageFilter() {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     Superclass::PrintSelf(os, indent);
     os << indent << "Rank: " << m_Rank << std::endl;
   }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastApproximateRankImageFilter);
+
   float m_Rank;
 };
-} // namespace itk
+}
 
 #endif

@@ -35,13 +35,14 @@ public :
 
   static bool ParseDump(const char *array, size_t length);
 
-  ASN1(const ASN1&) = delete;
-  void operator=(const ASN1&) = delete;
 protected:
   int TestPBKDF2();
 
 private:
   ASN1Internals *Internals;
+private:
+  ASN1(const ASN1&);  // Not implemented.
+  void operator=(const ASN1&);  // Not implemented.
 };
 } // end namespace gdcm
 //-----------------------------------------------------------------------------

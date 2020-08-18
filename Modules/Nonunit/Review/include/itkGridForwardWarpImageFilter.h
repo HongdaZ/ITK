@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,17 +55,19 @@ namespace itk
  *
  * \ingroup ITKReview
  */
-template <typename TDisplacementField, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GridForwardWarpImageFilter : public ImageToImageFilter<TDisplacementField, TOutputImage>
+template<
+  typename TDisplacementField,
+  typename TOutputImage
+  >
+class ITK_TEMPLATE_EXPORT GridForwardWarpImageFilter:
+  public ImageToImageFilter< TDisplacementField, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GridForwardWarpImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = GridForwardWarpImageFilter;
-  using Superclass = ImageToImageFilter<TDisplacementField, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GridForwardWarpImageFilter                             Self;
+  typedef ImageToImageFilter< TDisplacementField, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                   Pointer;
+  typedef SmartPointer< const Self >                             ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -74,24 +76,26 @@ public:
   itkTypeMacro(GridForwardWarpImageFilter, ImageToImageFilter);
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
   /** Inherit some types from the superclass. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using IndexType = typename OutputImageType::IndexType;
-  using SizeType = typename OutputImageType::SizeType;
-  using PixelType = typename OutputImageType::PixelType;
-  using SpacingType = typename OutputImageType::SpacingType;
+  typedef typename Superclass::OutputImageType    OutputImageType;
+  typedef typename Superclass::OutputImagePointer OutputImagePointer;
+  typedef typename OutputImageType::IndexType     IndexType;
+  typedef typename OutputImageType::SizeType      SizeType;
+  typedef typename OutputImageType::PixelType     PixelType;
+  typedef typename OutputImageType::SpacingType   SpacingType;
 
   /** Determine the image dimension. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int DisplacementFieldDimension = TDisplacementField::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(DisplacementFieldDimension, unsigned int,
+                      TDisplacementField::ImageDimension);
 
-  /** Deformation field type alias support */
-  using DisplacementFieldType = TDisplacementField;
-  using DisplacementFieldConstPointer = typename DisplacementFieldType::ConstPointer;
-  using DisplacementType = typename DisplacementFieldType::PixelType;
+  /** Deformation field typedef support. */
+  typedef TDisplacementField                           DisplacementFieldType;
+  typedef typename DisplacementFieldType::ConstPointer DisplacementFieldConstPointer;
+  typedef typename DisplacementFieldType::PixelType    DisplacementType;
 
   /** Set the background value */
   itkSetMacro(BackgroundValue, PixelType);
@@ -107,31 +111,32 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, DisplacementFieldDimension>));
-  itkConceptMacro(DisplacementFieldHasNumericTraitsCheck,
-                  (Concept::HasNumericTraits<typename TDisplacementField::PixelType::ValueType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, DisplacementFieldDimension > ) );
+  itkConceptMacro( DisplacementFieldHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TDisplacementField::PixelType::ValueType > ) );
   // End concept checking
 #endif
 
 protected:
   GridForwardWarpImageFilter();
-  ~GridForwardWarpImageFilter() override = default;
+  ~GridForwardWarpImageFilter() {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GridForwardWarpImageFilter);
+
   PixelType    m_BackgroundValue;
   PixelType    m_ForegroundValue;
-  unsigned int m_GridPixSpacing{ 5 };
+  unsigned int m_GridPixSpacing;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGridForwardWarpImageFilter.hxx"
+#include "itkGridForwardWarpImageFilter.hxx"
 #endif
 
 #endif

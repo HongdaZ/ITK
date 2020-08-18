@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,9 +27,19 @@ namespace itk
  * Constructor
  */
 template <typename TInputPointSet, typename TOutput, typename TCoordRep>
-PointSetFunction<TInputPointSet, TOutput, TCoordRep>::PointSetFunction()
+PointSetFunction<TInputPointSet, TOutput, TCoordRep>
+::PointSetFunction()
 {
-  this->m_PointSet = nullptr;
+  this->m_PointSet = ITK_NULLPTR;
+}
+
+/**
+ * Destructor
+ */
+template <typename TInputPointSet, typename TOutput, typename TCoordRep>
+PointSetFunction<TInputPointSet, TOutput, TCoordRep>
+::~PointSetFunction()
+{
 }
 
 /**
@@ -37,9 +47,10 @@ PointSetFunction<TInputPointSet, TOutput, TCoordRep>::PointSetFunction()
  */
 template <typename TInputPointSet, typename TOutput, typename TCoordRep>
 void
-PointSetFunction<TInputPointSet, TOutput, TCoordRep>::PrintSelf(std::ostream & os, Indent indent) const
+PointSetFunction<TInputPointSet, TOutput, TCoordRep>
+::PrintSelf( std::ostream& os, Indent indent) const
 {
-  Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf( os, indent );
   os << indent << "InputPointSet: " << m_PointSet.GetPointer() << std::endl;
 }
 
@@ -48,7 +59,8 @@ PointSetFunction<TInputPointSet, TOutput, TCoordRep>::PrintSelf(std::ostream & o
  */
 template <typename TInputPointSet, typename TOutput, typename TCoordRep>
 void
-PointSetFunction<TInputPointSet, TOutput, TCoordRep>::SetInputPointSet(const InputPointSetType * ptr)
+PointSetFunction<TInputPointSet, TOutput, TCoordRep>
+::SetInputPointSet( const InputPointSetType * ptr )
 {
   this->m_PointSet = ptr;
 }

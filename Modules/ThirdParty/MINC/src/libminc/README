@@ -86,7 +86,7 @@ MINC_MAX_FILE_BUFFER_KB = <N>
 #
 MINC_MAX_MEMORY_KB = <N>
 
-# Memory cache for MINC2 files, per open file
+# FILE cache, used in some minc programs
 #
 MINC_FILE_CACHE_MB = <N>
 
@@ -107,3 +107,4 @@ DOCUMENTATION
 -------------
 
 http://en.wikibooks.org/wiki/MINC
+

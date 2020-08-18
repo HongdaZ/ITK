@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ namespace itk
  * encapsulate simple types (float, int, std::vector).
  * AutoPointerDataObjectDecorator will decorate any pointer type (for
  * objects other than subclasses of itkObject) and manage the memory
- * deallocating of the component.
+ * deallocationg of the component.
  *
  * \sa SimpleDataObjectDecorator
  * \sa AutoPointerDataObjectDecorator
@@ -62,22 +62,20 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename T>
-class ITK_TEMPLATE_EXPORT DataObjectDecorator : public DataObject
+template< typename T >
+class ITK_TEMPLATE_EXPORT DataObjectDecorator:public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DataObjectDecorator);
-
-  /** Standard type alias. */
-  using Self = DataObjectDecorator;
-  using Superclass = DataObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs. */
+  typedef DataObjectDecorator        Self;
+  typedef DataObject                 Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Typedef for the component type (object being decorated) */
-  using ComponentType = T;
-  using ComponentPointer = typename T::Pointer;
-  using ComponentConstPointer = typename T::ConstPointer;
+  typedef T                        ComponentType;
+  typedef typename T::Pointer      ComponentPointer;
+  typedef typename T::ConstPointer ComponentConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -86,24 +84,19 @@ public:
   itkTypeMacro(DataObjectDecorator, DataObject);
 
   /** Set the contained object */
-  virtual void
-  Set(const ComponentType * val);
+  virtual void Set( const ComponentType *val);
 
   /** Get the contained object */
-  virtual const ComponentType *
-  Get() const;
-  virtual ComponentType *
-  GetModifiable();
+  virtual const ComponentType * Get() const;
+  virtual ComponentType * GetModifiable();
 
   /** The most recent MTime of this object and the held component */
-  ModifiedTimeType
-  GetMTime() const override;
+  virtual ModifiedTimeType GetMTime() const ITK_OVERRIDE;
 
   /** Restore the data object to its initial state. This means
    *  releasing the help component.
    */
-  void
-  Initialize() override;
+  virtual void Initialize() ITK_OVERRIDE;
 
   /** \brief Graft the content of one decorator onto another
    *
@@ -111,10 +104,8 @@ public:
    * then the component pointer is copies to that both decorators
    * refer to the same object.
    */
-  void
-  Graft(const DataObject *) override;
-  void
-  Graft(const Self * decorator);
+  virtual void Graft( const DataObject * ) ITK_OVERRIDE;
+  void Graft( const Self * decorator );
 
   /** Method to aid in dynamic Graft of polymorphic types.
    *
@@ -122,31 +113,32 @@ public:
    * template parameter must be provided.
    */
   template <typename TOther>
-  void
-  Graft(const DataObjectDecorator<TOther> * decorator)
-  {
-    auto * component = const_cast<ComponentType *>(dynamic_cast<const ComponentType *>(decorator->Get()));
-    if (!component)
+  void Graft( const DataObjectDecorator<TOther> * decorator )
     {
-      return;
+      ComponentType *component = const_cast< ComponentType * >( dynamic_cast< const ComponentType * >( decorator->Get() ) );
+      if ( !component  )
+        {
+        return;
+        }
+      this->Set( component );
     }
-    this->Set(component);
-  }
 
 protected:
-  DataObjectDecorator() = default;
-  ~DataObjectDecorator() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  DataObjectDecorator();
+  ~DataObjectDecorator() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 protected:
+
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DataObjectDecorator);
+
   ComponentPointer m_Component;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDataObjectDecorator.hxx"
+#include "itkDataObjectDecorator.hxx"
 #endif
 
 #endif

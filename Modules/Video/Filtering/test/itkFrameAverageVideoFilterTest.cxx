@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,18 +21,17 @@
 #include "itkVideoFileReader.h"
 #include "itkVideoFileWriter.h"
 #include "itkFileListVideoIOFactory.h"
-#include "itkTestingMacros.h"
 
 
-// Set up type alias for test
-constexpr unsigned int Dimension = 2;
-using InputPixelType = unsigned char;
-using InputFrameType = itk::Image<InputPixelType, Dimension>;
-using InputVideoType = itk::VideoStream<InputFrameType>;
-using OutputPixelType = double;
-using OutputFrameType = itk::Image<OutputPixelType, Dimension>;
-using OutputVideoType = itk::VideoStream<OutputFrameType>;
-using SizeValueType = itk::SizeValueType;
+// Set up typedefs for test
+const unsigned int Dimension =                   2;
+typedef unsigned char                            InputPixelType;
+typedef itk::Image< InputPixelType, Dimension >  InputFrameType;
+typedef itk::VideoStream< InputFrameType >       InputVideoType;
+typedef double                                   OutputPixelType;
+typedef itk::Image< OutputPixelType, Dimension > OutputFrameType;
+typedef itk::VideoStream< OutputFrameType >      OutputVideoType;
+typedef itk::SizeValueType                       SizeValueType;
 
 
 /**
@@ -46,14 +45,13 @@ namespace FrameAverageVideoFilterTest
 /**
  * Create a new frame and fill it with the indicated value
  */
-InputFrameType::Pointer
-CreateInputFrame(InputPixelType val)
+InputFrameType::Pointer CreateInputFrame(InputPixelType val)
 {
   InputFrameType::Pointer out = InputFrameType::New();
 
   InputFrameType::RegionType largestRegion;
-  InputFrameType::SizeType   sizeLR;
-  InputFrameType::IndexType  startLR;
+  InputFrameType::SizeType sizeLR;
+  InputFrameType::IndexType startLR;
   startLR.Fill(0);
   sizeLR[0] = 50;
   sizeLR[1] = 40;
@@ -65,11 +63,11 @@ CreateInputFrame(InputPixelType val)
 
   // Fill with the desired value
   itk::ImageRegionIterator<InputFrameType> iter(out, largestRegion);
-  while (!iter.IsAtEnd())
-  {
+  while(!iter.IsAtEnd())
+    {
     iter.Set(val);
     ++iter;
-  }
+    }
 
   return out;
 }
@@ -81,27 +79,25 @@ CreateInputFrame(InputPixelType val)
 /**
  * Main test
  */
-int
-itkFrameAverageVideoFilterTest(int argc, char * argv[])
+int itkFrameAverageVideoFilterTest( int argc, char* argv[] )
 {
 
   //////
   // Check Arguments
   //////
   if (argc < 3)
-  {
-    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << " input_file_string output_file_string"
-              << std::endl;
+    {
+    std::cout << "Usage: " << argv[0] << " input_file_string output_file_string" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Instantiate the filter
-  using FilterType = itk::FrameAverageVideoFilter<InputVideoType, OutputVideoType>;
+  typedef itk::FrameAverageVideoFilter< InputVideoType, OutputVideoType > FilterType;
   FilterType::Pointer filter = FilterType::New();
 
   // Set up an input VideoStream
   InputVideoType::Pointer inputVideo = InputVideoType::New();
-  SizeValueType           numInputFrames = 50;
+  SizeValueType numInputFrames = 50;
   inputVideo->SetNumberOfBuffers(numInputFrames);
   itk::TemporalRegion inputTempRegion;
   inputTempRegion.SetFrameStart(0);
@@ -110,9 +106,9 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   inputVideo->SetRequestedTemporalRegion(inputTempRegion);
   inputVideo->SetBufferedTemporalRegion(inputTempRegion);
   for (SizeValueType i = 0; i < numInputFrames; ++i)
-  {
+    {
     inputVideo->SetFrame(i, itk::FrameAverageVideoFilterTest::CreateInputFrame(i));
-  }
+    }
   filter->SetInput(inputVideo);
 
 
@@ -124,28 +120,29 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   filter->UpdateOutputInformation();
 
   // Make sure output largest possible temporal region is correct
-  itk::TemporalRegion outputLargestTempRegion = filter->GetOutput()->GetLargestPossibleTemporalRegion();
-  SizeValueType       outputStart = outputLargestTempRegion.GetFrameStart();
-  SizeValueType       outputDuration = outputLargestTempRegion.GetFrameDuration();
+  itk::TemporalRegion outputLargestTempRegion =
+    filter->GetOutput()->GetLargestPossibleTemporalRegion();
+  SizeValueType outputStart = outputLargestTempRegion.GetFrameStart();
+  SizeValueType outputDuration = outputLargestTempRegion.GetFrameDuration();
   if (outputStart != 0)
-  {
-    std::cerr << "output's LargestPossibleTemporalRegion incorrect start. Got: " << outputStart << " Expected: 0"
-              << std::endl;
+    {
+    std::cerr << "output's LargestPossibleTemporalRegion incorrect start. Got: "
+      << outputStart << " Expected: 0" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   if (outputDuration != numInputFrames - 1)
-  {
-    std::cerr << "output's LargestPossibleTemporalRegion incorrect duration. Got: " << outputDuration
-              << " Expected: " << numInputFrames - 1 << std::endl;
+    {
+    std::cerr << "output's LargestPossibleTemporalRegion incorrect duration. Got: "
+      << outputDuration << " Expected: " << numInputFrames - 1 << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Go one frame at a time and check results
   OutputFrameType::IndexType checkPx;
   checkPx[0] = inputVideo->GetFrame(0)->GetLargestPossibleRegion().GetSize()[0] - 1;
   checkPx[1] = inputVideo->GetFrame(0)->GetLargestPossibleRegion().GetSize()[1] - 1;
   for (unsigned int i = outputStart; i < outputStart + outputDuration; ++i)
-  {
+    {
     itk::TemporalRegion reqTempRegion;
     reqTempRegion.SetFrameStart(i);
     reqTempRegion.SetFrameDuration(1);
@@ -153,17 +150,17 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
     filter->Update();
 
     // Check the results
-    OutputPixelType expectedVal = (OutputPixelType)(i + (i + 1)) / 2.0;
+    OutputPixelType expectedVal = (OutputPixelType)(i + (i+1))/2.0;
     OutputPixelType actualVal = filter->GetOutput()->GetFrame(i)->GetPixel(checkPx);
-    double          eps = 0.00001;
+    double eps = 0.00001;
     if (expectedVal < actualVal - eps || expectedVal > actualVal + eps)
-    {
+      {
       std::cerr << "Filter failed to compute frame " << i << " correctly over 2 frames." << std::endl;
       std::cerr << "Expected Pixel Val: " << expectedVal << std::endl;
       std::cerr << "Actual Pixel Val: " << actualVal << std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
   //////
   // Test filter with average over 3 frames
@@ -180,33 +177,34 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   outputStart = outputLargestTempRegion.GetFrameStart();
   outputDuration = outputLargestTempRegion.GetFrameDuration();
   if (outputStart != 0)
-  {
-    std::cerr << "output's LargestPossibleTemporalRegion incorrect start. Got: " << outputStart << " Expected: 0"
-              << std::endl;
+    {
+    std::cerr << "output's LargestPossibleTemporalRegion incorrect start. Got: "
+      << outputStart << " Expected: 0" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   if (outputDuration != numInputFrames - 2)
-  {
-    std::cerr << "output's LargestPossibleTemporalRegion incorrect duration. Got: " << outputDuration
-              << " Expected: " << numInputFrames - 2 << std::endl;
+    {
+    std::cerr << "output's LargestPossibleTemporalRegion incorrect duration. Got: "
+      << outputDuration << " Expected: " << numInputFrames - 2 << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Get all the frames at once and check results
   filter->Update();
   for (unsigned int i = outputStart; i < outputStart + outputDuration; ++i)
-  {
-    OutputPixelType expectedVal = (OutputPixelType)(i + (i + 1) + (i + 2)) / 3.0;
-    OutputPixelType actualVal = filter->GetOutput()->GetFrame(i)->GetPixel(checkPx);
-    double          eps = 0.00001;
-    if (expectedVal < actualVal - eps || expectedVal > actualVal + eps)
     {
+    OutputPixelType expectedVal = (OutputPixelType)(i + (i+1) + (i+2))/3.0;
+    OutputPixelType actualVal = filter->GetOutput()->GetFrame(i)->GetPixel(checkPx);
+    double eps = 0.00001;
+    if (expectedVal < actualVal - eps || expectedVal > actualVal + eps)
+      {
       std::cerr << "Filter failed to compute frame " << i << " correctly over 3 frames." << std::endl;
       std::cerr << "Expected Pixel Val: " << expectedVal << std::endl;
       std::cerr << "Actual Pixel Val: " << actualVal << std::endl;
       return EXIT_FAILURE;
+      }
+
     }
-  }
 
 
   //////
@@ -214,18 +212,18 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   //////
 
   // Register FileListIO with the factory -- shouldn't have to do this. Needs fixing
-  itk::ObjectFactoryBase::RegisterFactory(itk::FileListVideoIOFactory::New());
+  itk::ObjectFactoryBase::RegisterFactory( itk::FileListVideoIOFactory::New() );
 
   // Set up reader and writer
-  using VideoReaderType = itk::VideoFileReader<InputVideoType>;
-  using VideoWriterType = itk::VideoFileWriter<InputVideoType>;
+  typedef itk::VideoFileReader<InputVideoType> VideoReaderType;
+  typedef itk::VideoFileWriter<InputVideoType> VideoWriterType;
   VideoReaderType::Pointer reader = VideoReaderType::New();
   VideoWriterType::Pointer writer = VideoWriterType::New();
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
 
   // Set up pipeline with 2 average filters each over 2 frames
-  using FilterType2 = itk::FrameAverageVideoFilter<InputVideoType, InputVideoType>;
+  typedef itk::FrameAverageVideoFilter<InputVideoType, InputVideoType> FilterType2;
   FilterType2::Pointer avg1 = FilterType2::New();
   FilterType2::Pointer avg2 = FilterType2::New();
   avg1->SetNumberOfFrames(2);

@@ -101,14 +101,14 @@ static GROUP_ENTRY groupname[] = {
   {0xfffc,"GEN","Generic"},
   {0x7fe0,"PXL","Pixel Data"},
   {0xffff,"UNK","Unknown"},
-  {0,nullptr,nullptr} // will not be added to the dict
+  {0,0,0} // will not be added to the dict
 };
 
 void GroupDict::FillDefaultGroupName()
 {
   unsigned int i = 0;
   GROUP_ENTRY n = groupname[i];
-  while( n.name != nullptr )
+  while( n.name != 0 )
   {
     Insert( n.group, n.abbreviation, n.name );
     n = groupname[++i];

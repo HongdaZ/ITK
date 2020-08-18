@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,111 +28,103 @@
 #include "itkCommand.h"
 #include <algorithm>
 
-#include "itkSingleton.h"
-
 namespace itk
 {
 /**
  * Initialize static member that controls warning display.
  */
-itkGetGlobalValueMacro(Object, bool, GlobalWarningDisplay, true);
-
-bool * Object::m_GlobalWarningDisplay;
+bool Object:: m_GlobalWarningDisplay = true;
 
 class ITKCommon_HIDDEN Observer
 {
 public:
-  Observer(Command * c, const EventObject * event, unsigned long tag)
-    : m_Command(c)
-    , m_Event(event)
-    , m_Tag(tag)
+  Observer(Command *c,
+           const EventObject *event,
+           unsigned long tag):m_Command(c),
+    m_Event(event),
+    m_Tag(tag)
   {}
   virtual ~Observer();
-  Command::Pointer    m_Command;
-  const EventObject * m_Event;
-  unsigned long       m_Tag;
+  Command::Pointer   m_Command;
+  const EventObject *m_Event;
+  unsigned long      m_Tag;
 };
 /* Create Out-of-line Definition */
-Observer::~Observer()
-{
-  delete m_Event;
-}
+Observer::~Observer() { delete m_Event; }
 
 class ITKCommon_HIDDEN SubjectImplementation
 {
 public:
-  SubjectImplementation() { m_Count = 0; }
+  SubjectImplementation() : m_ListModified(false) { m_Count = 0; }
   ~SubjectImplementation();
 
-  unsigned long
-  AddObserver(const EventObject & event, Command * cmd);
+  unsigned long AddObserver(const EventObject & event, Command *cmd);
 
-  unsigned long
-  AddObserver(const EventObject & event, Command * cmd) const;
+  unsigned long AddObserver(const EventObject & event, Command *cmd) const;
 
-  void
-  RemoveObserver(unsigned long tag);
+  void RemoveObserver(unsigned long tag);
 
-  void
-  RemoveAllObservers();
+  void RemoveAllObservers();
 
-  void
-  InvokeEvent(const EventObject & event, Object * self);
+  void InvokeEvent(const EventObject & event, Object *self);
 
-  void
-  InvokeEvent(const EventObject & event, const Object * self);
+  void InvokeEvent(const EventObject & event, const Object *self);
 
-  Command *
-  GetCommand(unsigned long tag);
+  Command * GetCommand(unsigned long tag);
 
-  bool
-  HasObserver(const EventObject & event) const;
+  bool HasObserver(const EventObject & event) const;
 
-  bool
-  PrintObservers(std::ostream & os, Indent indent) const;
+  bool PrintObservers(std::ostream & os, Indent indent) const;
 
-  bool m_ListModified{ false };
+  bool m_ListModified;
 
 protected:
+
   // RAII of ListModified state to ensure exception safety
   struct SaveRestoreListModified
   {
     // save the list modified flag, and reset to false
-    SaveRestoreListModified(SubjectImplementation * s)
-      : m_Subject(s)
-      , m_Save(s->m_ListModified)
-    {
-      m_Subject->m_ListModified = false;
-    }
+    SaveRestoreListModified(SubjectImplementation *s)
+      : m_Subject(s), m_Save(s->m_ListModified)
+      {
+        m_Subject->m_ListModified = false;
+      }
 
     // restore modify flag, and propagate if modified
-    ~SaveRestoreListModified() { m_Subject->m_ListModified = m_Save || m_Subject->m_ListModified; }
+    ~SaveRestoreListModified()
+      {
+        m_Subject->m_ListModified = m_Save||m_Subject->m_ListModified;
+      }
 
-    SubjectImplementation * m_Subject;
-    bool                    m_Save;
+    SubjectImplementation *m_Subject;
+    bool m_Save;
   };
 
-  template <typename TObject>
-  void
-  InvokeEventRecursion(const EventObject & event, TObject * self, std::list<Observer *>::reverse_iterator & i);
+  template<typename TObject>
+    void InvokeEventRecursion(const EventObject & event,
+                              TObject *self,
+                              std::list< Observer * >::reverse_iterator &i);
 
 private:
-  std::list<Observer *> m_Observers;
-  unsigned long         m_Count;
+  std::list< Observer * > m_Observers;
+  unsigned long           m_Count;
 };
 
-SubjectImplementation::~SubjectImplementation()
+SubjectImplementation::
+~SubjectImplementation()
 {
-  for (auto & observer : m_Observers)
-  {
-    delete observer;
-  }
+  for ( std::list< Observer * >::iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
+    {
+    delete ( *i );
+    }
 }
 
 unsigned long
-SubjectImplementation::AddObserver(const EventObject & event, Command * cmd)
+SubjectImplementation::AddObserver(const EventObject & event,
+                                   Command *cmd)
 {
-  auto * ptr = new Observer(cmd, event.MakeObject(), m_Count);
+  Observer *ptr = new Observer(cmd, event.MakeObject(), m_Count);
 
   m_Observers.push_back(ptr);
   m_Count++;
@@ -140,10 +132,11 @@ SubjectImplementation::AddObserver(const EventObject & event, Command * cmd)
 }
 
 unsigned long
-SubjectImplementation::AddObserver(const EventObject & event, Command * cmd) const
+SubjectImplementation::AddObserver(const EventObject & event,
+                                   Command *cmd) const
 {
-  auto * ptr = new Observer(cmd, event.MakeObject(), m_Count);
-  auto * me = const_cast<SubjectImplementation *>(this);
+  Observer *             ptr = new Observer(cmd, event.MakeObject(), m_Count);
+  SubjectImplementation *me = const_cast< SubjectImplementation * >( this );
 
   me->m_Observers.push_back(ptr);
   me->m_Count++;
@@ -153,31 +146,34 @@ SubjectImplementation::AddObserver(const EventObject & event, Command * cmd) con
 void
 SubjectImplementation::RemoveObserver(unsigned long tag)
 {
-  for (auto i = m_Observers.begin(); i != m_Observers.end(); ++i)
-  {
-    if ((*i)->m_Tag == tag)
+  for ( std::list< Observer * >::iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
     {
-      delete (*i);
+    if ( ( *i )->m_Tag == tag )
+      {
+      delete ( *i );
       m_Observers.erase(i);
       m_ListModified = true;
       return;
+      }
     }
-  }
 }
 
 void
 SubjectImplementation::RemoveAllObservers()
 {
-  for (auto & observer : m_Observers)
-  {
-    delete observer;
-  }
+  for ( std::list< Observer * >::iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
+    {
+    delete ( *i );
+    }
   m_Observers.clear();
   m_ListModified = true;
 }
 
 void
-SubjectImplementation::InvokeEvent(const EventObject & event, Object * self)
+SubjectImplementation::InvokeEvent(const EventObject & event,
+                                   Object *self)
 {
   // While an event is being invoked, it's possible to remove
   // observers, or another event to be invoked. All methods which
@@ -187,24 +183,25 @@ SubjectImplementation::InvokeEvent(const EventObject & event, Object * self)
 
   SaveRestoreListModified save(this);
 
-  auto i = m_Observers.rbegin();
-  InvokeEventRecursion(event, self, i);
+  std::list< Observer * >::reverse_iterator i = m_Observers.rbegin();
+  InvokeEventRecursion( event, self, i );
 }
 
 void
-SubjectImplementation::InvokeEvent(const EventObject & event, const Object * self)
+SubjectImplementation::InvokeEvent(const EventObject & event,
+                                   const Object *self)
 {
   SaveRestoreListModified save(this);
 
-  auto i = m_Observers.rbegin();
-  InvokeEventRecursion(event, self, i);
+  std::list< Observer * >::reverse_iterator i = m_Observers.rbegin();
+  InvokeEventRecursion( event, self, i );
 }
 
-template <typename TObject>
+template<typename TObject>
 void
-SubjectImplementation::InvokeEventRecursion(const EventObject &                       event,
-                                            TObject *                                 self,
-                                            std::list<Observer *>::reverse_iterator & i)
+SubjectImplementation::InvokeEventRecursion( const EventObject & event,
+                                             TObject *self,
+                                             std::list< Observer * >::reverse_iterator &i)
 {
   // This method recursively visits the list of observers in reverse
   // order so that on the last recursion the first observer can be
@@ -216,25 +213,26 @@ SubjectImplementation::InvokeEventRecursion(const EventObject &                 
   // observer save on the stack.
 
   while (i != m_Observers.rend())
-  {
+    {
 
     // save observer
-    const Observer * o = *i;
+    const Observer *o = *i;
 
-    if (o->m_Event->CheckEvent(&event))
-    {
-      InvokeEventRecursion(event, self, ++i);
-
-      if (!m_ListModified || std::find(m_Observers.begin(), m_Observers.end(), o) != m_Observers.end())
+    if ( o->m_Event->CheckEvent(&event) )
       {
+      InvokeEventRecursion( event, self, ++i );
+
+      if ( !m_ListModified ||
+           std::find(m_Observers.begin(), m_Observers.end(), o) != m_Observers.end() )
+        {
         o->m_Command->Execute(self, event);
-      }
+        }
 
       return;
-    }
+      }
 
     ++i;
-  }
+    }
 
   return;
 }
@@ -242,62 +240,65 @@ SubjectImplementation::InvokeEventRecursion(const EventObject &                 
 Command *
 SubjectImplementation::GetCommand(unsigned long tag)
 {
-  for (auto & observer : m_Observers)
-  {
-    if (observer->m_Tag == tag)
+  for ( std::list< Observer * >::iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
     {
-      return observer->m_Command;
+    if ( ( *i )->m_Tag == tag )
+      {
+      return ( *i )->m_Command;
+      }
     }
-  }
-  return nullptr;
+  return ITK_NULLPTR;
 }
 
 bool
 SubjectImplementation::HasObserver(const EventObject & event) const
 {
-  for (auto observer : m_Observers)
-  {
-    const EventObject * e = observer->m_Event;
-    if (e->CheckEvent(&event))
+  for ( std::list< Observer * >::const_iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
     {
+    const EventObject *e =  ( *i )->m_Event;
+    if ( e->CheckEvent(&event) )
+      {
       return true;
+      }
     }
-  }
   return false;
 }
 
 bool
 SubjectImplementation::PrintObservers(std::ostream & os, Indent indent) const
 {
-  if (m_Observers.empty())
-  {
+  if ( m_Observers.empty() )
+    {
     return false;
-  }
+    }
 
-  for (auto observer : m_Observers)
-  {
-    const EventObject * e = observer->m_Event;
-    const Command *     c = observer->m_Command;
+  for ( std::list< Observer * >::const_iterator i = m_Observers.begin();
+        i != m_Observers.end(); ++i )
+    {
+    const EventObject *e =  ( *i )->m_Event;
+    const Command *    c = ( *i )->m_Command;
     os << indent << e->GetEventName() << "(" << c->GetNameOfClass();
     if (!c->GetObjectName().empty())
-    {
+      {
       os << " \"" << c->GetObjectName() << "\"";
-    }
+      }
     os << ")\n";
-  }
+    }
   return true;
 }
 
 Object::Pointer
 Object::New()
 {
-  Pointer  smartPtr;
-  Object * rawPtr = ::itk::ObjectFactory<Object>::Create();
+  Pointer smartPtr;
+  Object *rawPtr = ::itk::ObjectFactory< Object >::Create();
 
-  if (rawPtr == nullptr)
-  {
+  if ( rawPtr == ITK_NULLPTR )
+    {
     rawPtr = new Object;
-  }
+    }
   smartPtr = rawPtr;
   rawPtr->UnRegister();
   return smartPtr;
@@ -313,7 +314,8 @@ Object::CreateAnother() const
  * Turn debugging output on.
  */
 void
-Object ::DebugOn() const
+Object
+::DebugOn() const
 {
   m_Debug = true;
 }
@@ -322,7 +324,8 @@ Object ::DebugOn() const
  * Turn debugging output off.
  */
 void
-Object ::DebugOff() const
+Object
+::DebugOff() const
 {
   m_Debug = false;
 }
@@ -331,7 +334,8 @@ Object ::DebugOff() const
  * Get the value of the debug flag.
  */
 bool
-Object ::GetDebug() const
+Object
+::GetDebug() const
 {
   return m_Debug;
 }
@@ -340,7 +344,8 @@ Object ::GetDebug() const
  * Set the value of the debug flag. A non-zero value turns debugging on.
  */
 void
-Object ::SetDebug(bool debugFlag) const
+Object
+::SetDebug(bool debugFlag) const
 {
   m_Debug = debugFlag;
 }
@@ -349,7 +354,8 @@ Object ::SetDebug(bool debugFlag) const
  * Return the modification for this object.
  */
 ModifiedTimeType
-Object ::GetMTime() const
+Object
+::GetMTime() const
 {
   return m_MTime.GetMTime();
 }
@@ -358,7 +364,8 @@ Object ::GetMTime() const
  * Return the modification for this object.
  */
 const TimeStamp &
-Object ::GetTimeStamp() const
+Object
+::GetTimeStamp() const
 {
   return m_MTime;
 }
@@ -366,7 +373,8 @@ Object ::GetTimeStamp() const
 /** Set the time stamp of this object. To be used very carefully !!!.
  * Most mortals will never need to call this method. */
 void
-Object ::SetTimeStamp(const TimeStamp & timeStamp)
+Object
+::SetTimeStamp( const TimeStamp & timeStamp )
 {
   this->m_MTime = timeStamp;
 }
@@ -375,20 +383,22 @@ Object ::SetTimeStamp(const TimeStamp & timeStamp)
  * Make sure this object's modified time is greater than all others.
  */
 void
-Object ::Modified() const
+Object
+::Modified() const
 {
   m_MTime.Modified();
-  InvokeEvent(ModifiedEvent());
+  InvokeEvent( ModifiedEvent() );
 }
 
 /**
  * Increase the reference count (mark as used by another object).
  */
 void
-Object ::Register() const
+Object
+::Register() const
 {
-  itkDebugMacro(<< "Registered, "
-                << "ReferenceCount = " << (m_ReferenceCount + 1));
+  itkDebugMacro( << "Registered, "
+                 << "ReferenceCount = " << ( m_ReferenceCount + 1 ) );
 
   // call the parent
   Superclass::Register();
@@ -398,39 +408,40 @@ Object ::Register() const
  * Decrease the reference count (release by another object).
  */
 void
-Object ::UnRegister() const noexcept
+Object
+::UnRegister() const ITK_NOEXCEPT
 {
   // call the parent
-  itkDebugMacro(<< "UnRegistered, "
-                << "ReferenceCount = " << (m_ReferenceCount - 1));
+  itkDebugMacro( << "UnRegistered, "
+                 << "ReferenceCount = " << ( m_ReferenceCount - 1 ) );
 
-  if ((m_ReferenceCount - 1) <= 0)
-  {
+  if ( ( m_ReferenceCount - 1 ) <= 0 )
+    {
     /**
      * If there is a delete method, invoke it.
      */
     try
-    {
-      this->InvokeEvent(DeleteEvent());
-    }
-    catch (...)
-    {
+      {
+      this->InvokeEvent( DeleteEvent() );
+      }
+    catch(...)
+      {
       // The macro is not use to avoid a memory allocation, and reduce
       // potential exceptions.
       // itkWarningMacro("Exception occurred in DeleteEvent Observer!");
       try
-      {
-        if (GetGlobalWarningDisplay())
         {
-          ::itk::OutputWindowDisplayWarningText("WARNING: Exception occurred in DeleteEvent Observer!");
+        if ( GetGlobalWarningDisplay() )
+          {
+          ::itk::OutputWindowDisplayWarningText( "WARNING: Exception occurred in DeleteEvent Observer!" );
+          }
+        }
+      catch(...)
+        {
+        // ignore exception in warning display
         }
       }
-      catch (...)
-      {
-        // ignore exception in warning display
-      }
     }
-  }
 
   Superclass::UnRegister();
 }
@@ -439,26 +450,27 @@ Object ::UnRegister() const noexcept
  * Sets the reference count (use with care)
  */
 void
-Object ::SetReferenceCount(int ref)
+Object
+::SetReferenceCount(int ref)
 {
   itkDebugMacro(<< "Reference Count set to " << ref);
 
   // ReferenceCount in now unlocked.  We may have a race condition to
   // to delete the object.
-  if (ref <= 0)
-  {
+  if ( ref <= 0 )
+    {
     /**
      * If there is a delete method, invoke it.
      */
     try
-    {
-      this->InvokeEvent(DeleteEvent());
-    }
-    catch (...)
-    {
+      {
+      this->InvokeEvent( DeleteEvent() );
+      }
+    catch(...)
+      {
       itkWarningMacro("Exception occurred in DeleteEvent Observer!");
+      }
     }
-  }
 
   Superclass::SetReferenceCount(ref);
 }
@@ -467,105 +479,115 @@ Object ::SetReferenceCount(int ref)
  * Set the value of the global debug output control flag.
  */
 void
-Object ::SetGlobalWarningDisplay(bool val)
+Object
+::SetGlobalWarningDisplay(bool val)
 {
-  itkInitGlobalsMacro(GlobalWarningDisplay);
-  *m_GlobalWarningDisplay = val;
+  m_GlobalWarningDisplay = val;
 }
 
 /**
  * Get the value of the global debug output control flag.
  */
 bool
-Object ::GetGlobalWarningDisplay()
+Object
+::GetGlobalWarningDisplay()
 {
-  return *Object::GetGlobalWarningDisplayPointer();
+  return m_GlobalWarningDisplay;
 }
 
 unsigned long
-Object ::AddObserver(const EventObject & event, Command * cmd)
+Object
+::AddObserver(const EventObject & event, Command *cmd)
 {
-  if (!this->m_SubjectImplementation)
-  {
+  if ( !this->m_SubjectImplementation )
+    {
     this->m_SubjectImplementation = new SubjectImplementation;
-  }
+    }
   return this->m_SubjectImplementation->AddObserver(event, cmd);
 }
 
 unsigned long
-Object ::AddObserver(const EventObject & event, Command * cmd) const
+Object
+::AddObserver(const EventObject & event, Command *cmd) const
 {
-  if (!this->m_SubjectImplementation)
-  {
-    auto * me = const_cast<Self *>(this);
+  if ( !this->m_SubjectImplementation )
+    {
+    Self *me = const_cast< Self * >( this );
     me->m_SubjectImplementation = new SubjectImplementation;
-  }
+    }
   return this->m_SubjectImplementation->AddObserver(event, cmd);
 }
 
 Command *
-Object ::GetCommand(unsigned long tag)
+Object
+::GetCommand(unsigned long tag)
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     return this->m_SubjectImplementation->GetCommand(tag);
-  }
-  return nullptr;
+    }
+  return ITK_NULLPTR;
 }
 
 void
-Object ::RemoveObserver(unsigned long tag)
+Object
+::RemoveObserver(unsigned long tag)
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     this->m_SubjectImplementation->RemoveObserver(tag);
-  }
+    }
 }
 
 void
-Object ::RemoveAllObservers()
+Object
+::RemoveAllObservers()
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     this->m_SubjectImplementation->RemoveAllObservers();
-  }
+    }
 }
 
 void
-Object ::InvokeEvent(const EventObject & event)
+Object
+::InvokeEvent(const EventObject & event)
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     this->m_SubjectImplementation->InvokeEvent(event, this);
-  }
+    }
 }
 
 void
-Object ::InvokeEvent(const EventObject & event) const
+Object
+::InvokeEvent(const EventObject & event) const
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     this->m_SubjectImplementation->InvokeEvent(event, this);
-  }
+    }
 }
 
 bool
-Object ::HasObserver(const EventObject & event) const
+Object
+::HasObserver(const EventObject & event) const
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     return this->m_SubjectImplementation->HasObserver(event);
-  }
+    }
   return false;
 }
 
 bool
-Object ::PrintObservers(std::ostream & os, Indent indent) const
+Object
+::PrintObservers(std::ostream & os, Indent indent) const
 {
-  if (this->m_SubjectImplementation)
-  {
+  if ( this->m_SubjectImplementation )
+    {
     return this->m_SubjectImplementation->PrintObservers(os, indent);
-  }
+    }
   return false;
 }
 
@@ -573,14 +595,19 @@ Object ::PrintObservers(std::ostream & os, Indent indent) const
  * Create an object with Debug turned off and modified time initialized
  * to the most recently modified object.
  */
-Object ::Object()
-  : LightObject()
-  , m_ObjectName()
+Object
+::Object():
+  LightObject(),
+  m_Debug(false),
+  m_SubjectImplementation(ITK_NULLPTR),
+  m_MetaDataDictionary(ITK_NULLPTR),
+  m_ObjectName()
 {
   this->Modified();
 }
 
-Object ::~Object()
+Object
+::~Object()
 {
   itkDebugMacro(<< "Destructing!");
   delete m_SubjectImplementation;
@@ -592,60 +619,51 @@ Object ::~Object()
  * its superclasses.
  */
 void
-Object ::PrintSelf(std::ostream & os, Indent indent) const
+Object
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   os << indent << "Modified Time: " << this->GetMTime() << std::endl;
-  os << indent << "Debug: " << (m_Debug ? "On\n" : "Off\n");
+  os << indent << "Debug: " << ( m_Debug ? "On\n" : "Off\n" );
   os << indent << "Object Name: " << this->GetObjectName() << std::endl;
   os << indent << "Observers: \n";
-  if (!this->PrintObservers(os, indent.GetNextIndent()))
-  {
+  if ( !this->PrintObservers( os, indent.GetNextIndent() ) )
+    {
     os << indent.GetNextIndent() << "none\n";
-  }
+    }
 }
 
 MetaDataDictionary &
-Object ::GetMetaDataDictionary()
+Object
+::GetMetaDataDictionary(void)
 {
-  if (m_MetaDataDictionary == nullptr)
-  {
+  if ( m_MetaDataDictionary == ITK_NULLPTR )
+    {
     m_MetaDataDictionary = new MetaDataDictionary;
-  }
+    }
   return *m_MetaDataDictionary;
 }
 
 const MetaDataDictionary &
-Object ::GetMetaDataDictionary() const
+Object
+::GetMetaDataDictionary(void) const
 {
-  if (m_MetaDataDictionary == nullptr)
-  {
+  if ( m_MetaDataDictionary == ITK_NULLPTR )
+    {
     m_MetaDataDictionary = new MetaDataDictionary;
-  }
+    }
   return *m_MetaDataDictionary;
 }
 
 void
-Object ::SetMetaDataDictionary(const MetaDataDictionary & rhs)
+Object
+::SetMetaDataDictionary(const MetaDataDictionary & rhs)
 {
-  if (m_MetaDataDictionary == nullptr)
-  {
-    m_MetaDataDictionary = new MetaDataDictionary(rhs);
-    return;
-  }
+  if ( m_MetaDataDictionary == ITK_NULLPTR )
+    {
+    m_MetaDataDictionary = new MetaDataDictionary;
+    }
   *m_MetaDataDictionary = rhs;
 }
-
-void
-Object ::SetMetaDataDictionary(MetaDataDictionary && rrhs)
-{
-  if (m_MetaDataDictionary == nullptr)
-  {
-    m_MetaDataDictionary = new MetaDataDictionary(std::move(rrhs));
-    return;
-  }
-  *m_MetaDataDictionary = std::move(rrhs);
-}
-
 } // end namespace itk

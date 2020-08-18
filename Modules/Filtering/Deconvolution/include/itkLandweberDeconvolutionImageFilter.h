@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,47 +27,45 @@ namespace itk
 {
 namespace Functor
 {
-/**
- *\class LandweberMethod
+/** \class LandweberMethod
  * \brief Functor class for computing a Landweber iteration.
  * \ingroup ITKDeconvolution
  */
-template <typename TInput1, typename TInput2, typename TInput3, typename TOutput>
+template< typename TInput1, typename TInput2, typename TInput3, typename TOutput >
 class ITK_TEMPLATE_EXPORT LandweberMethod
 {
 public:
-  LandweberMethod() = default;
-  ~LandweberMethod() = default;
+  LandweberMethod() {}
+  ~LandweberMethod() {}
 
-  bool
-  operator!=(const LandweberMethod &) const
+  bool operator!=(const LandweberMethod &) const
   {
     return false;
   }
 
-  bool
-  operator==(const LandweberMethod & other) const
+  bool operator==(const LandweberMethod & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & estimateFT, const TInput2 & kernelFT, const TInput2 & inputFT) const
+  inline TOutput operator()(const TInput1 & estimateFT,
+                            const TInput2 & kernelFT,
+                            const TInput2 & inputFT) const
   {
-    return m_Alpha * std::conj(kernelFT) * inputFT +
-           (NumericTraits<typename TInput1::value_type>::OneValue() - m_Alpha * std::norm(kernelFT)) * estimateFT;
+    return m_Alpha * std::conj( kernelFT ) * inputFT +
+      ( NumericTraits< typename TInput1::value_type >::OneValue() - m_Alpha * std::norm( kernelFT ) ) * estimateFT;
   }
 
   typename TInput1::value_type m_Alpha;
+
 };
 } // end namespace Functor
 
-/**
- *\class LandweberDeconvolutionImageFilter
+/** \class LandweberDeconvolutionImageFilter
  * \brief Deconvolve an image using the Landweber deconvolution
  * algorithm.
  *
- * This filter implements the Landweber deconvolution algorthim as
+ * This filter implements the Landweber deconvolution algorthm as
  * defined in Bertero M and Boccacci P, "Introduction to Inverse
  * Problems in Imaging", 1998. The algorithm assumes that the input
  * image has been formed by a linear shift-invariant system with a
@@ -99,39 +97,38 @@ public:
  * \sa RichardsonLucyDeconvolutionImageFilter
  * \sa ProjectedLandweberDeconvolutionImageFilter
  */
-template <typename TInputImage,
-          typename TKernelImage = TInputImage,
-          typename TOutputImage = TInputImage,
-          typename TInternalPrecision = double>
-class ITK_TEMPLATE_EXPORT LandweberDeconvolutionImageFilter
-  : public IterativeDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
+template< typename TInputImage, typename TKernelImage=TInputImage, typename TOutputImage=TInputImage, typename TInternalPrecision=double >
+class ITK_TEMPLATE_EXPORT LandweberDeconvolutionImageFilter :
+  public IterativeDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LandweberDeconvolutionImageFilter);
+  /** Standard typedefs. */
+  typedef LandweberDeconvolutionImageFilter                       Self;
+  typedef IterativeDeconvolutionImageFilter< TInputImage,
+                                             TKernelImage,
+                                             TOutputImage,
+                                             TInternalPrecision > Superclass;
+  typedef SmartPointer< Self >                                    Pointer;
+  typedef SmartPointer< const Self >                              ConstPointer;
 
-  /** Standard type alias. */
-  using Self = LandweberDeconvolutionImageFilter;
-  using Superclass = IterativeDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Other useful type alias. */
-  using InputImageType = TInputImage;
-  using KernelImageType = TKernelImage;
-  using OutputImageType = TOutputImage;
+  /** Other useful typedefs. */
+  typedef TInputImage  InputImageType;
+  typedef TKernelImage KernelImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Internal types used by the FFT filters. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  typedef typename Superclass::InternalImageType               InternalImageType;
+  typedef typename Superclass::InternalImagePointerType        InternalImagePointerType;
+  typedef typename Superclass::InternalComplexType             InternalComplexType;
+  typedef typename Superclass::InternalComplexImageType        InternalComplexImageType;
+  typedef typename Superclass::InternalComplexImagePointerType InternalComplexImagePointerType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LandweberDeconvolutionImageFilter, IterativeDeconvolutionImageFilter);
+  itkTypeMacro(LandweberDeconvolutionImageFilter,
+               IterativeDeconvolutionImageFilter);
 
   /** Set/get relaxation factor. */
   itkSetMacro(Alpha, double);
@@ -139,44 +136,47 @@ public:
 
 protected:
   LandweberDeconvolutionImageFilter();
-  ~LandweberDeconvolutionImageFilter() override;
+  virtual ~LandweberDeconvolutionImageFilter() ITK_OVERRIDE;
 
-  void
-  Initialize(ProgressAccumulator * progress, float progressWeight, float iterationProgressWeight) override;
+  virtual void Initialize(ProgressAccumulator * progress,
+                          float progressWeight,
+                          float iterationProgressWeight) ITK_OVERRIDE;
 
-  void
-  Iteration(ProgressAccumulator * progress, float iterationProgressWeight) override;
+  virtual void Iteration(ProgressAccumulator * progress,
+                         float iterationProgressWeight) ITK_OVERRIDE;
 
-  void
-  Finish(ProgressAccumulator * progress, float progressWeight) override;
+  virtual void Finish(ProgressAccumulator *progress, float progressWeight) ITK_OVERRIDE;
 
-  using FFTFilterType = typename Superclass::FFTFilterType;
-  using IFFTFilterType = typename Superclass::IFFTFilterType;
+  typedef typename Superclass::FFTFilterType  FFTFilterType;
+  typedef typename Superclass::IFFTFilterType IFFTFilterType;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LandweberDeconvolutionImageFilter);
+
   double m_Alpha;
 
   InternalComplexImagePointerType m_TransformedInput;
 
-  using LandweberFunctor =
-    Functor::LandweberMethod<InternalComplexType, InternalComplexType, InternalComplexType, InternalComplexType>;
-  using LandweberFilterType = TernaryFunctorImageFilter<InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        LandweberFunctor>;
+  typedef Functor::LandweberMethod< InternalComplexType,
+                                    InternalComplexType,
+                                    InternalComplexType,
+                                    InternalComplexType > LandweberFunctor;
+  typedef TernaryFunctorImageFilter< InternalComplexImageType,
+                                     InternalComplexImageType,
+                                     InternalComplexImageType,
+                                     InternalComplexImageType,
+                                     LandweberFunctor >   LandweberFilterType;
 
-  typename LandweberFilterType::Pointer m_LandweberFilter;
-  typename IFFTFilterType::Pointer      m_IFFTFilter;
+  typename LandweberFilterType::Pointer  m_LandweberFilter;
+  typename IFFTFilterType::Pointer       m_IFFTFilter;
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLandweberDeconvolutionImageFilter.hxx"
+#include "itkLandweberDeconvolutionImageFilter.hxx"
 #endif
 
 #endif

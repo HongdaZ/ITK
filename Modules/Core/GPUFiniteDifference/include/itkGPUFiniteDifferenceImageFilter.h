@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,11 +22,9 @@
 #include "itkGPUFiniteDifferenceFunction.h"
 #include "itkFiniteDifferenceImageFilter.h"
 #include "itkTimeProbe.h"
-#include "itkGPUFiniteDifferenceFilterEnum.h"
 
 namespace itk
 {
-
 /**
  * \class GPUFiniteDifferenceImageFilter
  *
@@ -34,148 +32,130 @@ namespace itk
  *
  * \ingroup ITKGPUFiniteDifference
  * \sa GPUDenseFiniteDifferenceImageFilter */
-template <typename TInputImage,
-          typename TOutputImage,
-          typename TParentImageFilter = FiniteDifferenceImageFilter<TInputImage, TOutputImage>>
-class ITK_TEMPLATE_EXPORT GPUFiniteDifferenceImageFilter
-  : public GPUInPlaceImageFilter<TInputImage, TOutputImage, TParentImageFilter>
+template< typename TInputImage, typename TOutputImage, typename TParentImageFilter =
+            FiniteDifferenceImageFilter< TInputImage, TOutputImage > >
+class ITK_TEMPLATE_EXPORT GPUFiniteDifferenceImageFilter :
+  public GPUInPlaceImageFilter< TInputImage, TOutputImage, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = GPUFiniteDifferenceImageFilter;
-  using GPUSuperclass = GPUInPlaceImageFilter<TInputImage, TOutputImage, TParentImageFilter>;
-  using CPUSuperclass = TParentImageFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GPUFiniteDifferenceImageFilter                                         Self;
+  typedef GPUInPlaceImageFilter< TInputImage, TOutputImage, TParentImageFilter > GPUSuperclass;
+  typedef TParentImageFilter                                                     CPUSuperclass;
+  typedef SmartPointer< Self >                                                   Pointer;
+  typedef SmartPointer< const Self >                                             ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(GPUFiniteDifferenceImageFilter, GPUInPlaceImageFilter);
 
   /** Input and output image types. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Dimensionality of input and output data is assumed to be the same. */
-  static constexpr unsigned int ImageDimension = OutputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, OutputImageType::ImageDimension);
 
   /** The pixel type of the output image will be used in computations. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using PixelType = OutputPixelType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
+  typedef typename TInputImage::PixelType  InputPixelType;
+  typedef OutputPixelType                  PixelType;
 
   /** Extract value type in case the pixel is of vector type */
-  using OutputPixelValueType = typename NumericTraits<OutputPixelType>::ValueType;
-  using InputPixelValueType = typename NumericTraits<InputPixelType>::ValueType;
+  typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
+  typedef typename NumericTraits< InputPixelType >::ValueType  InputPixelValueType;
 
   /** The value type of the time step.  This is distinct from PixelType
    * because PixelType may often be a vector value, while the TimeStep is
    * a scalar value. */
-  using FiniteDifferenceFunctionType = typename GPUFiniteDifferenceFunction<TOutputImage>::DifferenceFunctionType;
-  using TimeStepType = typename FiniteDifferenceFunctionType::TimeStepType;
-  using RadiusType = typename FiniteDifferenceFunctionType::RadiusType;
-  using NeighborhoodScalesType = typename FiniteDifferenceFunctionType::NeighborhoodScalesType;
+  typedef typename GPUFiniteDifferenceFunction< TOutputImage >::DifferenceFunctionType FiniteDifferenceFunctionType;
+  typedef typename FiniteDifferenceFunctionType::TimeStepType           TimeStepType;
+  typedef typename FiniteDifferenceFunctionType::RadiusType             RadiusType;
+  typedef typename FiniteDifferenceFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
 
-  /** This method returns a pointer to a FiniteDifferenceFunction object that
-   * will be used by the filter to calculate updates at image pixels.
-   * \returns A FiniteDifferenceObject pointer. */
-  const typename FiniteDifferenceFunctionType::Pointer &
-  GetDifferenceFunction() const override
-  {
-    return this->m_DifferenceFunction;
-  }
-
-  /** This method sets the pointer to a FiniteDifferenceFunction object that
-   * will be used by the filter to calculate updates at image pixels.
-   * \returns A FiniteDifferenceObject pointer. */
-  void
-  SetDifferenceFunction(FiniteDifferenceFunctionType * differenceFunction) override
-  {
-    itkDebugMacro("setting m_DifferenceFunction to " << differenceFunction);
-    if (this->m_DifferenceFunction != differenceFunction)
+/** This method returns a pointer to a FiniteDifferenceFunction object that
+  * will be used by the filter to calculate updates at image pixels.
+  * \returns A FiniteDifferenceObject pointer. */
+  virtual const typename FiniteDifferenceFunctionType::Pointer &GetDifferenceFunction() const ITK_OVERRIDE
     {
+    return this->m_DifferenceFunction;
+    }
+
+ /** This method sets the pointer to a FiniteDifferenceFunction object that
+  * will be used by the filter to calculate updates at image pixels.
+  * \returns A FiniteDifferenceObject pointer. */
+  virtual void SetDifferenceFunction ( FiniteDifferenceFunctionType *differenceFunction ) ITK_OVERRIDE
+    {
+    itkDebugMacro("setting m_DifferenceFunction to " << differenceFunction);
+    if ( this->m_DifferenceFunction != differenceFunction )
+      {
       this->m_DifferenceFunction = differenceFunction;
       this->Modified();
+      }
     }
-  }
 
-#if !defined(ITK_LEGACY_REMOVE)
-  /** Enables backwards compatibility for enum values */
-  using FilterStateType = GPUFiniteDifferenceFilterEnum;
-  // We need to expose the enum values at the class level for backwards compatibility
-  static constexpr GPUFiniteDifferenceFilterEnum UNINITIALIZED = GPUFiniteDifferenceFilterEnum::UNINITIALIZED;
-  static constexpr GPUFiniteDifferenceFilterEnum INITIALIZED = GPUFiniteDifferenceFilterEnum::INITIALIZED;
-#endif
+  typedef enum { UNINITIALIZED = 0, INITIALIZED = 1 } FilterStateType;
 
   /** Set the state of the filter to INITIALIZED */
-  void
-  SetStateToInitialized()
+  void SetStateToInitialized()
   {
-    this->SetState(GPUFiniteDifferenceFilterEnum::INITIALIZED);
+    this->SetState(INITIALIZED);
   }
 
   /** Set the state of the filter to UNINITIALIZED */
-  void
-  SetStateToUninitialized()
+  void SetStateToUninitialized()
   {
-    this->SetState(GPUFiniteDifferenceFilterEnum::UNINITIALIZED);
+    this->SetState(UNINITIALIZED);
   }
 
   /** Set/Get the state of the filter. */
-#if !defined(ITK_WRAPPING_PARSER)
-  itkSetMacro(State, GPUFiniteDifferenceFilterEnum);
-  itkGetConstReferenceMacro(State, GPUFiniteDifferenceFilterEnum);
+#if !defined( ITK_WRAPPING_PARSER )
+  itkSetMacro(State, FilterStateType);
+  itkGetConstReferenceMacro(State, FilterStateType);
 #endif
 
-#ifdef ITK_USE_CONCEPT_CHECKING
+#ifdef ITK_USE_STRICT_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputPixelIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputPixelValueType>));
+  itkConceptMacro( OutputPixelIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< OutputPixelValueType > ) );
   // End concept checking
 #endif
 
   /** Methods to get timers */
-  itkGetConstReferenceMacro(InitTime, TimeProbe);
-  itkGetConstReferenceMacro(ComputeUpdateTime, TimeProbe);
-  itkGetConstReferenceMacro(ApplyUpdateTime, TimeProbe);
-  itkGetConstReferenceMacro(SmoothFieldTime, TimeProbe);
+  itkGetConstReferenceMacro(InitTime,           TimeProbe);
+  itkGetConstReferenceMacro(ComputeUpdateTime,  TimeProbe);
+  itkGetConstReferenceMacro(ApplyUpdateTime,    TimeProbe);
+  itkGetConstReferenceMacro(SmoothFieldTime,    TimeProbe);
 
 protected:
   GPUFiniteDifferenceImageFilter();
-  ~GPUFiniteDifferenceImageFilter() override;
+  ~GPUFiniteDifferenceImageFilter() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** This method allocates a temporary update container in the subclass. */
-  void
-  AllocateUpdateBuffer() override = 0;
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE = 0;
 
   /** This method is defined by a subclass to apply changes to the output
    * from an update buffer and a time step value "dt".
    * \param dt Time step value. */
-  virtual void
-  GPUApplyUpdate(const TimeStepType & dt) = 0;
+  virtual void GPUApplyUpdate(const TimeStepType& dt) = 0;
 
   /** This method is defined by a subclass to populate an update buffer
    * with changes for the pixels in the output.  It returns a time
    * step value to be used for the update.
    * \returns A time step to use in updating the output with the changes
    * calculated from this method. */
-  virtual TimeStepType
-  GPUCalculateChange() = 0;
+  virtual TimeStepType GPUCalculateChange() = 0;
 
   /** This method can be defined in subclasses as needed to copy the input
    * to the output. See DenseFiniteDifferenceImageFilter for an
    * implementation. */
-  void
-  CopyInputToOutput() override = 0;
+  virtual void CopyInputToOutput() ITK_OVERRIDE = 0;
 
   /** This is the default, high-level algorithm for calculating finite
    * difference solutions.  It calls virtual methods in its subclasses
    * to implement the major steps of the algorithm. */
-  void
-  GPUGenerateData() override;
+  virtual void GPUGenerateData() ITK_OVERRIDE;
 
   /** FiniteDifferenceImageFilter needs a larger input requested region than
    * the output requested region.  As such, we need to provide
@@ -188,37 +168,32 @@ protected:
    * handled as described in the FiniteDifferenceFunction defined by the
    * subclass.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** This method returns true when the current iterative solution of the
    * equation has met the criteria to stop solving.  Defined by a subclass. */
-  bool
-  Halt() override;
+  virtual bool Halt() ITK_OVERRIDE;
 
   /** This method is similar to Halt(), and its default implementation in this
    * class is simply to call Halt(). However, this method takes as a parameter
-   * a void pointer to the MultiThreaderBase::WorkUnitInfo structure. If you
+   * a void pointer to the MultiThreader::ThreadInfoStruct structure. If you
    * override this method instead of overriding Halt, you will be able to get
    * the current thread ID and handle the Halt method accordingly. This is useful
    * if you are doing a lot of processing in Halt that you don't want parallelized.
    * Notice that ThreadedHalt is only called by the multithreaded filters, so you
    * still should implement Halt, just in case a non-threaded filter is used.
    */
-  bool
-  ThreadedHalt(void * itkNotUsed(threadInfo)) override
-  {
+  virtual bool ThreadedHalt( void *itkNotUsed(threadInfo) ) ITK_OVERRIDE {
     return this->Halt();
   }
 
   /** This method is optionally defined by a subclass and is called before
-   * the loop of iterations of calculate_change & update. It does the global
+   * the loop of iterations of calculate_change & upate. It does the global
    * initialization, i.e. in the SparseFieldLevelSetImageFilter, initialize
    * the list of layers.
    */
-  void
-  Initialize() override
-  {}
+  virtual void Initialize() ITK_OVERRIDE {
+  }
 
   /** This method is optionally defined by a subclass and is called immediately
    * prior to each iterative CalculateChange-ApplyUpdate cycle.  It can be
@@ -226,8 +201,7 @@ protected:
    * gradient magnitude of the image in anisotropic diffusion functions), or
    * otherwise prepare for the next iteration.
    */
-  void
-  InitializeIteration() override
+  virtual void InitializeIteration() ITK_OVERRIDE
   {
     m_DifferenceFunction->InitializeIteration();
   }
@@ -244,22 +218,21 @@ protected:
    *  valid
    *
    * The default is to return the minimum value in the list. */
-  TimeStepType
-  ResolveTimeStep(const std::vector<TimeStepType> & timeStepList, const std::vector<bool> & valid) const override;
+  virtual TimeStepType ResolveTimeStep(const std::vector<TimeStepType >& timeStepList,
+                                     const std::vector< bool >& valid) const ITK_OVERRIDE;
 
   /** This method is called after the solution has been generated to allow
    * subclasses to apply some further processing to the output. */
-  void
-  PostProcessOutput() override
-  {}
+  virtual void PostProcessOutput()  ITK_OVERRIDE {
+  }
 
   /** The maximum number of iterations this filter will run */
 
-  // unsigned int m_NumberOfIterations;
+  //unsigned int m_NumberOfIterations;
 
   /** A counter for keeping track of the number of elapsed
       iterations during filtering. */
-  // unsigned int m_ElapsedIterations;
+  //unsigned int m_ElapsedIterations;
 
   /** Indicates whether the filter automatically resets to UNINITIALIZED state
       after completing, or whether filter must be manually reset */
@@ -272,11 +245,13 @@ protected:
   TimeProbe m_InitTime, m_ComputeUpdateTime, m_ApplyUpdateTime, m_SmoothFieldTime;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceImageFilter);
+
   /** Initialize the values of the Function coefficients. This function will
    * also take care of checking whether the image spacing should be taken into
    * account or not. */
-  void
-  InitializeFunctionCoefficients();
+  void InitializeFunctionCoefficients();
 
   /** The function that will be used in calculating updates for each pixel. */
   typename FiniteDifferenceFunctionType::Pointer m_DifferenceFunction;
@@ -286,13 +261,12 @@ private:
   bool m_UseImageSpacing;
 
   /** State that the filter is in, i.e. UNINITIALIZED or INITIALIZED */
-  GPUFiniteDifferenceFilterEnum m_State;
+  FilterStateType m_State;
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUFiniteDifferenceImageFilter.hxx"
+#include "itkGPUFiniteDifferenceImageFilter.hxx"
 #endif
 
 #endif

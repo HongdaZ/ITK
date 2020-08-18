@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@
 
 namespace itk
 {
-/**
- *\class QuadEdgeMeshCellTraitsInfo
+/** \class QuadEdgeMeshCellTraitsInfo
  *  \brief Helper class holding the traits of QuadEdge cells.
  *
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
@@ -36,35 +35,35 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMesh
  */
-template <int VPointDimension,
+template< int VPointDimension,
           typename TCoordRep = float,
           typename TInterpolationWeight = float,
           typename TPointIdentifier = IdentifierType,
           typename TCellIdentifier = IdentifierType,
           typename TCellFeatureIdentifier = unsigned char,
-          typename TPoint = QuadEdgeMeshPoint<TCoordRep, VPointDimension>,
-          typename TPointsContainer = MapContainer<TPointIdentifier, TPoint>,
-          typename TUsingCellsContainer = std::set<TPointIdentifier>,
-          typename TQE = GeometricalQuadEdge<unsigned long, unsigned long, bool, bool, true>>
+          typename TPoint = QuadEdgeMeshPoint< TCoordRep, VPointDimension >,
+          typename TPointsContainer = MapContainer< TPointIdentifier, TPoint >,
+          typename TUsingCellsContainer = std::set< TPointIdentifier >,
+          typename TQE = GeometricalQuadEdge< unsigned long, unsigned long, bool, bool, true > >
 class QuadEdgeMeshCellTraitsInfo
 {
 public:
-  static constexpr unsigned int PointDimension = VPointDimension;
-  using CoordRepType = TCoordRep;
-  using InterpolationWeightType = TInterpolationWeight;
-  using PointIdentifier = TPointIdentifier;
-  using CellIdentifier = TCellIdentifier;
-  using CellFeatureIdentifier = TCellFeatureIdentifier;
-  using PointType = TPoint;
-  using PointsContainer = TPointsContainer;
-  using UsingCellsContainer = TUsingCellsContainer;
+  itkStaticConstMacro(PointDimension, unsigned int, VPointDimension);
+  typedef TCoordRep              CoordRepType;
+  typedef TInterpolationWeight   InterpolationWeightType;
+  typedef TPointIdentifier       PointIdentifier;
+  typedef TCellIdentifier        CellIdentifier;
+  typedef TCellFeatureIdentifier CellFeatureIdentifier;
+  typedef TPoint                 PointType;
+  typedef TPointsContainer       PointsContainer;
+  typedef TUsingCellsContainer   UsingCellsContainer;
 
   /** Iterator types. */
-  using PointIdIterator = PointIdentifier *;
-  using PointIdConstIterator = const PointIdentifier *;
-  using QuadEdgeType = TQE;
-  using PointIdInternalIterator = typename TQE::IteratorGeom;
-  using PointIdInternalConstIterator = typename TQE::ConstIteratorGeom;
+  typedef PointIdentifier *               PointIdIterator;
+  typedef const PointIdentifier *         PointIdConstIterator;
+  typedef TQE                             QuadEdgeType;
+  typedef typename TQE::IteratorGeom      PointIdInternalIterator;
+  typedef typename TQE::ConstIteratorGeom PointIdInternalConstIterator;
 };
-} // namespace itk
+}
 #endif

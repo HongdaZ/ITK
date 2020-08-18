@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,29 +20,28 @@
 #include "itkSimplexMeshAdaptTopologyFilter.h"
 #include "itkDefaultDynamicMeshTraits.h"
 
-int
-itkSimplexMeshAdaptTopologyFilterTest(int, char *[])
+int itkSimplexMeshAdaptTopologyFilterTest( int , char * [] )
 {
 
   // Declare the type of the input and output mesh
-  using TriangleMeshTraits = itk::DefaultDynamicMeshTraits<double, 3, 3, double, double>;
-  using SimplexMeshTraits = itk::DefaultDynamicMeshTraits<double, 3, 3, double, double>;
-  using TriangleMeshType = itk::Mesh<double, 3, TriangleMeshTraits>;
-  using SimplexMeshType = itk::SimplexMesh<double, 3, SimplexMeshTraits>;
+  typedef itk::DefaultDynamicMeshTraits<double, 3, 3,double,double> TriangleMeshTraits;
+  typedef itk::DefaultDynamicMeshTraits<double, 3, 3, double,double> SimplexMeshTraits;
+  typedef itk::Mesh<double,3, TriangleMeshTraits>                    TriangleMeshType;
+  typedef itk::SimplexMesh<double,3, SimplexMeshTraits>              SimplexMeshType;
 
   // declare triangle mesh source
-  using SphereMeshSourceType = itk::RegularSphereMeshSource<TriangleMeshType>;
-  using PointType = SphereMeshSourceType::PointType;
-  using VectorType = SphereMeshSourceType::VectorType;
+  typedef itk::RegularSphereMeshSource<TriangleMeshType>  SphereMeshSourceType;
+  typedef SphereMeshSourceType::PointType                 PointType;
+  typedef SphereMeshSourceType::VectorType                VectorType;
 
   // declare the triangle to simplex mesh filter
-  using SimplexFilterType = itk::TriangleMeshToSimplexMeshFilter<TriangleMeshType, SimplexMeshType>;
+  typedef itk::TriangleMeshToSimplexMeshFilter<TriangleMeshType, SimplexMeshType> SimplexFilterType;
 
-  SphereMeshSourceType::Pointer mySphereMeshSource = SphereMeshSourceType::New();
-  PointType                     center;
+  SphereMeshSourceType::Pointer  mySphereMeshSource = SphereMeshSourceType::New();
+  PointType center;
   center.Fill(10);
-  PointType::ValueType scaleInit[3] = { 3, 3, 3 };
-  VectorType           scale = scaleInit;
+  PointType::ValueType scaleInit[3] = {3,3,3};
+  VectorType scale = scaleInit;
 
   mySphereMeshSource->SetCenter(center);
   mySphereMeshSource->SetResolution(2);
@@ -51,7 +50,7 @@ itkSimplexMeshAdaptTopologyFilterTest(int, char *[])
   std::cout << "Triangle mesh created. " << std::endl;
 
   SimplexFilterType::Pointer simplexFilter = SimplexFilterType::New();
-  simplexFilter->SetInput(mySphereMeshSource->GetOutput());
+  simplexFilter->SetInput( mySphereMeshSource->GetOutput() );
   simplexFilter->Update();
 
   SimplexMeshType::Pointer simplexMesh = simplexFilter->GetOutput();
@@ -59,7 +58,7 @@ itkSimplexMeshAdaptTopologyFilterTest(int, char *[])
 
   std::cout << "Simplex Mesh: " << simplexMesh << std::endl;
 
-  using FilterType = itk::SimplexMeshAdaptTopologyFilter<SimplexMeshType, SimplexMeshType>;
+  typedef itk::SimplexMeshAdaptTopologyFilter< SimplexMeshType, SimplexMeshType > FilterType;
 
   FilterType::Pointer filter = FilterType::New();
   filter->SetInput(simplexMesh);
@@ -69,4 +68,5 @@ itkSimplexMeshAdaptTopologyFilterTest(int, char *[])
   std::cout << "[TEST DONE]" << std::endl;
 
   return EXIT_SUCCESS;
+
 }

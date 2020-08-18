@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,9 @@
 
 #include "itkUniformRandomSpatialNeighborSubsampler.h"
 
-namespace itk
-{
-namespace Statistics
-{
-/**
- *\class GaussianRandomSpatialNeighborSubsampler
+namespace itk {
+namespace Statistics {
+/** \class GaussianRandomSpatialNeighborSubsampler
  * \brief A subsampler that randomly selects points
  * according to a gaussian distribution
  * within the specified radius of the query point.
@@ -44,51 +41,49 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TSample, typename TRegion>
-class ITK_TEMPLATE_EXPORT GaussianRandomSpatialNeighborSubsampler
-  : public UniformRandomSpatialNeighborSubsampler<TSample, TRegion>
+template < typename TSample, typename TRegion >
+  class ITK_TEMPLATE_EXPORT GaussianRandomSpatialNeighborSubsampler : public UniformRandomSpatialNeighborSubsampler<TSample, TRegion>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianRandomSpatialNeighborSubsampler);
-
-  /** Standard class type aliases */
-  using Self = GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>;
-  using Superclass = UniformRandomSpatialNeighborSubsampler<TSample, TRegion>;
-  using Baseclass = typename Superclass::Baseclass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>  Self;
+  typedef UniformRandomSpatialNeighborSubsampler<TSample, TRegion>   Superclass;
+  typedef typename Superclass::Baseclass                             Baseclass;
+  typedef SmartPointer<Self>                                         Pointer;
+  typedef SmartPointer<const Self>                                   ConstPointer;
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(GaussianRandomSpatialNeighborSubsampler, UniformRandomSpatialNeighborSubsampler);
+  itkTypeMacro(GaussianRandomSpatialNeighborSubsampler,
+               UniformRandomSpatialNeighborSubsampler);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** type alias alias for the source data container */
-  using SampleType = typename Superclass::SampleType;
-  using SampleConstPointer = typename Superclass::SampleConstPointer;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  /** typedef alias for the source data container */
+  typedef typename Superclass::SampleType                  SampleType;
+  typedef typename Superclass::SampleConstPointer          SampleConstPointer;
+  typedef typename Superclass::MeasurementVectorType       MeasurementVectorType;
+  typedef typename Superclass::InstanceIdentifier          InstanceIdentifier;
 
-  using SubsampleType = typename Superclass::SubsampleType;
-  using SubsamplePointer = typename Superclass::SubsamplePointer;
-  using SubsampleConstIterator = typename Superclass::SubsampleConstIterator;
-  using InstanceIdentifierHolder = typename Superclass::InstanceIdentifierHolder;
+  typedef typename Superclass::SubsampleType            SubsampleType;
+  typedef typename Superclass::SubsamplePointer         SubsamplePointer;
+  typedef typename Superclass::SubsampleConstIterator   SubsampleConstIterator;
+  typedef typename Superclass::InstanceIdentifierHolder InstanceIdentifierHolder;
 
-  using SearchSizeType = typename Superclass::SearchSizeType;
-  using RandomIntType = typename Superclass::RandomIntType;
-  /** type alias related to image region */
-  using RadiusType = typename Superclass::RadiusType;
-  using RegionType = typename Superclass::RegionType;
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using ImageHelperType = typename Superclass::ImageHelperType;
+  typedef typename Superclass::SearchSizeType SearchSizeType;
+  typedef typename Superclass::RandomIntType  RandomIntType;
+  /** typedefs related to image region */
+  typedef typename Superclass::RadiusType      RadiusType;
+  typedef typename Superclass::RegionType      RegionType;
+  typedef typename Superclass::IndexType       IndexType;
+  typedef typename Superclass::SizeType        SizeType;
+  typedef typename Superclass::ImageHelperType ImageHelperType;
 
-  using RealType = double;
+  typedef double RealType;
 
-  using RandomGeneratorType = typename Superclass::RandomGeneratorType;
+  typedef typename Superclass::RandomGeneratorType RandomGeneratorType;
   /** Default sampling variance */
-  static constexpr int DefaultVariance = 900;
+  itkStaticConstMacro(DefaultVariance, int, 900);
 
   /** Set the variance */
   itkSetMacro(Variance, RealType);
@@ -102,29 +97,32 @@ protected:
    * This does a complete copy of the subsampler state
    * to the new subsampler
    */
-  typename LightObject::Pointer
-  InternalClone() const override;
+  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
   GaussianRandomSpatialNeighborSubsampler();
-  ~GaussianRandomSpatialNeighborSubsampler() override = default;
+  virtual ~GaussianRandomSpatialNeighborSubsampler() ITK_OVERRIDE {};
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  /** method to randomly generate an integer in the closed range
+/** method to randomly generate an integer in the closed range
    * [0, upperBound]
    * usign a gaussian selection method. */
-  RandomIntType
-  GetIntegerVariate(RandomIntType lowerBound, RandomIntType upperBound, RandomIntType mean) override;
+  virtual RandomIntType GetIntegerVariate(RandomIntType lowerBound,
+                                          RandomIntType upperBound,
+                                          RandomIntType mean) ITK_OVERRIDE;
 
   RealType m_Variance;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianRandomSpatialNeighborSubsampler);
+
 }; // end of class GaussianRandomSpatialNeighborSubsampler
 
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGaussianRandomSpatialNeighborSubsampler.hxx"
+#include "itkGaussianRandomSpatialNeighborSubsampler.hxx"
 #endif
 
 #endif

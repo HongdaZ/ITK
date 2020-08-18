@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,46 +19,50 @@
 #define itkImageSpatialObject_h
 
 #include "itkImage.h"
-#include "itkContinuousIndex.h"
 #include "itkSpatialObject.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
 
 namespace itk
 {
-/**
- *\class ImageSpatialObject
+/** \class ImageSpatialObject
  * \brief Implementation of an image as spatial object.
  *
- * This class combines functionalities from a spatial object,
+ * This class combines functionnalities from a spatial object,
  * and an image.
  *
  * \sa SpatialObject CompositeSpatialObject
  * \ingroup ITKSpatialObjects
  */
 
-template <unsigned int TDimension = 3, typename TPixelType = unsigned char>
-class ITK_TEMPLATE_EXPORT ImageSpatialObject : public SpatialObject<TDimension>
+template< unsigned int TDimension = 3,
+          typename TPixelType = unsigned char
+          >
+class ITK_TEMPLATE_EXPORT ImageSpatialObject:
+  public SpatialObject< TDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSpatialObject);
 
-  using ScalarType = double;
-  using Self = ImageSpatialObject<TDimension, TPixelType>;
-  using Superclass = SpatialObject<TDimension>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef double                                       ScalarType;
+  typedef ImageSpatialObject< TDimension, TPixelType > Self;
+  typedef SpatialObject< TDimension >                  Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
-  using ContinuousIndexType = ContinuousIndex<double, TDimension>;
-  using PixelType = TPixelType;
-  using ImageType = Image<PixelType, TDimension>;
-  using ImagePointer = typename ImageType::ConstPointer;
-  using IndexType = typename ImageType::IndexType;
-  using PointType = typename Superclass::PointType;
-  using InterpolatorType = InterpolateImageFunction<ImageType>;
+  typedef TPixelType                            PixelType;
+  typedef Image< PixelType, TDimension >        ImageType;
+  typedef typename ImageType::ConstPointer      ImagePointer;
+  typedef typename ImageType::IndexType         IndexType;
+  typedef typename ImageType::RegionType        RegionType;
+  typedef typename Superclass::TransformType    TransformType;
+  typedef typename Superclass::PointType        PointType;
+  typedef typename Superclass::BoundingBoxType  BoundingBoxType;
+  typedef InterpolateImageFunction< ImageType > InterpolatorType;
 
-  using NNInterpolatorType = NearestNeighborInterpolateImageFunction<ImageType>;
+  typedef NearestNeighborInterpolateImageFunction< ImageType >
+  NNInterpolatorType;
 
-  static constexpr unsigned int ObjectDimension = TDimension;
+  typedef VectorContainer< IdentifierType, PointType > PointContainerType;
+  typedef typename PointContainerType::Pointer         PointContainerPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -66,128 +70,98 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageSpatialObject, SpatialObject);
 
-  /** Reset the spatial object to its initial condition, yet preserves
-   *   Id, Parent, and Child information */
-  void
-  Clear() override;
-
   /** Set the image. */
-  void
-  SetImage(const ImageType * image);
+  void SetImage(const ImageType *image);
 
   /** Get a pointer to the image currently attached to the object. */
-  const ImageType *
-  GetImage() const;
+  const ImageType * GetImage() const;
 
-  /** Returns true if the point is inside, false otherwise. */
-  bool
-  IsInsideInObjectSpace(const PointType & point) const override;
-
-  /* Avoid hiding the overload that supports depth and name arguments */
-  using Superclass::IsInsideInObjectSpace;
+  /** Return true if the object is evaluable at the requested point,
+   *  and else otherwise. */
+  bool IsEvaluableAt(const PointType & point,
+                     unsigned int depth = 0, char *name = ITK_NULLPTR) const ITK_OVERRIDE;
 
   /** Returns the value of the image at the requested point.
-   *  Returns true if that value is valid */
-  bool
-  ValueAtInObjectSpace(const PointType &   point,
-                       double &            value,
-                       unsigned int        depth = 0,
-                       const std::string & name = "") const override;
+   *  If the point is not inside the object, then an exception is thrown.
+   * \sa ExceptionObject */
+  bool ValueAt(const PointType & point, double & value,
+               unsigned int depth = 0, char *name = ITK_NULLPTR) const ITK_OVERRIDE;
+
+  /** Returns true if the point is inside, false otherwise. */
+  bool IsInside(const PointType & point,
+                unsigned int depth, char *name) const ITK_OVERRIDE;
+
+  /** Test whether a point is inside or outside the object
+   *  For computational speed purposes, it is faster if the method does not
+   *  check the name of the class and the current depth */
+  bool IsInside(const PointType & point) const;
+
+  /** Compute the boundaries of the iamge spatial object. */
+  bool ComputeLocalBoundingBox() const ITK_OVERRIDE;
 
   /** Returns the latest modified time of the object and its component. */
-  ModifiedTimeType
-  GetMTime() const override;
+  ModifiedTimeType GetMTime(void) const ITK_OVERRIDE;
 
   /** Set the slice position */
-  itkSetMacro(SliceNumber, IndexType);
-  void
-  SetSliceNumber(unsigned int dimension, int position);
+  void SetSlicePosition(unsigned int dimension, int position);
 
   /** Get the slice position */
-  itkGetConstMacro(SliceNumber, IndexType);
-  int
-  GetSliceNumber(unsigned int dimension)
+  int GetSlicePosition(unsigned int dimension)
+  { return m_SlicePosition[dimension]; }
+
+  const char * GetPixelType()
   {
-    return m_SliceNumber[dimension];
+    return m_PixelType.c_str();
   }
 
-#if !defined(ITK_LEGACY_REMOVE)
-  itkLegacyMacro(const char * GetPixelTypeName()) { return m_PixelType.c_str(); }
-#endif
-
   /** Set/Get the interpolator */
-  void
-  SetInterpolator(InterpolatorType * interpolator);
-  itkGetConstMacro(Interpolator, InterpolatorType *);
+  void SetInterpolator(InterpolatorType *interpolator);
+  itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
 
 protected:
-  /** Compute the boundaries of the image spatial object. */
-  void
-  ComputeMyBoundingBox() override;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSpatialObject);
 
-  ImageSpatialObject();
-  ~ImageSpatialObject() override;
-
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-
-  typename LightObject::Pointer
-  InternalClone() const override;
-
-private:
   ImagePointer m_Image;
 
-  IndexType m_SliceNumber;
+  ImageSpatialObject();
+  virtual ~ImageSpatialObject() ITK_OVERRIDE;
 
-#if !defined(ITK_LEGACY_REMOVE)
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+  int *       m_SlicePosition;
   std::string m_PixelType;
-#endif
 
   typename InterpolatorType::Pointer m_Interpolator;
-
-#if !defined(ITK_LEGACY_REMOVE)
   template <typename T>
-  void
-  SetPixelTypeName(const T *)
+    void InternalSetPixelType(const T *)
   {
     itkWarningMacro("itk::ImageSpatialObject() : PixelType not recognized");
   }
-
-  void
-  SetPixelTypeName(const short *)
+  void InternalSetPixelType(const short *)
   {
     m_PixelType = "short";
   }
-
-  void
-  SetPixelTypeName(const unsigned char *)
+  void InternalSetPixelType(const unsigned char *)
   {
     m_PixelType = "unsigned char";
   }
-
-  void
-  SetPixelTypeName(const unsigned short *)
+  void InternalSetPixelType(const unsigned short *)
   {
     m_PixelType = "unsigned short";
   }
-
-  void
-  SetPixelTypeName(const float *)
+  void InternalSetPixelType(const float *)
   {
     m_PixelType = "float";
   }
-
-  void
-  SetPixelTypeName(const double *)
+  void InternalSetPixelType(const double *)
   {
     m_PixelType = "double";
   }
-#endif
 };
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageSpatialObject.hxx"
+#include "itkImageSpatialObject.hxx"
 #endif
 
-#endif // itkImageSpatialObject_h
+#endif //itkImageSpatialObject_h

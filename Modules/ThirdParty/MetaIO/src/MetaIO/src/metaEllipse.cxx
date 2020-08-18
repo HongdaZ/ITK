@@ -15,10 +15,10 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
-#include <cstring> // for memset
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
+#include <string.h> // for memset
 
 #if defined (__BORLANDC__) && (__BORLANDC__ >= 0x0580)
 #include <mem.h>
@@ -35,7 +35,7 @@ MetaEllipse::
 MetaEllipse()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaEllipse()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse()" << METAIO_STREAM::endl;
   Clear();
 
 }
@@ -45,7 +45,7 @@ MetaEllipse::
 MetaEllipse(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaEllipse()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaEllipse()" << METAIO_STREAM::endl;
   Clear();
   Read(_headerName);
 }
@@ -55,7 +55,7 @@ MetaEllipse::
 MetaEllipse(const MetaEllipse *_ellipse)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaEllipse()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaEllipse()" << METAIO_STREAM::endl;
   Clear();
   CopyInfo(_ellipse);
 }
@@ -64,7 +64,7 @@ MetaEllipse::
 MetaEllipse(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaEllipse()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -80,12 +80,12 @@ void MetaEllipse::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "Radius = ";
+  METAIO_STREAM::cout << "Radius = ";
   for(int i=0;i<m_NDims;i++)
-{
-    std::cout << m_Radius[i] << " ";
-}
-  std::cout << std::endl;
+  {
+    METAIO_STREAM::cout << m_Radius[i] << " ";
+  }
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 }
 
 void MetaEllipse::
@@ -98,9 +98,9 @@ void  MetaEllipse::
 Radius(const float* radius)
 {
   for(int i=0; i<m_NDims; i++)
-{
+  {
     m_Radius[i] = radius[i];
-}
+  }
 }
 
 
@@ -108,9 +108,9 @@ void  MetaEllipse::
 Radius(float radius)
 {
   for(int i=0;i<m_NDims;i++)
-{
+  {
     m_Radius[i] = radius;
-}
+  }
 }
 
 void  MetaEllipse::
@@ -129,41 +129,37 @@ Radius(float r1,float r2, float r3)
 }
 
 const float*  MetaEllipse::
-Radius() const
+Radius(void) const
 {
   return m_Radius;
 }
 
 /** Clear ellipse information */
 void MetaEllipse::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaEllipse: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Ellipse");
-
   memset(m_Radius, 0, 100*sizeof(float));
 
   for(int i=0; i<m_NDims; i++)
-{
+  {
     m_Radius[i] = 1;
-}
+  }
 }
 
 /** Destroy ellipse information */
 void MetaEllipse::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaEllipse::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaEllipse: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -179,8 +175,9 @@ M_SetupReadFields()
 }
 
 void MetaEllipse::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Ellipse");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -192,28 +189,28 @@ M_SetupWriteFields()
 
 
 bool MetaEllipse::
-M_Read()
+M_Read(void)
 {
-  if(META_DEBUG) std::cout << "MetaEllipse: M_Read: Loading Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse: M_Read: Loading Header" << METAIO_STREAM::endl;
 
   if(!MetaObject::M_Read())
-{
-    std::cout << "MetaEllipse: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaEllipse: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
-  if(META_DEBUG) std::cout << "MetaEllipse: M_Read: Parsing Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaEllipse: M_Read: Parsing Header" << METAIO_STREAM::endl;
 
   MET_FieldRecordType * mF;
 
   mF = MET_GetFieldRecord("Radius", &m_Fields);
   if(mF->defined)
-{
+  {
     for(int i=0;i<m_NDims;i++)
     {
       m_Radius[i]= (float)mF->value[i];
     }
-}
+  }
 
   return true;
 }

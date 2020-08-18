@@ -17,8 +17,8 @@
 
 #include "metaDTITube.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -92,7 +92,7 @@ MetaDTITube::
 MetaDTITube()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaDTITube()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -101,7 +101,7 @@ MetaDTITube::
 MetaDTITube(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaDTITube()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaDTITube()" << METAIO_STREAM::endl;
   Clear();
   Read(_headerName);
 }
@@ -111,7 +111,7 @@ MetaDTITube::
 MetaDTITube(const MetaDTITube *_DTITube)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaDTITube()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaDTITube()" << METAIO_STREAM::endl;
   Clear();
   CopyInfo(_DTITube);
 }
@@ -121,7 +121,7 @@ MetaDTITube::
 MetaDTITube(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaDTITube()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -132,11 +132,11 @@ MetaDTITube::
   // Delete the list of pointers to DTITubes.
   PointListType::iterator it = m_PointList.begin();
   while(it != m_PointList.end())
-{
+  {
     DTITubePnt* pnt = *it;
     ++it;
     delete pnt;
-}
+  }
   m_PointList.clear();
   M_Destroy();
 }
@@ -146,21 +146,21 @@ void MetaDTITube::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "ParentPoint = " << m_ParentPoint << std::endl;
+  METAIO_STREAM::cout << "ParentPoint = " << m_ParentPoint << METAIO_STREAM::endl;
   if(m_Root)
     {
-    std::cout << "Root = " << "True" << std::endl;
+    METAIO_STREAM::cout << "Root = " << "True" << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "Root = " << "True" << std::endl;
+    METAIO_STREAM::cout << "Root = " << "True" << METAIO_STREAM::endl;
     }
-  std::cout << "PointDim = " << m_PointDim.c_str()
-                      << std::endl;
-  std::cout << "NPoints = " << m_NPoints << std::endl;
+  METAIO_STREAM::cout << "PointDim = " << m_PointDim.c_str()
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NPoints = " << m_NPoints << METAIO_STREAM::endl;
   char str[255];
   MET_TypeToString(m_ElementType, str);
-  std::cout << "ElementType = " << str << std::endl;
+  METAIO_STREAM::cout << "ElementType = " << str << METAIO_STREAM::endl;
 }
 
 void MetaDTITube::
@@ -178,7 +178,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaDTITube::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim.c_str();
 }
@@ -190,7 +190,7 @@ NPoints(int npnt)
 }
 
 int MetaDTITube::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -202,7 +202,7 @@ Root(bool root)
 }
 
 bool MetaDTITube::
-Root() const
+Root(void) const
 {
   return m_Root;
 }
@@ -215,30 +215,25 @@ ParentPoint(int parentpoint)
 }
 
 int MetaDTITube::
-ParentPoint() const
+ParentPoint(void) const
 {
   return m_ParentPoint;
 }
 
 /** Clear DTITube information */
 void MetaDTITube::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaDTITube: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Tube");
-  strcpy(m_ObjectSubTypeName,"DTI");
-
   // Delete the list of pointers to DTITubes.
   PointListType::iterator it = m_PointList.begin();
   while(it != m_PointList.end())
-{
+  {
     DTITubePnt* pnt = *it;
     ++it;
     delete pnt;
-}
+  }
   m_PointList.clear();
 
   m_ParentPoint= -1;
@@ -250,16 +245,16 @@ Clear()
 
 /** Destroy DTITube information */
 void MetaDTITube::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaDTITube::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaDTITube: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaDTITube: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -291,8 +286,10 @@ M_SetupReadFields()
 }
 
 void MetaDTITube::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Tube");
+  strcpy(m_ObjectSubTypeName,"DTI");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -354,8 +351,8 @@ M_SetupWriteFields()
 /** Return the position given the name of the field */
 int MetaDTITube::GetPosition(const char* name) const
 {
-  std::vector<PositionType>::const_iterator it = m_Positions.begin();
-  std::vector<PositionType>::const_iterator itEnd = m_Positions.end();
+  METAIO_STL::vector<PositionType>::const_iterator it = m_Positions.begin();
+  METAIO_STL::vector<PositionType>::const_iterator itEnd = m_Positions.end();
   while(it != itEnd)
     {
     if(!strcmp((*it).first.c_str(),name))
@@ -369,22 +366,22 @@ int MetaDTITube::GetPosition(const char* name) const
 }
 
 bool MetaDTITube::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaDTITube: M_Read: Loading Header" << std::endl;
+    METAIO_STREAM::cout << "MetaDTITube: M_Read: Loading Header" << METAIO_STREAM::endl;
     }
 
   if(!MetaObject::M_Read())
     {
-    std::cout << "MetaDTITube: M_Read: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaDTITube: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
   if(META_DEBUG)
     {
-    std::cout << "MetaDTITube: M_Read: Parsing Header" << std::endl;
+    METAIO_STREAM::cout << "MetaDTITube: M_Read: Parsing Header" << METAIO_STREAM::endl;
     }
 
   MET_FieldRecordType * mF;
@@ -426,7 +423,7 @@ M_Read()
   int i;
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   char pointDim[255];
 
   for(unsigned t = 0;t<m_PointDim.size();t++)
@@ -439,7 +436,7 @@ M_Read()
 
   if(META_DEBUG)
     {
-    std::cout << "MetaDTITube: Parsing point dim" << std::endl;
+    METAIO_STREAM::cout << "MetaDTITube: Parsing point dim" << METAIO_STREAM::endl;
     }
 
   int j;
@@ -475,10 +472,10 @@ M_Read()
     int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
       {
-      std::cout << "MetaLine: m_Read: data not read completely"
-                << std::endl;
-      std::cout << "   ideal = " << readSize
-                << " : actual = " << gc << std::endl;
+      METAIO_STREAM::cout << "MetaLine: m_Read: data not read completely"
+                << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize
+                << " : actual = " << gc << METAIO_STREAM::endl;
       delete [] _data;
       return false;
       }
@@ -516,21 +513,21 @@ M_Read()
         pnt->m_TensorMatrix[d] = (float)td;
         }
 
-      std::vector<PositionType>::const_iterator itFields =
+      METAIO_STL::vector<PositionType>::const_iterator itFields =
                                                            m_Positions.begin();
-      std::vector<PositionType>::const_iterator itFieldsEnd =
+      METAIO_STL::vector<PositionType>::const_iterator itFieldsEnd =
                                                            m_Positions.end();
       while(itFields !=  itFieldsEnd)
         {
-        if(strcmp((*itFields).first.c_str(),"x") != 0
-          && strcmp((*itFields).first.c_str(),"y") != 0
-          && strcmp((*itFields).first.c_str(),"z") != 0
-          && strcmp((*itFields).first.c_str(),"tensor1") != 0
-          && strcmp((*itFields).first.c_str(),"tensor2") != 0
-          && strcmp((*itFields).first.c_str(),"tensor3") != 0
-          && strcmp((*itFields).first.c_str(),"tensor4") != 0
-          && strcmp((*itFields).first.c_str(),"tensor5") != 0
-          && strcmp((*itFields).first.c_str(),"tensor6") != 0
+        if(strcmp((*itFields).first.c_str(),"x")
+          && strcmp((*itFields).first.c_str(),"y")
+          && strcmp((*itFields).first.c_str(),"z")
+          && strcmp((*itFields).first.c_str(),"tensor1")
+          && strcmp((*itFields).first.c_str(),"tensor2")
+          && strcmp((*itFields).first.c_str(),"tensor3")
+          && strcmp((*itFields).first.c_str(),"tensor4")
+          && strcmp((*itFields).first.c_str(),"tensor5")
+          && strcmp((*itFields).first.c_str(),"tensor6")
           )
           {
           float td;
@@ -559,6 +556,8 @@ M_Read()
         m_Event->SetCurrentIteration(j+1);
         }
 
+      DTITubePnt* pnt = new DTITubePnt(m_NDims);
+
       for(int k=0; k<pntDim; k++)
         {
         *m_ReadStream >> v[k];
@@ -571,17 +570,14 @@ M_Read()
 
       if( positionOfX < 0 )
         {
-        std::cerr << "MetaDTITube: M_Read: 'x' not found." << std::endl;
-        return false;
+        METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'x' not found." << METAIO_STREAM::endl;
         }
 
       if( positionOfY < 0 )
         {
-        std::cerr << "MetaDTITube: M_Read: 'y' not found." << std::endl;
-        return false;
+        METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'y' not found." << METAIO_STREAM::endl;
         }
 
-      DTITubePnt* pnt = new DTITubePnt(m_NDims);
       pnt->m_X[0] = v[positionOfX];
       pnt->m_X[1] = v[positionOfY];
 
@@ -591,9 +587,7 @@ M_Read()
 
         if( positionOfZ < 0 )
           {
-          std::cerr << "MetaDTITube: M_Read: 'z' not found." << std::endl;
-          delete pnt;
-          return false;
+          METAIO_STREAM::cerr << "MetaDTITube: M_Read: 'z' not found." << METAIO_STREAM::endl;
           }
 
         pnt->m_X[2] = v[positionOfZ];
@@ -637,21 +631,21 @@ M_Read()
         }
 
       // Add the extrafields
-      std::vector<PositionType>::const_iterator itFields =
+      METAIO_STL::vector<PositionType>::const_iterator itFields =
                                                            m_Positions.begin();
-      std::vector<PositionType>::const_iterator itFieldsEnd =
+      METAIO_STL::vector<PositionType>::const_iterator itFieldsEnd =
                                                            m_Positions.end();
       while(itFields != itFieldsEnd)
         {
-        if(strcmp((*itFields).first.c_str(),"x") != 0
-          && strcmp((*itFields).first.c_str(),"y") != 0
-          && strcmp((*itFields).first.c_str(),"z") != 0
-          && strcmp((*itFields).first.c_str(),"tensor1") != 0
-          && strcmp((*itFields).first.c_str(),"tensor2") != 0
-          && strcmp((*itFields).first.c_str(),"tensor3") != 0
-          && strcmp((*itFields).first.c_str(),"tensor4") != 0
-          && strcmp((*itFields).first.c_str(),"tensor5") != 0
-          && strcmp((*itFields).first.c_str(),"tensor6") != 0
+        if(strcmp((*itFields).first.c_str(),"x")
+          && strcmp((*itFields).first.c_str(),"y")
+          && strcmp((*itFields).first.c_str(),"z")
+          && strcmp((*itFields).first.c_str(),"tensor1")
+          && strcmp((*itFields).first.c_str(),"tensor2")
+          && strcmp((*itFields).first.c_str(),"tensor3")
+          && strcmp((*itFields).first.c_str(),"tensor4")
+          && strcmp((*itFields).first.c_str(),"tensor5")
+          && strcmp((*itFields).first.c_str(),"tensor6")
           )
           {
           pnt->AddField((*itFields).first.c_str(),
@@ -679,7 +673,7 @@ M_Read()
 }
 
 MET_ValueEnumType MetaDTITube::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -691,12 +685,12 @@ ElementType(MET_ValueEnumType _elementType)
 }
 
 bool MetaDTITube::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
     {
-    std::cout << "MetaDTITube: M_Read: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaDTITube: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -779,7 +773,7 @@ M_Write()
         ++itFields;
         }
 
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
       }
     }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@
 #include "itkMath.h"
 #include "itkTestingMacros.h"
 
-int
-itkTIFFImageIOTest2(int argc, char * argv[])
+int itkTIFFImageIOTest2( int argc, char* argv[] )
 {
 
-  if (argc != 2)
-  {
+  if( argc != 2 )
+    {
     std::cerr << "Usage: " << argv[0] << " outputFilename" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  const unsigned int                          Dimension = 2;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
   ImageType::Pointer image = ImageType::New();
 
@@ -46,32 +45,32 @@ itkTIFFImageIOTest2(int argc, char * argv[])
   start[0] = 0;
   start[1] = 0;
 
-  region.SetSize(size);
-  region.SetIndex(start);
+  region.SetSize( size );
+  region.SetIndex( start );
 
-  image->SetRegions(region);
-  image->Allocate(true); // initialize buffer to zero
+  image->SetRegions( region );
+  image->Allocate( true ); // initialize buffer to zero
 
   ImageType::SpacingType spacing;
 
   spacing[0] = 3.1415;
   spacing[1] = 6.2830;
 
-  image->SetSpacing(spacing);
+  image->SetSpacing( spacing );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[1]);
+  writer->SetFileName( argv[1] );
 
-  writer->SetInput(image);
+  writer->SetInput( image );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
   const ImageType * readImage = reader->GetOutput();
 
@@ -79,16 +78,16 @@ itkTIFFImageIOTest2(int argc, char * argv[])
 
   const double tolerance = 1e-5;
 
-  for (unsigned int i = 0; i < ImageType::SpacingType::Dimension; ++i)
-  {
-    if (!itk::Math::FloatAlmostEqual(spacing[i], readSpacing[i], 10, tolerance))
+  for( unsigned int i = 0; i < ImageType::SpacingType::Dimension; ++i )
     {
+    if( !itk::Math::FloatAlmostEqual( spacing[i], readSpacing[i], 10, tolerance ) )
+      {
       std::cerr << "Test failed!" << std::endl;
       std::cerr << "Error while testing spacing at index: " << i << std::endl;
       std::cerr << "Expected: " << spacing[i] << ", but got: " << readSpacing[i] << std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
   std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;

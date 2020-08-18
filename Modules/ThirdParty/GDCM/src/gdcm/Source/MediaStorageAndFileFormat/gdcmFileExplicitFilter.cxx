@@ -70,7 +70,7 @@ bool FileExplicitFilter::ProcessDataSet(DataSet &ds, Dicts const & dicts)
     {
     DataElement de = *it;
     std::string strowner;
-    const char *owner = nullptr;
+    const char *owner = 0;
     const Tag& t = de.GetTag();
     if( t.IsPrivate() && !ChangePrivateTags
     // As a special exception we convert to proper VR :
@@ -97,17 +97,13 @@ bool FileExplicitFilter::ProcessDataSet(DataSet &ds, Dicts const & dicts)
     VR oldvr = de.GetVR();
     //SequenceOfItems *sqi = de.GetSequenceOfItems();
     //SequenceOfItems *sqi = dynamic_cast<SequenceOfItems*>(&de.GetValue());
-    SmartPointer<SequenceOfItems> sqi = nullptr;
+    SmartPointer<SequenceOfItems> sqi = 0;
     if( vr == VR::SQ )
       {
       sqi = de.GetValueAsSQ();
       if(!sqi)
         {
-        if( !de.IsEmpty() )
-          {
-          gdcmErrorMacro("DICOM file written out may not be readable" );
-          cvr = VR::UN;
-          }
+        assert( de.IsEmpty() );
         }
       }
     if( de.GetByteValue() && !sqi )

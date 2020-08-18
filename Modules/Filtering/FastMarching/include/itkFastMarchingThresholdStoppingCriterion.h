@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,66 +25,63 @@
 namespace itk
 {
 /**
- * \class FastMarchingThresholdStoppingCriterion
- * \brief Stopping Criterion is verified when Current Value is equal to or
- * greater than the provided threshold.
- *
- * \ingroup ITKFastMarching
- */
-template <typename TInput, typename TOutput>
-class FastMarchingThresholdStoppingCriterion : public FastMarchingStoppingCriterionBase<TInput, TOutput>
+  * \class FastMarchingThresholdStoppingCriterion
+  * \brief Stopping Criterion is verified when Current Value is equal to or
+  * greater than the provided threshold.
+  *
+  * \ingroup ITKFastMarching
+  */
+template< typename TInput, typename TOutput >
+class FastMarchingThresholdStoppingCriterion :
+public FastMarchingStoppingCriterionBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingThresholdStoppingCriterion);
-
-  using Self = FastMarchingThresholdStoppingCriterion;
-  using Superclass = FastMarchingStoppingCriterionBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef FastMarchingThresholdStoppingCriterion                Self;
+  typedef FastMarchingStoppingCriterionBase< TInput, TOutput >  Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FastMarchingThresholdStoppingCriterion, FastMarchingStoppingCriterionBase);
+  itkTypeMacro(FastMarchingThresholdStoppingCriterion,
+                FastMarchingStoppingCriterionBase );
 
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using NodeType = typename Superclass::NodeType;
+  typedef typename Superclass::OutputPixelType  OutputPixelType;
+  typedef typename Superclass::NodeType         NodeType;
 
   /** Get/set the threshold used by the stopping criteria. */
-  itkSetMacro(Threshold, OutputPixelType);
-  itkGetMacro(Threshold, OutputPixelType);
+  itkSetMacro( Threshold, OutputPixelType );
+  itkGetMacro( Threshold, OutputPixelType );
 
-  bool
-  IsSatisfied() const override
+  bool IsSatisfied() const ITK_OVERRIDE
   {
-    return (this->m_CurrentValue >= this->m_Threshold);
+    return ( this->m_CurrentValue >= this->m_Threshold );
   }
 
-  std::string
-  GetDescription() const override
+  std::string GetDescription() const ITK_OVERRIDE
   {
     return "Current Value >= Threshold";
   }
 
 protected:
-  FastMarchingThresholdStoppingCriterion()
-    : Superclass()
-    , m_Threshold(NumericTraits<OutputPixelType>::ZeroValue())
+  FastMarchingThresholdStoppingCriterion() : Superclass(),
+    m_Threshold( NumericTraits< OutputPixelType >::ZeroValue() )
   {}
 
-  ~FastMarchingThresholdStoppingCriterion() override = default;
+  ~FastMarchingThresholdStoppingCriterion() ITK_OVERRIDE {}
 
   OutputPixelType m_Threshold;
 
-  void
-  SetCurrentNode(const NodeType &) override
-  {}
+  void SetCurrentNode( const NodeType& ) ITK_OVERRIDE {}
 
-  void
-  Reset() override
-  {}
+  void Reset() ITK_OVERRIDE {}
+
+private:
+  FastMarchingThresholdStoppingCriterion( const Self& );
+  void operator = ( const Self& );
 };
 
-} // namespace itk
+}
 #endif // itkFastMarchingThresholdStoppingCriterion_h

@@ -61,8 +61,9 @@ public:
    */
   static size_t Decode( char *dst, size_t dlen, const char *src, size_t slen );
 
-  Base64(const Base64&) = delete;
-  void operator=(const Base64&) = delete;
+private:
+  Base64(const Base64&);  // Not implemented.
+  void operator=(const Base64&);  // Not implemented.
 };
 
 } // end namespace gdcm

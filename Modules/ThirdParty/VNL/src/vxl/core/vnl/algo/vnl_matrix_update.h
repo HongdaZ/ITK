@@ -8,10 +8,7 @@
 
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
 
 //: Perform rank 1 update of M:   M+=(a*b')
 //  Requires a.size()==M.rows(),  b.size()==M.columns()
@@ -38,3 +35,4 @@ inline void vnl_matrix_update(vnl_matrix<T>& M,
 }
 
 #endif // vnl_matrix_update_h_
+

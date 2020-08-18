@@ -1,7 +1,6 @@
 #include <malloc.h>
 
-int
-main()
+int main()
 {
   /** Test whether mallinfo is available. This depends on the C library
    * implementation. */
@@ -9,8 +8,8 @@ main()
   struct mallinfo minfo = mallinfo();
 
   if (minfo.uordblks > 0)
-  {
+    {
     return 0;
-  }
+    }
   return 1;
 }

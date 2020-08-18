@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,12 +21,9 @@
 #include "itkMacro.h"
 #include "metaEvent.h"
 
-#include "ITKSpatialObjectsExport.h"
-
 namespace itk
 {
-/**
- *\class MetaEvent
+/** \class MetaEvent
  * \brief Event abstract class
  *
  * The itk::MetaEvent inherits from the
@@ -35,14 +32,14 @@ namespace itk
  * \ingroup ITKSpatialObjects
  */
 #if (METAIO_USE_NAMESPACE)
-class ITKSpatialObjects_EXPORT MetaEvent : public METAIO_NAMESPACE::MetaEvent
+class MetaEvent : public METAIO_NAMESPACE::MetaEvent
 #else
-class ITKSpatialObjects_EXPORT MetaEvent : public ::MetaEvent
+class MetaEvent : public ::MetaEvent
 #endif
 {
 public:
   MetaEvent();
-  ~MetaEvent() override;
+  virtual ~MetaEvent();
 };
 } // end namespace itk
 

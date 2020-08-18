@@ -2,12 +2,6 @@
 #define vcl_limits_h_
 
 #include <limits>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#if VXL_LEGACY_FUTURE_REMOVE
-  # error  "Deprecated.  Use equivalent C++11 header instead. see: vxl/scripts/UseStandardHeaders.py"
-#else
-  # warning "This header will be removed in future versions of VXL.  Use equivalent C++11 header instead. see: vxl/scripts/UseStandardHeaders.py"
-#endif
+#include "vcl_compiler.h"
+
 #endif // vcl_limits_h_

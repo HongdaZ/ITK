@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,21 +45,20 @@ namespace itk
  * \ingroup Streamed
  * \ingroup ITKImageGrid
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageGrid/FlipAnImageOverSpecifiedAxes,Flip An Image Over Specified Axes}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Images/FlipImageFilter,Flip an image over specified axes}
+ * \endwiki
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT FlipImageFilter : public ImageToImageFilter<TImage, TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT FlipImageFilter:
+  public ImageToImageFilter< TImage, TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FlipImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = FlipImageFilter;
-  using Superclass = ImageToImageFilter<TImage, TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FlipImageFilter                      Self;
+  typedef ImageToImageFilter< TImage, TImage > Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,20 +67,20 @@ public:
   itkTypeMacro(FlipImageFilter, ImageToImageFilter);
 
   /** ImageDimension enumeration */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
   /** Inherited types */
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  typedef typename Superclass::InputImagePointer      InputImagePointer;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
+  typedef typename Superclass::OutputImagePointer     OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType  OutputImageRegionType;
 
   /** Index related types */
-  using IndexType = typename TImage::IndexType;
-  using IndexValueType = typename IndexType::IndexValueType;
+  typedef typename TImage::IndexType         IndexType;
+  typedef typename IndexType::IndexValueType IndexValueType;
 
   /** FlipAxesArray type */
-  using FlipAxesArrayType = FixedArray<bool, Self::ImageDimension>;
+  typedef FixedArray< bool, itkGetStaticConstMacro(ImageDimension) > FlipAxesArrayType;
 
   /** Set/Get the axis to be flipped. The image is flipped along axes
    * for which array[i] is true. Default is false. */
@@ -103,8 +102,7 @@ public:
    * image meta information. The original documentation of this method is
    * below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** FlipImageFilter needs different input requested region than the output
    * requested region.  As such, FlipImageFilter needs to provide an
@@ -113,36 +111,36 @@ public:
    * The required input requested region is obtained by permuting the index and
    * size of the output requested region.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 protected:
   FlipImageFilter();
-  ~FlipImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~FlipImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** FlipImageFilter can be implemented as a multithreaded filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData() routine
+   * Therefore, this implementation provides a ThreadedGenerateData() routine
    * which is called for each processing thread. The output image data is
    * allocated automatically by the superclass prior to calling
-   * DynamicThreadedGenerateData().  DynamicThreadedGenerateData can only write to the
+   * ThreadedGenerateData().  ThreadedGenerateData can only write to the
    * portion of the output image specified by the parameter
    * "outputRegionForThread"
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData()  */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FlipImageFilter);
+
   FlipAxesArrayType m_FlipAxes;
-  bool              m_FlipAboutOrigin{ true };
+  bool              m_FlipAboutOrigin;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFlipImageFilter.hxx"
+#include "itkFlipImageFilter.hxx"
 #endif
 
 #endif

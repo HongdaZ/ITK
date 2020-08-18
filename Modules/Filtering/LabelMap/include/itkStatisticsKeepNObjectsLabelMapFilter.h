@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class StatisticsKeepNObjectsLabelMapFilter
+/** \class StatisticsKeepNObjectsLabelMapFilter
  * \brief keep N objects according to their statistics attributes
  *
  * StatisticsKeepNObjectsLabelMapFilter keep the N objects in a label collection image
@@ -43,36 +42,37 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT StatisticsKeepNObjectsLabelMapFilter : public ShapeKeepNObjectsLabelMapFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT StatisticsKeepNObjectsLabelMapFilter:
+  public ShapeKeepNObjectsLabelMapFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsKeepNObjectsLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef StatisticsKeepNObjectsLabelMapFilter      Self;
+  typedef ShapeKeepNObjectsLabelMapFilter< TImage > Superclass;
+  typedef SmartPointer< Self >                      Pointer;
+  typedef SmartPointer< const Self >                ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = StatisticsKeepNObjectsLabelMapFilter;
-  using Superclass = ShapeKeepNObjectsLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TImage                              ImageType;
+  typedef typename ImageType::Pointer         ImagePointer;
+  typedef typename ImageType::ConstPointer    ImageConstPointer;
+  typedef typename ImageType::PixelType       PixelType;
+  typedef typename ImageType::IndexType       IndexType;
+  typedef typename ImageType::LabelObjectType LabelObjectType;
 
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
-
-  using AttributeType = typename LabelObjectType::AttributeType;
+  typedef typename LabelObjectType::AttributeType AttributeType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(StatisticsKeepNObjectsLabelMapFilter, ShapeKeepNObjectsLabelMapFilter);
+  itkTypeMacro(StatisticsKeepNObjectsLabelMapFilter,
+               ShapeKeepNObjectsLabelMapFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -87,15 +87,17 @@ public:
 
 protected:
   StatisticsKeepNObjectsLabelMapFilter();
-  ~StatisticsKeepNObjectsLabelMapFilter() override = default;
+  ~StatisticsKeepNObjectsLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
-}; // end of class
+  void GenerateData() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsKeepNObjectsLabelMapFilter);
+};                                                    // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkStatisticsKeepNObjectsLabelMapFilter.hxx"
+#include "itkStatisticsKeepNObjectsLabelMapFilter.hxx"
 #endif
 
 #endif

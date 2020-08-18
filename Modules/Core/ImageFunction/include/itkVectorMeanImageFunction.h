@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,20 +41,21 @@ namespace itk
  * \ingroup ImageFunctions
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = float>
-class ITK_TEMPLATE_EXPORT VectorMeanImageFunction
-  : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
+template< typename TInputImage, typename TCoordRep = float >
+class ITK_TEMPLATE_EXPORT VectorMeanImageFunction:
+  public ImageFunction< TInputImage,
+                        typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                        TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorMeanImageFunction);
+  /** Standard class typedefs. */
+  typedef VectorMeanImageFunction Self;
+  typedef ImageFunction< TInputImage,
+                         typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                         TCoordRep >                     Superclass;
 
-  /** Standard class type aliases. */
-  using Self = VectorMeanImageFunction;
-  using Superclass =
-    ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorMeanImageFunction, ImageFunction);
@@ -62,34 +63,33 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
+  /** InputImageType typedef support. */
+  typedef TInputImage InputImageType;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Datatype used for the mean */
-  using RealType = typename NumericTraits<typename TInputImage::PixelType>::RealType;
+  typedef typename NumericTraits< typename TInputImage::PixelType >::RealType RealType;
 
   /** Evalulate the function at specified index */
-  RealType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual RealType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at non-integer positions */
-  RealType
-  Evaluate(const PointType & point) const override
+  virtual RealType Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -97,8 +97,8 @@ public:
     return this->EvaluateAtIndex(index);
   }
 
-  RealType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override
+  virtual RealType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & cindex) const ITK_OVERRIDE
   {
     IndexType index;
 
@@ -113,17 +113,18 @@ public:
 
 protected:
   VectorMeanImageFunction();
-  ~VectorMeanImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~VectorMeanImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorMeanImageFunction);
+
   unsigned int m_NeighborhoodRadius;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVectorMeanImageFunction.hxx"
+#include "itkVectorMeanImageFunction.hxx"
 #endif
 
 #endif

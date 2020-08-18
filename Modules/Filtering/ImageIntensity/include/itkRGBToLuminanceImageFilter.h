@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@
 #ifndef itkRGBToLuminanceImageFilter_h
 #define itkRGBToLuminanceImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 
 namespace itk
 {
-/**
- *\class RGBToLuminanceImageFilter
+/** \class RGBToLuminanceImageFilter
  * \brief Converts an RGB image into a grayscale image.
  *
  * This filters converts an RGB image into a Luminance on by computing
@@ -36,69 +35,69 @@ namespace itk
  */
 namespace Functor
 {
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class RGBToLuminance
 {
 public:
-  using ComponentType = typename TInput::ComponentType;
-  using RealType = typename itk::NumericTraits<ComponentType>::RealType;
+  typedef typename TInput::ComponentType                         ComponentType;
+  typedef typename itk::NumericTraits< ComponentType >::RealType RealType;
 
-  RGBToLuminance() = default;
-  ~RGBToLuminance() = default;
-  bool
-  operator!=(const RGBToLuminance &) const
+  RGBToLuminance() {}
+  ~RGBToLuminance() {}
+  bool operator!=(const RGBToLuminance &) const
   {
     return false;
   }
 
-  bool
-  operator==(const RGBToLuminance & other) const
+  bool operator==(const RGBToLuminance & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
-  {
-    return static_cast<TOutput>(A.GetLuminance());
-  }
+  inline TOutput operator()(const TInput & A) const
+  { return static_cast< TOutput >( A.GetLuminance() ); }
 };
-} // namespace Functor
+}
 
-template <typename TInputImage, typename TOutputImage>
-class RGBToLuminanceImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class RGBToLuminanceImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::RGBToLuminance<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToLuminanceImageFilter);
+  /** Standard class typedefs. */
+  typedef RGBToLuminanceImageFilter Self;
+  typedef UnaryFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::RGBToLuminance< typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType > >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = RGBToLuminanceImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::RGBToLuminance<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(RGBToLuminanceImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(RGBToLuminanceImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck,
-                  (Concept::HasNumericTraits<typename TInputImage::PixelType::ComponentType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TInputImage::PixelType::ComponentType > ) );
   // End concept checking
 #endif
 
 protected:
-  RGBToLuminanceImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
-  ~RGBToLuminanceImageFilter() override = default;
+  RGBToLuminanceImageFilter() {}
+  virtual ~RGBToLuminanceImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToLuminanceImageFilter);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,49 +20,47 @@
 #include "itkSimpleFilterWatcher.h"
 
 #include "itkMaximumProjectionImageFilter.h"
-#include "itkTestingMacros.h"
 
 
-int
-itkMaximumProjectionImageFilterTest(int argc, char * argv[])
+int itkMaximumProjectionImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Missing Parameters " << std::endl;
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << "Usage: " << argv[0];
     std::cerr << " InputImage OutputImage " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr int dim = 3;
+  const int dim = 3;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, dim>;
+  typedef unsigned char                PixelType;
+  typedef itk::Image< PixelType, dim > ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using FilterType = itk::MaximumProjectionImageFilter<ImageType, ImageType>;
+  typedef itk::MaximumProjectionImageFilter< ImageType, ImageType > FilterType;
   FilterType::Pointer filter = FilterType::New();
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
 
   itk::SimpleFilterWatcher watcher(filter, "filter");
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch ( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

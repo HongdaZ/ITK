@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,34 +29,29 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2, typename TInput3, typename TOutput>
+template< typename TInput1, typename TInput2, typename TInput3, typename TOutput >
 class Modulus3
 {
 public:
-  Modulus3() = default;
-  ~Modulus3() = default;
-  bool
-  operator!=(const Modulus3 &) const
+  Modulus3() {}
+  ~Modulus3() {}
+  bool operator!=(const Modulus3 &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Modulus3 & other) const
+  bool operator==(const Modulus3 & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B, const TInput3 & C) const
-  {
-    return static_cast<TOutput>(std::sqrt(static_cast<double>(A * A + B * B + C * C)));
-  }
+  inline TOutput operator()(const TInput1 & A,
+                            const TInput2 & B,
+                            const TInput3 & C) const
+  { return static_cast<TOutput>(std::sqrt( static_cast<double>( A * A + B * B + C * C ) ) ); }
 };
-} // namespace Functor
-
-/**
- *\class TernaryMagnitudeImageFilter
+}
+/** \class TernaryMagnitudeImageFilter
  * \brief Compute the pixel-wise magnitude of three images.
  *
  * This class is templated over the types of the three
@@ -66,43 +61,47 @@ public:
  * \ingroup IntensityImageFilters
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage1, typename TInputImage2, typename TInputImage3, typename TOutputImage>
-class TernaryMagnitudeImageFilter
-  : public TernaryFunctorImageFilter<TInputImage1,
-                                     TInputImage2,
-                                     TInputImage3,
-                                     TOutputImage,
-                                     Functor::Modulus3<typename TInputImage1::PixelType,
-                                                       typename TInputImage2::PixelType,
-                                                       typename TInputImage3::PixelType,
-                                                       typename TOutputImage::PixelType>>
+template< typename TInputImage1, typename TInputImage2,
+          typename TInputImage3, typename TOutputImage >
+class TernaryMagnitudeImageFilter:
+  public
+  TernaryFunctorImageFilter< TInputImage1, TInputImage2,
+                             TInputImage3, TOutputImage,
+                             Functor::Modulus3<
+                               typename TInputImage1::PixelType,
+                               typename TInputImage2::PixelType,
+                               typename TInputImage3::PixelType,
+                               typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TernaryMagnitudeImageFilter);
+  /** Standard class typedefs. */
+  typedef TernaryMagnitudeImageFilter Self;
+  typedef TernaryFunctorImageFilter<
+    TInputImage1, TInputImage2,
+    TInputImage3, TOutputImage,
+    Functor::Modulus3<
+      typename TInputImage1::PixelType,
+      typename TInputImage2::PixelType,
+      typename TInputImage3::PixelType,
+      typename TOutputImage::PixelType >
+    >                                   Superclass;
 
-  /** Standard class type aliases. */
-  using Self = TernaryMagnitudeImageFilter;
-  using Superclass = TernaryFunctorImageFilter<TInputImage1,
-                                               TInputImage2,
-                                               TInputImage3,
-                                               TOutputImage,
-                                               Functor::Modulus3<typename TInputImage1::PixelType,
-                                                                 typename TInputImage2::PixelType,
-                                                                 typename TInputImage3::PixelType,
-                                                                 typename TOutputImage::PixelType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(TernaryMagnitudeImageFilter, TernaryFunctorImageFilter);
+  itkTypeMacro(TernaryMagnitudeImageFilter,
+               TernaryFunctorImageFilter);
 
 protected:
-  TernaryMagnitudeImageFilter() = default;
-  ~TernaryMagnitudeImageFilter() override = default;
+  TernaryMagnitudeImageFilter() {}
+  virtual ~TernaryMagnitudeImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TernaryMagnitudeImageFilter);
 };
 } // end namespace itk
 

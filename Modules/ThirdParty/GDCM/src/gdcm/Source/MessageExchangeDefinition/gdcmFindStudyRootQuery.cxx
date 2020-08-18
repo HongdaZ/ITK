@@ -125,7 +125,7 @@ bool FindStudyRootQuery::ValidateQuery(bool inStrict) const
   if (inStrict)
     {
     QueryBase* qb = BaseRootQuery::Construct( eStudyRootType, (EQueryLevel)ilevel );
-    if (qb == nullptr)
+    if (qb == NULL)
       {
       gdcmWarningMacro( "Invalid Query" );
       return false;
@@ -141,7 +141,7 @@ bool FindStudyRootQuery::ValidateQuery(bool inStrict) const
     }
   else //include all previous levels (ie, series gets study, image gets series and study)
     {
-    QueryBase* qb = nullptr;
+    QueryBase* qb = NULL;
 
     if (strcmp(theVal.c_str(), "STUDY ") == 0)
       {

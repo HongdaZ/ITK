@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,15 +33,13 @@ namespace Function
  * \sa WindowedSincInterpolateImageFunction
  * \ingroup ITKImageFunction
  */
-template <unsigned int VRadius, typename TInput = double, typename TOutput = double>
+template< unsigned int VRadius,
+          typename TInput = double, typename TOutput = double >
 class ITK_TEMPLATE_EXPORT CosineWindowFunction
 {
 public:
-  inline TOutput
-  operator()(const TInput & A) const
-  {
-    return static_cast<TOutput>(std::cos(A * m_Factor));
-  }
+  inline TOutput operator()(const TInput & A) const
+  { return static_cast<TOutput>(std::cos(A * m_Factor)); }
 
 private:
   /** Equal to \f$ \frac{\pi}{2 m} \f$ */
@@ -55,15 +53,13 @@ private:
  * \sa WindowedSincInterpolateImageFunction
  * \ingroup ITKImageFunction
  */
-template <unsigned int VRadius, typename TInput = double, typename TOutput = double>
+template< unsigned int VRadius,
+          typename TInput = double, typename TOutput = double >
 class ITK_TEMPLATE_EXPORT HammingWindowFunction
 {
 public:
-  inline TOutput
-  operator()(const TInput & A) const
-  {
-    return static_cast<TOutput>(0.54 + 0.46 * std::cos(A * m_Factor));
-  }
+  inline TOutput operator()(const TInput & A) const
+  { return static_cast<TOutput>(0.54 + 0.46 * std::cos(A * m_Factor) ); }
 
 private:
   /** Equal to \f$ \frac{\pi}{m} \f$ */
@@ -77,15 +73,13 @@ private:
  * \sa WindowedSincInterpolateImageFunction
  * \ingroup ITKImageFunction
  */
-template <unsigned int VRadius, typename TInput = double, typename TOutput = double>
+template< unsigned int VRadius,
+          typename TInput = double, typename TOutput = double >
 class ITK_TEMPLATE_EXPORT WelchWindowFunction
 {
 public:
-  inline TOutput
-  operator()(const TInput & A) const
-  {
-    return static_cast<TOutput>(1.0 - A * m_Factor * A);
-  }
+  inline TOutput operator()(const TInput & A) const
+  { return static_cast<TOutput>( 1.0 - A * m_Factor * A ); }
 
 private:
   /** Equal to \f$ \frac{1}{m^2} \f$ */
@@ -101,19 +95,16 @@ private:
  * \sa WindowedSincInterpolateImageFunction
  * \ingroup ITKImageFunction
  */
-template <unsigned int VRadius, typename TInput = double, typename TOutput = double>
+template< unsigned int VRadius,
+          typename TInput = double, typename TOutput = double >
 class ITK_TEMPLATE_EXPORT LanczosWindowFunction
 {
 public:
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    if (A == 0.0)
-    {
-      return static_cast<TOutput>(1.0);
-    }
+    if ( A == 0.0 ) { return static_cast<TOutput>(1.0); }
     double z = m_Factor * A;
-    return static_cast<TOutput>(std::sin(z) / z);
+    return static_cast<TOutput>( std::sin(z) / z );
   }
 
 private:
@@ -128,14 +119,15 @@ private:
  * \sa WindowedSincInterpolateImageFunction
  * \ingroup ITKImageFunction
  */
-template <unsigned int VRadius, typename TInput = double, typename TOutput = double>
+template< unsigned int VRadius,
+          typename TInput = double, typename TOutput = double >
 class ITK_TEMPLATE_EXPORT BlackmanWindowFunction
 {
 public:
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(0.42 + 0.5 * std::cos(A * m_Factor1) + 0.08 * std::cos(A * m_Factor2));
+    return static_cast<TOutput>
+           ( 0.42 + 0.5 * std::cos(A * m_Factor1) + 0.08 * std::cos(A * m_Factor2) );
   }
 
 private:
@@ -232,7 +224,7 @@ private:
  *
  * \par CAVEATS
  *
- * There are a few improvements that an enthusiastic ITK developer
+ * There are a few improvements that an enthusiasting ITK developer
  * could make to this filter. One issue is with the way that the kernel
  * is applied. The computational expense comes from two sources:
  * computing the kernel weights K(t) and multiplying the pixels in the
@@ -257,56 +249,53 @@ private:
  * \ingroup ImageFunctions ImageInterpolators
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage,
-          unsigned int VRadius,
-          typename TWindowFunction = Function::HammingWindowFunction<VRadius>,
-          class TBoundaryCondition = ZeroFluxNeumannBoundaryCondition<TInputImage, TInputImage>,
-          class TCoordRep = double>
-class WindowedSincInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
+template<
+  typename TInputImage,
+  unsigned int VRadius,
+  typename TWindowFunction = Function::HammingWindowFunction< VRadius >,
+  class TBoundaryCondition = ZeroFluxNeumannBoundaryCondition< TInputImage, TInputImage >,
+  class TCoordRep = double >
+class WindowedSincInterpolateImageFunction:
+  public InterpolateImageFunction< TInputImage, TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WindowedSincInterpolateImageFunction);
+  /** Standard class typedefs. */
+  typedef WindowedSincInterpolateImageFunction               Self;
+  typedef InterpolateImageFunction< TInputImage, TCoordRep > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = WindowedSincInterpolateImageFunction;
-  using Superclass = InterpolateImageFunction<TInputImage, TCoordRep>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(WindowedSincInterpolateImageFunction, InterpolateImageFunction);
+  itkTypeMacro(WindowedSincInterpolateImageFunction,
+               InterpolateImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
 
-  /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  /** RealType typedef support. */
+  typedef typename Superclass::RealType RealType;
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
-
-  /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType      IndexType;
+  typedef typename Superclass::IndexValueType IndexValueType;
 
   /** Image type definition */
-  using ImageType = TInputImage;
+  typedef TInputImage ImageType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  void
-  SetInputImage(const ImageType * image) override;
+  virtual void SetInputImage(const ImageType *image) ITK_OVERRIDE;
 
   /** Evaluate the function at a ContinuousIndex position
    *
@@ -314,26 +303,20 @@ public:
    * specified point position.  Bounds checking is based on the
    * type of the TBoundaryCondition specified.
    */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
-
-  SizeType
-  GetRadius() const override
-  {
-    SizeType radius;
-    radius.Fill(VRadius);
-    return radius;
-  }
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE;
 
 protected:
   WindowedSincInterpolateImageFunction();
-  ~WindowedSincInterpolateImageFunction() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~WindowedSincInterpolateImageFunction() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  // Internal type alias
-  using IteratorType = ConstNeighborhoodIterator<ImageType, TBoundaryCondition>;
+  ITK_DISALLOW_COPY_AND_ASSIGN(WindowedSincInterpolateImageFunction);
+
+  // Internal typedefs
+  typedef ConstNeighborhoodIterator<
+    ImageType, TBoundaryCondition > IteratorType;
 
   // Constant to store twice the radius
   static const unsigned int m_WindowSize;
@@ -343,27 +326,26 @@ private:
 
   /** The offset array, used to keep a list of relevant
    * offsets in the neihborhoodIterator */
-  unsigned int * m_OffsetTable;
+  unsigned int *m_OffsetTable;
 
   /** Size of the offset table */
   unsigned int m_OffsetTableSize;
 
   /** Index into the weights array for each offset */
-  unsigned int ** m_WeightOffsetTable;
+  unsigned int **m_WeightOffsetTable;
 
   /** The sinc function */
-  inline double
-  Sinc(double x) const
+  inline double Sinc(double x) const
   {
-    const double px = itk::Math::pi * x;
+    double px = itk::Math::pi * x;
 
-    return (x == 0.0) ? 1.0 : std::sin(px) / px;
+    return ( x == 0.0 ) ? 1.0 : std::sin(px) / px;
   }
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWindowedSincInterpolateImageFunction.hxx"
+#include "itkWindowedSincInterpolateImageFunction.hxx"
 #endif
 
 #endif // _itkWindowedSincInterpolateImageFunction_h

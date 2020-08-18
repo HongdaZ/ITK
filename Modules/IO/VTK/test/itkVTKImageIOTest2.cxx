@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,47 +20,46 @@
 #include "itkImageFileReader.h"
 
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkVTKImageIOTest2(int argc, char * argv[])
+int itkVTKImageIOTest2(int argc, char* argv[] )
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  output1 output2 " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
-  // Test writing images of vectors as VTK images.
+  // Testing to write images of vectors as VTK images.
 
-  using PixelComponentType = float;
-  using PixelType = itk::Vector<PixelComponentType, Dimension>;
-  using ImageType = itk::Image<PixelType, Dimension>;
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef float                                            PixelComponentType;
+  typedef itk::Vector< PixelComponentType, Dimension >     PixelType;
+  typedef itk::Image< PixelType, Dimension >               ImageType;
+  typedef itk::ImageFileReader< ImageType >                ReaderType;
+  typedef itk::ImageFileWriter< ImageType >                WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput( reader->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

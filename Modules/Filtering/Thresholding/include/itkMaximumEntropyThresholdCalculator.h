@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 namespace itk
 {
 
-/**
- *\class MaximumEntropyThresholdCalculator
+/** \class MaximumEntropyThresholdCalculator
  * \brief Computes the MaximumEntropy's threshold for an image.
  *
  * Implements Kapur-Sahoo-Wong (Maximum Entropy) thresholding method
@@ -49,17 +48,15 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKThresholding
  */
-template <typename THistogram, typename TOutput = double>
+template <typename THistogram, typename TOutput=double>
 class ITK_TEMPLATE_EXPORT MaximumEntropyThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumEntropyThresholdCalculator);
-
-  /** Standard class type aliases. */
-  using Self = MaximumEntropyThresholdCalculator;
-  using Superclass = HistogramThresholdCalculator<THistogram, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MaximumEntropyThresholdCalculator                 Self;
+  typedef HistogramThresholdCalculator<THistogram, TOutput> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,21 +65,24 @@ public:
   itkTypeMacro(MaximumEntropyThresholdCalculator, HistogramThresholdCalculator);
 
   /** Type definition for the input image. */
-  using HistogramType = THistogram;
-  using OutputType = TOutput;
+  typedef THistogram  HistogramType;
+  typedef TOutput     OutputType;
 
 protected:
-  MaximumEntropyThresholdCalculator() = default;
-  ~MaximumEntropyThresholdCalculator() override = default;
-  void
-  GenerateData() override;
+  MaximumEntropyThresholdCalculator() {};
+  virtual ~MaximumEntropyThresholdCalculator() ITK_OVERRIDE {};
+  void GenerateData(void) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumEntropyThresholdCalculator);
+
 };
 
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMaximumEntropyThresholdCalculator.hxx"
+#include "itkMaximumEntropyThresholdCalculator.hxx"
 #endif
 
 #endif

@@ -12,6 +12,7 @@
 //   10/4/2001 Ian Scott (Manchester) Converted perceps header to doxygen
 // \endverbatim
 
+#include <vcl_compiler.h> // for "export" keyword
 #include "vnl/vnl_export.h"
 #include <vnl/algo/vnl_algo_export.h>
 
@@ -22,11 +23,11 @@
 //   $N = 2^P 3^Q 5^R$
 // split N into its primefactors (2, 3, 5)
 
-template <class T>
+VCL_TEMPLATE_EXPORT template <class T>
 struct vnl_fft_prime_factors
 {
 private:
-
+  VCL_SAFE_BOOL_DEFINE;
 public:
   vnl_fft_prime_factors();
 
@@ -44,8 +45,8 @@ public:
   //: exponents P, Q, R.
   long const *pqr () const { return pqr_; }
 
-  explicit operator bool () const
-    { return (trigs_ && info_ >= 0)? true : false; }
+  operator safe_bool () const
+    { return (trigs_ && info_ >= 0)? VCL_SAFE_BOOL_TRUE : VXL_NULLPTR; }
   bool operator!() const
     { return (trigs_ && info_ >= 0)? false : true; }
 

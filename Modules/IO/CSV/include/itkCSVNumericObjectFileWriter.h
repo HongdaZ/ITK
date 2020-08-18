@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@
 
 namespace itk
 {
-/**
- *\class CSVNumericObjectFileWriter
+/** \class CSVNumericObjectFileWriter
  * \brief Writes out numeric itk data objects to a csv file.
  *
  * CSVNumericObjectFileWriter writes numeric data from an itk object into a
@@ -59,16 +58,14 @@ namespace itk
  * \ingroup ITKIOCSV
  */
 template <typename TValue, unsigned int NRows = 0, unsigned int NColumns = 0>
-class ITK_TEMPLATE_EXPORT CSVNumericObjectFileWriter : public LightProcessObject
+class ITK_TEMPLATE_EXPORT CSVNumericObjectFileWriter:public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVNumericObjectFileWriter);
-
-  /** Standard class type aliases */
-  using Self = CSVNumericObjectFileWriter;
-  using Superclass = LightProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef CSVNumericObjectFileWriter    Self;
+  typedef LightProcessObject            Superclass;
+  typedef SmartPointer <Self>           Pointer;
+  typedef SmartPointer <const Self>     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -77,72 +74,64 @@ public:
   itkTypeMacro(CSVNumericObjectFileWriter, LightProcessObject);
 
   // Matrix types
-  using vnlMatrixType = vnl_matrix<TValue>;
-  using vnlFixedMatrixType = vnl_matrix_fixed<TValue, NRows, NColumns>;
-  using itkMatrixType = itk::Matrix<TValue, NRows, NColumns>;
+  typedef vnl_matrix<TValue>                        vnlMatrixType;
+  typedef vnl_matrix_fixed<TValue, NRows, NColumns> vnlFixedMatrixType;
+  typedef itk::Matrix<TValue,NRows,NColumns>        itkMatrixType;
 
-  using StringVectorType = std::vector<std::string>;
+  typedef std::vector<std::string> StringVectorType;
 
-  using SizeValueType = itk::Size<2>::SizeValueType;
+  typedef itk::Size<2>::SizeValueType SizeValueType;
 
   /* Specify the name of the output file */
   itkSetStringMacro(FileName);
-  itkSetMacro(FieldDelimiterCharacter, char);
+  itkSetMacro(FieldDelimiterCharacter,char);
 
   /** Set the input object if the matrix is of vnl_matrix type or Array2D. */
-  void
-  SetInput(const vnlMatrixType * obj);
+  void SetInput(const vnlMatrixType* obj);
 
   /** Set the input object if the matrix is of vnl_matrix_fixed type. */
-  void
-  SetInput(const vnlFixedMatrixType * obj);
+  void SetInput(const vnlFixedMatrixType* obj);
 
   /** Set the input object if the matrix is of itkMatrixType. */
-  void
-  SetInput(const itkMatrixType * obj);
+  void SetInput(const itkMatrixType* obj);
 
-  void
-  ColumnHeadersPushBack(const std::string &);
-  void
-  RowHeadersPushBack(const std::string &);
-  void
-  SetColumnHeaders(const StringVectorType & columnheaders);
-  void
-  SetRowHeaders(const StringVectorType & rowheaders);
+  void ColumnHeadersPushBack(const std::string & );
+  void RowHeadersPushBack(const std::string & );
+  void SetColumnHeaders(const StringVectorType & columnheaders);
+  void SetRowHeaders(const StringVectorType & rowheaders);
 
   /* Checks that all essential components are plugged in */
-  void
-  PrepareForWriting();
+  void PrepareForWriting();
 
   /** Write out the object */
-  virtual void
-  Write();
+  virtual void Write();
 
   /** Aliased to the Write() method to be consistent with the rest of the
    * pipeline. */
-  virtual void
-  Update();
+  virtual void Update();
 
 protected:
+
   CSVNumericObjectFileWriter();
-  ~CSVNumericObjectFileWriter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~CSVNumericObjectFileWriter() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream &os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  std::string      m_FileName;
-  TValue *         m_InputObject;
-  char             m_FieldDelimiterCharacter;
-  SizeValueType    m_Rows;
-  SizeValueType    m_Columns;
-  StringVectorType m_ColumnHeaders;
-  StringVectorType m_RowHeaders;
+  std::string               m_FileName;
+  TValue                   *m_InputObject;
+  char                      m_FieldDelimiterCharacter;
+  SizeValueType             m_Rows;
+  SizeValueType             m_Columns;
+  StringVectorType          m_ColumnHeaders;
+  StringVectorType          m_RowHeaders;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(CSVNumericObjectFileWriter);
 };
 
-} // end namespace itk
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCSVNumericObjectFileWriter.hxx"
+#include "itkCSVNumericObjectFileWriter.hxx"
 #endif
 
 #endif

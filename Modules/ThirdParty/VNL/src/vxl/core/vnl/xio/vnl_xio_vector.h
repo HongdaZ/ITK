@@ -22,9 +22,7 @@
 #include <string>
 #include <iosfwd>
 #include <vnl/vnl_vector.h>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: XML save vnl_vector to stream.
 // \relatesalso vnl_vector

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@
 namespace itk
 {
 // ---------------------------------------------------------------------
-template <typename TInputMesh, typename TOutputMesh>
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::DelaunayConformingQuadEdgeMeshFilter()
+template< typename TInputMesh, typename TOutputMesh >
+DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
+::DelaunayConformingQuadEdgeMeshFilter()
 {
   this->m_NumberOfEdgeFlips = 0;
   this->m_FlipEdge = FlipEdgeFunctionType::New();
@@ -32,116 +33,99 @@ DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::DelaunayConformin
 }
 
 // ---------------------------------------------------------------------
-template <typename TInputMesh, typename TOutputMesh>
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::~DelaunayConformingQuadEdgeMeshFilter()
+template< typename TInputMesh, typename TOutputMesh >
+DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >::
+~DelaunayConformingQuadEdgeMeshFilter()
 {
-  OutputEdgeCellType * edge;
+  OutputEdgeCellType *edge;
 
-  while (!m_PriorityQueue->Empty())
-  {
+  while ( !m_PriorityQueue->Empty() )
+    {
     edge = m_PriorityQueue->Peek()->m_Element;
 
     m_PriorityQueue->Pop();
     delete m_QueueMapper[edge];
     m_QueueMapper.erase(edge);
-  }
+    }
 }
 
 // ---------------------------------------------------------------------
-template <typename TInputMesh, typename TOutputMesh>
-void
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InitializePriorityQueue()
+template< typename TInputMesh, typename TOutputMesh >
+void DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >::InitializePriorityQueue()
 {
-  OutputMeshType * output = this->GetOutput();
+  OutputMeshType *output = this->GetOutput();
 
-  OutputEdgeCellType * edge = nullptr;
+  OutputEdgeCellType *edge = ITK_NULLPTR;
 
   CriterionValueType value = 0.;
 
-  for (OutputCellsContainerIterator outCellIterator = output->GetEdgeCells()->Begin();
-       outCellIterator != output->GetEdgeCells()->End();
-       ++outCellIterator)
-  {
-    if ((edge = dynamic_cast<OutputEdgeCellType *>(outCellIterator.Value())))
+  for ( OutputCellsContainerIterator
+        outCellIterator = output->GetEdgeCells()->Begin();
+        outCellIterator != output->GetEdgeCells()->End();
+        ++outCellIterator )
     {
-      value = Dyer07Criterion(output, edge->GetQEGeom());
-
-      if (value > 0.0)
+    if ( ( edge = dynamic_cast< OutputEdgeCellType * >(
+             outCellIterator.Value() ) ) )
       {
-        auto * qi = new PriorityQueueItemType(edge, PriorityType(true, value));
+      value = Dyer07Criterion( output, edge->GetQEGeom() );
+
+      if ( value > 0.0 )
+        {
+        PriorityQueueItemType *qi =
+          new PriorityQueueItemType( edge, PriorityType(true, value) );
         m_QueueMapper[edge] = qi;
         m_PriorityQueue->Push(qi);
+        }
       }
     }
-  }
 
-  auto const_edge_it = m_ListOfConstrainedEdges.begin();
+  OutputEdgeCellListIterator const_edge_it =
+    m_ListOfConstrainedEdges.begin();
 
-  while (const_edge_it != m_ListOfConstrainedEdges.end())
-  {
-    auto queue_it = m_QueueMapper.find(*const_edge_it);
-
-    if (queue_it == m_QueueMapper.end())
+  while ( const_edge_it != m_ListOfConstrainedEdges.end() )
     {
+    QueueMapIterator queue_it = m_QueueMapper.find(*const_edge_it);
+
+    if ( queue_it == m_QueueMapper.end() )
+      {
       queue_it->second->m_Priority = PriorityType(false, value);
       m_PriorityQueue->Update(queue_it->second);
-    }
+      }
     else
-    {
-      auto * qi = new PriorityQueueItemType(edge, PriorityType(false, 0.0));
+      {
+      PriorityQueueItemType *qi =
+        new PriorityQueueItemType( edge, PriorityType(false, 0.0) );
       m_QueueMapper[edge] = qi;
       m_PriorityQueue->Push(qi);
-    }
+      }
 
     ++const_edge_it;
-  }
+    }
 }
 
 // ---------------------------------------------------------------------
-
-template <typename TInputMesh, typename TOutputMesh>
-void
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ReassignCellData(const OutputCellIdentifier & in,
-                                                                                const OutputCellIdentifier & out)
+template< typename TInputMesh, typename TOutputMesh >
+void DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >::Process()
 {
-
-  if (nullptr == this->GetOutput()->GetCellData())
-  {
-    return;
-  }
-  if (!this->GetOutput()->GetCellData()->IndexExists(in))
-  {
-    return;
-  }
-  const auto cell_data = this->GetOutput()->GetCellData()->ElementAt(in);
-  this->GetOutput()->GetCellData()->DeleteIndex(in);
-  this->GetOutput()->GetCellData()->SetElement(out, cell_data);
-}
-
-// ---------------------------------------------------------------------
-template <typename TInputMesh, typename TOutputMesh>
-void
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::Process()
-{
-  OutputMeshType * output = this->GetOutput();
+  OutputMeshType *output = this->GetOutput();
 
   m_FlipEdge->SetInput(output);
 
-  typename std::vector<OutputQEType *>           list_qe(5);
-  typename std::vector<OutputQEType *>::iterator it;
+  typename std::vector< OutputQEType * > list_qe(5);
+  typename std::vector< OutputQEType * >::iterator it;
 
-  OutputEdgeCellType * edge;
-  OutputQEType *       qe;
-  OutputQEType *       e_it;
+  OutputEdgeCellType *edge;
+  OutputQEType *      qe;
+  OutputQEType *      e_it;
 
   CriterionValueType value;
 
-  while (!m_PriorityQueue->Empty())
-  {
-    if (!m_PriorityQueue->Peek()->m_Priority.first)
+  while ( !m_PriorityQueue->Empty() )
     {
+    if ( !m_PriorityQueue->Peek()->m_Priority.first )
+      {
       break;
-    }
+      }
 
     edge = m_PriorityQueue->Peek()->m_Element;
     qe = edge->GetQEGeom();
@@ -155,55 +139,49 @@ DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::Process()
     delete m_QueueMapper[edge];
     m_QueueMapper.erase(edge);
 
-    const auto il_id = qe->GetLeft();  // Input Left ID
-    const auto ir_id = qe->GetRight(); // Input Right ID
     qe = m_FlipEdge->Evaluate(qe);
-    const auto ol_id = qe->GetLeft();  // Output Left ID
-    const auto or_id = qe->GetRight(); // Output Right ID
-
-    this->ReassignCellData(il_id, ol_id);
-    this->ReassignCellData(ir_id, or_id);
-
-    if (qe != nullptr)
-    {
+    if ( qe != ITK_NULLPTR )
+      {
       ++this->m_NumberOfEdgeFlips;
       list_qe[4] = qe;
 
-      for (it = list_qe.begin(); it != list_qe.end(); ++it)
-      {
-        e_it = *it;
-        if (e_it)
+      for ( it = list_qe.begin(); it != list_qe.end(); ++it )
         {
-          value = Dyer07Criterion(output, e_it);
-          if (value > 0.0)
+        e_it = *it;
+        if ( e_it )
           {
-            edge = output->FindEdgeCell(e_it->GetOrigin(), e_it->GetDestination());
-            auto queue_it = m_QueueMapper.find(edge);
-            if (queue_it == m_QueueMapper.end())
+          value = Dyer07Criterion(output, e_it);
+          if ( value > 0.0 )
             {
-              auto * qi = new PriorityQueueItemType(edge, PriorityType(true, value));
+            edge = output->FindEdgeCell( e_it->GetOrigin(),
+                                         e_it->GetDestination() );
+            QueueMapIterator queue_it = m_QueueMapper.find(edge);
+            if ( queue_it == m_QueueMapper.end() )
+              {
+              PriorityQueueItemType *qi =
+                new PriorityQueueItemType( edge,
+                                           PriorityType(true, value) );
               m_QueueMapper[edge] = qi;
               m_PriorityQueue->Push(qi);
-            }
+              }
             else
-            {
-              if (queue_it->second->m_Priority.first)
               {
+              if ( queue_it->second->m_Priority.first )
+                {
                 queue_it->second->m_Priority = PriorityType(true, value);
                 m_PriorityQueue->Update(queue_it->second);
+                }
               }
             }
           }
         }
       }
     }
-  }
 }
 
 // ---------------------------------------------------------------------
-template <typename TInputMesh, typename TOutputMesh>
-void
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
+template< typename TInputMesh, typename TOutputMesh >
+void DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >::GenerateData()
 {
   this->CopyInputMeshToOutputMesh();
 
@@ -213,9 +191,9 @@ DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   this->InitializePriorityQueue();
   this->Process();
 }
-template <typename TInputMesh, typename TOutputMesh>
-void
-DelaunayConformingQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::PrintSelf(std::ostream & os, Indent indent) const
+template< typename TInputMesh, typename TOutputMesh >
+void DelaunayConformingQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

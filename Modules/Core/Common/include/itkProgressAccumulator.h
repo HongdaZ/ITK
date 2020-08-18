@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,18 +37,18 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT ProgressAccumulator : public Object
+class ITKCommon_EXPORT ProgressAccumulator:public Object
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ProgressAccumulator;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ProgressAccumulator        Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Typedef for inputting filters */
-  using GenericFilterType = ProcessObject;
-  using GenericFilterPointer = GenericFilterType::Pointer;
+  typedef ProcessObject              GenericFilterType;
+  typedef GenericFilterType::Pointer GenericFilterPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -78,14 +78,12 @@ public:
    * The ProgressAccumulator will then ensure that each of the 4 runs
    * of this filter will add 0.1 to the filter's progress.
    */
-  void
-  RegisterInternalFilter(GenericFilterType * filter, float weight);
+  void RegisterInternalFilter(GenericFilterType *filter, float weight);
 
   /**
    * Unregister all filters that have been registered with this object
    */
-  void
-  UnregisterAllFilters();
+  void UnregisterAllFilters();
 
   /**
    * \deprecated
@@ -93,9 +91,8 @@ public:
    * because this functionality is already present in the filter
    * constructor.
    */
-#if !defined(ITK_LEGACY_REMOVE)
-  void
-  ResetProgress();
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
+  void ResetProgress();
 #endif
 
   /**
@@ -110,25 +107,22 @@ public:
    * triggered a ModifiedTime and thus caused the filters to rerun.
    * To avoid this behavior, the implementation of this method is now empty.
    */
-#if !defined(ITK_LEGACY_REMOVE)
-  void
-  ResetFilterProgressAndKeepAccumulatedProgress();
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
+  void ResetFilterProgressAndKeepAccumulatedProgress();
 #endif
 
 protected:
   ProgressAccumulator();
-  ~ProgressAccumulator() override;
-  void
-  PrintSelf(std::ostream & s, Indent indent) const override;
+  virtual ~ProgressAccumulator() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & s, Indent indent) const ITK_OVERRIDE;
 
 private:
   /**  Command for observing progress of pipeline filters */
-  using CommandType = MemberCommand<Self>;
-  using CommandPointer = CommandType::Pointer;
+  typedef MemberCommand< Self > CommandType;
+  typedef CommandType::Pointer  CommandPointer;
 
   /** Structure associated with each filter in the pipeline */
-  struct FilterRecord
-  {
+  struct FilterRecord {
     // Pointer to the filter
     GenericFilterPointer Filter;
 
@@ -141,14 +135,13 @@ private:
   };
 
   /** A callback function that is called by the progressing filters */
-  void
-  ReportProgress(Object * object, const EventObject & event);
+  void ReportProgress(Object *object, const EventObject & event);
 
   /** The client mini-pipeline filter */
   GenericFilterPointer m_MiniPipelineFilter;
 
   /** An array of record structures */
-  using FilterRecordVector = std::vector<struct FilterRecord>;
+  typedef std::vector< struct FilterRecord > FilterRecordVector;
 
   /** The total accumulated progress */
   float m_AccumulatedProgress;

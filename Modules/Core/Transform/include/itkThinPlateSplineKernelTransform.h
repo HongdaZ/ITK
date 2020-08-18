@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,18 +30,18 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType, unsigned int NDimensions = 3>
+template<typename TParametersValueType,
+          unsigned int NDimensions = 3>
 // Number of dimensions
-class ITK_TEMPLATE_EXPORT ThinPlateSplineKernelTransform : public KernelTransform<TParametersValueType, NDimensions>
+class ITK_TEMPLATE_EXPORT ThinPlateSplineKernelTransform:
+  public KernelTransform<TParametersValueType, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ThinPlateSplineKernelTransform);
-
-  /** Standard class type aliases. */
-  using Self = ThinPlateSplineKernelTransform;
-  using Superclass = KernelTransform<TParametersValueType, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ThinPlateSplineKernelTransform                     Self;
+  typedef KernelTransform<TParametersValueType, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                 Pointer;
+  typedef SmartPointer<const Self>                           ConstPointer;
 
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);
@@ -50,35 +50,33 @@ public:
   itkTypeMacro(ThinPlateSplineKernelTransform, KernelTransform);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
 
   /** Jacobian Type */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = Superclass::SpaceDimension;
+  itkStaticConstMacro(SpaceDimension, unsigned int, Superclass::SpaceDimension);
 
-  /** These (rather redundant) type alias are needed because type alias are not inherited */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using PointsIterator = typename Superclass::PointsIterator;
+  /** These (rather redundant) typedefs are needed because typedefs are not inherited */
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
+  typedef typename Superclass::PointsIterator            PointsIterator;
 
 protected:
-  ThinPlateSplineKernelTransform() = default;
-  ~ThinPlateSplineKernelTransform() override = default;
+  ThinPlateSplineKernelTransform() {}
+  virtual ~ThinPlateSplineKernelTransform() ITK_OVERRIDE {}
 
-  /** These (rather redundant) type alias are needed because type alias are not inherited. */
-  using GMatrixType = typename Superclass::GMatrixType;
+  /** These (rather redundant) typedefs are needed because typedefs are not inherited. */
+  typedef typename Superclass::GMatrixType GMatrixType;
 
   /** Compute G(x)
    * For the thin plate spline, this is:
@@ -88,18 +86,20 @@ protected:
    * r(x) = Euclidean norm = sqrt[x1^2 + x2^2 + x3^2]
    * \f[ r(x) = \sqrt{ x_1^2 + x_2^2 + x_3^2 }  \f]
    * I = identity matrix. */
-  void
-  ComputeG(const InputVectorType & landmarkVector, GMatrixType & gmatrix) const override;
+  virtual void ComputeG(const InputVectorType & landmarkVector, GMatrixType & gmatrix) const ITK_OVERRIDE;
 
-  /** Compute the contribution of the landmarks weighted by the kernel function
+  /** Compute the contribution of the landmarks weighted by the kernel funcion
       to the global deformation of the space  */
-  void
-  ComputeDeformationContribution(const InputPointType & inputPoint, OutputPointType & result) const override;
+  virtual void ComputeDeformationContribution(const InputPointType & inputPoint,
+                                              OutputPointType & result) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThinPlateSplineKernelTransform);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkThinPlateSplineKernelTransform.hxx"
+#include "itkThinPlateSplineKernelTransform.hxx"
 #endif
 
 #endif // itkThinPlateSplineKernelTransform_h

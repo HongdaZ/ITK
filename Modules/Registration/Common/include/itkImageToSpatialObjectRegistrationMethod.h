@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ namespace itk
  * The terms : Fixed image and Moving SpatialObject are used in this class
  * to indicate that the SpatialObject is being mapped by the transform.
  *
- * This class uses the coordinate system of the Fixed image and searches
+ * This class uses the coordinate system of the Fixed image and searchs
  * for a transform that will map the Moving SpatialObject on top of
  * the Fixed image. For doing so, a Metric will be continuously applied to
  * compare the Fixed image with the Transformed Moving SpatialObject.
@@ -81,17 +81,15 @@ namespace itk
  * \ingroup RegistrationFilters
  * \ingroup ITKRegistrationCommon
  */
-template <typename TFixedImage, typename TMovingSpatialObject>
+template< typename TFixedImage, typename TMovingSpatialObject >
 class ITK_TEMPLATE_EXPORT ImageToSpatialObjectRegistrationMethod : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToSpatialObjectRegistrationMethod);
-
-  /** Standard class type aliases. */
-  using Self = ImageToSpatialObjectRegistrationMethod;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageToSpatialObjectRegistrationMethod Self;
+  typedef ProcessObject                          Superclass;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef SmartPointer< const Self >             ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -100,40 +98,42 @@ public:
   itkTypeMacro(ImageToSpatialObjectRegistrationMethod, ProcessObject);
 
   /**  Type of the Fixed image. */
-  using FixedImageType = TFixedImage;
-  using FixedImageConstPointer = typename FixedImageType::ConstPointer;
+  typedef          TFixedImage                  FixedImageType;
+  typedef typename FixedImageType::ConstPointer FixedImageConstPointer;
 
   /**  Type of the Moving image. */
-  using MovingSpatialObjectType = TMovingSpatialObject;
-  using MovingSpatialObjectConstPointer = typename MovingSpatialObjectType::ConstPointer;
+  typedef TMovingSpatialObject MovingSpatialObjectType;
+  typedef typename MovingSpatialObjectType::ConstPointer
+  MovingSpatialObjectConstPointer;
 
   /**  Type of the metric. */
-  using MetricType = ImageToSpatialObjectMetric<FixedImageType, MovingSpatialObjectType>;
-  using MetricPointer = typename MetricType::Pointer;
+  typedef ImageToSpatialObjectMetric< FixedImageType,
+                                      MovingSpatialObjectType >     MetricType;
+  typedef typename MetricType::Pointer MetricPointer;
 
   /**  Type of the Transform . */
-  using TransformType = typename MetricType::TransformType;
-  using TransformPointer = typename TransformType::Pointer;
+  typedef  typename MetricType::TransformType TransformType;
+  typedef  typename TransformType::Pointer    TransformPointer;
 
   /** Type for the output: Using Decorator pattern for enabling
    *  the Transform to be passed in the data pipeline */
-  using TransformOutputType = DataObjectDecorator<TransformType>;
-  using TransformOutputPointer = typename TransformOutputType::Pointer;
-  using TransformOutputConstPointer = typename TransformOutputType::ConstPointer;
+  typedef  DataObjectDecorator< TransformType >      TransformOutputType;
+  typedef typename TransformOutputType::Pointer      TransformOutputPointer;
+  typedef typename TransformOutputType::ConstPointer TransformOutputConstPointer;
 
   /**  Type of the Interpolator. */
-  using InterpolatorType = typename MetricType::InterpolatorType;
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
+  typedef  typename MetricType::InterpolatorType InterpolatorType;
+  typedef  typename InterpolatorType::Pointer    InterpolatorPointer;
 
   /**  Type of the optimizer. */
-  using OptimizerType = SingleValuedNonLinearOptimizer;
+  typedef   SingleValuedNonLinearOptimizer OptimizerType;
 
   /** Type of the Transformation parameters This is the same type used to
    *  represent the search space of the optimization algorithm */
-  using ParametersType = typename MetricType::TransformParametersType;
+  typedef  typename MetricType::TransformParametersType ParametersType;
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = typename DataObject::Pointer;
+  typedef typename DataObject::Pointer DataObjectPointer;
 
   /** Set/Get the Fixed image. */
   itkSetConstObjectMacro(FixedImage, FixedImageType);
@@ -144,7 +144,7 @@ public:
   itkGetConstObjectMacro(MovingSpatialObject, MovingSpatialObjectType);
 
   /** Set/Get the Optimizer. */
-  itkSetObjectMacro(Optimizer, OptimizerType);
+  itkSetObjectMacro(Optimizer,  OptimizerType);
   itkGetModifiableObjectMacro(Optimizer, OptimizerType);
 
   /** Set/Get the Metric. */
@@ -168,40 +168,51 @@ public:
   itkGetConstReferenceMacro(LastTransformParameters, ParametersType);
 
   /** Returns the transform resulting from the registration process  */
-  const TransformOutputType *
-  GetOutput() const;
+  const TransformOutputType * GetOutput() const;
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   /** Method to return the latest modified time of this object or
    * any of its cached ivars */
-  ModifiedTimeType
-  GetMTime() const override;
+  virtual ModifiedTimeType GetMTime() const ITK_OVERRIDE;
+
+#ifdef ITKV3_COMPATIBILITY
+  // StartRegistration is an old API from before
+  // the RegistrationMethod was a subclass of ProcessObject.
+  // Historically, one could call StartRegistration() instead of
+  // calling Update().  However, when called directly by the user, the
+  // inputs to the RegistrationMethod may not be up to date.  This
+  // may cause an unexpected behavior.
+  //
+  // Since we cannot eliminate StartRegistration for ITKv3 backward
+  // compatibility reasons, we check whether StartRegistration was
+  // called directly or whether Update() (which in turn called
+  // StartRegistration()).
+  void StartRegistration(void) { this->Update(); }
+#endif
 
 protected:
   ImageToSpatialObjectRegistrationMethod();
-  ~ImageToSpatialObjectRegistrationMethod() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ImageToSpatialObjectRegistrationMethod() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Method invoked by the pipeline in order to trigger the computation of
    * the registration. */
-  void
-  GenerateData() override;
+  virtual void  GenerateData() ITK_OVERRIDE;
 
   /** Initialize by setting the interconnects between the components. */
-  void
-  Initialize();
+  void Initialize();
 
   ParametersType m_InitialTransformParameters;
   ParametersType m_LastTransformParameters;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToSpatialObjectRegistrationMethod);
+
   MetricPointer          m_Metric;
   OptimizerType::Pointer m_Optimizer;
 
@@ -214,7 +225,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageToSpatialObjectRegistrationMethod.hxx"
+#include "itkImageToSpatialObjectRegistrationMethod.hxx"
 #endif
 
 #endif

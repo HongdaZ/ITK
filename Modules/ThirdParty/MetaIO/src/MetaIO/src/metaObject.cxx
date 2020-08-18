@@ -11,11 +11,11 @@
 ============================================================================*/
 #include "metaObject.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 #include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #if defined (__BORLANDC__) && (__BORLANDC__ >= 0x0580)
 #include <mem.h>
 #endif
@@ -32,58 +32,58 @@ namespace METAIO_NAMESPACE {
 // MetaObject Constructors
 //
 MetaObject::
-MetaObject()
-{
+MetaObject(void)
+  {
   m_NDims = 0;
   this->ClearFields();
   this->ClearUserFields();
   this->ClearAdditionalFields();
   MetaObject::Clear();
-  m_ReadStream = nullptr;
-  m_WriteStream = nullptr;
+  m_ReadStream = NULL;
+  m_WriteStream = NULL;
   m_FileName[0] = '\0';
-  m_Event = nullptr;
+  m_Event = NULL;
   m_DoublePrecision = METAIO_MAX_DIGITS10;
   m_DistanceUnits = MET_DISTANCE_UNITS_UNKNOWN;
-}
+  }
 
 MetaObject::
 MetaObject(const char * _fileName)
-{
+  {
   m_NDims = 0;
   this->ClearFields();
   this->ClearUserFields();
   this->ClearAdditionalFields();
   MetaObject::Clear();
-  m_ReadStream = nullptr;
-  m_WriteStream = nullptr;
+  m_ReadStream = NULL;
+  m_WriteStream = NULL;
   this->Read(_fileName);
-  m_Event = nullptr;
+  m_Event = NULL;
   m_DoublePrecision = METAIO_MAX_DIGITS10;
   m_DistanceUnits = MET_DISTANCE_UNITS_UNKNOWN;
-}
+  }
 
 MetaObject::
 MetaObject(unsigned int dim)
-{
+  {
   m_NDims = 0;
   this->ClearFields();
   this->ClearUserFields();
   this->ClearAdditionalFields();
   MetaObject::Clear();
-  m_ReadStream = nullptr;
-  m_WriteStream = nullptr;
+  m_ReadStream = NULL;
+  m_WriteStream = NULL;
   m_FileName[0] = '\0';
   InitializeEssential(dim);
-  m_Event = nullptr;
+  m_Event = NULL;
   m_DoublePrecision = METAIO_MAX_DIGITS10;
   m_DistanceUnits = MET_DISTANCE_UNITS_UNKNOWN;
-}
+  }
 
 
 MetaObject::
-~MetaObject()
-{
+~MetaObject(void)
+  {
   M_Destroy();
   delete m_ReadStream;
   delete m_WriteStream;
@@ -91,17 +91,17 @@ MetaObject::
   this->ClearFields();
   this->ClearUserFields();
   this->ClearAdditionalFields();
-}
+  }
 
 
 //
 // Clear Fields only, if the pointer is in the UserField list it is not deleted.
 void MetaObject::
 ClearFields()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject:ClearFields" << std::endl;
+    METAIO_STREAM::cout << "MetaObject:ClearFields" << METAIO_STREAM::endl;
     }
 
   FieldsContainerType::iterator  it  = m_Fields.begin();
@@ -146,13 +146,13 @@ ClearFields()
       }
     }
   m_Fields.clear();
-}
+  }
 
 
 // Clear UserFields
 void MetaObject
 ::ClearUserFields()
-{
+  {
   // Clear write field
   FieldsContainerType::iterator  it  = m_UserDefinedWriteFields.begin();
   FieldsContainerType::iterator  end = m_UserDefinedWriteFields.end();
@@ -195,50 +195,55 @@ void MetaObject
 
   m_UserDefinedWriteFields.clear();
   m_UserDefinedReadFields.clear();
-}
+  }
 
 // Clear AdditionalReadFields
 void MetaObject
 ::ClearAdditionalFields()
-{
+  {
   // Clear read field
   FieldsContainerType::iterator it  = m_AdditionalReadFields.begin();
   FieldsContainerType::iterator end = m_AdditionalReadFields.end();
   while( it != end )
     {
     MET_FieldRecordType* field = *it;
-    delete field;
+    if( field )
+      {
+      delete field;
+      }
     ++it;
     }
 
   m_AdditionalReadFields.clear();
-}
+  }
 
+//
+//
 void MetaObject::
 FileName(const char *_fileName)
-{
-  if(_fileName != nullptr)
+  {
+  if(_fileName != NULL)
     {
     if(_fileName[0] != '\0')
       {
-      m_FileName = _fileName;
+      strcpy(m_FileName, _fileName);
       }
     }
-}
+  }
 
 const char * MetaObject::
-FileName() const
-{
-  return m_FileName.c_str();
-}
+FileName(void) const
+  {
+  return m_FileName;
+  }
 
 void MetaObject::
 CopyInfo(const MetaObject * _object)
-{
+  {
   if(NDims() != _object->NDims())
     {
-    std::cout << "MetaObject: CopyInfo: Warning: NDims not same size"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaObject: CopyInfo: Warning: NDims not same size"
+                        << METAIO_STREAM::endl;
     }
 
   FileName(_object->FileName());
@@ -257,28 +262,28 @@ CopyInfo(const MetaObject * _object)
   BinaryData(_object->BinaryData());
   BinaryDataByteOrderMSB(_object->BinaryDataByteOrderMSB());
   DistanceUnits(_object->DistanceUnits());
-}
+  }
 
 bool MetaObject::
 Read(const char *_fileName)
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Read" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Read" << METAIO_STREAM::endl;
     }
 
-  if(_fileName != nullptr)
+  if(_fileName != NULL)
     {
-    m_FileName = _fileName;
+    strcpy(m_FileName, _fileName);
     }
 
-  std::ifstream * tmpReadStream = new std::ifstream;
+  METAIO_STREAM::ifstream * tmpReadStream = new METAIO_STREAM::ifstream;
 
 #ifdef __sgi
-  tmpReadStream->open(m_FileName, std::ios::in);
+  tmpReadStream->open(m_FileName, METAIO_STREAM::ios::in);
 #else
-  tmpReadStream->open(m_FileName, std::ios::binary |
-                                  std::ios::in);
+  tmpReadStream->open(m_FileName, METAIO_STREAM::ios::binary |
+                                  METAIO_STREAM::ios::in);
 #endif
 
   if(!tmpReadStream->rdbuf()->is_open())
@@ -299,20 +304,20 @@ Read(const char *_fileName)
   delete tmpReadStream;
 
   return true;
-}
+  }
 
 
 bool MetaObject::
-ReadStream(int _nDims, std::ifstream * _stream)
-{
+ReadStream(int _nDims, METAIO_STREAM::ifstream * _stream)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: ReadStream" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: ReadStream" << METAIO_STREAM::endl;
     }
 
   M_Destroy();
 
-  fflush(nullptr);
+  fflush(NULL);
 
   Clear();
 
@@ -325,22 +330,25 @@ ReadStream(int _nDims, std::ifstream * _stream)
     mF->defined = true;
     }
 
-  delete m_ReadStream;
+  if(m_ReadStream)
+    {
+    delete m_ReadStream;
+    }
 
   m_ReadStream = _stream;
 
   bool result = M_Read();
 
-  m_ReadStream= nullptr;
+  m_ReadStream= NULL;
 
   return result;
-}
+  }
 
 
 bool MetaObject::
 Write(const char *_fileName)
-{
-  if(_fileName != nullptr)
+  {
+  if(_fileName != NULL)
     {
     FileName(_fileName);
     }
@@ -349,17 +357,17 @@ Write(const char *_fileName)
 
   if(!m_WriteStream)
     {
-    m_WriteStream = new std::ofstream;
+    m_WriteStream = new METAIO_STREAM::ofstream;
     }
 
 #ifdef __sgi
   // Create the file. This is required on some older sgi's
-  std::ofstream tFile(m_FileName, std::ios::out);
+  METAIO_STREAM::ofstream tFile(m_FileName, METAIO_STREAM::ios::out);
   tFile.close();
-  m_WriteStream->open(m_FileName, std::ios::out);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::out);
 #else
-  m_WriteStream->open(m_FileName, std::ios::binary |
-                                  std::ios::out);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::binary |
+                                  METAIO_STREAM::ios::out);
 #endif
 
   if(!m_WriteStream->rdbuf()->is_open())
@@ -371,101 +379,101 @@ Write(const char *_fileName)
 
   m_WriteStream->close();
   delete m_WriteStream;
-  m_WriteStream = nullptr;
+  m_WriteStream = 0;
 
   return result;
-}
+  }
 
 //
 //
 void MetaObject::
-PrintInfo() const
-{
+PrintInfo(void) const
+  {
   int i, j;
 
-  std::cout << "FileName = _" << m_FileName << "_"
-                      << std::endl;
-  std::cout << "Comment = _" << m_Comment << "_"
-                      << std::endl;
-  std::cout << "ObjectType = _" << m_ObjectTypeName << "_"
-                      << std::endl;
-  std::cout << "ObjectSubType = _" << m_ObjectSubTypeName << "_"
-                      << std::endl;
-  std::cout << "NDims = " << m_NDims << std::endl;
-  std::cout << "Name = " << m_Name << std::endl;
-  std::cout << "ID = " << m_ID << std::endl;
-  std::cout << "ParentID = " << m_ParentID << std::endl;
-  std::cout << "AcquisitionDate = " << m_AcquisitionDate << std::endl;
+  METAIO_STREAM::cout << "FileName = _" << m_FileName << "_"
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "Comment = _" << m_Comment << "_"
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ObjectType = _" << m_ObjectTypeName << "_"
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ObjectSubType = _" << m_ObjectSubTypeName << "_"
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NDims = " << m_NDims << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "Name = " << m_Name << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ID = " << m_ID << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ParentID = " << m_ParentID << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "AcquisitionDate = " << m_AcquisitionDate << METAIO_STREAM::endl;
   if(m_CompressedData)
     {
-    std::cout << "CompressedData = True" << std::endl;
+    METAIO_STREAM::cout << "CompressedData = True" << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "CompressedData = False" << std::endl;
+    METAIO_STREAM::cout << "CompressedData = False" << METAIO_STREAM::endl;
     }
-  std::cout << "m_CompressedDataSize = " << m_CompressedDataSize
-                      << std::endl;
+  METAIO_STREAM::cout << "m_CompressedDataSize = " << m_CompressedDataSize
+                      << METAIO_STREAM::endl;
   if(m_BinaryData)
     {
-    std::cout << "BinaryData = True" << std::endl;
+    METAIO_STREAM::cout << "BinaryData = True" << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "BinaryData = False" << std::endl;
+    METAIO_STREAM::cout << "BinaryData = False" << METAIO_STREAM::endl;
     }
   if(m_BinaryData && m_BinaryDataByteOrderMSB)
     {
-    std::cout << "BinaryDataByteOrderMSB = True"
-                        << std::endl;
+    METAIO_STREAM::cout << "BinaryDataByteOrderMSB = True"
+                        << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "BinaryDataByteOrderMSB = False"
-                        << std::endl;
+    METAIO_STREAM::cout << "BinaryDataByteOrderMSB = False"
+                        << METAIO_STREAM::endl;
     }
-  std::cout << "Color = " ;
+  METAIO_STREAM::cout << "Color = " ;
   for(i=0; i<4; i++)
     {
-    std::cout << m_Color[i] << " ";
+    METAIO_STREAM::cout << m_Color[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "Offset = ";
+  METAIO_STREAM::cout << "Offset = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_Offset[i] << " ";
+    METAIO_STREAM::cout << m_Offset[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "TransformMatrix = ";
-  std::cout << std::endl;
+  METAIO_STREAM::cout << "TransformMatrix = ";
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
   for(i=0; i<m_NDims; i++)
     {
     for(j=0; j<m_NDims; j++)
       {
-      std::cout << m_TransformMatrix[i*m_NDims+j] << " ";
+      METAIO_STREAM::cout << m_TransformMatrix[i*m_NDims+j] << " ";
       }
-    std::cout << std::endl;
+    METAIO_STREAM::cout << METAIO_STREAM::endl;
     }
 
-  std::cout << "CenterOfRotation = ";
-  std::cout << std::endl;
+  METAIO_STREAM::cout << "CenterOfRotation = ";
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_CenterOfRotation[i] << " ";
+    METAIO_STREAM::cout << m_CenterOfRotation[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "ElementSpacing = ";
+  METAIO_STREAM::cout << "ElementSpacing = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_ElementSpacing[i] << " ";
+    METAIO_STREAM::cout << m_ElementSpacing[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "DistanceUnits = " << this->DistanceUnitsName()
-                      << std::endl;
+  METAIO_STREAM::cout << "DistanceUnits = " << this->DistanceUnitsName()
+                      << METAIO_STREAM::endl;
 
   // Print User's fields :
   FieldsContainerType::const_iterator  itw = m_UserDefinedWriteFields.begin();
@@ -519,290 +527,290 @@ PrintInfo() const
       }
     else if((*it)->type == MET_FLOAT_MATRIX)
       {
-      std::cout << std::endl;
+      METAIO_STREAM::cout << METAIO_STREAM::endl;
       for(i=0; i<(*it)->length*(*it)->length; i++)
         {
         printf("%f ",(*it)->value[i]);
         if(i==(*it)->length-1)
           {
-          std::cout << std::endl;
+          METAIO_STREAM::cout << METAIO_STREAM::endl;
           }
         }
       }
-    std::cout << std::endl;
+    METAIO_STREAM::cout << METAIO_STREAM::endl;
 
     ++itw;
     ++itr;
     }
-}
+  }
 
 const char * MetaObject::
-Comment() const
-{
+Comment(void) const
+  {
   return m_Comment;
-}
+  }
 
 void MetaObject::
 Comment(const char * _comment)
-{
+  {
   strcpy(m_Comment, _comment);
-}
+  }
 
 const char * MetaObject::
-ObjectTypeName() const
-{
+ObjectTypeName(void) const
+  {
   return m_ObjectTypeName;
-}
+  }
 
 void MetaObject::
 ObjectTypeName(const char * _objectTypeName)
-{
+  {
   strcpy(m_ObjectTypeName, _objectTypeName);
-}
+  }
 
 const char * MetaObject::
-ObjectSubTypeName() const
-{
+ObjectSubTypeName(void) const
+  {
   return m_ObjectSubTypeName;
-}
+  }
 
 void MetaObject::
 ObjectSubTypeName(const char * _objectSubTypeName)
-{
+  {
   strcpy(m_ObjectSubTypeName, _objectSubTypeName);
-}
+  }
 
 int MetaObject::
-NDims() const
-{
+NDims(void) const
+  {
   return m_NDims;
-}
+  }
 
 const double * MetaObject::
-Offset() const
-{
+Offset(void) const
+  {
   return m_Offset;
-}
+  }
 
 double MetaObject::
 Offset(int _i) const
-{
+  {
   return m_Offset[_i];
-}
+  }
 
 void MetaObject::
 Offset(const double * _position)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_Offset[i] = _position[i];
     }
-}
+  }
 
 void MetaObject::
 Offset(int _i, double _value)
-{
+  {
   m_Offset[_i] = _value;
-}
+  }
 
 
 const double * MetaObject::
-Position() const
-{
+Position(void) const
+  {
   return m_Offset;
-}
+  }
 
 double MetaObject::
 Position(int _i) const
-{
+  {
   return m_Offset[_i];
-}
+  }
 
 void MetaObject::
 Position(const double * _position)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_Offset[i] = _position[i];
     }
-}
+  }
 
 void MetaObject::
 Position(int _i, double _value)
-{
+  {
   m_Offset[_i] = _value;
-}
+  }
 
 const double * MetaObject::
-Origin() const
-{
+Origin(void) const
+  {
   return m_Offset;
-}
+  }
 
 double MetaObject::
 Origin(int _i) const
-{
+  {
   return m_Offset[_i];
-}
+  }
 
 void MetaObject::
 Origin(const double * _position)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_Offset[i] = _position[i];
     }
-}
+  }
 
 void MetaObject::
 Origin(int _i, double _value)
-{
+  {
   m_Offset[_i] = _value;
-}
+  }
 
 //
 //
 const double * MetaObject::
-TransformMatrix() const
-{
+TransformMatrix(void) const
+  {
   return m_TransformMatrix;
-}
+  }
 
 double MetaObject::
 TransformMatrix(int _i, int _j) const
-{
+  {
   return m_TransformMatrix[_i*m_NDims+_j];
-}
+  }
 
 void MetaObject::
 TransformMatrix(const double * _orientation)
-{
+  {
   int i;
   for(i=0; i<m_NDims*m_NDims; i++)
     {
     m_TransformMatrix[i] = _orientation[i];
     }
-}
+  }
 
 void MetaObject::
 TransformMatrix(int _i, int _j, double _value)
-{
+  {
   m_TransformMatrix[_i*m_NDims+_j] = _value;
-}
+  }
 
 //
 const double * MetaObject::
-Rotation() const
-{
+Rotation(void) const
+  {
   return m_TransformMatrix;
-}
+  }
 
 double MetaObject::
 Rotation(int _i, int _j) const
-{
+  {
   return m_TransformMatrix[_i*m_NDims+_j];
-}
+  }
 
 void MetaObject::
 Rotation(const double * _orientation)
-{
+  {
   int i;
   for(i=0; i<m_NDims*m_NDims; i++)
     {
     m_TransformMatrix[i] = _orientation[i];
     }
-}
+  }
 
 void MetaObject::
 Rotation(int _i, int _j, double _value)
-{
+  {
   m_TransformMatrix[_i*m_NDims+_j] = _value;
-}
+  }
 
 //
 const double * MetaObject::
-Orientation() const
-{
+Orientation(void) const
+  {
   return m_TransformMatrix;
-}
+  }
 
 double MetaObject::
 Orientation(int _i, int _j) const
-{
+  {
   return m_TransformMatrix[_i*m_NDims+_j];
-}
+  }
 
 void MetaObject::
 Orientation(const double * _orientation)
-{
+  {
   int i;
   for(i=0; i<m_NDims*m_NDims; i++)
     {
     m_TransformMatrix[i] = _orientation[i];
     }
-}
+  }
 
 void MetaObject::
 Orientation(int _i, int _j, double _value)
-{
+  {
   m_TransformMatrix[_i*m_NDims+_j] = _value;
-}
+  }
 
 //
 //
 const double * MetaObject::
-CenterOfRotation() const
-{
+CenterOfRotation(void) const
+  {
   return m_CenterOfRotation;
-}
+  }
 
 double MetaObject::
 CenterOfRotation(int _i) const
-{
+  {
   return m_CenterOfRotation[_i];
-}
+  }
 
 void MetaObject::
 CenterOfRotation(const double * _position)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_CenterOfRotation[i] = _position[i];
     }
-}
+  }
 
 void MetaObject::
 CenterOfRotation(int _i, double _value)
-{
+  {
   m_CenterOfRotation[_i] = _value;
-}
+  }
 
 //
 const char * MetaObject::
-DistanceUnitsName() const
-{
+DistanceUnitsName(void) const
+  {
   return (const char *)(MET_DistanceUnitsTypeName[m_DistanceUnits]);
-}
+  }
 
 MET_DistanceUnitsEnumType MetaObject::
-DistanceUnits() const
-{
+DistanceUnits(void) const
+  {
   return m_DistanceUnits;
-}
+  }
 
 void MetaObject::
 DistanceUnits(MET_DistanceUnitsEnumType _distanceUnits)
-{
+  {
   m_DistanceUnits = _distanceUnits;
-}
+  }
 
 void MetaObject::
 DistanceUnits(const char * _distanceUnits)
-{
+  {
   int i;
   bool found = false;
   for(i=0; i<MET_NUM_DISTANCE_UNITS_TYPES; i++)
@@ -818,13 +826,13 @@ DistanceUnits(const char * _distanceUnits)
     {
     m_DistanceUnits = MET_DISTANCE_UNITS_UNKNOWN;
     }
-}
+  }
 
 //
 //
 const char * MetaObject::
-AnatomicalOrientationAcronym() const
-{
+AnatomicalOrientationAcronym(void) const
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
@@ -832,23 +840,23 @@ AnatomicalOrientationAcronym() const
     }
   m_OrientationAcronym[i] = '\0';
   return m_OrientationAcronym;
-}
+  }
 
 const MET_OrientationEnumType * MetaObject::
-AnatomicalOrientation() const
-{
+AnatomicalOrientation(void) const
+  {
   return m_AnatomicalOrientation;
-}
+  }
 
 MET_OrientationEnumType MetaObject::
 AnatomicalOrientation(int _dim) const
-{
+  {
   return m_AnatomicalOrientation[_dim];
-}
+  }
 
 void MetaObject::
 AnatomicalOrientation(const char *_ao)
-{
+  {
   int i, j;
   for(i=0; i<m_NDims; i++)
     {
@@ -865,27 +873,27 @@ AnatomicalOrientation(const char *_ao)
       m_AnatomicalOrientation[i] = MET_ORIENTATION_UNKNOWN;
       }
     }
-}
+  }
 
 void MetaObject::
 AnatomicalOrientation(const MET_OrientationEnumType *_ao)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_AnatomicalOrientation[i] = _ao[i];
     }
-}
+  }
 
 void MetaObject::
 AnatomicalOrientation(int _dim, MET_OrientationEnumType _ao)
-{
+  {
   m_AnatomicalOrientation[_dim] = _ao;
-}
+  }
 
 void MetaObject::
 AnatomicalOrientation(int _dim, char _ao)
-{
+  {
   int j;
   for(j=0; j<MET_NUM_ORIENTATION_TYPES; j++)
     {
@@ -897,175 +905,165 @@ AnatomicalOrientation(int _dim, char _ao)
     }
 
   m_AnatomicalOrientation[_dim] = MET_ORIENTATION_UNKNOWN;
-}
+  }
 
 //
 //
 const double * MetaObject::
-ElementSpacing() const
-{
+ElementSpacing(void) const
+  {
   return m_ElementSpacing;
-}
+  }
 
 double MetaObject::
 ElementSpacing(int _i) const
-{
+  {
   return m_ElementSpacing[_i];
-}
+  }
 
 void MetaObject::
 ElementSpacing(const double * _elementSpacing)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_ElementSpacing[i] = _elementSpacing[i];
     }
-}
+  }
 
 void MetaObject::
 ElementSpacing(const float * _elementSpacing)
-{
+  {
   int i;
   for(i=0; i<m_NDims; i++)
     {
     m_ElementSpacing[i] = static_cast<double>(_elementSpacing[i]);
     }
-}
+  }
 
 void MetaObject::
 ElementSpacing(int _i, double _value)
-{
+  {
   m_ElementSpacing[_i] = _value;
-}
+  }
 
 
 void  MetaObject::
 Name(const char *_Name)
-{
-  if(_Name != nullptr)
+  {
+  if(_Name != NULL)
     {
     strcpy(m_Name, _Name);
     }
-}
+  }
 
 const char  * MetaObject::
-Name() const
-{
+Name(void) const
+  {
   return m_Name;
-}
+  }
 
 
 const float * MetaObject::
-Color() const
-{
+Color(void) const
+  {
   return m_Color;
-}
+  }
 
 void  MetaObject::
 Color(float _r, float _g, float _b, float _a)
-{
+  {
   m_Color[0] = _r;
   m_Color[1] = _g;
   m_Color[2] = _b;
   m_Color[3] = _a;
-}
+  }
 void MetaObject::
 Color(const float * _color)
-{
+  {
   for(unsigned int i=0; i<4; i++)
     {
     m_Color[i] = _color[i];
     }
-}
+  }
 
 
 void  MetaObject::
 ID(int _id)
-{
+  {
   m_ID = _id;
-}
+  }
 
 int  MetaObject::
-ID() const
-{
+ID(void) const
+  {
   return m_ID;
-}
+  }
 
 void  MetaObject::
 ParentID(int _parentId)
-{
+  {
   m_ParentID = _parentId;
-}
+  }
 
-int   MetaObject::ParentID() const
-{
+int   MetaObject::ParentID(void) const
+  {
   return m_ParentID;
-}
+  }
 
 void  MetaObject::
 AcquisitionDate(const char * _acquisitionDate)
-{
+  {
   for(size_t i=0; i<strlen( _acquisitionDate ); i++)
     {
     m_AcquisitionDate[i] = _acquisitionDate[i];
     }
   m_AcquisitionDate[strlen( _acquisitionDate )] = '\0';
-}
+  }
 
-const char * MetaObject::AcquisitionDate() const
-{
+const char * MetaObject::AcquisitionDate(void) const
+  {
   return m_AcquisitionDate;
-}
+  }
 
 void MetaObject::CompressedData(bool _compressedData)
-{
+  {
   m_CompressedData = _compressedData;
-}
+  }
 
-bool MetaObject::CompressedData() const
-{
+bool MetaObject::CompressedData(void) const
+  {
   return m_CompressedData;
-}
-
-void MetaObject::CompressionLevel(int _compressionLevel)
-{
-  m_CompressionLevel = _compressionLevel;
-}
-
-int MetaObject::CompressionLevel() const
-{
-  return m_CompressionLevel;
-}
+  }
 
 void  MetaObject::BinaryData(bool _binaryData)
-{
+  {
   m_BinaryData = _binaryData;
-}
+  }
 
-bool   MetaObject::BinaryData() const
-{
+bool   MetaObject::BinaryData(void) const
+  {
   return m_BinaryData;
-}
+  }
 
 bool MetaObject::
-BinaryDataByteOrderMSB() const
-{
+BinaryDataByteOrderMSB(void) const
+  {
   return m_BinaryDataByteOrderMSB;
-}
+  }
 
 void MetaObject::
 BinaryDataByteOrderMSB(bool _elementByteOrderMSB)
-{
+  {
   m_BinaryDataByteOrderMSB = _elementByteOrderMSB;
-}
+  }
 
 void MetaObject::
-Clear()
-{
+Clear(void)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Clear()" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Clear()" << METAIO_STREAM::endl;
     }
   strcpy(m_Comment, "");
   strcpy(m_ObjectTypeName, "Object");
@@ -1088,15 +1086,14 @@ Clear()
   m_BinaryDataByteOrderMSB = MET_SystemByteOrderMSB();
   m_CompressedDataSize = 0;
   m_CompressedData = false;
-  m_CompressionLevel = 2;
   m_WriteCompressedDataSize = true;
 
   m_DistanceUnits = MET_DISTANCE_UNITS_UNKNOWN;
 
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Clear: m_NDims=" << m_NDims
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Clear: m_NDims=" << m_NDims
+                        << METAIO_STREAM::endl;
     }
   int i;
   for(i=0; i<10; i++)
@@ -1105,71 +1102,71 @@ Clear()
     m_AnatomicalOrientation[i] = MET_ORIENTATION_UNKNOWN;
     }
 /*
-  std::vector<MET_FieldRecordType *>::iterator fieldIter;
+  METAIO_STL::vector<MET_FieldRecordType *>::iterator fieldIter;
   for(fieldIter=m_Fields.begin(); fieldIter!=m_Fields.end(); fieldIter++)
     {
-    if(META_DEBUG) std::cout << "field = " << (*fieldIter)->name << std::endl;
+    if(META_DEBUG) METAIO_STREAM::cout << "field = " << (*fieldIter)->name << METAIO_STREAM::endl;
     MET_FieldRecordType* field = *fieldIter;
     delete field;
-    field = nullptr;
-    if(META_DEBUG) std::cout << " has been deleted." << std::endl;
+    field = NULL;
+    if(META_DEBUG) METAIO_STREAM::cout << " has been deleted." << METAIO_STREAM::endl;
     }
   m_Fields.clear();*/
   this->ClearFields();
-}
+  }
 
 bool MetaObject::
 InitializeEssential(int _nDims)
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Initialize" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Initialize" << METAIO_STREAM::endl;
     }
 
   M_Destroy();
 
   if(_nDims > 10)
     {
-    std::cout
+    METAIO_STREAM::cout
       << "MetaObject: Initialize: Warning: Number of dimensions limited to 10"
-      << std::endl
+      << METAIO_STREAM::endl
       << "Resetting number of dimensions to 10"
-      << std::endl;
+      << METAIO_STREAM::endl;
     _nDims = 10;
     }
 
   if(_nDims < 0)
     {
-    std::cout
+    METAIO_STREAM::cout
       << "MetaObject: Initialize: Warning: Number of dimensions must be >= 0"
-      << std::endl
+      << METAIO_STREAM::endl
       << "Resetting number of dimensions to 0"
-      << std::endl;
+      << METAIO_STREAM::endl;
     _nDims = 0;
     }
 
   m_NDims = _nDims;
 
   return true;
-}
+  }
 
 void MetaObject::
-M_Destroy()
-{
+M_Destroy(void)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Destroy" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Destroy" << METAIO_STREAM::endl;
     }
-}
+  }
 
 void MetaObject::
-M_SetupReadFields()
-{
+M_SetupReadFields(void)
+  {
   this->ClearFields();
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: M_SetupReadFields"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaObject: M_SetupReadFields"
+                        << METAIO_STREAM::endl;
     }
 
   MET_FieldRecordType * mF;
@@ -1300,20 +1297,20 @@ M_SetupReadFields()
 
 
 void MetaObject::
-M_SetupWriteFields()
-{
+M_SetupWriteFields(void)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: M_SetupWriteFields"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaObject: M_SetupWriteFields"
+                        << METAIO_STREAM::endl;
     }
 
   this->ClearFields();
 
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: M_SetupWriteFields: Creating Fields"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaObject: M_SetupWriteFields: Creating Fields"
+                        << METAIO_STREAM::endl;
     }
 
   MET_FieldRecordType * mF;
@@ -1501,19 +1498,19 @@ M_SetupWriteFields()
     m_Fields.push_back(*it);
     ++it;
     }
-}
+  }
 
 bool MetaObject::
-M_Read()
-{
+M_Read(void)
+  {
 
   this->ClearAdditionalFields();
 
   if(!MET_Read(*m_ReadStream, &m_Fields, '=', false, true,
      &m_AdditionalReadFields))
     {
-    std::cerr << "MetaObject: Read: MET_Read Failed"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaObject: Read: MET_Read Failed"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
@@ -1760,9 +1757,9 @@ M_Read()
         m_ElementSpacing[i] = mF->value[i];
         if (META_DEBUG)
           {
-          std::cout << "metaObject: M_Read: elementSpacing["
+          METAIO_STREAM::cout << "metaObject: M_Read: elementSpacing["
                               << i << "] = "
-                              << m_ElementSpacing[i] << std::endl;
+                              << m_ElementSpacing[i] << METAIO_STREAM::endl;
           }
         }
       }
@@ -1773,9 +1770,9 @@ M_Read()
         m_ElementSpacing[i] = 1;
         if (META_DEBUG)
           {
-          std::cout << "metaObject: M_Read: elementSpacing["
+          METAIO_STREAM::cout << "metaObject: M_Read: elementSpacing["
                               << i << "] = "
-                              << m_ElementSpacing[i] << std::endl;
+                              << m_ElementSpacing[i] << METAIO_STREAM::endl;
           }
         }
       }
@@ -1809,22 +1806,22 @@ M_Read()
    }
 
   return true;
-}
+  }
 
 bool MetaObject::
-M_Write()
-{
+M_Write(void)
+  {
   m_WriteStream->precision(m_DoublePrecision);
 
   if(!MET_Write(*m_WriteStream, & m_Fields))
     {
-    std::cerr << "MetaObject: Write: MET_Write Failed"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaObject: Write: MET_Write Failed"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
   return true;
-}
+  }
 
 
 bool MetaObject
@@ -1832,10 +1829,10 @@ bool MetaObject
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaObject: Append" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Append" << METAIO_STREAM::endl;
     }
 
-  if(_headName != nullptr)
+  if(_headName != NULL)
     {
     FileName(_headName);
     }
@@ -1844,27 +1841,27 @@ bool MetaObject
 
   if(!m_WriteStream)
     {
-    m_WriteStream = new std::ofstream;
+    m_WriteStream = new METAIO_STREAM::ofstream;
     }
 
 #ifdef __sgi
-  m_WriteStream->open(m_FileName, std::ios::out
-                                  | std::ios::in);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::out
+                                  | METAIO_STREAM::ios::in);
   if(!m_WriteStream->rdbuf()->is_open())
     {
     delete m_WriteStream;
     m_WriteStream = 0;
     return false;
     }
-  m_WriteStream->seekp(0,std::ios::end);
+  m_WriteStream->seekp(0,METAIO_STREAM::ios::end);
 #else
-  m_WriteStream->open(m_FileName, std::ios::binary
-                                  | std::ios::out
-                                  | std::ios::app);
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::binary
+                                  | METAIO_STREAM::ios::out
+                                  | METAIO_STREAM::ios::app);
   if(!m_WriteStream->rdbuf()->is_open())
     {
     delete m_WriteStream;
-    m_WriteStream = nullptr;
+    m_WriteStream = 0;
     return false;
     }
 #endif
@@ -1874,7 +1871,7 @@ bool MetaObject
   m_WriteStream->close();
 
   delete m_WriteStream;
-  m_WriteStream = nullptr;
+  m_WriteStream = 0;
   return true;
 
 }
@@ -1888,24 +1885,24 @@ void* MetaObject
   FieldsContainerType::iterator  it  = m_UserDefinedWriteFields.begin();
   FieldsContainerType::iterator  end = m_UserDefinedWriteFields.end();
   while( it != end )
-{
+  {
     int eSize;
     MET_SizeOfType((*it)->type, &eSize);
     const unsigned int itLength =
                 static_cast<unsigned int>( (*it)->length );
-    char * out;
+    void * out;
     if(!strcmp((*it)->name,_name))
       {
       if((*it)->type == MET_STRING)
         {
-        out = new char[(itLength+1)*eSize];
+        out = (void*) (new char[(itLength+1)*eSize] );
         memcpy( out, (*it)->value, itLength * eSize );
-        out[itLength]=0;
+        static_cast<char*>(out)[itLength]=0;
         }
       else if((*it)->type == MET_FLOAT_MATRIX)
         {
         const unsigned int numMatrixElements = itLength * itLength;
-        out = new char[numMatrixElements*eSize];
+        out = (void*) (new char[numMatrixElements*eSize] );
         for( unsigned int i=0; i < numMatrixElements; i++ )
           {
           MET_DoubleToValue((*it)->value[i],(*it)->type,out,i);
@@ -1913,7 +1910,7 @@ void* MetaObject
         }
       else
         {
-        out = new char[itLength*eSize];
+        out = (void*) (new char[itLength*eSize] );
         for( unsigned int i=0; i < itLength; i++ )
           {
           MET_DoubleToValue((*it)->value[i],(*it)->type,out,i);
@@ -1922,8 +1919,8 @@ void* MetaObject
       return out;
       }
     ++it;
-}
-  return nullptr;
+  }
+  return NULL;
 }
 
 int MetaObject
@@ -1972,7 +1969,7 @@ void MetaObject::M_PrepareNewReadStream()
     }
   else
     {
-    m_ReadStream = new std::ifstream;
+    m_ReadStream = new METAIO_STREAM::ifstream;
     }
 }
 

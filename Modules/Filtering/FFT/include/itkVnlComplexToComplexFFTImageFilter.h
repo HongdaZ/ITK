@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,15 +15,14 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "itkComplexToComplexFFTImageFilter.h"
-
 #ifndef itkVnlComplexToComplexFFTImageFilter_h
-#  define itkVnlComplexToComplexFFTImageFilter_h
+#define itkVnlComplexToComplexFFTImageFilter_h
+
+#include "itkComplexToComplexFFTImageFilter.h"
 
 namespace itk
 {
-/**
- *\class VnlComplexToComplexFFTImageFilter
+/** \class VnlComplexToComplexFFTImageFilter
  *
  * \brief VNL based complex to complex Fast Fourier Transform.
  *
@@ -37,46 +36,48 @@ namespace itk
  * \sa VnlForwardFFTImageFilter
  * \sa VnlInverseFFTImageFilter
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT VnlComplexToComplexFFTImageFilter : public ComplexToComplexFFTImageFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT VnlComplexToComplexFFTImageFilter:
+  public ComplexToComplexFFTImageFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VnlComplexToComplexFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef VnlComplexToComplexFFTImageFilter        Self;
+  typedef ComplexToComplexFFTImageFilter< TImage > Superclass;
+  typedef SmartPointer< Self >                     Pointer;
+  typedef SmartPointer< const Self >               ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = VnlComplexToComplexFFTImageFilter;
-  using Superclass = ComplexToComplexFFTImageFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using ImageType = TImage;
-  using PixelType = typename ImageType::PixelType;
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef TImage                               ImageType;
+  typedef typename ImageType::PixelType        PixelType;
+  typedef typename Superclass::InputImageType  InputImageType;
+  typedef typename Superclass::OutputImageType OutputImageType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VnlComplexToComplexFFTImageFilter, ComplexToComplexFFTImageFilter);
+  itkTypeMacro(VnlComplexToComplexFFTImageFilter,
+               ComplexToComplexFFTImageFilter);
 
-  static constexpr unsigned int ImageDimension = ImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      ImageType::ImageDimension);
 
 protected:
   VnlComplexToComplexFFTImageFilter();
-  ~VnlComplexToComplexFFTImageFilter() override = default;
+  virtual ~VnlComplexToComplexFFTImageFilter() ITK_OVERRIDE {}
 
-  void
-  BeforeThreadedGenerateData() override;
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) ) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VnlComplexToComplexFFTImageFilter);
 };
 
 } // end namespace itk
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkVnlComplexToComplexFFTImageFilter.hxx"
-#  endif
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkVnlComplexToComplexFFTImageFilter.hxx"
+#endif
 
-#endif // itkVnlComplexToComplexFFTImageFilter_h
+#endif //itkVnlComplexToComplexFFTImageFilter_h

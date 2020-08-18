@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,32 +22,33 @@
 #include "itkSubtractImageFilter.h"
 #include "itkTestingMacros.h"
 
-int
-itkComplexToModulusFilterAndAdaptorTest(int, char *[])
+int itkComplexToModulusFilterAndAdaptorTest( int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int ImageDimension = 3;
+  const unsigned int ImageDimension = 3;
 
   // Declare the types of the images
-  using InputPixelType = std::complex<float>;
-  using OutputPixelType = float;
+  typedef std::complex< float >              InputPixelType;
+  typedef float                              OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, ImageDimension>;
-  using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
+  typedef itk::Image< InputPixelType, ImageDimension >    InputImageType;
+  typedef itk::Image< OutputPixelType, ImageDimension >   OutputImageType;
 
   // Declare appropriate Iterator types for each image
-  using InputIteratorType = itk::ImageRegionIteratorWithIndex<InputImageType>;
-  using OutputIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  InputImageType>  InputIteratorType;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  OutputImageType> OutputIteratorType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<ImageDimension>;
+  typedef itk::Index<ImageDimension>         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<ImageDimension>;
+  typedef itk::Size<ImageDimension>          SizeType;
 
   // Declare the type of the Region
-  using RegionType = itk::ImageRegion<ImageDimension>;
+  typedef itk::ImageRegion<ImageDimension>   RegionType;
 
   // Create two images
   InputImageType::Pointer inputImage = InputImageType::New();
@@ -64,40 +65,43 @@ itkComplexToModulusFilterAndAdaptorTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetLargestPossibleRegion( region );
+  inputImage->SetBufferedRegion( region );
+  inputImage->SetRequestedRegion( region );
   inputImage->Allocate();
   // Create one iterator for the Input Image (this is a light object)
-  InputIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  InputIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image A
-  InputPixelType value(13, 25);
+  InputPixelType value( 13, 25 );
 
-  double modulus = std::sqrt(value.real() * value.real() + value.imag() * value.imag());
+  double modulus = std::sqrt( value.real() * value.real() +
+                             value.imag() * value.imag() );
 
   std::cout << "Modulus of input pixel = " << modulus << std::endl;
   it.GoToBegin();
-  while (!it.IsAtEnd())
-  {
-    it.Set(value);
+  while( !it.IsAtEnd() )
+    {
+    it.Set( value );
     ++it;
-  }
+    }
 
   // Declare the type for the ComplexToModulus filter
-  using FilterType = itk::ComplexToModulusImageFilter<InputImageType, OutputImageType>;
+  typedef itk::ComplexToModulusImageFilter< InputImageType,
+                               OutputImageType > FilterType;
 
   // Create the filter
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ComplexToModulusImageFilter, UnaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, ComplexToModulusImageFilter,
+    UnaryFunctorImageFilter );
 
   // Set the input image
-  filter->SetInput(inputImage);
+  filter->SetInput( inputImage );
 
   // Execute the filter
   filter->Update();
@@ -106,52 +110,59 @@ itkComplexToModulusFilterAndAdaptorTest(int, char *[])
   OutputImageType::Pointer outputImage = filter->GetOutput();
 
   // Create an iterator for going through the image output
-  OutputIteratorType ot(outputImage, outputImage->GetRequestedRegion());
+  OutputIteratorType ot( outputImage, outputImage->GetRequestedRegion() );
 
   //  Check the content of the result image
   const OutputImageType::PixelType epsilon = 1e-6;
   ot.GoToBegin();
   it.GoToBegin();
-  while (!ot.IsAtEnd())
-  {
-    const InputImageType::PixelType  input = it.Get();
+  while( !ot.IsAtEnd() )
+    {
+    const InputImageType::PixelType  input  = it.Get();
     const OutputImageType::PixelType output = ot.Get();
 
-    double normd = std::sqrt(input.real() * input.real() + input.imag() * input.imag());
+    double normd = std::sqrt( input.real() * input.real() +
+                             input.imag() * input.imag() );
 
-    const auto norm = static_cast<OutputImageType::PixelType>(normd);
+    const OutputImageType::PixelType norm =
+       static_cast<OutputImageType::PixelType>( normd );
 
-    if (!itk::Math::FloatAlmostEqual(norm, output, 10, epsilon))
-    {
-      std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
+    if( !itk::Math::FloatAlmostEqual( norm, output, 10, epsilon ) )
+      {
+      std::cerr.precision( static_cast< int >( itk::Math::abs( std::log10( epsilon ) ) ) );
       std::cerr << "Error in itkComplexToModulusImageFilterTest " << std::endl;
       std::cerr << " norm( " << input << ") = " << norm << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++ot;
     ++it;
-  }
+    }
 
   //
   // Test the itk::ComplexToModulusImageAdaptor
   //
 
-  using AdaptorType = itk::ComplexToModulusImageAdaptor<InputImageType, OutputImageType::PixelType>;
+  typedef itk::ComplexToModulusImageAdaptor< InputImageType,
+                          OutputImageType::PixelType > AdaptorType;
 
   AdaptorType::Pointer imaginaryAdaptor = AdaptorType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(imaginaryAdaptor, ComplexToModulusImageAdaptor, ImageAdaptor);
+  EXERCISE_BASIC_OBJECT_METHODS( imaginaryAdaptor, ComplexToModulusImageAdaptor,
+    ImageAdaptor );
 
-  imaginaryAdaptor->SetImage(inputImage);
+  imaginaryAdaptor->SetImage( inputImage );
 
-  using DiffFilterType = itk::SubtractImageFilter<OutputImageType, AdaptorType, OutputImageType>;
+  typedef itk::SubtractImageFilter<
+                        OutputImageType,
+                        AdaptorType,
+                        OutputImageType > DiffFilterType;
 
   DiffFilterType::Pointer diffFilter = DiffFilterType::New();
 
-  diffFilter->SetInput1(outputImage);
-  diffFilter->SetInput2(imaginaryAdaptor);
+  diffFilter->SetInput1( outputImage );
+  diffFilter->SetInput2( imaginaryAdaptor  );
 
   diffFilter->Update();
 
@@ -160,24 +171,24 @@ itkComplexToModulusFilterAndAdaptorTest(int, char *[])
 
   // Check the content of the diff image:
   // Create an iterator for going through the image output
-  OutputIteratorType dt(diffImage, diffImage->GetRequestedRegion());
+  OutputIteratorType dt( diffImage, diffImage->GetRequestedRegion() );
 
   dt.GoToBegin();
-  while (!dt.IsAtEnd())
-  {
-    const OutputImageType::PixelType diff = dt.Get();
-    if (std::fabs(diff) > epsilon)
+  while( !dt.IsAtEnd() )
     {
-      std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
+    const OutputImageType::PixelType diff = dt.Get();
+    if( std::fabs( diff ) > epsilon )
+      {
+      std::cerr.precision( static_cast< int >( itk::Math::abs( std::log10( epsilon ) ) ) );
       std::cerr << "Error in itkComplexToModulusImageFilterTest " << std::endl;
       std::cerr << "Comparing results with Adaptors" << std::endl;
       std::cerr << " difference = " << diff << std::endl;
       std::cerr << " differs from 0 ";
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++dt;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

@@ -5,9 +5,13 @@ computations of Fast Fourier Transforms based on
 <a href=\"http://www.fftw.org\">FFTW</a>. Note that when using the FFTW
 implementation you must comply with the GPL license.")
 
+if( ITK_USE_FFTWF OR ITK_USE_FFTWD )
+  set(FFT_ENABLE_SHARED "ENABLE_SHARED")
+endif()
+
 itk_module(ITKFFT
-  ENABLE_SHARED
-  DEPENDS
+  ${FFT_ENABLE_SHARED}
+  PRIVATE_DEPENDS
     ITKCommon
   COMPILE_DEPENDS
     ITKImageGrid

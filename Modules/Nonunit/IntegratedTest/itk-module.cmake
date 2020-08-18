@@ -6,6 +6,7 @@ itk_module(ITKIntegratedTest
     ITKAnisotropicSmoothing
     ITKAntiAlias
     ITKBiasCorrection
+    ITKBioCell
     ITKClassifiers
     ITKCommon
     ITKConnectedComponents
@@ -15,6 +16,8 @@ itk_module(ITKIntegratedTest
     ITKDiffusionTensorImage
     ITKDistanceMap
     ITKEigen
+    ITKFEM
+    ITKFEMRegistration
     ITKFFT
     ITKFiniteDifference
     ITKImageAdaptors
@@ -52,7 +55,6 @@ itk_module(ITKIntegratedTest
     ITKIOTIFF
     ITKIOVTK
     ITKIOXML
-    ITKIOMesh
     ITKKLMRegionGrowing
     ITKLabelVoting
     ITKLevelSets
@@ -61,6 +63,7 @@ itk_module(ITKIntegratedTest
     ITKMathematicalMorphology
     ITKMesh
     ITKNarrowBand
+    ITKNeuralNetworks
     ITKOptimizers
     ITKPath
     ITKPDEDeformableRegistration

@@ -41,13 +41,13 @@ class GDCM_EXPORT PixmapReader : public Reader
 {
 public:
   PixmapReader();
-  ~PixmapReader() override; //needs to be virtual to ensure lack of memory leaks
+  virtual ~PixmapReader(); //needs to be virtual to ensure lack of memory leaks
 
   /// Read the DICOM image. There are two reason for failure:
   /// 1. The input filename is not DICOM
   /// 2. The input DICOM file does not contains an Pixmap.
 
-  bool Read() override;
+  virtual bool Read();
 
   // Following methods are valid only after a call to 'Read'
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,53 +20,9 @@
 
 #include "itkMultipleLogOutput.h"
 #include "itkRealTimeClock.h"
-#include "ITKCommonExport.h"
-#ifdef DEBUG
-#  undef DEBUG // HDF5 publicly exports this define when built in debug mode
-// That messes up the DEBUG enumeration in PriorityLevelEnum.
-#endif
 
 namespace itk
 {
-/***\class LoggerBaseEnums
- * \brief Contains all enum classes used by LoggerBase class.
- * \ingroup ITKCommon
- */
-class LoggerBaseEnums
-{
-public:
-  /** \class PriorityLevel
-   *  \ingroup ITKCommon
-   * Definition of types of messages. These codes will be used to regulate
-   * the level of detail of messages reported to the final outputs
-   */
-  enum class PriorityLevel : uint8_t
-  {
-    MUSTFLUSH = 0,
-    FATAL,
-    CRITICAL,
-    WARNING,
-    INFO,
-    DEBUG,
-    NOTSET
-  };
-
-  /**\class TimeStampFormat
-   * \ingroup ITKCommon
-   * Select the type of format for reporting time stamps */
-  enum class TimeStampFormat : uint8_t
-  {
-    REALVALUE = 0,
-    HUMANREADABLE = 1
-  };
-};
-
-// Define how to print enumeration
-extern ITKCommon_EXPORT std::ostream &
-                        operator<<(std::ostream & out, const LoggerBaseEnums::PriorityLevel value);
-extern ITKCommon_EXPORT std::ostream &
-                        operator<<(std::ostream & out, const LoggerBaseEnums::TimeStampFormat value);
-
 /** \class LoggerBase
  *  \brief Used for logging information during a run.
  *
@@ -78,42 +34,40 @@ extern ITKCommon_EXPORT std::ostream &
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT LoggerBase : public Object
+class ITKCommon_EXPORT LoggerBase:public Object
 {
 public:
-  using Self = LoggerBase;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+
+  typedef LoggerBase                 Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LoggerBase, Object);
 
-  using OutputType = MultipleLogOutput::OutputType;
+  typedef  MultipleLogOutput::OutputType OutputType;
 
-  using PriorityLevelEnum = LoggerBaseEnums::PriorityLevel;
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr PriorityLevelEnum MUSTFLUSH = PriorityLevelEnum::MUSTFLUSH;
-  static constexpr PriorityLevelEnum FATAL = PriorityLevelEnum::FATAL;
-  static constexpr PriorityLevelEnum CRITICAL = PriorityLevelEnum::CRITICAL;
-  static constexpr PriorityLevelEnum WARNING = PriorityLevelEnum::WARNING;
-  static constexpr PriorityLevelEnum INFO = PriorityLevelEnum::INFO;
-  static constexpr PriorityLevelEnum DEBUG = PriorityLevelEnum::DEBUG;
-  static constexpr PriorityLevelEnum NOTSET = PriorityLevelEnum::NOTSET;
-#endif
+  /** Definition of types of messages. These codes will be used to regulate
+    * the level of detail of messages reported to the final outputs */
+  typedef enum {
+    MUSTFLUSH = 0,
+    FATAL,
+    CRITICAL,
+    WARNING,
+    INFO,
+    DEBUG,
+    NOTSET
+    } PriorityLevelType;
 
   itkSetStringMacro(Name);
   itkGetStringMacro(Name);
 
-  using TimeStampFormatEnum = LoggerBaseEnums::TimeStampFormat;
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr TimeStampFormatEnum REALVALUE = TimeStampFormatEnum::REALVALUE;
-  static constexpr TimeStampFormatEnum HUMANREADABLE = TimeStampFormatEnum::HUMANREADABLE;
-#endif
+  /** Select the type of format for reporting time stamps */
+  typedef enum {
+    REALVALUE = 0,
+    HUMANREADABLE
+    } TimeStampFormatType;
 
   /** Set/Get the type of format used for reporting the time stamp of a given
    * log message. The main options are REALVALUE and HUMANREADABLE.
@@ -124,8 +78,8 @@ public:
    * \sa SetHumanReadableFormat()
    *
    */
-  itkSetEnumMacro(TimeStampFormat, TimeStampFormatEnum);
-  itkGetConstReferenceMacro(TimeStampFormat, TimeStampFormatEnum);
+  itkSetMacro(TimeStampFormat, TimeStampFormatType);
+  itkGetConstReferenceMacro(TimeStampFormat, TimeStampFormatType);
 
   /** Set/Get the specific text format to use when the time stamp format type
    * is set to HUMANREADABLE. For a description of the acceptable formats
@@ -139,14 +93,13 @@ public:
   itkGetStringMacro(HumanReadableFormat);
 
   /** Provides a default formatted log entry */
-  virtual std::string
-  BuildFormattedEntry(PriorityLevelEnum level, std::string const & content);
+  virtual std::string BuildFormattedEntry(PriorityLevelType level,
+                                          std::string const & content);
 
   /** Set the priority level for the current logger. Only messages that have
-   * priorities equal or greater than the one set here will be posted to the
-   * current outputs */
-  virtual void
-  SetPriorityLevel(PriorityLevelEnum level)
+    * priorities equal or greater than the one set here will be posted to the
+    * current outputs */
+  virtual void SetPriorityLevel(PriorityLevelType level)
   {
     m_PriorityLevel = level;
   }
@@ -154,98 +107,88 @@ public:
   /** Get the priority level for the current logger. Only messages that have
    * priorities equal or greater than the one set here will be posted to the
    * current outputs */
-  virtual PriorityLevelEnum
-  GetPriorityLevel() const
+  virtual PriorityLevelType GetPriorityLevel() const
   {
     return m_PriorityLevel;
   }
 
-  virtual void
-  SetLevelForFlushing(PriorityLevelEnum level)
+  virtual void SetLevelForFlushing(PriorityLevelType level)
   {
     m_LevelForFlushing = level;
   }
 
-  virtual PriorityLevelEnum
-  GetLevelForFlushing() const
+  virtual PriorityLevelType GetLevelForFlushing() const
   {
     return m_LevelForFlushing;
   }
 
   /** Registers another output stream with the multiple output. */
-  virtual void
-  AddLogOutput(OutputType * output);
+  virtual void AddLogOutput(OutputType *output);
 
-  virtual void
-  Write(PriorityLevelEnum level, std::string const & content);
+  virtual void Write(PriorityLevelType level, std::string const & content);
 
   /** Helper methods */
-  void
-  Debug(std::string const & message)
+  void Debug(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::DEBUG, message);
+    this->Write (LoggerBase::DEBUG, message);
   }
 
-  void
-  Info(std::string const & message)
+  void Info(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::INFO, message);
+    this->Write (LoggerBase::INFO, message);
   }
 
-  void
-  Warning(std::string const & message)
+  void Warning(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::WARNING, message);
+    this->Write (LoggerBase::WARNING, message);
   }
 
-  void
-  Critical(std::string const & message)
+  void Critical(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::CRITICAL, message);
+    this->Write (LoggerBase::CRITICAL, message);
   }
 
-  void
-  Error(std::string const & message)
+  void Error(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::CRITICAL, message);
+    this->Write (LoggerBase::CRITICAL, message);
   }
 
-  void
-  Fatal(std::string const & message)
+  void Fatal(std::string const & message)
   {
-    this->Write(LoggerBase::PriorityLevelEnum::FATAL, message);
+    this->Write (LoggerBase::FATAL, message);
   }
 
-  virtual void
-  Flush();
+  virtual void Flush();
 
 protected:
+
   /** Constructor */
   LoggerBase();
 
   /** Destructor */
-  ~LoggerBase() override;
+  virtual ~LoggerBase() ITK_OVERRIDE;
 
   /** Print contents of a LoggerBase */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 protected:
-  PriorityLevelEnum m_PriorityLevel;
 
-  PriorityLevelEnum m_LevelForFlushing;
+  PriorityLevelType m_PriorityLevel;
+
+  PriorityLevelType m_LevelForFlushing;
 
   MultipleLogOutput::Pointer m_Output;
 
   RealTimeClock::Pointer m_Clock;
 
-  TimeStampFormatEnum m_TimeStampFormat;
+  TimeStampFormatType m_TimeStampFormat;
 
   std::string m_HumanReadableFormat;
 
 private:
+
   std::string m_Name;
-}; // class LoggerBase
+};  // class LoggerBase
 } // namespace itk
 
-#endif // itkLoggerBase_h
+#endif  // itkLoggerBase_h

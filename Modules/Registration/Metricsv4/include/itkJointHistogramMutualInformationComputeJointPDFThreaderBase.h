@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,74 +25,72 @@ namespace itk
 {
 
 /** \class JointHistogramMutualInformationComputeJointPDFThreaderBase
- * \brief Compute the JointPDF image.
+ * \brief Comput the JointPDF image.
  *
  * This is a helper to compute the joint pdf image for the
  * JointHistogramMutualInformationImageToImageMetricv4.
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TDomainPartitioner, typename TJointHistogramMetric>
+template < typename TDomainPartitioner, typename TJointHistogramMetric >
 class ITK_TEMPLATE_EXPORT JointHistogramMutualInformationComputeJointPDFThreaderBase
-  : public DomainThreader<TDomainPartitioner, TJointHistogramMetric>
+  : public DomainThreader< TDomainPartitioner, TJointHistogramMetric >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JointHistogramMutualInformationComputeJointPDFThreaderBase);
+  /** Standard class typedefs. */
+  typedef JointHistogramMutualInformationComputeJointPDFThreaderBase  Self;
+  typedef DomainThreader< TDomainPartitioner, TJointHistogramMetric > Superclass;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = JointHistogramMutualInformationComputeJointPDFThreaderBase;
-  using Superclass = DomainThreader<TDomainPartitioner, TJointHistogramMetric>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  itkTypeMacro(JointHistogramMutualInformationComputeJointPDFThreaderBase, DomainThreader);
+  itkTypeMacro( JointHistogramMutualInformationComputeJointPDFThreaderBase, DomainThreader );
 
   /** Superclass types.  */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
   /** Types of the associate class. */
-  using JointHistogramMetricType = TJointHistogramMetric;
-  using VirtualImageType = typename JointHistogramMetricType::VirtualImageType;
-  using VirtualIndexType = typename JointHistogramMetricType::VirtualIndexType;
-  using VirtualPointType = typename JointHistogramMetricType::VirtualPointType;
-  using JointPDFType = typename JointHistogramMetricType::JointPDFType;
-  using JointPDFIndexType = typename JointHistogramMetricType::JointPDFIndexType;
-  using JointPDFPointType = typename JointHistogramMetricType::JointPDFPointType;
-  using JointPDFValueType = typename JointHistogramMetricType::JointPDFValueType;
+  typedef TJointHistogramMetric                                JointHistogramMetricType;
+  typedef typename JointHistogramMetricType::VirtualImageType  VirtualImageType;
+  typedef typename JointHistogramMetricType::VirtualIndexType  VirtualIndexType;
+  typedef typename JointHistogramMetricType::VirtualPointType  VirtualPointType;
+  typedef typename JointHistogramMetricType::JointPDFType      JointPDFType;
+  typedef typename JointHistogramMetricType::JointPDFIndexType JointPDFIndexType;
+  typedef typename JointHistogramMetricType::JointPDFPointType JointPDFPointType;
+  typedef typename JointHistogramMetricType::JointPDFValueType JointPDFValueType;
 
-  using InternalComputationValueType = typename JointHistogramMetricType::InternalComputationValueType;
+  typedef typename JointHistogramMetricType::InternalComputationValueType InternalComputationValueType;
 
 protected:
   JointHistogramMutualInformationComputeJointPDFThreaderBase();
-  ~JointHistogramMutualInformationComputeJointPDFThreaderBase() override;
+  virtual ~JointHistogramMutualInformationComputeJointPDFThreaderBase() ITK_OVERRIDE;
 
   /** Create the \c m_JointPDFPerThread's. */
-  void
-  BeforeThreadedExecution() override;
+  virtual void BeforeThreadedExecution() ITK_OVERRIDE;
 
   /** Called by the \c ThreadedExecution of derived classes. */
-  virtual void
-  ProcessPoint(const VirtualIndexType & virtualIndex,
-               const VirtualPointType & virtualPoint,
-               const ThreadIdType       threadId);
+  virtual void ProcessPoint( const VirtualIndexType & virtualIndex,
+                             const VirtualPointType & virtualPoint,
+                             const ThreadIdType threadId );
 
   /** Collect the results per and normalize. */
-  void
-  AfterThreadedExecution() override;
+  virtual void AfterThreadedExecution() ITK_OVERRIDE;
 
-  using JointHistogramType = Image<SizeValueType, 2>;
-  // TODO: This needs updating
+  typedef Image< SizeValueType, 2 >                   JointHistogramType;
+  //TODO: This needs updating
   struct JointHistogramMIPerThreadStruct
-  {
+    {
     typename JointHistogramType::Pointer JointHistogram;
     SizeValueType                        JointHistogramCount;
-  };
-  itkPadStruct(ITK_CACHE_LINE_ALIGNMENT, JointHistogramMIPerThreadStruct, PaddedJointHistogramMIPerThreadStruct);
-  itkAlignedTypedef(ITK_CACHE_LINE_ALIGNMENT,
-                    PaddedJointHistogramMIPerThreadStruct,
-                    AlignedJointHistogramMIPerThreadStruct);
+    };
+  itkPadStruct( ITK_CACHE_LINE_ALIGNMENT, JointHistogramMIPerThreadStruct,
+                                            PaddedJointHistogramMIPerThreadStruct);
+  itkAlignedTypedef( ITK_CACHE_LINE_ALIGNMENT, PaddedJointHistogramMIPerThreadStruct,
+                                               AlignedJointHistogramMIPerThreadStruct );
   AlignedJointHistogramMIPerThreadStruct * m_JointHistogramMIPerThreadVariables;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(JointHistogramMutualInformationComputeJointPDFThreaderBase);
 };
 
 } // end namespace itk

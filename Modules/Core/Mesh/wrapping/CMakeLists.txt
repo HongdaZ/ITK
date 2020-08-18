@@ -5,8 +5,6 @@ set(WRAPPER_SUBMODULE_ORDER
   itkMeshSource
   itkImageToMeshFilter
   itkMeshToMeshFilter
-  itkVTKPolyDataReader
-  itkVTKPolyDataWriter
 )
 itk_auto_load_submodules()
 itk_end_wrap_module()

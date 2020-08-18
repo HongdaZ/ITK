@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,21 +25,25 @@
 
 namespace itk
 {
-template <typename TImage>
-StatisticsUniqueLabelMapFilter<TImage>::StatisticsUniqueLabelMapFilter()
+template< typename TImage >
+StatisticsUniqueLabelMapFilter< TImage >
+::StatisticsUniqueLabelMapFilter()
 {
   this->m_Attribute = LabelObjectType::MEAN;
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-StatisticsUniqueLabelMapFilter<TImage>::GenerateData()
+StatisticsUniqueLabelMapFilter< TImage >
+::GenerateData()
 {
-  switch (this->m_Attribute)
-  {
-    itkStatisticsLabelMapFilterDispatchMacro() default : Superclass::GenerateData();
-    break;
-  }
+  switch ( this->m_Attribute )
+    {
+    itkStatisticsLabelMapFilterDispatchMacro()
+    default:
+      Superclass::GenerateData();
+      break;
+    }
 }
 } // end namespace itk
 #endif

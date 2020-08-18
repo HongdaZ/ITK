@@ -20,10 +20,12 @@ namespace gdcm
 {
 
 SegmentReader::SegmentReader()
-= default;
+{
+}
 
 SegmentReader::~SegmentReader()
-= default;
+{
+}
 
 const SegmentReader::SegmentVector SegmentReader::GetSegments() const
 {
@@ -88,7 +90,7 @@ bool SegmentReader::Read()
   {
     const char *    modality  = ms.GetModality();
     const DataSet & dsRoot    = F->GetDataSet();
-    if (modality != nullptr)
+    if (modality != 0)
     { // Check modality
       String<> modalityStr( modality );
       if ( modalityStr.Trim() == "SEG" )

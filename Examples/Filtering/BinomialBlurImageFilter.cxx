@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,16 +52,14 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile  outputImageFile  numberOfRepetitions"
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile  outputImageFile  numberOfRepetitions" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -72,15 +70,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = float;
-  using OutputPixelType = float;
+  typedef    float    InputPixelType;
+  typedef    float    OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
+  typedef itk::Image< InputPixelType,  2 >   InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >   OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
 
 
   //  Software Guide : BeginLatex
@@ -95,14 +93,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::BinomialBlurImageFilter<InputImageType, OutputImageType>;
+  typedef itk::BinomialBlurImageFilter<
+                 InputImageType, OutputImageType >  FilterType;
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
-  const unsigned int repetitions = std::stoi(argv[3]);
+  reader->SetFileName( argv[1] );
+  const unsigned int repetitions = atoi( argv[3] );
 
 
   //  Software Guide : BeginLatex
@@ -120,29 +119,29 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
-  filter->SetRepetitions(repetitions);
+  filter->SetInput( reader->GetOutput() );
+  filter->SetRepetitions( repetitions );
   filter->Update();
   // Software Guide : EndCodeSnippet
 
 
   // This section connects the filter output to a writer
   //
-  using WritePixelType = unsigned char;
-  using WriteImageType = itk::Image<WritePixelType, 2>;
-  using RescaleFilterType =
-    itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
+  typedef unsigned char                          WritePixelType;
+  typedef itk::Image< WritePixelType, 2 >        WriteImageType;
+  typedef itk::RescaleIntensityImageFilter<
+               OutputImageType, WriteImageType > RescaleFilterType;
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
 
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[2]);
-  rescaler->SetInput(filter->GetOutput());
-  writer->SetInput(rescaler->GetOutput());
+  writer->SetFileName( argv[2] );
+  rescaler->SetInput( filter->GetOutput() );
+  writer->SetInput( rescaler->GetOutput() );
   writer->Update();
 
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class LabelObjectLine
+/** \class LabelObjectLine
  * LabelObjectLine is the line object used in the LabelObject class
  * to store the line which are part of the object.
  * A line is formed of and index and a length in the dimension 0.
@@ -39,63 +38,53 @@ namespace itk
  * \ingroup LabeledImageObject
  * \ingroup ITKLabelMap
  */
-template <unsigned int VImageDimension>
+template< unsigned int VImageDimension >
 class ITK_TEMPLATE_EXPORT LabelObjectLine
 {
 public:
-  static constexpr unsigned int ImageDimension = VImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
 
-  using IndexType = Index<VImageDimension>;
-  using LengthType = SizeValueType;
+  typedef Index< VImageDimension > IndexType;
+  typedef SizeValueType            LengthType;
 
   LabelObjectLine();
   LabelObjectLine(const IndexType & idx, const LengthType & length);
-  virtual ~LabelObjectLine() = default;
+  virtual ~LabelObjectLine() {}
 
   /**
    * Set/Get Index
    */
-  void
-  SetIndex(const IndexType & idx);
+  void SetIndex(const IndexType & idx);
 
-  const IndexType &
-  GetIndex() const;
+  const IndexType & GetIndex() const;
 
   /**
    * SetGet Length
    */
-  void
-  SetLength(const LengthType length);
+  void SetLength(const LengthType length);
 
-  const LengthType &
-  GetLength() const;
+  const LengthType & GetLength() const;
 
   /**
    *  Check for index
    */
-  bool
-  HasIndex(const IndexType idx) const;
+  bool HasIndex(const IndexType idx) const;
 
-  bool
-  IsNextIndex(const IndexType & idx) const;
+  bool IsNextIndex(const IndexType & idx) const;
 
   /** Cause the object to print itself out. */
-  void
-  Print(std::ostream & os, Indent indent = 0) const;
+  void Print(std::ostream & os, Indent indent = 0) const;
 
 protected:
   /** Methods invoked by Print() to print information about the object
    * including superclasses. Typically not called by the user (use Print()
    * instead) but used in the hierarchical print process to combine the
    * output of several classes.  */
-  virtual void
-  PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const;
 
-  virtual void
-  PrintHeader(std::ostream & os, Indent indent) const;
+  virtual void PrintHeader(std::ostream & os, Indent indent) const;
 
-  virtual void
-  PrintTrailer(std::ostream & os, Indent indent) const;
+  virtual void PrintTrailer(std::ostream & os, Indent indent) const;
 
 private:
   IndexType  m_Index;
@@ -104,7 +93,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLabelObjectLine.hxx"
+#include "itkLabelObjectLine.hxx"
 #endif
 
 #endif

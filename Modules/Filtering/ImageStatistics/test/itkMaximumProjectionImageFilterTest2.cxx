@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,53 +23,52 @@
 #include "itkMaximumProjectionImageFilter.h"
 
 
-int
-itkMaximumProjectionImageFilterTest2(int argc, char * argv[])
+int itkMaximumProjectionImageFilterTest2(int argc, char * argv[])
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Missing parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << "Dimension Inputimage Outputimage " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Legacy compat with older MetaImages
   itk::MetaImageIO::SetDefaultDoublePrecision(6);
-  int dim = std::stoi(argv[1]);
+  int dim = atoi(argv[1]);
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, 3>;
+  typedef itk::Image< PixelType, 3 > ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[2]);
+  reader->SetFileName( argv[2] );
 
-  using FilterType = itk::MaximumProjectionImageFilter<ImageType, ImageType>;
+  typedef itk::MaximumProjectionImageFilter< ImageType, ImageType > FilterType;
   FilterType::Pointer filter = FilterType::New();
-  filter->SetInput(reader->GetOutput());
-  filter->SetProjectionDimension(dim);
+  filter->SetInput( reader->GetOutput() );
+  filter->SetProjectionDimension( dim );
   // to be sure that the result is ok with several threads, even on a single
   // proc computer
-  filter->SetNumberOfWorkUnits(2);
+  filter->SetNumberOfThreads( 2 );
 
   itk::SimpleFilterWatcher watcher(filter, "filter");
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[3]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[3] );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch ( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

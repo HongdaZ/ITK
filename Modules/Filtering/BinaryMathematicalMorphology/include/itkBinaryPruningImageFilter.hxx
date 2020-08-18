@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,13 +28,14 @@ namespace itk
 /**
  *    Constructor
  */
-template <typename TInputImage, typename TOutputImage>
-BinaryPruningImageFilter<TInputImage, TOutputImage>::BinaryPruningImageFilter()
+template< typename TInputImage, typename TOutputImage >
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::BinaryPruningImageFilter()
 {
   this->SetNumberOfRequiredOutputs(1);
 
   OutputImagePointer pruneImage = OutputImageType::New();
-  this->SetNthOutput(0, pruneImage.GetPointer());
+  this->SetNthOutput( 0, pruneImage.GetPointer() );
 
   m_Iteration = 3;
 }
@@ -42,58 +43,64 @@ BinaryPruningImageFilter<TInputImage, TOutputImage>::BinaryPruningImageFilter()
 /**
  *  Return the pruning Image pointer
  */
-template <typename TInputImage, typename TOutputImage>
-typename BinaryPruningImageFilter<TInputImage, TOutputImage>::OutputImageType *
-BinaryPruningImageFilter<TInputImage, TOutputImage>::GetPruning()
+template< typename TInputImage, typename TOutputImage >
+typename BinaryPruningImageFilter<
+  TInputImage, TOutputImage >::OutputImageType *
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::GetPruning(void)
 {
-  return dynamic_cast<OutputImageType *>(this->ProcessObject::GetOutput(0));
+  return dynamic_cast< OutputImageType * >(
+           this->ProcessObject::GetOutput(0) );
 }
 
 /**
  *  Prepare data for computation
  */
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-BinaryPruningImageFilter<TInputImage, TOutputImage>::PrepareData()
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::PrepareData(void)
 {
   itkDebugMacro(<< "PrepareData Start");
   OutputImagePointer pruneImage = GetPruning();
 
-  InputImagePointer inputImage = dynamic_cast<const TInputImage *>(ProcessObject::GetInput(0));
+  InputImagePointer inputImage  =
+    dynamic_cast< const TInputImage  * >( ProcessObject::GetInput(0) );
 
-  pruneImage->SetBufferedRegion(pruneImage->GetRequestedRegion());
+  pruneImage->SetBufferedRegion( pruneImage->GetRequestedRegion() );
   pruneImage->Allocate();
 
-  typename OutputImageType::RegionType region = pruneImage->GetRequestedRegion();
+  typename OutputImageType::RegionType region  = pruneImage->GetRequestedRegion();
 
-  ImageRegionConstIterator<TInputImage> it(inputImage, region);
-  ImageRegionIterator<TOutputImage>     ot(pruneImage, region);
+  ImageRegionConstIterator< TInputImage > it(inputImage,  region);
+  ImageRegionIterator< TOutputImage >     ot(pruneImage,  region);
 
   it.GoToBegin();
   ot.GoToBegin();
 
   itkDebugMacro(<< "PrepareData: Copy input to output");
 
-  while (!ot.IsAtEnd())
-  {
-    ot.Set(static_cast<typename OutputImageType::PixelType>(it.Get()));
+  while ( !ot.IsAtEnd() )
+    {
+    ot.Set( static_cast< typename OutputImageType::PixelType >( it.Get() ) );
     ++it;
     ++ot;
-  }
+    }
   itkDebugMacro(<< "PrepareData End");
 }
 
 /**
  *  Post processing for computing thinning
  */
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-BinaryPruningImageFilter<TInputImage, TOutputImage>::ComputePruneImage()
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::ComputePruneImage()
 {
   itkDebugMacro(<< "ComputeThinImage Start");
-  OutputImagePointer pruneImage = GetPruning();
+  OutputImagePointer pruneImage          =  GetPruning();
 
-  typename OutputImageType::RegionType region = pruneImage->GetRequestedRegion();
+  typename OutputImageType::RegionType region  = pruneImage->GetRequestedRegion();
 
   typename NeighborhoodIteratorType::RadiusType radius;
   radius.Fill(1);
@@ -109,38 +116,39 @@ BinaryPruningImageFilter<TInputImage, TOutputImage>::ComputePruneImage()
   typename NeighborhoodIteratorType::OffsetType offset8 = { { 0, -1 } };
 
   unsigned int count = 0;
-  while (count < m_Iteration)
-  {
-    ot.GoToBegin();
-    while (!ot.IsAtEnd())
+  while ( count < m_Iteration )
     {
-      if (ot.GetCenterPixel())
+    ot.GoToBegin();
+    while ( !ot.IsAtEnd() )
       {
+      if ( ot.GetCenterPixel() )
+        {
         PixelType genus;
-        genus = ot.GetPixel(offset1) + ot.GetPixel(offset2);
+        genus  = ot.GetPixel(offset1) + ot.GetPixel(offset2);
         genus += ot.GetPixel(offset3) + ot.GetPixel(offset4);
         genus += ot.GetPixel(offset5) + ot.GetPixel(offset6);
         genus += ot.GetPixel(offset7) + ot.GetPixel(offset8);
-        if (genus < 2)
-        {
+        if ( genus < 2 )
+          {
           genus = 0;
           ot.SetCenterPixel(genus);
+          }
         }
-      }
 
       ++ot;
-    }
+      }
     ++count;
-  }
+    }
   itkDebugMacro(<< "ComputeThinImage End");
 }
 
 /**
  *  Generate PruneImage
  */
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-BinaryPruningImageFilter<TInputImage, TOutputImage>::GenerateData()
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::GenerateData()
 {
   this->PrepareData();
 
@@ -151,9 +159,10 @@ BinaryPruningImageFilter<TInputImage, TOutputImage>::GenerateData()
 /**
  *  Print Self
  */
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-BinaryPruningImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+BinaryPruningImageFilter< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

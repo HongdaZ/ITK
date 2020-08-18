@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,15 +47,13 @@ class GenericCUBFileAdaptor;
  *
  * \ingroup ITKReview
  */
-class VoxBoCUBImageIO : public ImageIOBase
+class VoxBoCUBImageIO:public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoxBoCUBImageIO);
-
-  /** Standard class type aliases. */
-  using Self = VoxBoCUBImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef VoxBoCUBImageIO      Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,81 +65,71 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation() ITK_OVERRIDE;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegions has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
   VoxBoCUBImageIO();
-  ~VoxBoCUBImageIO() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~VoxBoCUBImageIO();
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  bool
-  CheckExtension(const char *, bool & isCompressed);
+  ITK_DISALLOW_COPY_AND_ASSIGN(VoxBoCUBImageIO);
 
-  GenericCUBFileAdaptor *
-  CreateReader(const char * filename);
+  bool CheckExtension(const char *, bool & isCompressed);
 
-  GenericCUBFileAdaptor *
-  CreateWriter(const char * filename);
+  GenericCUBFileAdaptor * CreateReader(const char *filename);
+
+  GenericCUBFileAdaptor * CreateWriter(const char *filename);
 
   GenericCUBFileAdaptor *m_Reader, *m_Writer;
 
   // Initialize the orientation map (from strings to ITK)
-  void
-  InitializeOrientationMap();
+  void InitializeOrientationMap();
 
   // Orientation stuff
-  using OrientationFlags = SpatialOrientation::ValidCoordinateOrientationFlags;
-  using OrientationMap = std::map<std::string, OrientationFlags>;
-  using InverseOrientationMap = std::map<OrientationFlags, std::string>;
+  typedef SpatialOrientation::ValidCoordinateOrientationFlags OrientationFlags;
+  typedef std::map< std::string, OrientationFlags >           OrientationMap;
+  typedef std::map< OrientationFlags, std::string >           InverseOrientationMap;
 
   OrientationMap        m_OrientationMap;
   InverseOrientationMap m_InverseOrientationMap;
 
   // Method to swap bytes in read buffer
-  void
-  SwapBytesIfNecessary(void * buffer, BufferSizeType numberOfBytes);
+  void SwapBytesIfNecessary(void *buffer, BufferSizeType numberOfBytes);
 
   // Strings used in VoxBo files
-  static const char * m_VB_IDENTIFIER_SYSTEM;
-  static const char * m_VB_IDENTIFIER_FILETYPE;
-  static const char * m_VB_DIMENSIONS;
-  static const char * m_VB_SPACING;
-  static const char * m_VB_ORIGIN;
-  static const char * m_VB_DATATYPE;
-  static const char * m_VB_BYTEORDER;
-  static const char * m_VB_ORIENTATION;
-  static const char * m_VB_BYTEORDER_MSB;
-  static const char * m_VB_BYTEORDER_LSB;
-  static const char * m_VB_DATATYPE_BYTE;
-  static const char * m_VB_DATATYPE_INT;
-  static const char * m_VB_DATATYPE_FLOAT;
-  static const char * m_VB_DATATYPE_DOUBLE;
+  static const char *m_VB_IDENTIFIER_SYSTEM;
+  static const char *m_VB_IDENTIFIER_FILETYPE;
+  static const char *m_VB_DIMENSIONS;
+  static const char *m_VB_SPACING;
+  static const char *m_VB_ORIGIN;
+  static const char *m_VB_DATATYPE;
+  static const char *m_VB_BYTEORDER;
+  static const char *m_VB_ORIENTATION;
+  static const char *m_VB_BYTEORDER_MSB;
+  static const char *m_VB_BYTEORDER_LSB;
+  static const char *m_VB_DATATYPE_BYTE;
+  static const char *m_VB_DATATYPE_INT;
+  static const char *m_VB_DATATYPE_FLOAT;
+  static const char *m_VB_DATATYPE_DOUBLE;
 };
 } // end namespace itk
 

@@ -27,10 +27,10 @@ namespace gdcm
 class TableEntry
 {
 public:
-  TableEntry(const char *attribute = nullptr,
-    Type const &type = Type(), const char * des = nullptr ) :
+  TableEntry(const char *attribute = 0,
+    Type const &type = Type(), const char * des = 0 ) :
     Attribute(attribute ? attribute : ""),TypeField(type),Description(des ? des : "") {}
-  ~TableEntry() = default;
+  ~TableEntry() {}
 
 private:
   std::string Attribute;

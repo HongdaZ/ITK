@@ -13,10 +13,10 @@ class JpegStreamWriter;
 class JpegSegment
 {
 protected:
-    JpegSegment() = default;
+	JpegSegment() {}
 public:
-    virtual ~JpegSegment() = default;
-    virtual void Serialize(JpegStreamWriter& streamWriter) = 0;
+	virtual ~JpegSegment() {}
+	virtual void Serialize(JpegStreamWriter& streamWriter) = 0;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,16 +46,14 @@ namespace itk
  * \ingroup OSSystemObjects
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT XMLFileOutputWindow : public FileOutputWindow
+class ITKCommon_EXPORT XMLFileOutputWindow:public FileOutputWindow
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(XMLFileOutputWindow);
-
-  /** Standard class type aliases. */
-  using Self = XMLFileOutputWindow;
-  using Superclass = FileOutputWindow;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef XMLFileOutputWindow        Self;
+  typedef FileOutputWindow           Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,40 +62,34 @@ public:
   itkTypeMacro(XMLFileOutputWindow, FileOutputWindow);
 
   /** Send a string to the XML file. */
-  void
-  DisplayText(const char *) override;
+  virtual void DisplayText(const char *) ITK_OVERRIDE;
 
   /** Send an error string to the XML file. */
-  void
-  DisplayErrorText(const char *) override;
+  virtual void DisplayErrorText(const char *) ITK_OVERRIDE;
 
   /** Send a warning string to the XML file. */
-  void
-  DisplayWarningText(const char *) override;
+  virtual void DisplayWarningText(const char *) ITK_OVERRIDE;
 
   /** Send a generic output string to the XML file. */
-  void
-  DisplayGenericOutputText(const char *) override;
+  virtual void DisplayGenericOutputText(const char *) ITK_OVERRIDE;
 
   /** Send a debug string to the XML file. */
-  void
-  DisplayDebugText(const char *) override;
+  virtual void DisplayDebugText(const char *) ITK_OVERRIDE;
 
   /**  Put the text into the log file without processing it. */
-  virtual void
-  DisplayTag(const char *);
+  virtual void DisplayTag(const char *);
 
 protected:
   XMLFileOutputWindow();
-  ~XMLFileOutputWindow() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~XMLFileOutputWindow() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  Initialize();
+  void Initialize();
 
-  virtual void
-  DisplayXML(const char *, const char *);
+  virtual void DisplayXML(const char *, const char *);
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(XMLFileOutputWindow);
 };
 } // end namespace itk
 

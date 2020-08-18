@@ -1,6 +1,6 @@
 #==========================================================================
 #
-#   Copyright NumFOCUS
+#   Copyright Insight Software Consortium
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 #
 #==========================================================================*/
 
+from __future__ import print_function
+
 import os
 import os.path
 import sys
-# Required to work around weird import error with xarray
-import pkg_resources
-import importlib
-import types
+if sys.version_info >= (3, 4):
+    import importlib
+    import types
+else:
+    import imp
+import inspect
 import itkConfig
 import itkTemplate
 
@@ -42,14 +46,20 @@ def LoadModule(name, namespace=None):
     This later submodule will be created if it does not already exist."""
 
     # find the module's name in sys.modules, or create a new module so named
-    this_module = sys.modules.setdefault(name, types.ModuleType(name))
+    if sys.version_info >= (3, 4):
+        this_module = sys.modules.setdefault(name, types.ModuleType(name))
+    else:
+        this_module = sys.modules.setdefault(name, imp.new_module(name))
 
     # if this library and it's template instantiations have already been loaded
     # into sys.modules, bail out after loading the defined symbols into
     # 'namespace'
     if hasattr(this_module, '__templates_loaded'):
         if namespace is not None:
-            swig = namespace.setdefault('swig', types.ModuleType('swig'))
+            if sys.version_info >= (3, 4):
+                swig = namespace.setdefault('swig', types.ModuleType('swig'))
+            else:
+                swig = namespace.setdefault('swig', imp.new_module('swig'))
             swig.__dict__.update(this_module.swig.__dict__)
 
             # don't worry about overwriting the symbols in namespace -- any
@@ -65,6 +75,31 @@ def LoadModule(name, namespace=None):
     # here instead of at the end of the file to protect against cyclical
     # dependencies that could kill the recursive lookup below.
     this_module.__templates_loaded = True
+
+    # For external projects :
+    # If this_module name (variable name) is in the module_data dictionnary,
+    # then this_module is an installed module (or a previously loaded module).
+    # Otherwise, it may come from an external project. In this case, we must
+    # search the Configuration/<name>Config.py file of this project.
+    try:
+        module_data[name]
+    except:
+        file = inspect.getfile(this_module)
+        path = os.path.dirname(file)
+
+        data = {}
+        conf = name + 'Config.py'
+        try:
+            # for a linux tree
+            execfile(os.path.join(path, 'Configuration', conf), data)
+        except:
+            try:
+                # for a windows tree
+                execfile(os.path.join(path, '..', 'Configuration', conf), data)
+            except:
+                data = None
+        if(data):
+            module_data[name] = data
 
     # Now, we definitely need to load the template instantiations from the
     # named module, and possibly also load the underlying SWIG module. Before
@@ -103,16 +138,22 @@ def LoadModule(name, namespace=None):
     # stomp on an existing 'swig' module, nor do we want to share 'swig'
     # modules between this_module and namespace.
 
-    this_module.swig = types.ModuleType('swig')
+    if sys.version_info >= (3, 4):
+        this_module.swig = types.ModuleType('swig')
+    else:
+        this_module.swig = imp.new_module('swig')
 
     if namespace is not None:
-        swig = namespace.setdefault('swig', types.ModuleType('swig'))
+        if sys.version_info >= (3, 4):
+            swig = namespace.setdefault('swig', types.ModuleType('swig'))
+        else:
+            swig = namespace.setdefault('swig', imp.new_module('swig'))
 
     for k, v in module.__dict__.items():
         if not k.startswith('__'):
             setattr(this_module.swig, k, v)
-            if namespace is not None:
-                setattr(swig, k, v)
+        if namespace is not None and not k.startswith('__'):
+            setattr(swig, k, v)
 
     data = module_data[name]
     if data:
@@ -168,15 +209,6 @@ def LoadModule(name, namespace=None):
                     DebugPrintError("%s not found in module %s because of "
                                     "exception:\n %s"
                                     % (swigClassName, name, e))
-        if 'snake_case_functions' in data:
-            for snakeCaseFunction in data['snake_case_functions']:
-                namespace[snakeCaseFunction] = getattr(module, snakeCaseFunction)
-                init_name = snakeCaseFunction + "_init_docstring"
-                init_function = getattr(module, init_name)
-                try:
-                    init_function()
-                except AttributeError:
-                    pass
 
     if itkConfig.ImportCallback:
         itkConfig.ImportCallback(name, 1)
@@ -208,8 +240,19 @@ class LibraryLoader(object):
     def load(self, name):
         self.setup()
         try:
-            return importlib.import_module(name)
+            if sys.version_info >= (3, 4):
+                return importlib.import_module(name)
+            else:
+                # needed in case next line raises exception, so that finally block
+                # works
+                fp = None
+                fp, pathname, description = imp.find_module(name)
+                return imp.load_module(name, fp, pathname, description)
         finally:
+            if sys.version_info < (3, 4):
+                # Since we may exit via an exception, close fp explicitly.
+                if fp:
+                    fp.close()
             self.cleanup()
 
     def cleanup(self):
@@ -223,7 +266,6 @@ class LibraryLoader(object):
 dirs = [p for p in itkConfig.path if os.path.isdir(p)]
 module_data = {}
 lazy_attributes = {}
-known_modules = []
 for d in dirs:
     files = os.listdir(d + os.sep + "Configuration")
     known_modules = sorted([f[:-9] for f in files if f.endswith('Config.py')])
@@ -234,6 +276,9 @@ for d in dirs:
         data = {}
         conf = module + 'Config.py'
         path = os.path.join(d + os.sep + "Configuration", conf)
-        with open(path, "rb") as modulefile:
-            exec(modulefile.read(), data)
+        if sys.version_info >= (3, 0):
+            with open(path, "rb") as modulefile:
+                exec(modulefile.read(), data)
+        else:
+            execfile(path, data)
         module_data[module] = data

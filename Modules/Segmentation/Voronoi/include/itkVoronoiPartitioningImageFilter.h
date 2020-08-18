@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,47 +29,44 @@ namespace itk
  * \ingroup HybridSegmentation
  * \ingroup ITKVoronoi
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT VoronoiPartitioningImageFilter
-  : public VoronoiSegmentationImageFilterBase<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT VoronoiPartitioningImageFilter:
+  public VoronoiSegmentationImageFilterBase< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiPartitioningImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = VoronoiPartitioningImageFilter;
-  using Superclass = VoronoiSegmentationImageFilterBase<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef VoronoiPartitioningImageFilter                                  Self;
+  typedef VoronoiSegmentationImageFilterBase< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                            Pointer;
+  typedef SmartPointer< const Self >                                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VoronoiPartitioningImageFilter, VoronoiSegmentationImageFilterBase);
+  itkTypeMacro(VoronoiPartitioningImageFilter,
+               VoronoiSegmentationImageFilterBase);
 
-  /** Convenient type alias. */
-  using BinaryObjectImage = typename Superclass::BinaryObjectImage;
-  using IndexList = typename Superclass::IndexList;
-  using IndexType = typename Superclass::IndexType;
-  using RegionType = typename Superclass::RegionType;
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
+  /** Convenient typedefs. */
+  typedef typename Superclass::BinaryObjectImage BinaryObjectImage;
+  typedef typename Superclass::IndexList         IndexList;
+  typedef typename Superclass::IndexType         IndexType;
+  typedef typename Superclass::RegionType        RegionType;
+  typedef typename Superclass::InputImageType    InputImageType;
+  typedef typename Superclass::OutputImageType   OutputImageType;
+  typedef typename Superclass::OutputPixelType   OutputPixelType;
 
-  using PointType = typename Superclass::PointType;
-  using PointTypeDeque = typename Superclass::PointTypeDeque;
-  using PointIdIterator = typename Superclass::PointIdIterator;
-  using CellAutoPointer = typename Superclass::CellAutoPointer;
-  using EdgeIterator = typename Superclass::EdgeIterator;
-  using NeighborIdIterator = typename Superclass::NeighborIdIterator;
+  typedef typename Superclass::PointType          PointType;
+  typedef typename Superclass::PointTypeDeque     PointTypeDeque;
+  typedef typename Superclass::PointIdIterator    PointIdIterator;
+  typedef typename Superclass::CellAutoPointer    CellAutoPointer;
+  typedef typename Superclass::EdgeIterator       EdgeIterator;
+  typedef typename Superclass::NeighborIdIterator NeighborIdIterator;
 
   /** Create the output results.  */
-  void
-  MakeSegmentBoundary() override;
+  virtual void MakeSegmentBoundary(void) ITK_OVERRIDE;
 
-  void
-  MakeSegmentObject() override;
+  virtual void MakeSegmentObject(void) ITK_OVERRIDE;
 
   /** Set/Get the threshold used to determine if a Voronoi region is
    * homogeneous. If the standard deviation of the intensities in the
@@ -79,41 +76,44 @@ public:
   itkGetConstMacro(SigmaThreshold, double);
 
   /** ImageDimension enumeration   */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
-  itkConceptMacro(IntConvertibleToOutputCheck, (Concept::Convertible<int, OutputPixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( IntConvertibleToOutputCheck,
+                   ( Concept::Convertible< int, OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  VoronoiPartitioningImageFilter() = default;
-  ~VoronoiPartitioningImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  VoronoiPartitioningImageFilter();
+  ~VoronoiPartitioningImageFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   // Classify all the voronoi cells as interior , exterior or boundary.
-  void
-  ClassifyDiagram() override;
+  virtual void ClassifyDiagram(void) ITK_OVERRIDE;
 
   // Generate the seeds to be added by dividing the boundary cells.
-  void
-  GenerateAddingSeeds() override;
+  virtual void GenerateAddingSeeds(void) ITK_OVERRIDE;
 
   // Are the pixels specified in the index list homogeneous?
-  bool
-  TestHomogeneity(IndexList & Plist) override;
+  virtual bool TestHomogeneity(IndexList & Plist) ITK_OVERRIDE;
 
   // Threshold for homogeneity criterion
-  double m_SigmaThreshold{ 10 };
+  double m_SigmaThreshold;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiPartitioningImageFilter);
 };
-} // namespace itk
+} //end namespace
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVoronoiPartitioningImageFilter.hxx"
+#include "itkVoronoiPartitioningImageFilter.hxx"
 #endif
 
 #endif

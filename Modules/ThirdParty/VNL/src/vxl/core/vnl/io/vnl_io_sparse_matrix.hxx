@@ -8,10 +8,7 @@
 #include "vnl_io_sparse_matrix.h"
 #include <vnl/vnl_sparse_matrix.h>
 #include <vsl/vsl_binary_io.h>
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
 
 // I/O for vnl_sparse_matrix_pair
 //==================================================================================
@@ -23,7 +20,7 @@
 template<class T>
 void vsl_b_write(vsl_b_ostream &os, const vnl_sparse_matrix_pair<T> & p)
 {
-  constexpr short io_version_no = 1;
+  const short io_version_no = 1;
   vsl_b_write(os, io_version_no);
   vsl_b_write(os, p.first);
   vsl_b_write(os, p.second);
@@ -74,7 +71,7 @@ void vsl_b_write(vsl_b_ostream & os, const vnl_sparse_matrix<T> & p)
   row rw;
   vnl_sparse_matrix<T> v=p;
 
-  constexpr short io_version_no = 1;
+  const short io_version_no = 1;
   vsl_b_write(os, io_version_no);
   vsl_b_write(os, v.rows());
   vsl_b_write(os, v.columns());
@@ -157,8 +154,8 @@ void vsl_print_summary(std::ostream & os,const vnl_sparse_matrix<T> & p)
 }
 
 #define VNL_IO_SPARSE_MATRIX_INSTANTIATE(T) \
-  template VNL_EXPORT void vsl_print_summary(std::ostream &, const vnl_sparse_matrix<T > &); \
-  template VNL_EXPORT void vsl_b_read(vsl_b_istream &, vnl_sparse_matrix<T > &); \
-  template VNL_EXPORT void vsl_b_write(vsl_b_ostream &, const vnl_sparse_matrix<T > &)
+  template VNL_TEMPLATE_EXPORT void vsl_print_summary(std::ostream &, const vnl_sparse_matrix<T > &); \
+  template VNL_TEMPLATE_EXPORT void vsl_b_read(vsl_b_istream &, vnl_sparse_matrix<T > &); \
+  template VNL_TEMPLATE_EXPORT void vsl_b_write(vsl_b_ostream &, const vnl_sparse_matrix<T > &)
 
 #endif // vnl_io_sparse_matrix_hxx_

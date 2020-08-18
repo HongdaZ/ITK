@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,85 +47,87 @@ namespace itk
  *
  * \ingroup ITKMathematicalMorphology
  */
-template <typename TImage, typename TKernel, typename TCompare1, typename TCompare2>
-class ITK_TEMPLATE_EXPORT AnchorOpenCloseImageFilter : public KernelImageFilter<TImage, TImage, TKernel>
+template< typename TImage, typename TKernel, typename TCompare1, typename TCompare2 >
+class ITK_TEMPLATE_EXPORT AnchorOpenCloseImageFilter:
+  public KernelImageFilter< TImage, TImage, TKernel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorOpenCloseImageFilter);
+  /** Standard class typedefs. */
+  typedef AnchorOpenCloseImageFilter           Self;
+  typedef KernelImageFilter< TImage, TImage, TKernel >
+                                               Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = AnchorOpenCloseImageFilter;
-  using Superclass = KernelImageFilter<TImage, TImage, TKernel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  /** Kernel typedef. */
+  typedef TKernel                    KernelType;
+  typedef typename KernelType::LType KernelLType;
 
-  /** Some convenient type alias. */
-  /** Kernel type alias. */
-  using KernelType = TKernel;
-  using KernelLType = typename KernelType::LType;
-
-  using InputImageType = TImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  typedef TImage                                InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AnchorOpenCloseImageFilter, KernelImageFilter);
+  itkTypeMacro(AnchorOpenCloseImageFilter,
+               KernelImageFilter);
 
 protected:
   AnchorOpenCloseImageFilter();
-  ~AnchorOpenCloseImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~AnchorOpenCloseImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Multi-thread version GenerateData. */
-  void
-  DynamicThreadedGenerateData(const InputImageRegionType & outputRegionForThread) override;
-
+  void  ThreadedGenerateData(const InputImageRegionType & outputRegionForThread,
+                             ThreadIdType threadId) ITK_OVERRIDE;
 
   InputImagePixelType m_Boundary1;
   InputImagePixelType m_Boundary2;
 
 private:
-  using BresType = BresenhamLine<Self::InputImageDimension>;
-  using BresOffsetArray = typename BresType::OffsetArray;
+  ITK_DISALLOW_COPY_AND_ASSIGN(AnchorOpenCloseImageFilter);
+
+  typedef BresenhamLine< itkGetStaticConstMacro(InputImageDimension) > BresType;
+  typedef typename BresType::OffsetArray                               BresOffsetArray;
 
   // the class that operates on lines -- does the opening in one
   // operation. The classes following are named on the assumption that
   // we are doing an opening
 
-  //  using AnchorLineOpenType = AnchorOpenCloseLine<InputImagePixelType, THistogramCompare,
-  // TFunction1, TFunction2>;
-  using AnchorLineOpenType = AnchorOpenCloseLine<InputImagePixelType, TCompare1>;
+//  typedef AnchorOpenCloseLine<InputImagePixelType, THistogramCompare,
+// TFunction1, TFunction2> AnchorLineOpenType;
+  typedef AnchorOpenCloseLine< InputImagePixelType, TCompare1 > AnchorLineOpenType;
 
-  using AnchorLineErodeType = AnchorErodeDilateLine<InputImagePixelType, TCompare1>;
+  typedef AnchorErodeDilateLine< InputImagePixelType, TCompare1 > AnchorLineErodeType;
 
   // the class that does the dilation
-  using AnchorLineDilateType = AnchorErodeDilateLine<InputImagePixelType, TCompare2>;
+  typedef AnchorErodeDilateLine< InputImagePixelType, TCompare2 > AnchorLineDilateType;
 
-  void
-  DoFaceOpen(InputImageConstPointer             input,
-             InputImagePointer                  output,
-             InputImagePixelType                border,
-             KernelLType                        line,
-             AnchorLineOpenType &               AnchorLineOpen,
-             const BresOffsetArray              LineOffsets,
-             std::vector<InputImagePixelType> & outbuffer,
-             const InputImageRegionType         AllImage,
-             const InputImageRegionType         face);
+  void DoFaceOpen(InputImageConstPointer input,
+                  InputImagePointer output,
+                  InputImagePixelType border,
+                  KernelLType line,
+                  AnchorLineOpenType & AnchorLineOpen,
+                  const BresOffsetArray LineOffsets,
+                  std::vector<InputImagePixelType> & outbuffer,
+                  const InputImageRegionType AllImage,
+                  const InputImageRegionType face);
 }; // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAnchorOpenCloseImageFilter.hxx"
+#include "itkAnchorOpenCloseImageFilter.hxx"
 #endif
 
 #endif

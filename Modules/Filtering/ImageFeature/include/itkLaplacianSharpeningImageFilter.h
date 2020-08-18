@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,37 +45,37 @@ namespace itk
  * \ingroup ImageFeatureExtraction
  * \ingroup ITKImageFeature
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/SharpenImage,Sharpen Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/LaplacianSharpeningImageFilter,Sharpen an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT LaplacianSharpeningImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT LaplacianSharpeningImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianSharpeningImageFilter);
-
-  /** Standard "Self" & Superclass type alias.   */
-  using Self = LaplacianSharpeningImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  /** Standard "Self" & Superclass typedef.   */
+  typedef LaplacianSharpeningImageFilter                  Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using RealType = typename NumericTraits<OutputPixelType>::RealType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  typedef typename TOutputImage::PixelType                    OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType            OutputInternalPixelType;
+  typedef typename NumericTraits< OutputPixelType >::RealType RealType;
+  typedef typename TInputImage::PixelType                     InputPixelType;
+  typedef typename TInputImage::InternalPixelType             InputInternalPixelType;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Image type alias support */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
+  /** Image typedef support. */
+  typedef TInputImage                      InputImageType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename InputImageType::Pointer InputImagePointer;
 
-  /** Smart pointer type alias support   */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support.   */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods)  */
   itkTypeMacro(LaplacianSharpeningImageFilter, ImageToImageFilter);
@@ -91,13 +91,12 @@ public:
    * execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion()  */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Enable/Disable using the image spacing information in
    *  calculations. Use this option if you  want derivatives in
    *  physical space. Default  is UseImageSpacingOn. */
-  itkBooleanMacro(UseImageSpacing);
+  itkBooleanMacro( UseImageSpacing );
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -105,28 +104,31 @@ public:
   itkGetConstMacro(UseImageSpacing, bool);
 
 protected:
-  LaplacianSharpeningImageFilter() { m_UseImageSpacing = true; }
+  LaplacianSharpeningImageFilter()
+  {
+    m_UseImageSpacing = true;
+  }
 
-  ~LaplacianSharpeningImageFilter() override = default;
+  virtual ~LaplacianSharpeningImageFilter() ITK_OVERRIDE {}
 
   /** Standard pipeline method. While this class does not implement a
    * ThreadedGenerateData(), its GenerateData() delegates all
    * calculations to an NeighborhoodOperatorImageFilter.  Since the
    * NeighborhoodOperatorImageFilter is multithreaded, this filter is
    * multithreaded by default.   */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream &, Indent) const override;
+  void PrintSelf(std::ostream &, Indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianSharpeningImageFilter);
+
   bool m_UseImageSpacing;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLaplacianSharpeningImageFilter.hxx"
+#include "itkLaplacianSharpeningImageFilter.hxx"
 #endif
 
 #endif

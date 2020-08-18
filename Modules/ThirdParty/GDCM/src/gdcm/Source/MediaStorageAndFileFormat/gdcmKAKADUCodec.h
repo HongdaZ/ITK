@@ -26,14 +26,14 @@ class KAKADUCodec : public ImageCodec
 {
 public:
   KAKADUCodec();
-  ~KAKADUCodec() override;
-  bool CanDecode(TransferSyntax const &ts) const override;
-  bool CanCode(TransferSyntax const &ts) const override;
+  ~KAKADUCodec();
+  bool CanDecode(TransferSyntax const &ts) const;
+  bool CanCode(TransferSyntax const &ts) const;
 
-  bool Decode(DataElement const &is, DataElement &os) override;
-  bool Code(DataElement const &in, DataElement &out) override;
+  bool Decode(DataElement const &is, DataElement &os);
+  bool Code(DataElement const &in, DataElement &out);
 
-  ImageCodec * Clone() const override;
+  virtual ImageCodec * Clone() const;
 private:
 };
 

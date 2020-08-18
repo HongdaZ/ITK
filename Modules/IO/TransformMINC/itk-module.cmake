@@ -13,8 +13,6 @@ itk_module(ITKIOTransformMINC
   TEST_DEPENDS
     ITKTestKernel
     ITKDisplacementField
-    ITKMINC
-    ITKIOMINC
   FACTORY_NAMES
     TransformIO::MINC
   DESCRIPTION

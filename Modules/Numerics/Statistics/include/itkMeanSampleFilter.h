@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class MeanSampleFilter
+/** \class MeanSampleFilter
  * \brief Given a sample, this filter computes the sample mean
  *
  * The sample is plugged in using SetSample method. Then invoke
@@ -45,86 +44,79 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TSample>
+template< typename TSample >
 class ITK_TEMPLATE_EXPORT MeanSampleFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSampleFilter);
-
-  /**Standard class type aliases. */
-  using Self = MeanSampleFilter;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using SampleType = TSample;
+  /**Standard class typedefs. */
+  typedef MeanSampleFilter           Self;
+  typedef ProcessObject              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
+  typedef TSample                    SampleType;
 
   /**Standard Macros */
   itkTypeMacro(MeanSampleFilter, ProcessObject);
   itkNewMacro(Self);
 
   /** Type of each measurement vector in sample */
-  using MeasurementVectorType = typename SampleType::MeasurementVectorType;
+  typedef typename SampleType::MeasurementVectorType                  MeasurementVectorType;
 
   /** Type of the length of each measurement vector */
-  using MeasurementVectorSizeType = typename SampleType::MeasurementVectorSizeType;
+  typedef typename SampleType::MeasurementVectorSizeType              MeasurementVectorSizeType;
 
   /** Type of measurement vector component value */
-  using MeasurementType = typename SampleType::MeasurementType;
+  typedef typename SampleType::MeasurementType                        MeasurementType;
 
   /** Type of a measurement vector, holding floating point values */
-  using MeasurementVectorRealType = typename NumericTraits<MeasurementVectorType>::RealType;
+  typedef typename NumericTraits< MeasurementVectorType >::RealType   MeasurementVectorRealType;
 
   /** Type of a floating point measurement component value */
-  using MeasurementRealType = typename NumericTraits<MeasurementType>::RealType;
+  typedef typename NumericTraits< MeasurementType >::RealType         MeasurementRealType;
 
 
   /** Method to set the sample */
   using Superclass::SetInput;
-  void
-  SetInput(const SampleType * sample);
+  void SetInput(const SampleType *sample);
 
   /** Method to get the sample */
-  const SampleType *
-  GetInput() const;
+  const SampleType * GetInput() const;
 
 
   /** Get the mean measurement vector */
-  const MeasurementVectorRealType
-  GetMean() const;
+  const MeasurementVectorRealType GetMean() const;
 
   /** MeasurementVector is not a DataObject, we need to decorate it to push it down
    * a ProcessObject's pipeline */
-  using MeasurementVectorDecoratedType = SimpleDataObjectDecorator<MeasurementVectorRealType>;
-  const MeasurementVectorDecoratedType *
-  GetOutput() const;
-  using OutputType = MeasurementVectorDecoratedType;
+  typedef SimpleDataObjectDecorator< MeasurementVectorRealType > MeasurementVectorDecoratedType;
+  const MeasurementVectorDecoratedType * GetOutput() const;
+  typedef MeasurementVectorDecoratedType                         OutputType;
 
 
-  MeasurementVectorSizeType
-  GetMeasurementVectorSize() const;
+  MeasurementVectorSizeType GetMeasurementVectorSize() const;
 
 protected:
   MeanSampleFilter();
-  ~MeanSampleFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MeanSampleFilter() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** DataObject pointer */
-  using DataObjectPointer = DataObject::Pointer;
+  typedef DataObject::Pointer DataObjectPointer;
 
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
-}; // end of class
+  virtual void GenerateData() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSampleFilter);
+};                                // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMeanSampleFilter.hxx"
+#include "itkMeanSampleFilter.hxx"
 #endif
 
 #endif

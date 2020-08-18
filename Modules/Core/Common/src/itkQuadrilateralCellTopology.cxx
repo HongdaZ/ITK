@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,15 @@ namespace itk
 /**
  * The quadrilateral's topology data: Edges.
  */
-const int QuadrilateralCellTopology ::m_Edges[4][2] = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 } };
+const int
+QuadrilateralCellTopology
+:: m_Edges[4][2] = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 } };
 
-QuadrilateralCellTopology ::QuadrilateralCellTopology() = default;
+QuadrilateralCellTopology
+::QuadrilateralCellTopology()
+{}
 
-QuadrilateralCellTopology ::~QuadrilateralCellTopology() = default;
+QuadrilateralCellTopology
+::~QuadrilateralCellTopology()
+{}
 } // end namespace itk

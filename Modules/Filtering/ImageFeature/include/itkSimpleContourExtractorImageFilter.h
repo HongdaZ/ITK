@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,50 +24,48 @@
 
 namespace itk
 {
-/**
- *\class SimpleContourExtractorImageFilter
- * \brief Computes an image of contours which will be the contour
- * of the first image.
- *
- * A pixel of the source image is considered to belong to the contour
- * if its pixel value is equal to the input foreground value and it
- * has in its neighborhood at least one pixel which its pixel value is
- * equal to the input background value. The output image will have
- * pixels which will be set to the output foreground value if they
- * belong to the contour, otherwise they will be set to the output
- * background value.
- *
- * The neighborhood "radius" is set thanks to the radius params.
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/ExtractContoursFromImage,Extract Contours From Image}
- * \endsphinx
- * \sa Image
- * \sa Neighborhood
- * \sa NeighborhoodOperator
- * \sa NeighborhoodIterator
- *
- * \ingroup IntensityImageFilters
- * \ingroup ITKImageFeature
- */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT SimpleContourExtractorImageFilter : public BoxImageFilter<TInputImage, TOutputImage>
+/** \class SimpleContourExtractorImageFilter
+* \brief Computes an image of contours which will be the contour
+* of the first image.
+*
+* A pixel of the source image is considered to belong to the contour
+* if its pixel value is equal to the input foreground value and it
+* has in its neighborhood at least one pixel which its pixel value is
+* equal to the input background value. The output image will have
+* pixels which will be set to the output foreground value if they
+* belong to the contour, otherwise they will be set to the output
+* background value.
+*
+* The neighborhood "radius" is set thanks to the radius params.
+*
+* \sa Image
+* \sa Neighborhood
+* \sa NeighborhoodOperator
+* \sa NeighborhoodIterator
+*
+* \ingroup IntensityImageFilters
+  * \ingroup ITKImageFeature
+*/
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT SimpleContourExtractorImageFilter:
+  public BoxImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SimpleContourExtractorImageFilter);
-
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  /** Standard class type aliases. */
-  using Self = SimpleContourExtractorImageFilter;
-  using Superclass = BoxImageFilter<InputImageType, OutputImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SimpleContourExtractorImageFilter                 Self;
+  typedef BoxImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef SmartPointer< Self >                              Pointer;
+  typedef SmartPointer< const Self >                        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -75,15 +73,15 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SimpleContourExtractorImageFilter, BoxImageFilter);
 
-  /** Image type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using InputRealType = typename NumericTraits<InputPixelType>::RealType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType                 InputPixelType;
+  typedef typename OutputImageType::PixelType                OutputPixelType;
+  typedef typename NumericTraits< InputPixelType >::RealType InputRealType;
 
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
-  using InputSizeType = typename InputImageType::SizeType;
+  typedef typename InputImageType::SizeType InputSizeType;
 
   /** Set the foreground value used in order to identify a foreground
    * pixel in the input image. */
@@ -119,34 +117,37 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputPixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   SimpleContourExtractorImageFilter();
-  ~SimpleContourExtractorImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~SimpleContourExtractorImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** SimpleContourExtractorImageFilter can be implemented as a
    *  multithreaded filter. Therefore, this implementation provides a
-   *  DynamicThreadedGenerateData() routine which is called for each
+   *  ThreadedGenerateData() routine which is called for each
    *  processing thread. The output image data is allocated
    *  automatically by the superclass prior to calling
-   *  DynamicThreadedGenerateData(). DynamicThreadedGenerateData can only write to
+   *  ThreadedGenerateData(). ThreadedGenerateData can only write to
    *  the portion of the output image specified by the parameter
    *  "outputRegionForThread"
    *
    *  \sa ImageToImageFilter::ThreadedGenerateData(),
    *      ImageToImageFilter::GenerateData()
+   *
    */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SimpleContourExtractorImageFilter);
+
   InputPixelType  m_InputForegroundValue;
   InputPixelType  m_InputBackgroundValue;
   OutputPixelType m_OutputForegroundValue;
@@ -155,7 +156,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSimpleContourExtractorImageFilter.hxx"
+#include "itkSimpleContourExtractorImageFilter.hxx"
 #endif
 
 #endif

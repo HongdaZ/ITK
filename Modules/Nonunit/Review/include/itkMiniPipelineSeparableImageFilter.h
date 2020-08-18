@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ namespace itk
  * the same separable transform.
  * This filter can be used with the filter for which the neighborhood is
  * defined by the SetRadius() method, like the BoxImageFilter and its
- * subclasses.
+ * subcalsses.
  *
  *
  * This code was contributed in the Insight Journal paper:
@@ -46,74 +46,72 @@ namespace itk
  * \ingroup ITKReview
  */
 
-template <typename TInputImage, typename TOutputImage, typename TFilter>
-class ITK_TEMPLATE_EXPORT MiniPipelineSeparableImageFilter : public BoxImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage, typename TFilter >
+class ITK_TEMPLATE_EXPORT MiniPipelineSeparableImageFilter:
+  public BoxImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MiniPipelineSeparableImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MiniPipelineSeparableImageFilter;
-  using Superclass = BoxImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MiniPipelineSeparableImageFilter            Self;
+  typedef BoxImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(MiniPipelineSeparableImageFilter, BoxImageFilter);
+  itkTypeMacro(MiniPipelineSeparableImageFilter,
+               BoxImageFilter);
 
-  /** Image related type alias. */
-  using InputImageType = TInputImage;
-  using RegionType = typename TInputImage::RegionType;
-  using SizeType = typename TInputImage::SizeType;
-  using IndexType = typename TInputImage::IndexType;
-  using PixelType = typename TInputImage::PixelType;
-  using OffsetType = typename TInputImage::OffsetType;
+  /** Image related typedefs. */
+  typedef TInputImage                      InputImageType;
+  typedef typename TInputImage::RegionType RegionType;
+  typedef typename TInputImage::SizeType   SizeType;
+  typedef typename TInputImage::IndexType  IndexType;
+  typedef typename TInputImage::PixelType  PixelType;
+  typedef typename TInputImage::OffsetType OffsetType;
 
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename TOutputImage::PixelType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
 
-  using FilterType = TFilter;
-  using CastType = CastImageFilter<InputImageType, OutputImageType>;
+  typedef TFilter                                            FilterType;
+  typedef CastImageFilter< InputImageType, OutputImageType > CastType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** n-dimensional Kernel radius. */
-  using RadiusType = typename TInputImage::SizeType;
+  typedef typename TInputImage::SizeType RadiusType;
 
-  void
-  SetRadius(const RadiusType &) override;
+  virtual void SetRadius(const RadiusType &) ITK_OVERRIDE;
 
-  void
-  SetRadius(const SizeValueType & radius) override
+  virtual void SetRadius(const SizeValueType & radius) ITK_OVERRIDE
   {
     // needed because of the overloading of the method
     Superclass::SetRadius(radius);
   }
 
-  void
-  Modified() const override;
+  virtual void Modified() const ITK_OVERRIDE;
 
-  void
-  SetNumberOfWorkUnits(ThreadIdType nb) override;
+  virtual void SetNumberOfThreads(ThreadIdType nb) ITK_OVERRIDE;
 
 protected:
   MiniPipelineSeparableImageFilter();
-  ~MiniPipelineSeparableImageFilter() override = default;
+  ~MiniPipelineSeparableImageFilter() {}
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   typename FilterType::Pointer m_Filters[ImageDimension];
-  typename CastType::Pointer   m_Cast;
+  typename CastType::Pointer m_Cast;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MiniPipelineSeparableImageFilter);
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMiniPipelineSeparableImageFilter.hxx"
+#include "itkMiniPipelineSeparableImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@
 
 #include "itkLightObject.h"
 #include "itkObjectFactory.h"
-#include "itkCommonEnums.h"
 
 namespace itk
 {
 // Forward reference of CellInterface because of circular #include dependencies
-template <typename TPixelType, typename TCellTraits>
+template<
+  typename TPixelType,
+  typename TCellTraits
+  >
 class ITK_TEMPLATE_EXPORT CellInterface;
 
 /** \class CellInterfaceVisitor
@@ -41,33 +43,36 @@ class ITK_TEMPLATE_EXPORT CellInterface;
  * \ingroup MeshAccess
  * \ingroup ITKCommon
  */
-template <typename TPixelType, typename TCellTraits>
-class ITK_TEMPLATE_EXPORT CellInterfaceVisitor : public LightObject
+template<
+  typename TPixelType,
+  typename TCellTraits
+  >
+class ITK_TEMPLATE_EXPORT CellInterfaceVisitor:public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CellInterfaceVisitor);
-
-  /** Standard class type aliases. */
-  using Self = CellInterfaceVisitor;
-  using Superclass = LightObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using CellIdentifier = typename TCellTraits::CellIdentifier;
+  /** Standard class typedefs. */
+  typedef CellInterfaceVisitor                  Self;
+  typedef LightObject                           Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
+  typedef typename TCellTraits::CellIdentifier  CellIdentifier;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CellInterfaceVisitor, LightObject);
 
   /** This method is called by each cell as it visits this visitor. */
-  virtual void
-  VisitFromCell(CellIdentifier cellId, CellInterface<TPixelType, TCellTraits> *) = 0;
+  virtual void VisitFromCell(CellIdentifier cellId, CellInterface< TPixelType,
+                                                                   TCellTraits > *) = 0;
 
   /**  Return the index of the CellTopology. */
-  virtual CellGeometryEnum
-  GetCellTopologyId() = 0;
+  virtual int GetCellTopologyId() = 0;
 
 protected:
-  CellInterfaceVisitor() = default;
-  ~CellInterfaceVisitor() override = default;
+  CellInterfaceVisitor() {}
+  ~CellInterfaceVisitor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CellInterfaceVisitor);
 };
 
 /** \class CellInterfaceVisitorImplementation
@@ -96,18 +101,20 @@ protected:
  * \ingroup MeshAccess
  * \ingroup ITKCommon
  */
-template <typename TPixelType, typename TCellTraits, typename CellTopology, typename UserVisitor>
-class CellInterfaceVisitorImplementation
-  : public CellInterfaceVisitor<TPixelType, TCellTraits>
-  , public UserVisitor
+template<
+  typename TPixelType,
+  typename TCellTraits,
+  typename CellTopology,
+  typename UserVisitor
+  >
+class CellInterfaceVisitorImplementation:
+  public CellInterfaceVisitor< TPixelType, TCellTraits >, public UserVisitor
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CellInterfaceVisitorImplementation);
-
-  /** Standard class type aliases. */
-  using Self = CellInterfaceVisitorImplementation;
-  using Pointer = SmartPointer<Self>;
-  using CellIdentifier = typename TCellTraits::CellIdentifier;
+  /** Standard class typedefs. */
+  typedef CellInterfaceVisitorImplementation    Self;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef typename TCellTraits::CellIdentifier  CellIdentifier;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -117,23 +124,22 @@ public:
 
   /** Call the static method GetTopologyId for the CellTopology type that
    * we are templated over. */
-  CellGeometryEnum
-  GetCellTopologyId() override
-  {
-    return CellTopology::GetTopologyId();
-  }
+  virtual int GetCellTopologyId() ITK_OVERRIDE { return CellTopology::GetTopologyId(); }
 
   /** Call the method Visit from the UserVisitor template parameter that
    * this class inherits from.  I am my own gradpa... */
-  void
-  VisitFromCell(CellIdentifier cellId, CellInterface<TPixelType, TCellTraits> * c) override
+  void VisitFromCell(CellIdentifier cellId, CellInterface< TPixelType,
+                                                           TCellTraits > *c) ITK_OVERRIDE
   {
     this->UserVisitor::Visit(cellId, (CellTopology *)c);
   }
 
 protected:
-  CellInterfaceVisitorImplementation() = default;
-  ~CellInterfaceVisitorImplementation() override = default;
+  CellInterfaceVisitorImplementation() {}
+  ~CellInterfaceVisitorImplementation() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CellInterfaceVisitorImplementation);
 };
 } // end namespace itk
 

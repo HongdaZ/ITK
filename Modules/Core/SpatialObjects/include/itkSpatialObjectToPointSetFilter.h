@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,38 +19,32 @@
 #define itkSpatialObjectToPointSetFilter_h
 
 #include "itkPointSet.h"
-#include "itkDataObject.h"
 #include "itkMeshSource.h"
 #include "itkPointBasedSpatialObject.h"
 
 namespace itk
 {
-/**
- *\class SpatialObjectToPointSetFilter
+/** \class SpatialObjectToPointSetFilter
  * \brief Base class for filters that take a SpatialObject
  *        as input and produce a PointSet as output.
  *  The pointset created is in physical space.
  * \ingroup ITKSpatialObjects
  */
-template <typename TPointBasedSpatialObject, typename TOutputPointSet>
-class ITK_TEMPLATE_EXPORT SpatialObjectToPointSetFilter : public MeshSource<TOutputPointSet>
+template< typename TInputSpatialObject, typename TOutputPointSet >
+class ITK_TEMPLATE_EXPORT SpatialObjectToPointSetFilter:public MeshSource< TOutputPointSet >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectToPointSetFilter);
+  /** Standard class typedefs. */
+  typedef SpatialObjectToPointSetFilter Self;
+  typedef MeshSource< TOutputPointSet > Superclass;
+  typedef SmartPointer< Self >          Pointer;
+  typedef SmartPointer< const Self >    ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = SpatialObjectToPointSetFilter;
-  using Superclass = MeshSource<TOutputPointSet>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using OutputPointSetType = TOutputPointSet;
-  using OutputPointSetPointer = typename OutputPointSetType::Pointer;
+  typedef TOutputPointSet                      OutputPointSetType;
+  typedef typename OutputPointSetType::Pointer OutputPointSetPointer;
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = DataObject::Pointer;
-
-  using DataObjectIdentifierType = DataObject::DataObjectIdentifierType;
+  typedef DataObject::Pointer DataObjectPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,33 +52,28 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SpatialObjectToPointSetFilter, ProcessObject);
 
-  /** Some convenient type alias. */
-  using PointBasedSpatialObjectType = TPointBasedSpatialObject;
-  using PointBasedSpatialObjectPointer = typename PointBasedSpatialObjectType::Pointer;
-  using PointBasedSpatialObjectConstPointer = typename PointBasedSpatialObjectType::ConstPointer;
-  using ChildrenListType = typename TPointBasedSpatialObject::ChildrenListType;
+  /** Some convenient typedefs. */
+  typedef TInputSpatialObject                            InputSpatialObjectType;
+  typedef typename InputSpatialObjectType::Pointer       InputSpatialObjectPointer;
+  typedef typename InputSpatialObjectType::ConstPointer  InputSpatialObjectConstPointer;
+  typedef typename TInputSpatialObject::ChildrenListType ChildrenListType;
 
   /** Dimension constants */
-  static constexpr unsigned int ObjectDimension = PointBasedSpatialObjectType::ObjectDimension;
+  itkStaticConstMacro(ObjectDimension, unsigned int,
+                      InputSpatialObjectType::ObjectDimension);
 
-  using SpatialObjectPointType = itk::SpatialObjectPoint<Self::ObjectDimension>;
-
-  using SpatialObjectType = itk::SpatialObject<Self::ObjectDimension>;
+  typedef itk::SpatialObjectPoint< itkGetStaticConstMacro(ObjectDimension) >      PointType;
+  typedef itk::PointBasedSpatialObject< itkGetStaticConstMacro(ObjectDimension) > PointBasedSpatialObjectType;
 
   /** Set/Get the PointSet input of this process object.  */
   using Superclass::SetInput;
+  virtual void SetInput(const InputSpatialObjectType *object);
 
-  void
-  SetInput(const SpatialObjectType * object);
-
-  void
-  SetInput(const DataObjectIdentifierType & key, const SpatialObjectType * object);
+  virtual void SetInput(unsigned int, const InputSpatialObjectType *object);
 
   /** Get the input Spatial Object. */
-  const SpatialObjectType *
-  GetInput();
-  const SpatialObjectType *
-  GetInput(unsigned int idx);
+  const InputSpatialObjectType * GetInput();
+  const InputSpatialObjectType * GetInput(unsigned int idx);
 
   /** The spatial object being transformed can be part of a hierarchy.
    * How deep in the hierarchy should we descend in generating the
@@ -93,32 +82,30 @@ public:
   itkSetMacro(ChildrenDepth, unsigned int);
   itkGetConstMacro(ChildrenDepth, unsigned int);
 
-  /* Set the sampling factor of the object. The resulting pointset will have a
-   * size inversely proportional to the sampling factor.*/
+  /* Set the sampling factor of the object. The resulting pointset will have a size
+   * inversely proportional to the sampling factor.*/
   itkSetMacro(SamplingFactor, unsigned int);
   itkGetConstMacro(SamplingFactor, unsigned int);
 
 protected:
   SpatialObjectToPointSetFilter();
-  ~SpatialObjectToPointSetFilter() override = default;
+  ~SpatialObjectToPointSetFilter() ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override
-  {} // do nothing
-  void
-  GenerateData() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE {}  // do nothing
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  unsigned int m_ChildrenDepth{ 0 };
-  unsigned int m_SamplingFactor{ 1 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectToPointSetFilter);
+
+  unsigned int m_ChildrenDepth;
+  unsigned int m_SamplingFactor;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSpatialObjectToPointSetFilter.hxx"
+#include "itkSpatialObjectToPointSetFilter.hxx"
 #endif
 
 #endif

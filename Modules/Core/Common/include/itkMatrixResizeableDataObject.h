@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,17 +33,16 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TItemType>
-class ITK_TEMPLATE_EXPORT MatrixResizeableDataObject
-  : public DataObject
-  , public vnl_matrix<TItemType>
+template< typename TItemType >
+class ITK_TEMPLATE_EXPORT MatrixResizeableDataObject:public DataObject, public vnl_matrix< TItemType >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = MatrixResizeableDataObject;
-  using Superclass = DataObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+
+  /** Standard class typedefs. */
+  typedef MatrixResizeableDataObject Self;
+  typedef DataObject                 Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -52,12 +51,17 @@ public:
   itkTypeMacro(MatrixResizeableDataObject, DataObject);
 
 protected:
+
   /** Default Constructor. */
-  MatrixResizeableDataObject() = default;
+  MatrixResizeableDataObject();
 
   /** Default Destructor. */
-  ~MatrixResizeableDataObject() override = default;
+  ~MatrixResizeableDataObject() ITK_OVERRIDE;
 };
 } // end namespace itk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkMatrixResizeableDataObject.hxx"
+#endif
 
 #endif

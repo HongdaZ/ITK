@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,86 +37,86 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TTransform, typename TImage>
-class ITK_TEMPLATE_EXPORT BSplineTransformInitializer : public Object
+template<typename TTransform, typename TImage>
+class ITK_TEMPLATE_EXPORT BSplineTransformInitializer
+: public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineTransformInitializer);
 
-  /** Standard class type aliases. */
-  using Self = BSplineTransformInitializer;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BSplineTransformInitializer Self;
+  typedef Object                      Superclass;
+  typedef SmartPointer<Self>          Pointer;
+  typedef SmartPointer<const Self>    ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(BSplineTransformInitializer, Object);
+  itkTypeMacro( BSplineTransformInitializer, Object );
 
   /** Type of the transform to initialize. */
-  using TransformType = TTransform;
+  typedef TTransform TransformType;
 
   /** Types defined from the input image traits. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::ConstPointer;
-  using IndexType = typename ImageType::IndexType;
-  using ImagePointType = typename ImageType::PointType;
-  using ImagePointCoordRepType = typename ImagePointType::CoordRepType;
+  typedef TImage                                   ImageType;
+  typedef typename ImageType::ConstPointer         ImagePointer;
+  typedef typename ImageType::IndexType            IndexType;
+  typedef typename ImageType::PointType            ImagePointType;
+  typedef typename ImagePointType::CoordRepType    ImagePointCoordRepType;
 
   /** Types defined from transform traits. */
-  using TransformPointer = typename TransformType::Pointer;
-  using RegionType = typename TransformType::RegionType;
-  using SizeType = typename RegionType::SizeType;
-  using SpacingType = typename TransformType::SpacingType;
-  using OriginType = typename TransformType::OriginType;
-  using DirectionType = typename TransformType::DirectionType;
-  using PhysicalDimensionsType = typename TransformType::PhysicalDimensionsType;
-  using MeshSizeType = typename TransformType::MeshSizeType;
-  using SpacingComponentType = typename SpacingType::ComponentType;
+  typedef typename TransformType::Pointer                 TransformPointer;
+  typedef typename TransformType::RegionType              RegionType;
+  typedef typename RegionType::SizeType                   SizeType;
+  typedef typename TransformType::SpacingType             SpacingType;
+  typedef typename TransformType::OriginType              OriginType;
+  typedef typename TransformType::DirectionType           DirectionType;
+  typedef typename TransformType::PhysicalDimensionsType  PhysicalDimensionsType;
+  typedef typename TransformType::MeshSizeType            MeshSizeType;
+  typedef typename SpacingType::ComponentType             SpacingComponentType;
 
   /** Dimension of parameters. */
-  static constexpr unsigned int SpaceDimension = TransformType::SpaceDimension;
+  itkStaticConstMacro( SpaceDimension, unsigned int,
+    TransformType::SpaceDimension );
 
   /** Set/Get the transform to be initialized. */
-  itkGetConstObjectMacro(Transform, TransformType);
-  itkSetObjectMacro(Transform, TransformType);
+  itkGetConstObjectMacro( Transform, TransformType );
+  itkSetObjectMacro( Transform, TransformType );
 
   /** Set/Get the image to initialize the domain. */
-  itkGetConstObjectMacro(Image, ImageType);
-  itkSetConstObjectMacro(Image, ImageType);
+  itkGetConstObjectMacro( Image, ImageType );
+  itkSetConstObjectMacro( Image, ImageType );
 
   /** Allow the user to set the mesh size of the transform via the initializer,
    * even though the initializer does not do anything with that information.
    * Default size is 1^ImageDimension. */
-  itkGetConstMacro(TransformDomainMeshSize, MeshSizeType);
-  void
-  SetTransformDomainMeshSize(const MeshSizeType);
+  itkGetConstMacro( TransformDomainMeshSize, MeshSizeType );
+  void SetTransformDomainMeshSize( const MeshSizeType );
 
   /** Initialize the transform using the specified transformation domain. */
-  virtual void
-  InitializeTransform() const;
+  virtual void InitializeTransform() const;
 
 protected:
   BSplineTransformInitializer();
-  ~BSplineTransformInitializer() override = default;
+  ~BSplineTransformInitializer() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
 private:
-  ImagePointer     m_Image;
-  TransformPointer m_Transform;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineTransformInitializer);
 
-  MeshSizeType m_TransformDomainMeshSize;
-  bool         m_SetTransformDomainMeshSizeViaInitializer{ false };
+  ImagePointer                    m_Image;
+  TransformPointer                m_Transform;
 
-}; // class BSplineTransformInitializer
-} // namespace itk
+  MeshSizeType                    m_TransformDomainMeshSize;
+  bool                            m_SetTransformDomainMeshSizeViaInitializer;
+
+}; //class BSplineTransformInitializer
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBSplineTransformInitializer.hxx"
+#include "itkBSplineTransformInitializer.hxx"
 #endif
 
 #endif /* itkBSplineTransformInitializer_h */

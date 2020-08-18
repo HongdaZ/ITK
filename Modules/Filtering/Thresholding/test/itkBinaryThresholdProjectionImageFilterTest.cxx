@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,75 +15,88 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkSimpleFilterWatcher.h"
+
 #include "itkBinaryThresholdProjectionImageFilter.h"
-#include "itkTestingMacros.h"
 
-
-int
-itkBinaryThresholdProjectionImageFilterTest(int argc, char * argv[])
+int itkBinaryThresholdProjectionImageFilterTest(int argc, char * argv[])
 {
-  if (argc != 6)
-  {
-    std::cerr << "Missing parameters." << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImage"
-              << " outputImage"
-              << " threshold"
-              << " foreground"
-              << " background" << std::endl;
+  if( argc < 6 )
+    {
+    std::cerr << "Missing Parameters " << std::endl;
+    std::cerr << "Usage: " << argv[0];
+    std::cerr << " InputImage OutputImage Threshold Foreground Background"
+              << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 3;
+  const int dim = 3;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                PixelType;
+  typedef itk::Image< PixelType, dim > ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
-
-
-  using FilterType = itk::BinaryThresholdProjectionImageFilter<ImageType, ImageType>;
+  typedef itk::BinaryThresholdProjectionImageFilter< ImageType, ImageType >
+                                                                   FilterType;
   FilterType::Pointer filter = FilterType::New();
+  filter->SetInput( reader->GetOutput() );
 
-  itk::SimpleFilterWatcher watcher(filter);
+  //Exercise Set/Get methods for Threshold Value
+  filter->SetThresholdValue( 255 );
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, BinaryThresholdProjectionImageFilter, ProjectionImageFilter);
+  if ( filter->GetThresholdValue( ) != 255 )
+    {
+    std::cerr << "Set/Get Threshold value problem" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  filter->SetThresholdValue( atoi(argv[3]) );
+
+  //Exercise Set/Get methods for Foreground Value
+  filter->SetForegroundValue( 255 );
+
+  if ( filter->GetForegroundValue( ) != 255 )
+    {
+    std::cerr << "Set/Get Foreground value problem: "
+              << filter->GetForegroundValue() << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  filter->SetForegroundValue( atoi(argv[4]) );
+
+  //Exercise Set/Get methods for Background Value
+  filter->SetBackgroundValue( 0 );
+
+  if ( filter->GetBackgroundValue( ) != 0 )
+    {
+    std::cerr << "Set/Get Background value problem" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  filter->SetBackgroundValue( atoi(argv[5]) );
 
 
-  FilterType::InputPixelType thresholdValue = std::stoi(argv[3]);
-  filter->SetThresholdValue(thresholdValue);
-  ITK_TEST_SET_GET_VALUE(thresholdValue, filter->GetThresholdValue());
+  itk::SimpleFilterWatcher watcher(filter, "filter");
 
-  FilterType::OutputPixelType foregroundValue = std::stoi(argv[4]);
-  filter->SetForegroundValue(foregroundValue);
-  ITK_TEST_SET_GET_VALUE(foregroundValue, filter->GetForegroundValue());
-
-  FilterType::OutputPixelType backgroundValue = std::stoi(argv[5]);
-  filter->SetBackgroundValue(backgroundValue);
-  ITK_TEST_SET_GET_VALUE(backgroundValue, filter->GetBackgroundValue());
-
-
-  filter->SetInput(reader->GetOutput());
-
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
-
-
-  // Write output image
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  try
+    {
+    writer->Update();
+    }
+  catch ( itk::ExceptionObject & excp )
+    {
+    std::cerr << excp << std::endl;
+    return EXIT_FAILURE;
+    }
 
-  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

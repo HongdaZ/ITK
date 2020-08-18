@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,50 +19,35 @@
 #include <iostream>
 #include "itkMesh.h"
 
-class Bogus
-{
-public:
-  // using Self = Bogus;
-  // using Pointer =  SmartPointer<Self>;
-  // itkNewMacro(Self);
-  //     static Bogus* New() { return new Bogus(); };
-  //     void Register() {};
-  //     void UnRegister() {};
+  class Bogus
+  {
+   public:
+    // typedef Bogus Self;
+    // typedef SmartPointer<Self> Pointer;
+    // itkNewMacro(Self);
+//     static Bogus* New() { return new Bogus(); };
+//     void Register() {};
+//     void UnRegister() {};
 
-  float
-  operator()(double d, double)
-  {
-    return (float)d;
-  }
-  void
-  Visit(int, Bogus *)
-  {}
-  itk::CellGeometryEnum
-  GetCellTopologyId()
-  {
-    return itk::CellGeometryEnum::HEXAHEDRON_CELL;
-  }
-  itk::CellGeometryEnum
-  GetTopologyId()
-  {
-    return itk::CellGeometryEnum::HEXAHEDRON_CELL;
-  }
-  Bogus() = default;
-  virtual ~Bogus() = default;
-};
+    float operator() ( double d, double ) { return (float) d; }
+    void Visit ( int, Bogus* ) {}
+    int GetCellTopologyId() { return 1; }
+    int GetTopologyId() { return 1; }
+    Bogus() {}
+    virtual ~Bogus() {}
+  };
 
-int
-itkNewTest(int, char *[])
+int itkNewTest ( int , char* [] )
 {
   // Call New and Print on as many classes as possible
 
   // CellInterfaceVisitorImplementation
-  itk::CellInterfaceVisitorImplementation<float, itk::Mesh<float>::CellTraits, Bogus, Bogus>::Pointer CIVI =
-    itk::CellInterfaceVisitorImplementation<float, itk::Mesh<float>::CellTraits, Bogus, Bogus>::New();
-  if (CIVI.IsNull())
-  {
+  itk::CellInterfaceVisitorImplementation<float, itk::Mesh<float>::CellTraits, Bogus, Bogus>::Pointer CIVI
+    = itk::CellInterfaceVisitorImplementation<float, itk::Mesh<float>::CellTraits, Bogus, Bogus>::New();
+  if(CIVI.IsNull())
+    {
     return EXIT_FAILURE;
-  }
+    }
 
   // CreateObjectFunction
   // itk::CreateObjectFunction<itk::Mesh<int> >::Pointer COF = itk::CreateObjectFunction<itk::Mesh<int> >::New();
@@ -74,12 +59,12 @@ itkNewTest(int, char *[])
 
   // BackwardDifferenceOperator
   // Bad
-  // using iDHBO = itk::BackwardDifferenceOperator<double>;
+  // typedef itk::BackwardDifferenceOperator<double> iDHBO;
   // iDHBO::Pointer dhbo = iDHBO::New();
 
   // ForwardDifferenceOperator
   // Bad
-  // using iDHFO = itk::ForwardDifferenceOperator<double>;
+  // typedef itk::ForwardDifferenceOperator<double> iDHFO;
   // iDHFO::Pointer dhfo = iDHFO::New();
 
   return EXIT_SUCCESS;

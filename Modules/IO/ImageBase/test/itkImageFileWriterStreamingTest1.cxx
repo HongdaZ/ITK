@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,100 +21,99 @@
 #include "itkImageFileWriter.h"
 #include "itkPipelineMonitorImageFilter.h"
 
-int
-itkImageFileWriterStreamingTest1(int argc, char * argv[])
+int itkImageFileWriterStreamingTest1(int argc, char* argv[])
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << argv[0] << " input output [existingFile [ no-streaming 1|0] ]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // We remove the output file
   if (argc == 3)
-  {
-    itksys::SystemTools::RemoveFile(argv[2]);
-  }
+    {
+      itksys::SystemTools::RemoveFile( argv[2] );
+    }
   else
-  {
-    // copy this file to over write
-    itksys::SystemTools::CopyAFile(argv[3], argv[2]);
-  }
+    {
+      // copy this file to over write
+      itksys::SystemTools::CopyAFile(argv[3], argv[2]);
+    }
 
 
   unsigned int numberOfDataPieces = 4;
 
 
   bool forceNoStreamingInput = false;
-  if (argc > 4)
-  {
-    if (std::stoi(argv[4]) == 1)
-      forceNoStreamingInput = true;
-  }
+  if ( argc > 4 )
+    {
+      if ( atoi( argv[4] ) == 1 )
+          forceNoStreamingInput = true;
+    }
 
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, 3>;
+  typedef unsigned char             PixelType;
+  typedef itk::Image<PixelType,3>   ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader<ImageType>   ReaderType;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
-  reader->SetUseStreaming(true);
+  reader->SetFileName( argv[1] );
+  reader->SetUseStreaming( true );
 
-  using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
+  typedef itk::PipelineMonitorImageFilter<ImageType> MonitorFilter;
   MonitorFilter::Pointer monitor = MonitorFilter::New();
   monitor->SetInput(reader->GetOutput());
 
-  if (forceNoStreamingInput)
-  {
+  if ( forceNoStreamingInput )
+    {
     monitor->UpdateLargestPossibleRegion();
     monitor->VerifyAllInputCanNotStream();
-  }
+    }
 
   // Setup the writer
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
   writer->SetInput(monitor->GetOutput());
   writer->SetNumberOfStreamDivisions(numberOfDataPieces);
 
 
   try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-  }
+    {
+      writer->Update();
+    }
+  catch( itk::ExceptionObject & err )
+    {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+      return EXIT_FAILURE;
+    }
 
 
   bool passed = true;
-  if (!forceNoStreamingInput)
-  {
-    if (!monitor->VerifyAllInputCanStream(numberOfDataPieces))
+  if( !forceNoStreamingInput )
     {
+    if( !monitor->VerifyAllInputCanStream(numberOfDataPieces) )
+      {
       passed = false;
+      }
     }
-  }
   else
-  {
-    if (!monitor->VerifyAllNoUpdate())
     {
+    if( !monitor->VerifyAllNoUpdate() )
+      {
       passed = false;
+      }
     }
-  }
 
 
-  if (!passed)
-  {
+  if( !passed )
+    {
     std::cout << monitor << std::endl;
     std::cout << "pipeline did not execute as expected!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

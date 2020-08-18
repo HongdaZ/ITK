@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,46 +19,42 @@
 #include "itkRandomVariateGeneratorBase.h"
 #include "itkObjectFactory.h"
 
-namespace itk
-{
-namespace Statistics
-{
+namespace itk {
+namespace Statistics {
 
 class VariateGeneratorTestHelper : public RandomVariateGeneratorBase
 {
 public:
-  using Self = VariateGeneratorTestHelper;
-  using Superclass = RandomVariateGeneratorBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef VariateGeneratorTestHelper Self;
+  typedef RandomVariateGeneratorBase Superclass;
+  typedef SmartPointer<Self>         Pointer;
+  typedef SmartPointer<const Self>   ConstPointer;
 
-  itkTypeMacro(VariateGeneratorTestHelper, RandomVariateGeneratorBase);
+  itkTypeMacro(VariateGeneratorTestHelper, RandomVariateGeneratorBase );
 
   itkNewMacro(Self);
 
-  double
-  GetVariate() override
-  {
+  virtual double GetVariate() ITK_OVERRIDE
+    {
     double theAnswerToTheQuestionOfLifeTheUniverseAndEverything = 42.0;
     return theAnswerToTheQuestionOfLifeTheUniverseAndEverything;
-  }
+    }
 
-  void
-  RunTests()
-  {
+  void RunTests()
+    {
     std::cout << "Superclass Name " << this->Superclass::GetNameOfClass() << std::endl;
     std::cout << "This class Name " << this->GetNameOfClass() << std::endl;
-    std::cout << "GetVariate() = " << this->GetVariate() << std::endl;
-  }
+    std::cout << "GetVariate() = "  << this->GetVariate() << std::endl;
+    }
+
 };
 
-} // namespace Statistics
-} // namespace itk
+}
+}
 
-int
-itkRandomVariateGeneratorBaseTest(int, char *[])
+int itkRandomVariateGeneratorBaseTest( int , char* [] )
 {
-  using GeneratorType = itk::Statistics::VariateGeneratorTestHelper;
+  typedef itk::Statistics::VariateGeneratorTestHelper GeneratorType;
 
   GeneratorType::Pointer generator = GeneratorType::New();
 
@@ -66,7 +62,7 @@ itkRandomVariateGeneratorBaseTest(int, char *[])
 
   generator->RunTests();
 
-  generator->Print(std::cout);
+  generator->Print( std::cout );
 
   std::cerr << "[PASSED]" << std::endl;
   return EXIT_SUCCESS;

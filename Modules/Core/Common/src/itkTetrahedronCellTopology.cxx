@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,14 +22,22 @@ namespace itk
 /**
  * The tetrahedron's topology data: Faces
  */
-const int TetrahedronCellTopology ::m_Faces[4][3] = { { 0, 1, 3 }, { 1, 2, 3 }, { 2, 0, 3 }, { 0, 2, 1 } };
+const int
+TetrahedronCellTopology
+:: m_Faces[4][3] = { { 0, 1, 3 }, { 1, 2, 3 }, { 2, 0, 3 }, { 0, 2, 1 } };
 
 /**
  * The tetrahedron's topology data: Faces
  */
-const int TetrahedronCellTopology ::m_Edges[6][2] = { { 0, 1 }, { 1, 2 }, { 2, 0 }, { 0, 3 }, { 1, 3 }, { 2, 3 } };
+const int
+TetrahedronCellTopology
+:: m_Edges[6][2] = { { 0, 1 }, { 1, 2 }, { 2, 0 }, { 0, 3 }, { 1, 3 }, { 2, 3 } };
 
-TetrahedronCellTopology ::TetrahedronCellTopology() = default;
+TetrahedronCellTopology
+::TetrahedronCellTopology()
+{}
 
-TetrahedronCellTopology ::~TetrahedronCellTopology() = default;
+TetrahedronCellTopology
+::~TetrahedronCellTopology()
+{}
 } // end namespace itk

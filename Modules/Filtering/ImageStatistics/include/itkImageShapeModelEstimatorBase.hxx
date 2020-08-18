@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,10 +23,20 @@
 
 namespace itk
 {
+template< typename TInputImage, typename TOutputImage >
+ImageShapeModelEstimatorBase< TInputImage, TOutputImage >
+::ImageShapeModelEstimatorBase(void)
+{}
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+ImageShapeModelEstimatorBase< TInputImage, TOutputImage >
+::~ImageShapeModelEstimatorBase()
+{}
+
+template< typename TInputImage, typename TOutputImage >
 void
-ImageShapeModelEstimatorBase<TInputImage, TOutputImage>::GenerateData()
+ImageShapeModelEstimatorBase< TInputImage, TOutputImage >
+::GenerateData()
 {
   this->EstimateShapeModels();
 }
@@ -34,9 +44,10 @@ ImageShapeModelEstimatorBase<TInputImage, TOutputImage>::GenerateData()
 /**
  * PrintSelf
  */
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-ImageShapeModelEstimatorBase<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+ImageShapeModelEstimatorBase< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

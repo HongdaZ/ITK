@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,38 +22,52 @@
 
 namespace itk
 {
-
-template <typename TMesh>
-void
-LevelSetDomainPartitionMesh<TMesh>::PopulateListDomain()
+template< typename TMesh >
+LevelSetDomainPartitionMesh <TMesh>
+::LevelSetDomainPartitionMesh()
 {
-  PointsContainerConstPointer  points = this->m_Mesh->GetPoints();
+}
+
+template< typename TMesh >
+LevelSetDomainPartitionMesh <TMesh>
+::~LevelSetDomainPartitionMesh()
+{
+}
+
+template< typename TMesh >
+void
+LevelSetDomainPartitionMesh <TMesh>
+::PopulateListDomain()
+{
+  PointsContainerConstPointer points = this->m_Mesh->GetPoints();
   PointsContainerConstIterator p_it = points->Begin();
   PointsContainerConstIterator p_end = points->End();
 
-  while (p_it != p_end)
-  {
-    PointIdentifierType & idx = p_it->Index();
-    IdentifierListType    identifierList;
-
-    for (IdentifierType i = NumericTraits<IdentifierType>::ZeroValue(); i < this->m_NumberOfLevelSetFunctions; ++i)
+  while( p_it != p_end )
     {
-      if (this->m_LevelSetDataPointerVector[i]->VerifyInsideRegion(idx))
-      {
-        identifierList.push_back(i);
-      }
+    PointIdentifierType & idx = p_it->Index();
+    IdentifierListType identifierList;
 
-      this->m_ListDomain[idx] = identifierList;
+    for( IdentifierType i = NumericTraits< IdentifierType >::ZeroValue(); i < this->m_NumberOfLevelSetFunctions; ++i )
+      {
+      if ( this->m_LevelSetDataPointerVector[i]->VerifyInsideRegion( idx ) )
+        {
+        identifierList.push_back(i);
+        }
+
+      this->m_ListDomain[ idx ] = identifierList;
       ++p_it;
+      }
     }
-  }
 }
 
-template <typename TMesh>
+template< typename TMesh >
 void
-LevelSetDomainPartitionMesh<TMesh>::AllocateListDomain()
-{}
+LevelSetDomainPartitionMesh <TMesh>
+::AllocateListDomain()
+{
+}
 
-} // end namespace itk
+} //end namespace itk
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,33 +22,36 @@
 
 namespace itk
 {
-template <typename TInput, typename TLevelSetContainer>
-class LevelSetEquationRegionTerm : public LevelSetEquationTermBase<TInput, TLevelSetContainer>
+template< typename TInput,
+          typename TLevelSetContainer >
+class LevelSetEquationRegionTerm :
+    public LevelSetEquationTermBase< TInput, TLevelSetContainer >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationRegionTerm);
+  typedef LevelSetEquationRegionTerm                             Self;
+  typedef SmartPointer< Self >                                   Pointer;
+  typedef SmartPointer< const Self >                             ConstPointer;
+  typedef LevelSetEquationTermBase< TInput, TLevelSetContainer > Superclass;
 
-  using Self = LevelSetEquationRegionTerm;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetEquationTermBase<TInput, TLevelSetContainer>;
+  typedef TInput                      InputType;
+  typedef typename InputType::Pointer InputPointer;
 
-  using InputType = TInput;
-  using InputPointer = typename InputType::Pointer;
-
-  using LevelSetContainerType = TLevelSetContainer;
-  using LevelSetContainerPointer = typename LevelSetContainerType::Pointer;
-  using LevelSetOutputType = typename LevelSetContainerType::OutputType;
-  using LevelSetInputType = typename LevelSetContainerType::InputType;
-  using GradientType = typename LevelSetContainerType::GradientType;
-  using HessianType = typename LevelSetContainerType::HessianType;
+  typedef TLevelSetContainer                           LevelSetContainerType;
+  typedef typename LevelSetContainerType::Pointer      LevelSetContainerPointer;
+  typedef typename LevelSetContainerType::OutputType   LevelSetOutputType;
+  typedef typename LevelSetContainerType::InputType    LevelSetInputType;
+  typedef typename LevelSetContainerType::GradientType GradientType;
+  typedef typename LevelSetContainerType::HessianType  HessianType;
 
 protected:
-  LevelSetEquationRegionTerm()
-    : Superclass()
+  LevelSetEquationRegionTerm() : Superclass()
   {}
 
-  virtual ~LevelSetEquationRegionTerm() = default;
+  virtual ~LevelSetEquationRegionTerm() {}
+
+private:
+  LevelSetEquationRegionTerm( const Self& );
+  void operator = ( const Self& );
 };
-} // namespace itk
+}
 #endif // itkLevelSetEquationRegionTerm_h

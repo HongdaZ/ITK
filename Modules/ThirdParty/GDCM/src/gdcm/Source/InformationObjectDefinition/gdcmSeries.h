@@ -24,7 +24,8 @@ namespace gdcm
 class GDCM_EXPORT Series
 {
 public:
-  Series() = default;
+  Series() {
+  }
 private:
   // Image, Waveform...
 };

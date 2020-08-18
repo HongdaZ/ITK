@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,32 +23,37 @@
 
 namespace itk
 {
-template <typename TImage>
-ShapeRelabelLabelMapFilter<TImage>::ShapeRelabelLabelMapFilter()
+template< typename TImage >
+ShapeRelabelLabelMapFilter< TImage >
+::ShapeRelabelLabelMapFilter()
 {
   m_ReverseOrdering = false;
   m_Attribute = LabelObjectType::NUMBER_OF_PIXELS;
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-ShapeRelabelLabelMapFilter<TImage>::GenerateData()
+ShapeRelabelLabelMapFilter< TImage >
+::GenerateData()
 {
-  switch (m_Attribute)
-  {
-    itkShapeLabelMapFilterDispatchMacro() default : itkExceptionMacro(<< "Unknown attribute type");
-    break;
-  }
+  switch ( m_Attribute )
+    {
+    itkShapeLabelMapFilterDispatchMacro()
+    default:
+      itkExceptionMacro(<< "Unknown attribute type");
+      break;
+    }
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-ShapeRelabelLabelMapFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
+ShapeRelabelLabelMapFilter< TImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "ReverseOrdering: " << m_ReverseOrdering << std::endl;
-  os << indent << "Attribute: " << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")"
+  os << indent << "ReverseOrdering: "  << m_ReverseOrdering << std::endl;
+  os << indent << "Attribute: "  << LabelObjectType::GetNameFromAttribute(m_Attribute) << " (" << m_Attribute << ")"
      << std::endl;
 }
 } // end namespace itk

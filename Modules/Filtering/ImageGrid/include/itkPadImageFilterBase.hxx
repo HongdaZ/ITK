@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,110 +24,121 @@
 #include "itkImageRegionExclusionIteratorWithIndex.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkObjectFactory.h"
-#include "itkTotalProgressReporter.h"
+#include "itkProgressReporter.h"
 
 namespace itk
 {
 
-template <typename TInputImage, typename TOutputImage>
-PadImageFilterBase<TInputImage, TOutputImage>::PadImageFilterBase()
+template< typename TInputImage, typename TOutputImage >
+PadImageFilterBase< TInputImage, TOutputImage >
+::PadImageFilterBase()
 {
-  m_BoundaryCondition = nullptr;
-  this->DynamicMultiThreadingOn();
-  this->ThreaderUpdateProgressOff();
+  m_BoundaryCondition = ITK_NULLPTR;
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-PadImageFilterBase<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+PadImageFilterBase< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
-  if (m_BoundaryCondition)
-  {
-    m_BoundaryCondition->Print(os, indent);
-  }
+  if ( m_BoundaryCondition )
+    {
+    m_BoundaryCondition->Print( os, indent );
+    }
   else
-  {
-    os << "nullptr" << std::endl;
-  }
+    {
+    os << "ITK_NULLPTR" << std::endl;
+    }
 }
 
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-PadImageFilterBase<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
+PadImageFilterBase< TInputImage, TOutputImage >
+::GenerateInputRequestedRegion()
 {
   // Get pointers to the input and output.
-  typename Superclass::InputImagePointer  inputPtr = const_cast<TInputImage *>(this->GetInput());
+  typename Superclass::InputImagePointer inputPtr =
+    const_cast< TInputImage * >( this->GetInput() );
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
 
-  const InputImageRegionType &  inputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
-  const OutputImageRegionType & outputRequestedRegion = outputPtr->GetRequestedRegion();
+  const InputImageRegionType & inputLargestPossibleRegion =
+    inputPtr->GetLargestPossibleRegion();
+  const OutputImageRegionType & outputRequestedRegion =
+    outputPtr->GetRequestedRegion();
 
   // Ask the boundary condition for the input requested region.
-  if (!m_BoundaryCondition)
-  {
-    itkExceptionMacro(<< "Boundary condition is nullptr so no request region can be generated.");
-  }
+  if ( !m_BoundaryCondition )
+    {
+    itkExceptionMacro( << "Boundary condition is ITK_NULLPTR so no request region can be generated.");
+    }
   InputImageRegionType inputRequestedRegion =
-    m_BoundaryCondition->GetInputRequestedRegion(inputLargestPossibleRegion, outputRequestedRegion);
+    m_BoundaryCondition->GetInputRequestedRegion( inputLargestPossibleRegion,
+                                                  outputRequestedRegion );
 
-  inputPtr->SetRequestedRegion(inputRequestedRegion);
+  inputPtr->SetRequestedRegion( inputRequestedRegion );
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-PadImageFilterBase<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+PadImageFilterBase< TInputImage, TOutputImage >
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       ThreadIdType threadId)
 {
 
-  typename Superclass::OutputImagePointer     outputPtr = this->GetOutput();
-  typename Superclass::InputImageConstPointer inputPtr = this->GetInput();
-
-  TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
-
+  typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
+  typename Superclass::InputImageConstPointer inputPtr  = this->GetInput();
   // Use the region copy method to copy the input image values to the
   // output image.
-  OutputImageRegionType copyRegion(outputRegionForThread);
-  bool                  regionOverlaps = copyRegion.Crop(inputPtr->GetLargestPossibleRegion());
-  if (regionOverlaps)
-  {
+  OutputImageRegionType copyRegion( outputRegionForThread );
+  bool regionOverlaps = copyRegion.Crop( inputPtr->GetLargestPossibleRegion() );
+  if ( regionOverlaps )
+    {
     // Do a block copy for the overlapping region.
-    ImageAlgorithm::Copy(inputPtr.GetPointer(), outputPtr.GetPointer(), copyRegion, copyRegion);
-
-    progress.Completed(copyRegion.GetNumberOfPixels());
+    ImageAlgorithm::Copy( inputPtr.GetPointer(), outputPtr.GetPointer(), copyRegion, copyRegion );
 
     // Use the boundary condition for pixels outside the input image region.
-    ImageRegionExclusionIteratorWithIndex<TOutputImage> outIter(outputPtr, outputRegionForThread);
-    outIter.SetExclusionRegion(copyRegion);
+    typename OutputImageSizeType::SizeValueType numberOfPixels =
+      outputRegionForThread.GetNumberOfPixels() - copyRegion.GetNumberOfPixels();
+    ProgressReporter progress( this, threadId, numberOfPixels );
+
+    ImageRegionExclusionIteratorWithIndex< TOutputImage > outIter( outputPtr,
+                                                                   outputRegionForThread );
+    outIter.SetExclusionRegion( copyRegion );
     outIter.GoToBegin();
-    while (!outIter.IsAtEnd())
-    {
-      auto value = static_cast<OutputImagePixelType>(m_BoundaryCondition->GetPixel(outIter.GetIndex(), inputPtr));
-      outIter.Set(value);
+    while ( !outIter.IsAtEnd() )
+      {
+      OutputImagePixelType value = static_cast< OutputImagePixelType >
+        ( m_BoundaryCondition->GetPixel( outIter.GetIndex(), inputPtr ) );
+      outIter.Set( value );
       ++outIter;
       progress.CompletedPixel();
+      }
     }
-  }
   else
-  {
-    // There is no overlap. Apply to the boundary condition for every pixel.
-    ImageRegionIteratorWithIndex<TOutputImage> outIter(outputPtr, outputRegionForThread);
-    outIter.GoToBegin();
-    while (!outIter.IsAtEnd())
     {
-      auto value = static_cast<OutputImagePixelType>(m_BoundaryCondition->GetPixel(outIter.GetIndex(), inputPtr));
-      outIter.Set(value);
+    // There is no overlap. Appeal to the boundary condition for every pixel.
+    ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
+
+    ImageRegionIteratorWithIndex< TOutputImage > outIter( outputPtr,
+                                                          outputRegionForThread );
+    outIter.GoToBegin();
+    while ( !outIter.IsAtEnd() )
+      {
+      OutputImagePixelType value = static_cast< OutputImagePixelType >
+        ( m_BoundaryCondition->GetPixel( outIter.GetIndex(), inputPtr ) );
+      outIter.Set( value );
       ++outIter;
       progress.CompletedPixel();
+      }
     }
-  }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-PadImageFilterBase<TInputImage, TOutputImage>::InternalSetBoundaryCondition(
-  const BoundaryConditionPointerType boundaryCondition)
+PadImageFilterBase< TInputImage, TOutputImage >
+::InternalSetBoundaryCondition( const BoundaryConditionPointerType boundaryCondition )
 {
   m_BoundaryCondition = boundaryCondition;
 }

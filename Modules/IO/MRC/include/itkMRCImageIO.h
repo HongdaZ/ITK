@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class MRCImageIO
+/** \class MRCImageIO
  *
  *  \brief An ImageIO class to read the MRC file format.
  * The MRC file format frequently has the extension ".mrc" or
@@ -56,15 +55,14 @@ namespace itk
  * \sa ImageFileWriter ImageFileReader ImageIOBase
  * \ingroup ITKIOMRC
  */
-class ITKIOMRC_EXPORT MRCImageIO : public StreamingImageIOBase
+class ITKIOMRC_EXPORT MRCImageIO :
+  public StreamingImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRCImageIO);
-
-  /** Standard class type aliases. */
-  using Self = MRCImageIO;
-  using Superclass = StreamingImageIOBase;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef MRCImageIO           Self;
+  typedef StreamingImageIOBase Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,23 +71,18 @@ public:
   itkTypeMacro(MRCImageIO, StreamingImageIOBase);
 
   // we don't use this method
-  void
-  WriteImageInformation() override
-  {}
+  virtual void WriteImageInformation(void) ITK_OVERRIDE {}
 
   //-------- This part of the interface deals with reading data. ------
 
   // See super class for documentation
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   // See super class for documentation
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   // See super class for documentation
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   // -------- This part of the interfaces deals with writing data. -----
 
@@ -99,53 +92,47 @@ public:
    * The methods verifies that the file extension is known to be
    * supported by this class.
    */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   // see super class for documentation
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
   /** \todo Move to itkIOCommon with the other MetaDataDictionary
    * keys, likely rename the symbol to something like
    * ITK_MRCHHeader. (remember to fix class doc too)
    */
-  static const char * m_MetaDataHeaderName;
+  static const char *m_MetaDataHeaderName;
 
 protected:
   MRCImageIO();
   // ~MRCImageIO(); // default works
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Overloaded to return the actually header size of the file
    * specified. The header must be read before this methods is
    * called.
    */
-  SizeType
-  GetHeaderSize() const override;
+  virtual SizeType GetHeaderSize(void) const ITK_OVERRIDE;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(MRCImageIO);
+
   // internal methods to update the min and max in the header based on
   // the data, in the image buffer to be written
-  template <typename TPixelType>
-  void
-  UpdateHeaderWithMinMaxMean(const TPixelType * bufferBegin);
+  template< typename TPixelType >
+  void UpdateHeaderWithMinMaxMean(const TPixelType *bufferBegin);
 
-  void
-  UpdateHeaderWithMinMaxMean(const void * bufferBegin);
+  void UpdateHeaderWithMinMaxMean(const void *bufferBegin);
 
   // internal methods to update the header object from the ImageIO's
   // set member variables
-  void
-  UpdateHeaderFromImageIO();
+  void UpdateHeaderFromImageIO();
 
   // reimplemented
-  void
-  InternalReadImageInformation(std::ifstream & is);
+  void InternalReadImageInformation(std::ifstream & is);
 
-  virtual void
-  WriteImageInformation(const void * bufferBegin);
+  virtual void WriteImageInformation(const void *bufferBegin);
 
   MRCHeaderObject::Pointer m_MRCHeader;
 };

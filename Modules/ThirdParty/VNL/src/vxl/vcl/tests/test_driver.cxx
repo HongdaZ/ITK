@@ -5,11 +5,8 @@
 //  Note that all tests' main function should have signature (int,char**).
 // \author awf, mar 2000
 
-#include <iostream>
-#include <string>
-#ifdef _MSC_VER
-#  include "vcl_msvc_warnings.h"
-#endif
+#include <vcl_iostream.h>
+#include <vcl_string.h>
 
 int test_algorithm_main(int, char*[]);
 int test_cctype_main(int, char*[]);
@@ -43,18 +40,18 @@ int failed;
 
 void testname( const char* testname )
 {
-  std::cout << "   Testing vcl_" << testname << " ... ";
-  std::cout.flush();
+  vcl_cout << "   Testing vcl_" << testname << " ... ";
+  vcl_cout.flush();
 }
 
 void testresult( int testresult )
 {
   if ( testresult==0 ) {
     ++passed;
-    std::cout << "    PASSED" << std::endl;
+    vcl_cout << "    PASSED" << vcl_endl;
   } else {
     ++failed;
-    std::cout << "  **FAILED**" << std::endl;
+    vcl_cout << "  **FAILED**" << vcl_endl;
   }
 }
 
@@ -69,7 +66,7 @@ int main( int argc, char* argv[] )
 {
   int test_run = 0;
   passed = failed = 0;
-  std::string name = "";
+  vcl_string name = "";
 
   if ( argc > 1 ) {
     name = argv[1];
@@ -93,6 +90,7 @@ int main( int argc, char* argv[] )
   DO_TEST(memory);
   DO_TEST(map);
   DO_TEST(multimap);
+  DO_TEST(new);
   DO_TEST(set);
   DO_TEST(string);
   DO_TEST(sstream);
@@ -102,19 +100,19 @@ int main( int argc, char* argv[] )
 
   if (test_run == 0)
   {
-    std::cout << "Unsupported test " << name
+    vcl_cout << "Unsupported test " << name
              << "; should first be added to test_driver.cxx\n";
     failed = true;
   }
 
-  std::cout << name << " Test Summary: ";
+  vcl_cout << name << " Test Summary: ";
   if (failed > 0)
-    std::cout<<passed<<" tests succeeded, "<<failed<<" tests failed\t\t\t*****";
+    vcl_cout<<passed<<" tests succeeded, "<<failed<<" tests failed\t\t\t*****";
   else if (passed > 1)
-    std::cout<<"All "<<passed<<" tests succeeded";
+    vcl_cout<<"All "<<passed<<" tests succeeded";
   else
-    std::cout<<"All tests succeeded";
-  std::cout << "\n-----------------------------------------------------------------------------\n";
+    vcl_cout<<"All tests succeeded";
+  vcl_cout << "\n-----------------------------------------------------------------------------\n";
 
   return failed;
 }

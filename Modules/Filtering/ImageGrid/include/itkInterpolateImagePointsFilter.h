@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -73,20 +73,19 @@ namespace itk
  * \ingroup ITKImageGrid
  */
 
-template <typename TInputImage,
+template< typename TInputImage,
           typename TOutputImage,
           typename TCoordType = typename TInputImage::PixelType,
-          typename InterpolatorType = BSplineInterpolateImageFunction<TInputImage, TCoordType>>
-class ITK_TEMPLATE_EXPORT InterpolateImagePointsFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+          typename InterpolatorType = BSplineInterpolateImageFunction< TInputImage, TCoordType > >
+class ITK_TEMPLATE_EXPORT InterpolateImagePointsFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolateImagePointsFilter);
-
-  /** Standard class type aliases. */
-  using Self = InterpolateImagePointsFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef InterpolateImagePointsFilter                    Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(InterpolateImagePointsFilter, ImageToImageFilter);
@@ -95,42 +94,41 @@ public:
   itkNewMacro(Self);
 
   /** ImageDimension enumeration. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** Typedefs from the Superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  typedef typename Superclass::InputImageType    InputImageType;
+  typedef typename Superclass::OutputImageType   OutputImageType;
+  typedef typename Superclass::InputImagePointer InputImagePointer;
 
   /** Typedefs to describe and access output image. */
-  using OutputImagePointer = typename TOutputImage::Pointer;
-  using OutputImageIterator = ImageRegionIterator<InputImageType>;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef typename TOutputImage::Pointer        OutputImagePointer;
+  typedef ImageRegionIterator< InputImageType > OutputImageIterator;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
 
-  /** Image pixel value type alias. */
-  using PixelType = typename TOutputImage::PixelType;
+  /** Image pixel value typedef. */
+  typedef typename TOutputImage::PixelType PixelType;
 
   /** Typedefs to describe and access Interpolator */
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
-  using ContinuousIndexType = typename InterpolatorType::ContinuousIndexType;
+  typedef typename InterpolatorType::Pointer             InterpolatorPointer;
+  typedef typename InterpolatorType::ContinuousIndexType ContinuousIndexType;
 
   /** Typedefs to describe and access coordinate images */
-  using CoordImageType = Image<TCoordType, Self::ImageDimension>;
+  typedef Image< TCoordType, itkGetStaticConstMacro(ImageDimension) > CoordImageType;
 
   /** Typedef for region copier */
-  using RegionCopierType = ImageToImageFilterDetail::ImageRegionCopier<Self::ImageDimension, Self::ImageDimension>;
+  typedef ImageToImageFilterDetail::ImageRegionCopier< itkGetStaticConstMacro(ImageDimension),
+                                                       itkGetStaticConstMacro(ImageDimension) > RegionCopierType;
 
   /** SetInputImage is used to set the image to be interpolated.
-   * Note that this should be used instead of the direct setInput
-   * as multiple inputs are needed and this class keeps track of
-   * the ordering. */
-  void
-  SetInputImage(const TInputImage * inputImage);
+    * Note that this should be used instead of the direct setInput
+    * as multiple inputs are needed and this class keeps track of
+    * the ordering. */
+  void SetInputImage(const TInputImage *inputImage);
 
   /** SetInterpolationCoordinate must be called for each dimension.  The variable setDimension
-   * is used to identify the dimension being set, i.e. 0,1,2...N */
-  void
-  SetInterpolationCoordinate(const CoordImageType * coordinate, unsigned int setDimension);
+    * is used to identify the dimension being set, i.e. 0,1,2...N */
+  void SetInterpolationCoordinate(const CoordImageType *coordinate, unsigned int setDimension);
 
   /** Set the pixel value when a transformed pixel is outside of the image */
   itkSetMacro(DefaultPixelValue, PixelType);
@@ -139,63 +137,63 @@ public:
   itkGetConstMacro(DefaultPixelValue, PixelType);
 
   /** Returns a pointer to the  interpolator. */
-  InterpolatorPointer
-  GetInterpolator()
-  {
-    return m_Interpolator;
-  }
+  InterpolatorPointer GetInterpolator()
+  { return m_Interpolator; }
 
   /** Overloaded to ensure that output is sized the same as the coordinate inputs
-   * and not the size of the input image. */
-  void
-  GenerateOutputInformation() override;
+    * and not the size of the input image. */
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /**  Overloaded to set the input image to the largest possible region */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename TInputImage::PixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TInputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   InterpolateImagePointsFilter();
-  // ~InterpolateImagePointsFilter(){} default implementation ok
+  // ~InterpolateImagePointsFilter(){} default implemnetation ok
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Main function for calculating interpolated values at each coordinate
-   *  set.  Access is through the Update() call. */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+    * set.  Access is through the update() call. */
 
+  /** TODO:  This needs to be modified for a threaded implementation.
+    */
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
-  /** Override VerifyInputInformation() since this filter's inputs do
-   * not need to occupy the same physical space.
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
+  /** Override VeriyInputInformation() since this filter's inputs do
+   * not need to occoupy the same physical space.
    *
    * \sa ProcessObject::VerifyInputInformation
    */
-  void
-  VerifyInputInformation() ITKv5_CONST override
-  {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
+
   /** Typedefs to describe and access coordinate images */
-  using CoordImageTypePointer = typename CoordImageType::Pointer;
-  using CoordImageIterator = ImageRegionConstIterator<CoordImageType>;
-  using CoordImageRegionType = typename CoordImageType::RegionType;
+  typedef typename CoordImageType::Pointer           CoordImageTypePointer;
+  typedef ImageRegionConstIterator< CoordImageType > CoordImageIterator;
+  typedef typename CoordImageType::RegionType        CoordImageRegionType;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolateImagePointsFilter);
 
   InterpolatorPointer m_Interpolator;
-  PixelType           m_DefaultPixelValue; // default pixel value if the
-                                           // point is outside the image
+  PixelType           m_DefaultPixelValue;      // default pixel value if the
+                                                // point is outside the image
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkInterpolateImagePointsFilter.hxx"
+#include "itkInterpolateImagePointsFilter.hxx"
 #endif
 
 #endif

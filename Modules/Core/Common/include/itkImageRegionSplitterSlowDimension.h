@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,16 +43,15 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT ImageRegionSplitterSlowDimension : public ImageRegionSplitterBase
+class ITKCommon_EXPORT ImageRegionSplitterSlowDimension
+  :public ImageRegionSplitterBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageRegionSplitterSlowDimension);
-
-  /** Standard class type aliases. */
-  using Self = ImageRegionSplitterSlowDimension;
-  using Superclass = ImageRegionSplitterBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ImageRegionSplitterSlowDimension Self;
+  typedef ImageRegionSplitterBase          Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,18 +63,19 @@ public:
 protected:
   ImageRegionSplitterSlowDimension();
 
-  unsigned int
-  GetNumberOfSplitsInternal(unsigned int         dim,
-                            const IndexValueType regionIndex[],
-                            const SizeValueType  regionSize[],
-                            unsigned int         requestedNumber) const override;
+  virtual unsigned int GetNumberOfSplitsInternal( unsigned int dim,
+                                                  const IndexValueType regionIndex[],
+                                                  const SizeValueType regionSize[],
+                                                  unsigned int requestedNumber ) const ITK_OVERRIDE;
 
-  unsigned int
-  GetSplitInternal(unsigned int   dim,
-                   unsigned int   i,
-                   unsigned int   numberOfPieces,
-                   IndexValueType regionIndex[],
-                   SizeValueType  regionSize[]) const override;
+  virtual unsigned int GetSplitInternal( unsigned int dim,
+                                         unsigned int i,
+                                         unsigned int numberOfPieces,
+                                         IndexValueType regionIndex[],
+                                         SizeValueType regionSize[] ) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageRegionSplitterSlowDimension);
 };
 } // end namespace itk
 

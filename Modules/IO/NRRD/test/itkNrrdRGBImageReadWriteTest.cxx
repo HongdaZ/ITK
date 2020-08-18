@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,50 +25,51 @@
 // so we don't label it as SPECIFIC_IMAGEIO_MODULE_TEST
 //
 
-int
-itkNrrdRGBImageReadWriteTest(int ac, char * av[])
+int itkNrrdRGBImageReadWriteTest( int ac, char* av[] )
 {
-  if (ac < 2)
-  {
+  if(ac < 2)
+    {
     std::cerr << "Usage: " << av[0] << " Input Output\n";
     return EXIT_FAILURE;
-  }
+    }
 
-  using PixelType = itk::RGBPixel<unsigned char>;
-  using myImage = itk::Image<PixelType, 2>;
+  typedef itk::RGBPixel<unsigned char> PixelType;
+  typedef itk::Image<PixelType, 2>     myImage;
 
-  itk::ImageFileReader<myImage>::Pointer reader = itk::ImageFileReader<myImage>::New();
+  itk::ImageFileReader<myImage>::Pointer reader
+                                  = itk::ImageFileReader<myImage>::New();
   reader->SetFileName(av[1]);
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   myImage::Pointer image = reader->GetOutput();
-  image->Print(std::cout);
+  image->Print(std::cout );
 
   // Generate test image
   itk::ImageFileWriter<myImage>::Pointer writer;
   writer = itk::ImageFileWriter<myImage>::New();
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput( reader->GetOutput() );
   writer->SetFileName(av[2]);
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file writer " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
+
 }

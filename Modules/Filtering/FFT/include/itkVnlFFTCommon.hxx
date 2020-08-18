@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,30 +23,32 @@
 namespace itk
 {
 
-template <typename TSizeValue>
+template< typename TSizeValue >
 bool
-VnlFFTCommon ::IsDimensionSizeLegal(TSizeValue n)
+VnlFFTCommon
+::IsDimensionSizeLegal(TSizeValue n)
 {
   int ifac = 2;
 
-  for (int l = 1; l <= 3; l++)
-  {
-    for (; n % ifac == 0;)
+  for ( int l = 1; l <= 3; l++ )
     {
+    for (; n % ifac == 0; )
+      {
       n /= ifac;
-    }
+      }
     ifac += l;
-  }
-  return (n == 1); // return false if decomposition failed
+    }
+  return ( n == 1 ); // return false if decomposition failed
 }
 
-template <typename TImage>
-VnlFFTCommon::VnlFFTTransform<TImage>::VnlFFTTransform(const typename TImage::SizeType & s)
+template< typename TImage >
+VnlFFTCommon::VnlFFTTransform< TImage >
+::VnlFFTTransform(const typename TImage::SizeType & s)
 {
-  for (unsigned int i = 0; i < TImage::ImageDimension; i++)
-  {
+  for( unsigned int i=0; i < TImage::ImageDimension; i++ )
+    {
     Base::factors_[TImage::ImageDimension - i - 1].resize(s[i]);
-  }
+    }
 }
 
 } // end namespace itk

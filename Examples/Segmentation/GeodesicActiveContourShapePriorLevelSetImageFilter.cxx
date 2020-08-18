@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@
 // \begin{figure} \center
 // \includegraphics[width=\textwidth]{GeodesicActiveContourShapePriorCollaborationDiagram}
 // \itkcaption[GeodesicActiveContourShapePriorLevelSetImageFilter collaboration
-// diagram]{Collaboration diagram for the
-// GeodesicActiveContourShapePriorLevelSetImageFilter applied to a segmentation task.}
+// diagram]{Collaboration diagram for the GeodesicActiveContourShapePriorLevelSetImageFilter
+// applied to a segmentation task.}
 // \label{fig:GeodesicActiveContourShapePriorCollaborationDiagram}
 // \end{figure}
 //
@@ -124,6 +124,7 @@
 #include "itkEuler2DTransform.h"
 #include "itkOnePlusOneEvolutionaryOptimizer.h"
 #include "itkNormalVariateGenerator.h"
+#include "vnl/vnl_sample.h"
 #include "itkNumericSeriesFileNames.h"
 // Software Guide : EndCodeSnippet
 
@@ -155,47 +156,46 @@
 // Software Guide : BeginCodeSnippet
 #include "itkCommand.h"
 
-template <class TFilter>
+template<class TFilter>
 class CommandIterationUpdate : public itk::Command
 {
 public:
-  using Self = CommandIterationUpdate;
-  using Superclass = itk::Command;
-  using Pointer = itk::SmartPointer<Self>;
-  itkNewMacro(Self);
+  typedef CommandIterationUpdate   Self;
+  typedef itk::Command             Superclass;
+  typedef itk::SmartPointer<Self>  Pointer;
+  itkNewMacro( Self );
 
 protected:
-  CommandIterationUpdate() = default;
+  CommandIterationUpdate() {};
 
 public:
-  void
-  Execute(itk::Object * caller, const itk::EventObject & event) override
-  {
-    Execute((const itk::Object *)caller, event);
-  }
 
-  void
-  Execute(const itk::Object * object, const itk::EventObject & event) override
-  {
-    const auto * filter = static_cast<const TFilter *>(object);
-    if (typeid(event) != typeid(itk::IterationEvent))
+  void Execute(itk::Object *caller,
+               const itk::EventObject & event) ITK_OVERRIDE
     {
-      return;
+    Execute( (const itk::Object *) caller, event);
     }
+
+  void Execute(const itk::Object * object,
+               const itk::EventObject & event) ITK_OVERRIDE
+    {
+    const TFilter * filter = static_cast< const TFilter * >( object );
+    if( typeid( event ) != typeid( itk::IterationEvent ) )
+      { return; }
 
     std::cout << filter->GetElapsedIterations() << ": ";
     std::cout << filter->GetRMSChange() << " ";
     std::cout << filter->GetCurrentParameters() << std::endl;
-  }
+    }
+
 };
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc < 18)
-  {
+  if( argc < 18 )
+    {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImage  outputImage";
@@ -208,7 +208,7 @@ main(int argc, char * argv[])
     std::cerr << " meanShapeImage numberOfModes shapeModeFilePattern";
     std::cerr << " startX startY" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -219,9 +219,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InternalPixelType = float;
-  constexpr unsigned int Dimension = 2;
-  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
+  typedef   float           InternalPixelType;
+  const     unsigned int    Dimension = 2;
+  typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -229,44 +229,47 @@ main(int argc, char * argv[])
   //  process the final level set at the output of the
   //  GeodesicActiveContourLevelSetImageFilter.
   //
-  using OutputPixelType = unsigned char;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using ThresholdingFilterType =
-    itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
+  typedef unsigned char                            OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::BinaryThresholdImageFilter<
+                        InternalImageType,
+                        OutputImageType    >       ThresholdingFilterType;
 
   ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
 
-  thresholder->SetLowerThreshold(-1000.0);
-  thresholder->SetUpperThreshold(0.0);
+  thresholder->SetLowerThreshold( -1000.0 );
+  thresholder->SetUpperThreshold(     0.0 );
 
-  thresholder->SetOutsideValue(0);
-  thresholder->SetInsideValue(255);
+  thresholder->SetOutsideValue(  0  );
+  thresholder->SetInsideValue(  255 );
 
 
   // We instantiate reader and writer types in the following lines.
   //
-  using ReaderType = itk::ImageFileReader<InternalImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef  itk::ImageFileReader< InternalImageType > ReaderType;
+  typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
 
   //  The RescaleIntensityImageFilter type is declared below. This filter will
   //  renormalize image before sending them to writers.
   //
-  using CastFilterType =
-    itk::RescaleIntensityImageFilter<InternalImageType, OutputImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+                               InternalImageType,
+                               OutputImageType >   CastFilterType;
 
 
   //  The \doxygen{CurvatureAnisotropicDiffusionImageFilter} type is
   //  instantiated using the internal image type.
   //
-  using SmoothingFilterType =
-    itk::CurvatureAnisotropicDiffusionImageFilter<InternalImageType, InternalImageType>;
+  typedef   itk::CurvatureAnisotropicDiffusionImageFilter<
+                               InternalImageType,
+                               InternalImageType >  SmoothingFilterType;
 
   SmoothingFilterType::Pointer smoothing = SmoothingFilterType::New();
 
@@ -275,25 +278,26 @@ main(int argc, char * argv[])
   //  GradientMagnitudeRecursiveGaussianImageFilter is
   //  instantiated using the internal image type.
   //
-  using GradientFilterType =
-    itk::GradientMagnitudeRecursiveGaussianImageFilter<InternalImageType,
-                                                       InternalImageType>;
+  typedef   itk::GradientMagnitudeRecursiveGaussianImageFilter<
+                               InternalImageType,
+                               InternalImageType >  GradientFilterType;
 
-  GradientFilterType::Pointer gradientMagnitude = GradientFilterType::New();
+  GradientFilterType::Pointer  gradientMagnitude = GradientFilterType::New();
 
 
   //  We declare now the type of the FastMarchingImageFilter that
   //  will be used to generate the initial level set in the form of a distance
   //  map.
   //
-  using FastMarchingFilterType =
-    itk::FastMarchingImageFilter<InternalImageType, InternalImageType>;
+  typedef  itk::FastMarchingImageFilter<
+                              InternalImageType,
+                              InternalImageType >    FastMarchingFilterType;
 
 
   //  Next we construct one filter of this class using the \code{New()}
   //  method.
   //
-  FastMarchingFilterType::Pointer fastMarching = FastMarchingFilterType::New();
+  FastMarchingFilterType::Pointer  fastMarching = FastMarchingFilterType::New();
 
   //  Software Guide : BeginLatex
   //
@@ -304,11 +308,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using GeodesicActiveContourFilterType =
-    itk::GeodesicActiveContourShapePriorLevelSetImageFilter<InternalImageType,
-                                                            InternalImageType>;
+  typedef itk::GeodesicActiveContourShapePriorLevelSetImageFilter<
+            InternalImageType, InternalImageType >
+                                              GeodesicActiveContourFilterType;
   GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
-    GeodesicActiveContourFilterType::New();
+                                       GeodesicActiveContourFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -322,7 +326,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using CenterFilterType = itk::ChangeInformationImageFilter<InternalImageType>;
+  typedef itk::ChangeInformationImageFilter<
+                               InternalImageType >  CenterFilterType;
 
   CenterFilterType::Pointer center = CenterFilterType::New();
   center->CenterImageOn();
@@ -336,8 +341,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReciprocalFilterType =
-    itk::BoundedReciprocalImageFilter<InternalImageType, InternalImageType>;
+  typedef   itk::BoundedReciprocalImageFilter<
+                               InternalImageType,
+                               InternalImageType >  ReciprocalFilterType;
 
   ReciprocalFilterType::Pointer reciprocal = ReciprocalFilterType::New();
   // Software Guide : EndCodeSnippet
@@ -364,14 +370,14 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const double propagationScaling = std::stod(argv[11]);
-  const double shapePriorScaling = std::stod(argv[12]);
+  const double propagationScaling = atof( argv[11] );
+  const double shapePriorScaling  = atof( argv[12] );
 
   //  Software Guide : BeginCodeSnippet
-  geodesicActiveContour->SetPropagationScaling(propagationScaling);
-  geodesicActiveContour->SetShapePriorScaling(shapePriorScaling);
-  geodesicActiveContour->SetCurvatureScaling(1.0);
-  geodesicActiveContour->SetAdvectionScaling(1.0);
+  geodesicActiveContour->SetPropagationScaling( propagationScaling );
+  geodesicActiveContour->SetShapePriorScaling( shapePriorScaling );
+  geodesicActiveContour->SetCurvatureScaling( 1.0 );
+  geodesicActiveContour->SetAdvectionScaling( 1.0 );
   //  Software Guide : EndCodeSnippet
 
   //  Once activiated the level set evolution will stop if the convergence
@@ -385,8 +391,8 @@ main(int argc, char * argv[])
   //  algorithm before the zero set leaks through the regions of low gradient
   //  in the contour of the anatomical structure to be segmented.
 
-  geodesicActiveContour->SetMaximumRMSError(0.005);
-  geodesicActiveContour->SetNumberOfIterations(400);
+  geodesicActiveContour->SetMaximumRMSError( 0.005 );
+  geodesicActiveContour->SetNumberOfIterations( 400 );
 
   //  Software Guide : BeginLatex
   //
@@ -402,7 +408,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  geodesicActiveContour->SetNumberOfLayers(4);
+  geodesicActiveContour->SetNumberOfLayers( 4 );
   //  Software Guide : EndCodeSnippet
 
 
@@ -414,16 +420,16 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  center->SetInput(reader->GetOutput());
-  smoothing->SetInput(center->GetOutput());
-  gradientMagnitude->SetInput(smoothing->GetOutput());
-  reciprocal->SetInput(gradientMagnitude->GetOutput());
+  center->SetInput( reader->GetOutput() );
+  smoothing->SetInput( center->GetOutput() );
+  gradientMagnitude->SetInput( smoothing->GetOutput() );
+  reciprocal->SetInput( gradientMagnitude->GetOutput() );
 
-  geodesicActiveContour->SetInput(fastMarching->GetOutput());
-  geodesicActiveContour->SetFeatureImage(reciprocal->GetOutput());
+  geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
+  geodesicActiveContour->SetFeatureImage( reciprocal->GetOutput() );
 
-  thresholder->SetInput(geodesicActiveContour->GetOutput());
-  writer->SetInput(thresholder->GetOutput());
+  thresholder->SetInput( geodesicActiveContour->GetOutput() );
+  writer->SetInput( thresholder->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -433,9 +439,9 @@ main(int argc, char * argv[])
   //  noise present in the input image. This filter has been discussed in
   //  section~\ref{sec:GradientAnisotropicDiffusionImageFilter}.
 
-  smoothing->SetTimeStep(0.125);
-  smoothing->SetNumberOfIterations(5);
-  smoothing->SetConductanceParameter(9.0);
+  smoothing->SetTimeStep( 0.125 );
+  smoothing->SetNumberOfIterations(  5 );
+  smoothing->SetConductanceParameter( 9.0 );
 
 
   //  The GradientMagnitudeRecursiveGaussianImageFilter performs the
@@ -444,8 +450,8 @@ main(int argc, char * argv[])
   //  the range of influence of the image edges. This filter has been discussed
   //  in Section~\ref{sec:GradientMagnitudeRecursiveGaussianImageFilter}.
 
-  const double sigma = std::stod(argv[10]);
-  gradientMagnitude->SetSigma(sigma);
+  const double sigma = atof( argv[10] );
+  gradientMagnitude->SetSigma(  sigma  );
 
 
   //  The FastMarchingImageFilter requires the user to provide a seed
@@ -459,15 +465,15 @@ main(int argc, char * argv[])
   //  container is defined as \code{NodeContainer} among the
   //  FastMarchingImageFilter traits.
   //
-  using NodeContainer = FastMarchingFilterType::NodeContainer;
-  using NodeType = FastMarchingFilterType::NodeType;
+  typedef FastMarchingFilterType::NodeContainer  NodeContainer;
+  typedef FastMarchingFilterType::NodeType       NodeType;
 
   NodeContainer::Pointer seeds = NodeContainer::New();
 
-  InternalImageType::IndexType seedPosition;
+  InternalImageType::IndexType  seedPosition;
 
-  seedPosition[0] = std::stoi(argv[3]);
-  seedPosition[1] = std::stoi(argv[4]);
+  seedPosition[0] = atoi( argv[3] );
+  seedPosition[1] = atoi( argv[4] );
 
 
   //  Nodes are created as stack variables and initialized with a value and an
@@ -480,38 +486,38 @@ main(int argc, char * argv[])
   //  command line arguments. The rule of thumb for the user is to select this
   //  value as the distance from the seed points at which she want the initial
   //  contour to be.
-  const double initialDistance = std::stod(argv[9]);
+  const double initialDistance = atof( argv[9] );
 
   NodeType node;
 
-  const double seedValue = -initialDistance;
+  const double seedValue = - initialDistance;
 
-  node.SetValue(seedValue);
-  node.SetIndex(seedPosition);
+  node.SetValue( seedValue );
+  node.SetIndex( seedPosition );
 
 
   //  The list of nodes is initialized and then every node is inserted using
   //  the \code{InsertElement()}.
 
   seeds->Initialize();
-  seeds->InsertElement(0, node);
+  seeds->InsertElement( 0, node );
 
-  seedPosition[0] = std::stoi(argv[5]);
-  seedPosition[1] = std::stoi(argv[6]);
-  node.SetIndex(seedPosition);
-  seeds->InsertElement(1, node);
+  seedPosition[0] = atoi( argv[5] );
+  seedPosition[1] = atoi( argv[6] );
+  node.SetIndex( seedPosition );
+  seeds->InsertElement( 1, node );
 
-  seedPosition[0] = std::stoi(argv[7]);
-  seedPosition[1] = std::stoi(argv[8]);
-  node.SetIndex(seedPosition);
-  seeds->InsertElement(2, node);
+  seedPosition[0] = atoi( argv[7] );
+  seedPosition[1] = atoi( argv[8] );
+  node.SetIndex( seedPosition );
+  seeds->InsertElement( 2, node );
 
 
   //  The set of seed nodes is passed now to the
   //  FastMarchingImageFilter with the method
   //  \code{SetTrialPoints()}.
   //
-  fastMarching->SetTrialPoints(seeds);
+  fastMarching->SetTrialPoints(  seeds  );
 
 
   //  Since the FastMarchingImageFilter is used here just as a
@@ -519,7 +525,7 @@ main(int argc, char * argv[])
   //  Instead the constant value $1.0$ is passed using the
   //  \code{SetSpeedConstant()} method.
   //
-  fastMarching->SetSpeedConstant(1.0);
+  fastMarching->SetSpeedConstant( 1.0 );
 
 
   //  Here we configure all the writers required to see the intermediate
@@ -539,32 +545,32 @@ main(int argc, char * argv[])
   WriterType::Pointer writer3 = WriterType::New();
   WriterType::Pointer writer4 = WriterType::New();
 
-  caster1->SetInput(smoothing->GetOutput());
-  writer1->SetInput(caster1->GetOutput());
+  caster1->SetInput( smoothing->GetOutput() );
+  writer1->SetInput( caster1->GetOutput() );
   writer1->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput1.png");
-  caster1->SetOutputMinimum(0);
-  caster1->SetOutputMaximum(255);
+  caster1->SetOutputMinimum(   0 );
+  caster1->SetOutputMaximum( 255 );
   writer1->Update();
 
-  caster2->SetInput(gradientMagnitude->GetOutput());
-  writer2->SetInput(caster2->GetOutput());
+  caster2->SetInput( gradientMagnitude->GetOutput() );
+  writer2->SetInput( caster2->GetOutput() );
   writer2->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput2.png");
-  caster2->SetOutputMinimum(0);
-  caster2->SetOutputMaximum(255);
+  caster2->SetOutputMinimum(   0 );
+  caster2->SetOutputMaximum( 255 );
   writer2->Update();
 
-  caster3->SetInput(reciprocal->GetOutput());
-  writer3->SetInput(caster3->GetOutput());
+  caster3->SetInput( reciprocal->GetOutput() );
+  writer3->SetInput( caster3->GetOutput() );
   writer3->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput3.png");
-  caster3->SetOutputMinimum(0);
-  caster3->SetOutputMaximum(255);
+  caster3->SetOutputMinimum(   0 );
+  caster3->SetOutputMaximum( 255 );
   writer3->Update();
 
-  caster4->SetInput(fastMarching->GetOutput());
-  writer4->SetInput(caster4->GetOutput());
+  caster4->SetInput( fastMarching->GetOutput() );
+  writer4->SetInput( caster4->GetOutput() );
   writer4->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput4.png");
-  caster4->SetOutputMinimum(0);
-  caster4->SetOutputMaximum(255);
+  caster4->SetOutputMinimum(   0 );
+  caster4->SetOutputMaximum( 255 );
 
 
   //  The FastMarchingImageFilter requires the user to specify the
@@ -574,9 +580,12 @@ main(int argc, char * argv[])
   //  only after the \code{Update()} methods of this filter has been called
   //  directly or indirectly.
   //
-  fastMarching->SetOutputRegion(center->GetOutput()->GetBufferedRegion());
-  fastMarching->SetOutputSpacing(center->GetOutput()->GetSpacing());
-  fastMarching->SetOutputOrigin(center->GetOutput()->GetOrigin());
+  fastMarching->SetOutputRegion(
+           center->GetOutput()->GetBufferedRegion() );
+  fastMarching->SetOutputSpacing(
+           center->GetOutput()->GetSpacing() );
+  fastMarching->SetOutputOrigin(
+           center->GetOutput()->GetOrigin() );
 
 
   //  Software Guide : BeginLatex
@@ -597,8 +606,7 @@ main(int argc, char * argv[])
   //
   //  Given a set of training data, the \doxygen{ImagePCAShapeModelEstimator}
   //  can be used to obtain
-  //  the mean and principal mode shape images required by
-  //  PCAShapeSignedDistanceFunction.
+  //  the mean and principal mode shape images required by PCAShapeSignedDistanceFunction.
   //
   //  \index{itk::PCAShapeSignedDistanceFunction!New()}
   //  \index{itk::PCAShapeSignedDistanceFunction!SetNumberOfPrincipalComponents()}
@@ -606,15 +614,17 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const unsigned int numberOfPCAModes = std::stoi(argv[14]);
+  const unsigned int numberOfPCAModes = atoi( argv[14] );
 
   // Software Guide : BeginCodeSnippet
-  using ShapeFunctionType =
-    itk::PCAShapeSignedDistanceFunction<double, Dimension, InternalImageType>;
+  typedef itk::PCAShapeSignedDistanceFunction<
+                              double,
+                              Dimension,
+                              InternalImageType >     ShapeFunctionType;
 
   ShapeFunctionType::Pointer shape = ShapeFunctionType::New();
 
-  shape->SetNumberOfPrincipalComponents(numberOfPCAModes);
+  shape->SetNumberOfPrincipalComponents( numberOfPCAModes );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -630,30 +640,30 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   ReaderType::Pointer meanShapeReader = ReaderType::New();
-  meanShapeReader->SetFileName(argv[13]);
+  meanShapeReader->SetFileName( argv[13] );
   meanShapeReader->Update();
 
-  std::vector<InternalImageType::Pointer> shapeModeImages(numberOfPCAModes);
+  std::vector<InternalImageType::Pointer> shapeModeImages( numberOfPCAModes );
 
   itk::NumericSeriesFileNames::Pointer fileNamesCreator =
-    itk::NumericSeriesFileNames::New();
+          itk::NumericSeriesFileNames::New();
 
-  fileNamesCreator->SetStartIndex(0);
-  fileNamesCreator->SetEndIndex(numberOfPCAModes - 1);
-  fileNamesCreator->SetSeriesFormat(argv[15]);
+  fileNamesCreator->SetStartIndex( 0 );
+  fileNamesCreator->SetEndIndex( numberOfPCAModes - 1 );
+  fileNamesCreator->SetSeriesFormat( argv[15] );
   const std::vector<std::string> & shapeModeFileNames =
-    fileNamesCreator->GetFileNames();
+          fileNamesCreator->GetFileNames();
 
-  for (unsigned int k = 0; k < numberOfPCAModes; ++k)
-  {
+  for (unsigned int k = 0; k < numberOfPCAModes; ++k )
+    {
     ReaderType::Pointer shapeModeReader = ReaderType::New();
-    shapeModeReader->SetFileName(shapeModeFileNames[k].c_str());
+    shapeModeReader->SetFileName( shapeModeFileNames[k].c_str() );
     shapeModeReader->Update();
     shapeModeImages[k] = shapeModeReader->GetOutput();
-  }
+    }
 
-  shape->SetMeanImage(meanShapeReader->GetOutput());
-  shape->SetPrincipalComponentImages(shapeModeImages);
+  shape->SetMeanImage( meanShapeReader->GetOutput() );
+  shape->SetPrincipalComponentImages( shapeModeImages );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -668,10 +678,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ShapeFunctionType::ParametersType pcaStandardDeviations(numberOfPCAModes);
-  pcaStandardDeviations.Fill(1.0);
+  ShapeFunctionType::ParametersType pcaStandardDeviations( numberOfPCAModes );
+  pcaStandardDeviations.Fill( 1.0 );
 
-  shape->SetPrincipalComponentStandardDeviations(pcaStandardDeviations);
+  shape->SetPrincipalComponentStandardDeviations( pcaStandardDeviations );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -687,10 +697,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using TransformType = itk::Euler2DTransform<double>;
+  typedef itk::Euler2DTransform<double>    TransformType;
   TransformType::Pointer transform = TransformType::New();
 
-  shape->SetTransform(transform);
+  shape->SetTransform( transform );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -706,18 +716,19 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using CostFunctionType =
-    itk::ShapePriorMAPCostFunction<InternalImageType, InternalPixelType>;
+  typedef itk::ShapePriorMAPCostFunction<
+                              InternalImageType,
+                              InternalPixelType >     CostFunctionType;
 
   CostFunctionType::Pointer costFunction = CostFunctionType::New();
 
   CostFunctionType::WeightsType weights;
-  weights[0] = 1.0;  // weight for contour fit term
-  weights[1] = 20.0; // weight for image fit term
-  weights[2] = 1.0;  // weight for shape prior term
-  weights[3] = 1.0;  // weight for pose prior term
+  weights[0] =  1.0;  // weight for contour fit term
+  weights[1] =  20.0; // weight for image fit term
+  weights[2] =  1.0;  // weight for shape prior term
+  weights[3] =  1.0;  // weight for pose prior term
 
-  costFunction->SetWeights(weights);
+  costFunction->SetWeights( weights );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -755,13 +766,13 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  CostFunctionType::ArrayType mean(shape->GetNumberOfShapeParameters());
-  CostFunctionType::ArrayType stddev(shape->GetNumberOfShapeParameters());
+  CostFunctionType::ArrayType mean(   shape->GetNumberOfShapeParameters() );
+  CostFunctionType::ArrayType stddev( shape->GetNumberOfShapeParameters() );
 
-  mean.Fill(0.0);
-  stddev.Fill(1.0);
-  costFunction->SetShapeParameterMeans(mean);
-  costFunction->SetShapeParameterStandardDeviations(stddev);
+  mean.Fill( 0.0 );
+  stddev.Fill( 1.0 );
+  costFunction->SetShapeParameterMeans( mean );
+  costFunction->SetShapeParameterStandardDeviations( stddev );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -772,7 +783,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using OptimizerType = itk::OnePlusOneEvolutionaryOptimizer;
+  typedef itk::OnePlusOneEvolutionaryOptimizer    OptimizerType;
   OptimizerType::Pointer optimizer = OptimizerType::New();
   // Software Guide : EndCodeSnippet
 
@@ -790,12 +801,12 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using GeneratorType = itk::Statistics::NormalVariateGenerator;
+  typedef itk::Statistics::NormalVariateGenerator GeneratorType;
   GeneratorType::Pointer generator = GeneratorType::New();
 
-  generator->Initialize(20020702);
+  generator->Initialize( 20020702 );
 
-  optimizer->SetNormalVariateGenerator(generator);
+  optimizer->SetNormalVariateGenerator( generator );
   // Software Guide : EndCodeSnippet
 
 
@@ -813,14 +824,14 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  OptimizerType::ScalesType scales(shape->GetNumberOfParameters());
-  scales.Fill(1.0);
-  for (unsigned int k = 0; k < numberOfPCAModes; k++)
-  {
-    scales[k] = 20.0; // scales for the pca mode multiplier
-  }
-  scales[numberOfPCAModes] = 350.0; // scale for 2D rotation
-  optimizer->SetScales(scales);
+  OptimizerType::ScalesType scales( shape->GetNumberOfParameters() );
+  scales.Fill( 1.0 );
+  for( unsigned int k = 0; k < numberOfPCAModes; k++ )
+    {
+    scales[k] = 20.0;  // scales for the pca mode multiplier
+    }
+  scales[numberOfPCAModes] = 350.0;  // scale for 2D rotation
+  optimizer->SetScales( scales );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -859,10 +870,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ShapeFunctionType::ParametersType parameters(shape->GetNumberOfParameters());
-  parameters.Fill(0.0);
-  parameters[numberOfPCAModes + 1] = std::stod(argv[16]); // startX
-  parameters[numberOfPCAModes + 2] = std::stod(argv[17]); // startY
+  ShapeFunctionType::ParametersType parameters(
+                                             shape->GetNumberOfParameters() );
+  parameters.Fill( 0.0 );
+  parameters[numberOfPCAModes + 1] = atof( argv[16] ); // startX
+  parameters[numberOfPCAModes + 2] = atof( argv[17] ); // startY
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -873,14 +885,14 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  geodesicActiveContour->SetShapeFunction(shape);
-  geodesicActiveContour->SetCostFunction(costFunction);
-  geodesicActiveContour->SetOptimizer(optimizer);
-  geodesicActiveContour->SetInitialParameters(parameters);
+  geodesicActiveContour->SetShapeFunction( shape );
+  geodesicActiveContour->SetCostFunction( costFunction );
+  geodesicActiveContour->SetOptimizer( optimizer );
+  geodesicActiveContour->SetInitialParameters( parameters );
 
-  using CommandType = CommandIterationUpdate<GeodesicActiveContourFilterType>;
+  typedef CommandIterationUpdate<GeodesicActiveContourFilterType> CommandType;
   CommandType::Pointer observer = CommandType::New();
-  geodesicActiveContour->AddObserver(itk::IterationEvent(), observer);
+  geodesicActiveContour->AddObserver( itk::IterationEvent(), observer );
   // Software Guide : EndCodeSnippet
 
 
@@ -894,29 +906,25 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // Print out some useful information
   std::cout << std::endl;
-  std::cout << "Max. no. iterations: " << geodesicActiveContour->GetNumberOfIterations()
-            << std::endl;
-  std::cout << "Max. RMS error: " << geodesicActiveContour->GetMaximumRMSError()
-            << std::endl;
+  std::cout << "Max. no. iterations: " << geodesicActiveContour->GetNumberOfIterations() << std::endl;
+  std::cout << "Max. RMS error: " << geodesicActiveContour->GetMaximumRMSError() << std::endl;
   std::cout << std::endl;
-  std::cout << "No. elpased iterations: "
-            << geodesicActiveContour->GetElapsedIterations() << std::endl;
+  std::cout << "No. elpased iterations: " << geodesicActiveContour->GetElapsedIterations() << std::endl;
   std::cout << "RMS change: " << geodesicActiveContour->GetRMSChange() << std::endl;
-  std::cout << "Parameters: " << geodesicActiveContour->GetCurrentParameters()
-            << std::endl;
+  std::cout << "Parameters: " << geodesicActiveContour->GetCurrentParameters() << std::endl;
 
   writer4->Update();
 
@@ -927,41 +935,41 @@ main(int argc, char * argv[])
   // determine an appropriate threshold to be used on the output of the
   // fastmarching filter.
   //
-  using InternalWriterType = itk::ImageFileWriter<InternalImageType>;
+  typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
 
   InternalWriterType::Pointer mapWriter = InternalWriterType::New();
-  mapWriter->SetInput(fastMarching->GetOutput());
+  mapWriter->SetInput( fastMarching->GetOutput() );
   mapWriter->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput4.mha");
   mapWriter->Update();
 
   InternalWriterType::Pointer speedWriter = InternalWriterType::New();
-  speedWriter->SetInput(reciprocal->GetOutput());
+  speedWriter->SetInput( reciprocal->GetOutput() );
   speedWriter->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput3.mha");
   speedWriter->Update();
 
   InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
-  gradientWriter->SetInput(gradientMagnitude->GetOutput());
+  gradientWriter->SetInput( gradientMagnitude->GetOutput() );
   gradientWriter->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput2.mha");
   gradientWriter->Update();
 
   // Also write out the initial and final best fit shape
-  using EvaluatorFilterType =
-    itk::SpatialFunctionImageEvaluatorFilter<ShapeFunctionType,
-                                             InternalImageType,
-                                             InternalImageType>;
+  typedef itk::SpatialFunctionImageEvaluatorFilter<
+                              ShapeFunctionType,
+                              InternalImageType,
+                              InternalImageType >  EvaluatorFilterType;
 
   EvaluatorFilterType::Pointer evaluator = EvaluatorFilterType::New();
-  evaluator->SetInput(geodesicActiveContour->GetOutput());
-  evaluator->SetFunction(shape);
-  shape->SetParameters(geodesicActiveContour->GetInitialParameters());
+  evaluator->SetInput( geodesicActiveContour->GetOutput() );
+  evaluator->SetFunction( shape );
+  shape->SetParameters( geodesicActiveContour->GetInitialParameters() );
 
-  thresholder->SetInput(evaluator->GetOutput());
-  writer->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput5.png");
+  thresholder->SetInput( evaluator->GetOutput() );
+  writer->SetFileName( "GeodesicActiveContourShapePriorImageFilterOutput5.png" );
   writer->Update();
 
-  shape->SetParameters(geodesicActiveContour->GetCurrentParameters());
+  shape->SetParameters( geodesicActiveContour->GetCurrentParameters() );
   evaluator->Modified();
-  writer->SetFileName("GeodesicActiveContourShapePriorImageFilterOutput6.png");
+  writer->SetFileName( "GeodesicActiveContourShapePriorImageFilterOutput6.png" );
   writer->Update();
 
 
@@ -974,22 +982,22 @@ main(int argc, char * argv[])
   // The aim here is to segment the corpus callosum from the image using a shape model
   // defined by \code{CorpusCallosumMeanShape.mha} and the first three principal
   // components \code{CorpusCallosumMode0.mha}, \code{CorpusCallosumMode1.mha} and
-  // \code{CorpusCallosumMode12.mha}. As shown in
-  // Figure~\ref{fig:CorpusCallosumPCAModes}, the first mode captures scaling, the
-  // second mode captures the shifting of mass between the rostrum and the splenium and
-  // the third mode captures the degree of curvature. Segmentation results with and
-  // without shape guidance are shown in
+  // \code{CorpusCallosumMode12.mha}. As shown in Figure~\ref{fig:CorpusCallosumPCAModes},
+  // the first mode captures scaling, the second mode captures the shifting of mass between
+  // the rostrum and the splenium and the third mode captures the degree of curvature.
+  // Segmentation results with and without shape
+  // guidance are shown in
   // Figure~\ref{fig:GeodesicActiveContourShapePriorImageFilterOutput2}.
   //
   //
   // \begin{figure} \center
   // \includegraphics[width=0.30\textwidth]{BrainMidSagittalSlice}
   // \includegraphics[width=0.30\textwidth]{GeodesicActiveContourShapePriorImageFilterOutput5}
-  // \itkcaption[GeodesicActiveContourShapePriorImageFilter input image and initial
-  // model]{ The input image to the GeodesicActiveContourShapePriorLevelSetImageFilter
-  // is a synthesized MR-T1 mid-sagittal slice ($217 \times 180$ pixels, $1 \times 1$ mm
-  // spacing) of the brain (left) and the initial best-fit shape (right) chosen to
-  // roughly overlap the corpus callosum in the image to be segmented.}
+  // \itkcaption[GeodesicActiveContourShapePriorImageFilter input image and initial model]{
+  // The input image to the GeodesicActiveContourShapePriorLevelSetImageFilter is a
+  // synthesized MR-T1 mid-sagittal slice ($217 \times 180$ pixels, $1 \times 1$ mm spacing)
+  // of the brain (left) and the initial best-fit shape
+  // (right) chosen to roughly overlap the corpus callosum in the image to be segmented.}
   //
   // \label{fig:GeodesicActiveContourShapePriorImageFilterOutput}
   // \end{figure}
@@ -1043,25 +1051,24 @@ main(int argc, char * argv[])
   // \end{verbatim}
   //
   // and is shown in
-  // Figure~\ref{fig:GeodesicActiveContourShapePriorImageFilterOutput2} (right). Note
-  // that a $0.28$ radian ($15.8$ degree) rotation has been introduced to match the
-  // model to the corpus callosum in the image. Additionally, a negative weight for the
-  // first mode shrinks the size relative to the mean shape. A negative weight for the
-  // second mode shifts the mass to splenium, and a positive weight for the third mode
+  // Figure~\ref{fig:GeodesicActiveContourShapePriorImageFilterOutput2} (right). Note that a
+  // $0.28$ radian ($15.8$ degree) rotation has been introduced to match the model to
+  // the corpus callosum in the image. Additionally, a negative weight for the first
+  // mode shrinks the size relative to the mean shape. A negative weight for the second mode
+  // shifts the mass to splenium, and a positive weight for the third mode
   // increases the curvature. It can also be observed that the final segmentation is
-  // a combination of the best-fit shape with additional local deformation. The
-  // combination of both global and local shape allows the segmentation to capture fine
-  // details not represented in the shape model.
+  // a combination of the best-fit shape with additional local deformation. The combination
+  // of both global and local shape allows the segmentation to capture fine details not represented
+  // in the shape model.
   //
   //
   // \begin{figure} \center
   // \includegraphics[width=0.30\textwidth]{GeodesicActiveContourShapePriorImageFilterOutput1}
   // \includegraphics[width=0.30\textwidth]{GeodesicActiveContourShapePriorImageFilterOutput2}
   // \includegraphics[width=0.30\textwidth]{GeodesicActiveContourShapePriorImageFilterOutput6}
-  // \itkcaption[GeodesicActiveContourShapePriorImageFilter segmentations]{Corpus
-  // callosum segmentation using geodesic active contours without (left) and with
-  // (center) shape guidance. The image on the right represents the best-fit shape at
-  // the end of the segmentation process.}
+  // \itkcaption[GeodesicActiveContourShapePriorImageFilter segmentations]{Corpus callosum
+  // segmentation using geodesic active contours without (left) and with (center) shape guidance.
+  // The image on the right represents the best-fit shape at the end of the segmentation process.}
   //
   // \label{fig:GeodesicActiveContourShapePriorImageFilterOutput2}
   // \end{figure}
@@ -1070,4 +1077,5 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   return EXIT_SUCCESS;
+
 }

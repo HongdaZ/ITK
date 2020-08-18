@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@
 namespace itk
 {
 
-/**
- *\class IntermodesThresholdImageFilter
+/** \class IntermodesThresholdImageFilter
  * \brief Threshold an image using the Intermodes Threshold
  *
  * This filter creates a binary thresholded image that separates an
@@ -49,17 +48,16 @@ namespace itk
  * \ingroup ITKThresholding
  */
 
-template <typename TInputImage, typename TOutputImage, typename TMaskImage = TOutputImage>
-class IntermodesThresholdImageFilter : public HistogramThresholdImageFilter<TInputImage, TOutputImage, TMaskImage>
+template<typename TInputImage, typename TOutputImage, typename TMaskImage=TOutputImage>
+class IntermodesThresholdImageFilter :
+    public HistogramThresholdImageFilter<TInputImage, TOutputImage, TMaskImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IntermodesThresholdImageFilter);
-
-  /** Standard Self type alias */
-  using Self = IntermodesThresholdImageFilter;
-  using Superclass = HistogramThresholdImageFilter<TInputImage, TOutputImage, TMaskImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard Self typedef */
+  typedef IntermodesThresholdImageFilter                              Self;
+  typedef HistogramThresholdImageFilter<TInputImage,TOutputImage,TMaskImage>     Superclass;
+  typedef SmartPointer<Self>                                          Pointer;
+  typedef SmartPointer<const Self>                                    ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,87 +65,83 @@ public:
   /** Runtime information support. */
   itkTypeMacro(IntermodesThresholdImageFilter, HistogramThresholdImageFilter);
 
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using MaskImageType = TMaskImage;
+  typedef TInputImage                       InputImageType;
+  typedef TOutputImage                      OutputImageType;
+  typedef TMaskImage                        MaskImageType;
 
-  /** Image pixel value type alias. */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using MaskPixelType = typename MaskImageType::PixelType;
+  /** Image pixel value typedef. */
+  typedef typename InputImageType::PixelType   InputPixelType;
+  typedef typename OutputImageType::PixelType  OutputPixelType;
+  typedef typename MaskImageType::PixelType    MaskPixelType;
 
-  /** Image related type alias. */
-  using InputImagePointer = typename InputImageType::Pointer;
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  /** Image related typedefs. */
+  typedef typename InputImageType::Pointer  InputImagePointer;
+  typedef typename OutputImageType::Pointer OutputImagePointer;
 
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputIndexType = typename InputImageType::IndexType;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputSizeType = typename OutputImageType::SizeType;
-  using OutputIndexType = typename OutputImageType::IndexType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using MaskSizeType = typename MaskImageType::SizeType;
-  using MaskIndexType = typename MaskImageType::IndexType;
-  using MaskImageRegionType = typename MaskImageType::RegionType;
+  typedef typename InputImageType::SizeType    InputSizeType;
+  typedef typename InputImageType::IndexType   InputIndexType;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
+  typedef typename OutputImageType::SizeType   OutputSizeType;
+  typedef typename OutputImageType::IndexType  OutputIndexType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
+  typedef typename MaskImageType::SizeType     MaskSizeType;
+  typedef typename MaskImageType::IndexType    MaskIndexType;
+  typedef typename MaskImageType::RegionType   MaskImageRegionType;
 
-  using HistogramType = typename Superclass::HistogramType;
-  using CalculatorType = IntermodesThresholdCalculator<HistogramType, InputPixelType>;
+  typedef typename Superclass::HistogramType                             HistogramType;
+  typedef IntermodesThresholdCalculator< HistogramType, InputPixelType > CalculatorType;
 
+  void SetMaximumSmoothingIterations(SizeValueType maxSmoothingIterations)
+  {
+    m_IntermodesCalculator->SetMaximumSmoothingIterations(maxSmoothingIterations);
+  }
 
-  itkSetMacro(MaximumSmoothingIterations, SizeValueType);
-  itkGetMacro(MaximumSmoothingIterations, SizeValueType);
+  SizeValueType GetMaximumSmoothingIterations()
+  {
+    return(m_IntermodesCalculator->GetMaximumSmoothingIterations());
+  }
 
   /** Select whether midpoint (intermode=true) or minimum between
      peaks is used. */
-  itkSetMacro(UseInterMode, bool);
-  itkGetConstReferenceMacro(UseInterMode, bool);
-  itkBooleanMacro(UseInterMode);
+  void SetUseInterMode(bool useIntermode)
+  {
+    m_IntermodesCalculator->SetUseInterMode(useIntermode);
+  }
 
-  /** Image related type alias. */
-  static constexpr unsigned int InputImageDimension = InputImageType::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = OutputImageType::ImageDimension;
+  bool GetUseInterMode()
+  {
+    return(m_IntermodesCalculator->GetUseInterMode());
+  }
+
+  /** Image related typedefs. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      InputImageType::ImageDimension );
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      OutputImageType::ImageDimension );
 
 protected:
+
   IntermodesThresholdImageFilter()
-  {
-    auto calculator = CalculatorType::New();
-    calculator->SetMaximumSmoothingIterations(m_MaximumSmoothingIterations);
-    calculator->SetUseInterMode(m_UseInterMode);
-    Superclass::SetCalculator(calculator);
-  }
-  ~IntermodesThresholdImageFilter() override = default;
-
-  void
-  VerifyPreconditions() ITKv5_CONST override
-  {
-    Superclass::VerifyPreconditions();
-    if (dynamic_cast<const CalculatorType *>(Superclass::GetCalculator()) == nullptr)
     {
-      itkExceptionMacro(<< "Invalid IntermodesCalculator.");
+    m_IntermodesCalculator = CalculatorType::New();
+    this->SetCalculator( m_IntermodesCalculator );
+    m_IntermodesCalculator->SetMaximumSmoothingIterations(10000);
+    m_IntermodesCalculator->SetUseInterMode(true);
     }
-  }
+  ~IntermodesThresholdImageFilter() ITK_OVERRIDE {};
 
-  void
-  GenerateData() override
-  {
-    auto calculator = static_cast<CalculatorType *>(this->Superclass::GetModifiableCalculator());
-    calculator->SetMaximumSmoothingIterations(m_MaximumSmoothingIterations);
-    calculator->SetUseInterMode(m_UseInterMode);
-    this->Superclass::GenerateData();
-  }
-
-
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+    {
     Superclass::PrintSelf(os, indent);
-    os << indent << "MaximumSmoothingIterations: " << m_MaximumSmoothingIterations << std::endl;
-    os << indent << "UseInterMode: " << m_UseInterMode << std::endl;
-  }
+
+    itkPrintSelfObjectMacro( IntermodesCalculator );
+    }
 
 private:
-  SizeValueType m_MaximumSmoothingIterations{ 1000 };
-  bool          m_UseInterMode{ true };
+  ITK_DISALLOW_COPY_AND_ASSIGN(IntermodesThresholdImageFilter);
+
+  typename CalculatorType::Pointer m_IntermodesCalculator;
+
 };
 
 } // end namespace itk

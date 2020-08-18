@@ -16,9 +16,9 @@
 
 #include "metaContour.h"
 
-#include <cassert>
-#include <cctype>
-#include <cstdio>
+#include <assert.h>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -27,7 +27,7 @@ namespace METAIO_NAMESPACE {
 
 ContourControlPnt::
 ContourControlPnt(int dim)
-{
+  {
   m_Id = 0;
   m_Dim = dim;
   m_X = new float[m_Dim];
@@ -44,22 +44,22 @@ ContourControlPnt(int dim)
   m_Color[1]=0.0f;
   m_Color[2]=0.0f;
   m_Color[3]=1.0f;
-}
+  }
 
 ContourControlPnt::
 ~ContourControlPnt()
-{
+  {
   delete [] m_X;
   delete [] m_XPicked;
   delete [] m_V;
-}
+  }
 
 /** Constructor */
 MetaContour::
 MetaContour()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaContour()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -68,7 +68,7 @@ MetaContour::
 MetaContour(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaContour()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaContour()" << METAIO_STREAM::endl;
   Clear();
   Read(_headerName);
 }
@@ -78,7 +78,7 @@ MetaContour::
 MetaContour(const MetaContour *_Contour)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaContour()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaContour()" << METAIO_STREAM::endl;
   Clear();
   CopyInfo(_Contour);
 }
@@ -90,7 +90,7 @@ MetaContour::
 MetaContour(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaContour()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -107,12 +107,12 @@ void MetaContour::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "ControlPointDim = " << m_ControlPointDim << std::endl;
-  std::cout << "NControlPoints = " << m_NControlPoints << std::endl;
-  std::cout << "InterpolatedPointDim = " << m_InterpolatedPointDim << std::endl;
-  std::cout << "NInterpolatedPoints = " << m_NInterpolatedPoints << std::endl;
-  std::cout << "Display Orientation = " << m_DisplayOrientation << std::endl;
-  std::cout << "Attached to Slice = " << m_AttachedToSlice << std::endl;
+  METAIO_STREAM::cout << "ControlPointDim = " << m_ControlPointDim << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NControlPoints = " << m_NControlPoints << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "InterpolatedPointDim = " << m_InterpolatedPointDim << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NInterpolatedPoints = " << m_NInterpolatedPoints << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "Display Orientation = " << m_DisplayOrientation << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "Attached to Slice = " << m_AttachedToSlice << METAIO_STREAM::endl;
 }
 
 void MetaContour::
@@ -141,7 +141,7 @@ ControlPointDim(const char* pointDim)
 }
 
 const char* MetaContour::
-ControlPointDim() const
+ControlPointDim(void) const
 {
   return m_ControlPointDim;
 }
@@ -153,26 +153,26 @@ InterpolatedPointDim(const char* pointDim)
 }
 
 const char* MetaContour::
-InterpolatedPointDim() const
+InterpolatedPointDim(void) const
 {
   return m_InterpolatedPointDim;
 }
 
 int MetaContour::
-NControlPoints() const
+NControlPoints(void) const
 {
   return m_NControlPoints;
 }
 
 int MetaContour::
-NInterpolatedPoints() const
+NInterpolatedPoints(void) const
 {
   return m_NInterpolatedPoints;
 }
 
 
 MET_InterpolationEnumType
-MetaContour::Interpolation() const
+MetaContour::Interpolation(void) const
 {
   return m_InterpolationType;
 }
@@ -185,17 +185,13 @@ void MetaContour::Interpolation(MET_InterpolationEnumType _interpolation)
 
 /** Clear Contour information */
 void MetaContour::
-Clear()
+Clear(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaContour: Clear" << std::endl;
+    METAIO_STREAM::cout << "MetaContour: Clear" << METAIO_STREAM::endl;
     }
-
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Contour");
-
   m_InterpolationType = MET_NO_INTERPOLATION;
   m_NControlPoints = 0;
   m_NInterpolatedPoints = 0;
@@ -233,7 +229,7 @@ Clear()
 
 /** Destroy Contour information */
 void MetaContour::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
@@ -267,9 +263,9 @@ DisplayOrientation() const
 
 /** Set Read fields */
 void MetaContour::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaContour: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -302,10 +298,11 @@ M_SetupReadFields()
 }
 
 void MetaContour::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaContour: M_SetupWriteFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_SetupWriteFields" << METAIO_STREAM::endl;
 
+  strcpy(m_ObjectTypeName,"Contour");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -348,24 +345,24 @@ M_SetupWriteFields()
 
 
 bool MetaContour::
-M_Read()
+M_Read(void)
 {
-  if(META_DEBUG) std::cout << "MetaContour: M_Read: Loading Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_Read: Loading Header" << METAIO_STREAM::endl;
 
   if(!MetaObject::M_Read())
-{
-    std::cout << "MetaContour: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaContour: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
-  if(META_DEBUG) std::cout << "MetaContour: M_Read: Parsing Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaContour: M_Read: Parsing Header" << METAIO_STREAM::endl;
 
   MET_FieldRecordType * mF;
 
   mF = MET_GetFieldRecord("Closed", &m_Fields);
   if(mF->defined)
     {
-    if(mF->value[0] != 0.0)
+    if(mF->value[0])
       {
       m_Closed = true;
       }
@@ -374,7 +371,7 @@ M_Read()
   mF = MET_GetFieldRecord("DisplayOrientation", &m_Fields);
   if(mF->defined)
     {
-    if(mF->value[0] != 0.0)
+    if(mF->value[0])
       {
       m_DisplayOrientation = (int)mF->value[0];
       }
@@ -383,7 +380,7 @@ M_Read()
   mF = MET_GetFieldRecord("PinToSlice", &m_Fields);
   if(mF->defined)
     {
-    if(mF->value[0] != 0.0)
+    if(mF->value[0])
       {
       m_AttachedToSlice = (long int)mF->value[0];
       }
@@ -402,7 +399,7 @@ M_Read()
     }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_ControlPointDim, &pntDim, &pntVal);
 
   int i;
@@ -422,10 +419,10 @@ M_Read()
     int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
       {
-      std::cout << "MetaContour: m_Read: data not read completely"
-                          << std::endl;
-      std::cout << "   ideal = " << readSize << " : actual = " << gc
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaContour: m_Read: data not read completely"
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc
+                          << METAIO_STREAM::endl;
       delete [] _data;
       return false;
       }
@@ -521,7 +518,7 @@ M_Read()
         }
 
       unsigned long pos = 0;
-      pnt->m_Id = (unsigned int)v[pos];
+      pnt->m_Id = (unsigned long)v[pos];
       pos++;
 
       int d;
@@ -624,10 +621,10 @@ M_Read()
       int gc = static_cast<int>(m_ReadStream->gcount());
       if(gc != readSize)
         {
-        std::cout << "MetaContour: m_Read: data not read completely"
-                            << std::endl;
-        std::cout << "   ideal = " << readSize << " : actual = " << gc
-                            << std::endl;
+        METAIO_STREAM::cout << "MetaContour: m_Read: data not read completely"
+                            << METAIO_STREAM::endl;
+        METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc
+                            << METAIO_STREAM::endl;
         delete [] _data;
         return false;
         }
@@ -697,7 +694,7 @@ M_Read()
           }
 
         unsigned long pos = 0;
-        pnt->m_Id = (unsigned int)v[pos];
+        pnt->m_Id = (unsigned long)v[pos];
         pos++;
 
         int d;
@@ -731,17 +728,17 @@ M_Read()
 
 
 bool MetaContour::
-M_Write()
+M_Write(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaContour: M_Write" << std::endl;
+    METAIO_STREAM::cout << "MetaContour: M_Write" << METAIO_STREAM::endl;
     }
 
   if(!MetaObject::M_Write())
     {
-    std::cout << "MetaContour: M_Read: Error parsing file"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaContour: M_Read: Error parsing file"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
@@ -823,7 +820,7 @@ M_Write()
         {
         *m_WriteStream << (*it)->m_Color[d] << " ";
         }
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
       }
     }
@@ -916,7 +913,7 @@ M_Write()
         {
         *m_WriteStream << (*it)->m_Color[d] << " ";
         }
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
       }
     }

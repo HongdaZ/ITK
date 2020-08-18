@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,41 +49,36 @@ namespace itk
  * \sa MorphologyImageFilter, GrayscaleDilateImageFilter, GrayscaleErodeImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKBinaryMathematicalMorphology
- *
- * \sphinx
- * \sphinxexample{Filtering/BinaryMathematicalMorphology/OpeningBinaryImage,Opening A Binary Image}
- * \endsphinx
  */
 
-template <typename TInputImage, typename TOutputImage, typename TKernel>
-class ITK_TEMPLATE_EXPORT BinaryMorphologicalOpeningImageFilter
-  : public KernelImageFilter<TInputImage, TOutputImage, TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
+class ITK_TEMPLATE_EXPORT BinaryMorphologicalOpeningImageFilter:
+  public KernelImageFilter< TInputImage, TOutputImage, TKernel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMorphologicalOpeningImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BinaryMorphologicalOpeningImageFilter;
-  using Superclass = KernelImageFilter<TInputImage, TOutputImage, TKernel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BinaryMorphologicalOpeningImageFilter                   Self;
+  typedef KernelImageFilter< TInputImage, TOutputImage, TKernel > Superclass;
+  typedef SmartPointer< Self >                                    Pointer;
+  typedef SmartPointer< const Self >                              ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(BinaryMorphologicalOpeningImageFilter, KernelImageFilter);
+  itkTypeMacro(BinaryMorphologicalOpeningImageFilter,
+               KernelImageFilter);
 
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef TInputImage                          InputImageType;
+  typedef TOutputImage                         OutputImageType;
+  typedef typename InputImageType::Pointer     InputImagePointer;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   /** Declaration of pixel type. */
-  using PixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType PixelType;
 
-  /** Kernel type alias. */
-  using KernelType = TKernel;
+  /** Kernel typedef. */
+  typedef TKernel KernelType;
 
   /** Set the value in the image to consider as "foreground". Defaults to
    * maximum value of PixelType. */
@@ -101,16 +96,16 @@ public:
 
 protected:
   BinaryMorphologicalOpeningImageFilter();
-  ~BinaryMorphologicalOpeningImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~BinaryMorphologicalOpeningImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to GrayscaleDilateImageFilter GrayscaleErodeImageFilter. */
-  void
-  GenerateData() override;
+  void  GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMorphologicalOpeningImageFilter);
+
   PixelType m_ForegroundValue;
 
   PixelType m_BackgroundValue;
@@ -118,7 +113,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBinaryMorphologicalOpeningImageFilter.hxx"
+#include "itkBinaryMorphologicalOpeningImageFilter.hxx"
 #endif
 
 #endif

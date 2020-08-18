@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,28 +30,25 @@ namespace Functor
  * \brief bitwise AND functor
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1>
+template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
 class ITK_TEMPLATE_EXPORT AND
 {
 public:
-  AND() = default;
-  ~AND() = default;
-  bool
-  operator!=(const AND &) const
+  AND() {}
+  ~AND() {}
+  bool operator!=(const AND &) const
   {
     return false;
   }
 
-  bool
-  operator==(const AND & other) const
+  bool operator==(const AND & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
   {
-    return static_cast<TOutput>(A & B);
+    return static_cast< TOutput >( A & B );
   }
 };
 
@@ -60,28 +57,25 @@ public:
  * \brief bitwise OR functor
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1>
+template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
 class ITK_TEMPLATE_EXPORT OR
 {
 public:
-  OR() = default;
-  ~OR() = default;
-  bool
-  operator!=(const OR &) const
+  OR() {}
+  ~OR() {}
+  bool operator!=(const OR &) const
   {
     return false;
   }
 
-  bool
-  operator==(const OR & other) const
+  bool operator==(const OR & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
   {
-    return static_cast<TOutput>(A | B);
+    return static_cast< TOutput >( A | B );
   }
 };
 
@@ -90,28 +84,25 @@ public:
  * \brief bitwise XOR fucntor
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1>
+template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
 class ITK_TEMPLATE_EXPORT XOR
 {
 public:
-  XOR() = default;
-  ~XOR() = default;
-  bool
-  operator!=(const XOR &) const
+  XOR() {}
+  ~XOR() {}
+  bool operator!=(const XOR &) const
   {
     return false;
   }
 
-  bool
-  operator==(const XOR & other) const
+  bool operator==(const XOR & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
   {
-    return static_cast<TOutput>(A ^ B);
+    return static_cast< TOutput >( A ^ B );
   }
 };
 
@@ -120,32 +111,29 @@ public:
  * \brief Performs the C++ unary bitwise NOT operator.
  * \ingroup ITKImageIntensity
  */
-template <class TInput, class TOutput>
+template< class TInput, class TOutput >
 class BitwiseNot
 {
 public:
   // Use default copy, assigned and destructor
   // BitwiseNot() {} default constructor OK
 
-  bool
-  operator!=(const BitwiseNot &) const
-  {
-    return false;
-  }
+  bool operator!=(const BitwiseNot &) const
+    {
+      return false;
+    }
 
-  bool
-  operator==(const BitwiseNot & other) const
-  {
-    return !(*this != other);
-  }
+  bool operator==(const BitwiseNot & other) const
+    {
+      return !( *this != other );
+    }
 
-  inline TOutput
-  operator()(const TInput & A) const
-  {
-    return static_cast<TOutput>(~A);
-  }
+  inline TOutput operator()(const TInput & A) const
+    {
+      return static_cast<TOutput>( ~A );
+    }
 };
-} // namespace Functor
-} // namespace itk
+}
+}
 
 #endif

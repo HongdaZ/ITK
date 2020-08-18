@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,251 +22,257 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkLabelContourImageFilter.h"
-#include "itkTestingMacros.h"
 
 
 template <unsigned int VDimension>
-int
-FastMarchingImageFilter(unsigned int argc, char * argv[])
+int FastMarchingImageFilter( unsigned int argc, char *argv[] )
 {
-  using InternalPixelType = float;
+  typedef float InternalPixelType;
 
-  using InternalImageType = itk::Image<InternalPixelType, VDimension>;
+  typedef itk::Image< InternalPixelType, VDimension > InternalImageType;
 
-  using OutputPixelType = unsigned char;
+  typedef unsigned char OutputPixelType;
 
-  using OutputImageType = itk::Image<OutputPixelType, VDimension>;
+  typedef itk::Image<OutputPixelType, VDimension> OutputImageType;
 
-  using CriterionType = itk::FastMarchingThresholdStoppingCriterion<InternalImageType, InternalImageType>;
+  typedef itk::FastMarchingThresholdStoppingCriterion< InternalImageType, InternalImageType >
+      CriterionType;
 
-  using CriterionPointer = typename CriterionType::Pointer;
+  typedef typename CriterionType::Pointer CriterionPointer;
 
-  InternalPixelType stoppingValue = std::stod(argv[5]);
+  InternalPixelType stoppingValue = atof( argv[5] );
 
   CriterionPointer criterion = CriterionType::New();
-  criterion->SetThreshold(stoppingValue);
+  criterion->SetThreshold( stoppingValue );
 
-  using ReaderType = itk::ImageFileReader<InternalImageType>;
-  using ReaderPointer = typename ReaderType::Pointer;
+  typedef itk::ImageFileReader< InternalImageType>  ReaderType;
+  typedef typename ReaderType::Pointer              ReaderPointer;
 
   ReaderPointer reader = ReaderType::New();
-  reader->SetFileName(argv[2]);
+  reader->SetFileName( argv[2] );
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using FastMarchingType = itk::FastMarchingImageFilterBase<InternalImageType, InternalImageType>;
-  using FastMarchingPointer = typename FastMarchingType::Pointer;
+  typedef itk::FastMarchingImageFilterBase< InternalImageType, InternalImageType > FastMarchingType;
+  typedef typename FastMarchingType::Pointer FastMarchingPointer;
 
   FastMarchingPointer fastMarching = FastMarchingType::New();
-  fastMarching->SetInput(reader->GetOutput());
-  fastMarching->SetStoppingCriterion(criterion);
+  fastMarching->SetInput( reader->GetOutput() );
+  fastMarching->SetStoppingCriterion( criterion );
 
-  using LabelImageType = typename FastMarchingType::LabelImageType;
-  using LabelType = typename LabelImageType::PixelType;
+  typedef typename FastMarchingType::LabelImageType LabelImageType;
+  typedef typename LabelImageType::PixelType        LabelType;
 
-  using LabelImageReaderType = itk::ImageFileReader<LabelImageType>;
-  using LabelImageReaderPointer = typename LabelImageReaderType::Pointer;
+  typedef itk::ImageFileReader<LabelImageType>    LabelImageReaderType;
+  typedef typename LabelImageReaderType::Pointer  LabelImageReaderPointer;
   LabelImageReaderPointer labelImageReader = LabelImageReaderType::New();
-  labelImageReader->SetFileName(argv[4]);
+  labelImageReader->SetFileName( argv[4] );
 
   try
-  {
+    {
     labelImageReader->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   LabelType label_zero = itk::NumericTraits<LabelType>::ZeroValue();
 
-  using ContourFilterType = itk::LabelContourImageFilter<LabelImageType, LabelImageType>;
+  typedef itk::LabelContourImageFilter<LabelImageType,
+      LabelImageType> ContourFilterType;
   typename ContourFilterType::Pointer contour = ContourFilterType::New();
-  contour->SetInput(labelImageReader->GetOutput());
+  contour->SetInput( labelImageReader->GetOutput() );
   contour->FullyConnectedOff();
-  contour->SetBackgroundValue(label_zero);
+  contour->SetBackgroundValue( label_zero );
 
   try
-  {
+    {
     contour->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using NodePairType = typename FastMarchingType::NodePairType;
-  using NodePairContainerType = typename FastMarchingType::NodePairContainerType;
+  typedef typename FastMarchingType::NodePairType           NodePairType;
+  typedef typename FastMarchingType::NodePairContainerType  NodePairContainerType;
 
 
   typename NodePairContainerType::Pointer AlivePoints = NodePairContainerType::New();
   typename NodePairContainerType::Pointer TrialPoints = NodePairContainerType::New();
 
-  itk::ImageRegionIteratorWithIndex<LabelImageType> ItL(labelImageReader->GetOutput(),
-                                                        labelImageReader->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<LabelImageType> ItL(
+        labelImageReader->GetOutput(),
+        labelImageReader->GetOutput()->GetLargestPossibleRegion() );
 
-  itk::ImageRegionIteratorWithIndex<LabelImageType> ItC(contour->GetOutput(),
-                                                        contour->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<LabelImageType> ItC(
+        contour->GetOutput(),
+        contour->GetOutput()->GetLargestPossibleRegion() );
 
   ItL.GoToBegin();
   ItC.GoToBegin();
 
-  while (!ItL.IsAtEnd())
-  {
-    if (ItC.Get() != label_zero)
+  while( !ItL.IsAtEnd() )
     {
-      TrialPoints->push_back(NodePairType(ItC.GetIndex(), 0.));
-    }
-    else
-    {
-      if (ItL.Get() != label_zero)
+    if( ItC.Get() != label_zero )
       {
-        AlivePoints->push_back(NodePairType(ItL.GetIndex(), 0.));
+      TrialPoints->push_back( NodePairType( ItC.GetIndex(), 0. ) );
       }
-    }
+    else
+      {
+      if( ItL.Get() != label_zero )
+        {
+        AlivePoints->push_back( NodePairType( ItL.GetIndex(), 0. ) );
+        }
+      }
     ++ItL;
     ++ItC;
-  }
+    }
 
-  fastMarching->SetTrialPoints(TrialPoints);
-  fastMarching->SetAlivePoints(AlivePoints);
+  fastMarching->SetTrialPoints(  TrialPoints  );
+  fastMarching->SetAlivePoints(  AlivePoints  );
 
-  fastMarching->SetTopologyCheck(FastMarchingType::TopologyCheckEnum::Nothing);
+  fastMarching->SetTopologyCheck( FastMarchingType::Nothing );
 
-  if (argc > 6 && std::stoi(argv[6]) == 1)
-  {
+  if( argc > 6 && atoi( argv[6] ) == 1 )
+    {
     std::cout << "Strict." << std::endl;
-    fastMarching->SetTopologyCheck(FastMarchingType::TopologyCheckEnum::Strict);
-  }
-  if (argc > 6 && std::stoi(argv[6]) == 2)
-  {
+    fastMarching->SetTopologyCheck( FastMarchingType::Strict );
+    }
+  if( argc > 6 && atoi( argv[6] ) == 2 )
+    {
     std::cout << "No handles." << std::endl;
-    fastMarching->SetTopologyCheck(FastMarchingType::TopologyCheckEnum::NoHandles);
-  }
+    fastMarching->SetTopologyCheck( FastMarchingType::NoHandles );
+    }
 
   try
-  {
+    {
     fastMarching->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using ThresholdingFilterType = itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
-  typename ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
+  typedef itk::BinaryThresholdImageFilter
+    <InternalImageType, OutputImageType> ThresholdingFilterType;
+  typename ThresholdingFilterType::Pointer thresholder
+    = ThresholdingFilterType::New();
 
-  thresholder->SetLowerThreshold(0.0);
-  thresholder->SetUpperThreshold(stoppingValue);
-  thresholder->SetOutsideValue(0);
-  thresholder->SetInsideValue(1);
-  thresholder->SetInput(fastMarching->GetOutput());
+  thresholder->SetLowerThreshold( 0.0 );
+  thresholder->SetUpperThreshold( stoppingValue );
+  thresholder->SetOutsideValue( 0 );
+  thresholder->SetInsideValue( 1 );
+  thresholder->SetInput( fastMarching->GetOutput() );
 
   try
-  {
+    {
     thresholder->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+   catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter<OutputImageType> WriterType;
   typename WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(thresholder->GetOutput());
-  writer->SetFileName(argv[3]);
+  writer->SetInput( thresholder->GetOutput() );
+  writer->SetFileName( argv[3] );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  if (argc > 7)
-  {
+  if( argc > 7 )
     {
-      std::string filename = std::string(argv[7]) + std::string("LevelSet.nii.gz");
-      using InternalWriterType = itk::ImageFileWriter<InternalImageType>;
+      {
+      std::string filename = std::string( argv[7] ) +
+        std::string( "LevelSet.nii.gz" );
+      typedef itk::ImageFileWriter<InternalImageType> InternalWriterType;
       typename InternalWriterType::Pointer internal_writer = InternalWriterType::New();
-      internal_writer->SetInput(fastMarching->GetOutput());
-      internal_writer->SetFileName(filename.c_str());
+      internal_writer->SetInput( fastMarching->GetOutput() );
+      internal_writer->SetFileName( filename.c_str() );
 
       try
-      {
+        {
         internal_writer->Update();
-      }
-      catch (const itk::ExceptionObject & excep)
-      {
+        }
+      catch( itk::ExceptionObject & excep )
+        {
         std::cerr << "Exception caught !" << std::endl;
         std::cerr << excep << std::endl;
         return EXIT_FAILURE;
+        }
       }
-    }
 
-    {
-      std::string filename = std::string(argv[7]) + std::string("LabelMap.nii.gz");
-      using LabelImageWriterType = itk::ImageFileWriter<LabelImageType>;
+      {
+      std::string filename = std::string( argv[7] ) +
+        std::string( "LabelMap.nii.gz" );
+      typedef itk::ImageFileWriter< LabelImageType > LabelImageWriterType;
       typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
-      mapWriter->SetInput(fastMarching->GetLabelImage());
-      mapWriter->SetFileName(filename.c_str());
+      mapWriter->SetInput( fastMarching->GetLabelImage() );
+      mapWriter->SetFileName( filename.c_str() );
 
       try
-      {
+        {
         mapWriter->Update();
-      }
-      catch (const itk::ExceptionObject & excep)
-      {
+        }
+      catch( itk::ExceptionObject & excep )
+        {
         std::cerr << "Exception caught !" << std::endl;
         std::cerr << excep << std::endl;
         return EXIT_FAILURE;
+        }
       }
     }
-  }
 
   return EXIT_SUCCESS;
 }
 
-int
-itkFastMarchingImageTopologicalTest(int argc, char * argv[])
+int itkFastMarchingImageTopologicalTest( int argc, char *argv[] )
 {
-  if (argc < 6)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " imageDimension";
+  if( argc < 6 )
+    {
+    std::cerr << "Usage: " << argv[0] << " imageDimension";
     std::cerr << " speedImage outputImage seedImage ";
-    std::cerr << " stoppingValue [checkTopology] [otherFilePrefix]" << std::endl;
+    std::cerr << " stoppingValue [checkTopology] [otherFilePrefix]"
+      << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  switch (std::stoi(argv[1]))
-  {
-    case 2:
-      return FastMarchingImageFilter<2>(argc, argv);
-    case 3:
-      return FastMarchingImageFilter<3>(argc, argv);
-    default:
-      std::cerr << "Unsupported dimension" << std::endl;
-      return EXIT_FAILURE;
-  }
+  switch( atoi( argv[1] ) )
+   {
+   case 2:
+     return FastMarchingImageFilter<2>( argc, argv );
+   case 3:
+     return FastMarchingImageFilter<3>( argc, argv );
+   default:
+     std::cerr << "Unsupported dimension" << std::endl;
+     return EXIT_FAILURE;
+   }
 }

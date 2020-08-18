@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkAtanImageFilter_h
 #define itkAtanImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,32 +30,28 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class Atan
 {
 public:
-  Atan() = default;
-  ~Atan() = default;
-  bool
-  operator!=(const Atan &) const
+  Atan() {}
+  ~Atan() {}
+  bool operator!=(const Atan &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Atan & other) const
+  bool operator==(const Atan & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(std::atan(static_cast<double>(A)));
+    return static_cast< TOutput >( std::atan( static_cast< double >( A ) ) );
   }
 };
-} // namespace Functor
-
+}
 /** \class AtanImageFilter
  * \brief Computes the one-argument inverse tangent of each pixel.
  *
@@ -75,41 +71,48 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage, typename TOutputImage>
-class AtanImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class AtanImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::Atan<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AtanImageFilter);
+  /** Standard class typedefs. */
+  typedef AtanImageFilter Self;
+  typedef UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                                   Functor::Atan<
+                                     typename TInputImage::PixelType,
+                                     typename TOutputImage::PixelType >
+                                   >                                 Superclass;
 
-  /** Standard class type aliases. */
-  using Self = AtanImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::Atan<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AtanImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(AtanImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( InputConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  AtanImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  AtanImageFilter() {}
+  virtual ~AtanImageFilter() ITK_OVERRIDE {}
 
-  ~AtanImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AtanImageFilter);
 };
 } // end namespace itk
 

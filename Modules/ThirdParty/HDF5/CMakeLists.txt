@@ -4,11 +4,6 @@ set(ITKHDF5_THIRD_PARTY 1)
 if (BUILD_SHARED_LIBS)
    add_definitions(-DH5_BUILT_AS_DYNAMIC_LIB=1)
 endif()
-if(CMAKE_LINKER MATCHES "link.exe$")
-  # Suppress undefined public symbols warning
-  set(CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /IGNORE:4221")
-endif()
-
 if(ITK_USE_SYSTEM_HDF5)
 
   if(HDF5_DIR)
@@ -42,7 +37,7 @@ endif()
     ${HDF5_INCLUDE_DIR_CPP}
     )
   list(APPEND ITKHDF5_LIBRARIES
-    ${HDF5_CXX_LIBRARY_NAMES}
+    ${HDF5_LIBRARIES}
     )
   set(ITKHDF5_NO_SRC 1)
 else()

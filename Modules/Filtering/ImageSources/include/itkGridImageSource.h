@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@
 
 namespace itk
 {
-/**
- *\class GridImageSource
+/** \class GridImageSource
  * \brief Generate an n-dimensional image of a grid.
  *
  * GridImageSource generates an image of a grid.
@@ -54,17 +53,16 @@ namespace itk
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GridImageSource : public GenerateImageSource<TOutputImage>
+template< typename TOutputImage >
+class ITK_TEMPLATE_EXPORT GridImageSource
+   :public GenerateImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GridImageSource);
-
-  /** Standard class type aliases. */
-  using Self = GridImageSource;
-  using Superclass = GenerateImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GridImageSource                     Self;
+  typedef GenerateImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GridImageSource, GenerateImageSource);
@@ -72,26 +70,29 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  using RealType = double;
+  typedef double RealType;
 
   /** Dimensionality of the output image */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Typedef for the output image types. */
-  using ImageType = TOutputImage;
-  using ImageRegionType = typename TOutputImage::RegionType;
-  using PixelType = typename TOutputImage::PixelType;
-  using SpacingType = typename TOutputImage::SpacingType;
-  using OriginType = typename TOutputImage::PointType;
-  using DirectionType = typename TOutputImage::DirectionType;
-  using SizeType = typename TOutputImage::SizeType;
+  typedef TOutputImage                         ImageType;
+  typedef typename TOutputImage::RegionType    ImageRegionType;
+  typedef typename TOutputImage::PixelType     PixelType;
+  typedef typename TOutputImage::SpacingType   SpacingType;
+  typedef typename TOutputImage::PointType     OriginType;
+  typedef typename TOutputImage::DirectionType DirectionType;
+  typedef typename TOutputImage::SizeType      SizeType;
 
-  using KernelFunctionType = KernelFunctionBase<double>;
+  typedef KernelFunctionBase<double>           KernelFunctionType;
   /** Other convenient types. */
-  using ArrayType = FixedArray<RealType, Self::ImageDimension>;
-  using BoolArrayType = FixedArray<bool, Self::ImageDimension>;
-  using PixelArrayType = vnl_vector<RealType>;
-  using PixelArrayContainerType = VectorContainer<SizeValueType, PixelArrayType>;
+  typedef FixedArray< RealType, itkGetStaticConstMacro(ImageDimension) >
+  ArrayType;
+  typedef FixedArray< bool, itkGetStaticConstMacro(ImageDimension) >
+  BoolArrayType;
+  typedef vnl_vector< RealType >                           PixelArrayType;
+  typedef VectorContainer< SizeValueType, PixelArrayType > PixelArrayContainerType;
 
   /** Set/Get kernel function used to create the grid. */
   itkSetObjectMacro(KernelFunction, KernelFunctionType);
@@ -120,18 +121,18 @@ public:
 
 protected:
   GridImageSource();
-  ~GridImageSource() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  // ~GridImageSource(){} default implementation ok
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const ImageRegionType & outputRegionForThread) override;
+  virtual void
+  ThreadedGenerateData(const ImageRegionType &
+                       outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
-
-  void
-  BeforeThreadedGenerateData() override;
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GridImageSource);
+
   /** Internal variable to speed up the calculation of pixel values. */
   typename PixelArrayContainerType::Pointer m_PixelArrays;
 
@@ -145,12 +146,12 @@ private:
 
   BoolArrayType m_WhichDimensions;
 
-  RealType m_Scale{ 255.0 };
+  RealType m_Scale;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGridImageSource.hxx"
+#include "itkGridImageSource.hxx"
 #endif
 
 #endif

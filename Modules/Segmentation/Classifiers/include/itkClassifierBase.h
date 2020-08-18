@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class ClassifierBase
+/** \class ClassifierBase
  * \brief Base class for classifier objects.
  *
  * ClassifierBase is the base class for classifier objects. It provides
@@ -83,15 +82,13 @@ namespace itk
  * \ingroup ClassificationFilters
  * \ingroup ITKClassifiers
  */
-template <typename TDataContainer>
-class ITK_TEMPLATE_EXPORT ClassifierBase : public LightProcessObject
+template< typename TDataContainer >
+class ITK_TEMPLATE_EXPORT ClassifierBase:public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ClassifierBase);
-
-  /** Standard class type aliases. */
-  using Self = ClassifierBase;
-  using Superclass = LightProcessObject;
+  /** Standard class typedefs. */
+  typedef ClassifierBase     Self;
+  typedef LightProcessObject Superclass;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ClassifierBase, LightProcessObject);
@@ -103,29 +100,28 @@ public:
   itkGetConstReferenceMacro(NumberOfClasses, unsigned int);
 
   /**Sets the decision rule */
-  using MeasurementVectorType = typename TDataContainer::ValueType;
+  typedef typename TDataContainer::ValueType MeasurementVectorType;
 
-  /** Typedefs for membership function */
-  using MembershipFunctionType = Statistics::MembershipFunctionBase<MeasurementVectorType>;
-  using MembershipFunctionPointer = typename MembershipFunctionType::Pointer;
+  /** Typedefs for membership funciton */
+  typedef Statistics::MembershipFunctionBase< MeasurementVectorType > MembershipFunctionType;
+  typedef typename MembershipFunctionType::Pointer                    MembershipFunctionPointer;
 
-  using MembershipFunctionPointerVector = std::vector<MembershipFunctionPointer>;
+  typedef std::vector< MembershipFunctionPointer >
+  MembershipFunctionPointerVector;
 
   /** Type alias for decision rule */
-  using DecisionRuleType = Statistics::DecisionRule;
+  typedef Statistics::DecisionRule DecisionRuleType;
 
   /** Sets the pointer to the decision rule.
    * Stores the decision rule that makes the real decision using
    * informations from MembershipFunctions and other prior knowledge */
-  void
-  SetDecisionRule(DecisionRuleType * ptrToDecisionRule)
+  void SetDecisionRule(DecisionRuleType *ptrToDecisionRule)
   {
     m_DecisionRule = ptrToDecisionRule;
   }
 
   /** Gets the pointer to the decision rule being used. */
-  DecisionRuleType *
-  GetDecisionRule()
+  DecisionRuleType * GetDecisionRule(void)
   {
     return m_DecisionRule.GetPointer();
   }
@@ -134,39 +130,35 @@ public:
    * the AddMembershipFunction method. The index is assigned according
    * to the order each membership function has been added using the
    * AddMemberShipFunction method */
-  const MembershipFunctionType *
-  GetMembershipFunction(unsigned int index) const
+  const MembershipFunctionType * GetMembershipFunction(unsigned int index) const
   {
     return m_MembershipFunctions[index].GetPointer();
   }
 
   /** Gets the number of membership functions */
-  unsigned int
-  GetNumberOfMembershipFunctions()
+  unsigned int GetNumberOfMembershipFunctions()
   {
-    return static_cast<unsigned int>(m_MembershipFunctions.size());
+    return static_cast< unsigned int >( m_MembershipFunctions.size() );
   }
 
   /** Stores a membership function of a class in its internal vector */
-  unsigned int
-  AddMembershipFunction(MembershipFunctionType * function);
+  unsigned int AddMembershipFunction(MembershipFunctionType *function);
 
   /** Starts the classification process */
-  void
-  Update();
+  void Update();
 
 protected:
   ClassifierBase();
-  ~ClassifierBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ClassifierBase() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** The real classification logic implementation. All the subclasses
+  /** The real classification logic implementaion. All the subclasses
    * of this class should implement this method. */
-  void
-  GenerateData() override = 0;
+  virtual void GenerateData() ITK_OVERRIDE = 0;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ClassifierBase);
+
   /** Number of classes */
   unsigned int m_NumberOfClasses;
 
@@ -179,7 +171,7 @@ private:
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkClassifierBase.hxx"
+#include "itkClassifierBase.hxx"
 #endif
 
 #endif

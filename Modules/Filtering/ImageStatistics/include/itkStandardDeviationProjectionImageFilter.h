@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,82 +46,81 @@ namespace itk
 
 namespace Functor
 {
-template <typename TInputPixel, typename TAccumulate>
+template< typename TInputPixel, typename TAccumulate >
 class StandardDeviationAccumulator
 {
 public:
-  using RealType = typename NumericTraits<TInputPixel>::RealType;
+  typedef typename NumericTraits< TInputPixel >::RealType RealType;
 
-  StandardDeviationAccumulator(SizeValueType size)
+  StandardDeviationAccumulator( SizeValueType size )
   {
     m_Size = size;
     m_Values.reserve(size);
   }
 
-  ~StandardDeviationAccumulator() = default;
+  ~StandardDeviationAccumulator(){}
 
-  inline void
-  Initialize()
+  inline void Initialize()
   {
-    m_Sum = NumericTraits<TAccumulate>::ZeroValue();
+    m_Sum = NumericTraits< TAccumulate >::ZeroValue();
     m_Values.clear();
   }
 
-  inline void
-  operator()(const TInputPixel & input)
+  inline void operator()(const TInputPixel & input)
   {
     m_Sum = m_Sum + input;
     m_Values.push_back(input);
   }
 
-  inline RealType
-  GetValue()
+  inline RealType GetValue()
   {
     // to avoid division by zero
-    if (m_Size <= 1)
-    {
-      return NumericTraits<RealType>::ZeroValue();
-    }
+    if ( m_Size <= 1 )
+      {
+      return NumericTraits< RealType >::ZeroValue();
+      }
 
-    typename NumericTraits<TInputPixel>::RealType mean = ((RealType)m_Sum) / m_Size;
-    typename std::vector<TInputPixel>::iterator   it;
-    RealType                                      squaredSum = NumericTraits<RealType>::ZeroValue();
-    for (it = m_Values.begin(); it != m_Values.end(); it++)
-    {
+    typename NumericTraits< TInputPixel >::RealType mean =
+      ( (RealType)m_Sum ) / m_Size;
+    typename std::vector< TInputPixel >::iterator it;
+    RealType squaredSum = NumericTraits< RealType >::ZeroValue();
+    for ( it = m_Values.begin(); it != m_Values.end(); it++ )
+      {
       squaredSum += itk::Math::sqr(*it - mean);
-    }
-    return std::sqrt(squaredSum / (m_Size - 1));
+      }
+    return std::sqrt( squaredSum / ( m_Size - 1 ) );
   }
 
-  TAccumulate              m_Sum;
-  SizeValueType            m_Size;
-  std::vector<TInputPixel> m_Values;
+  TAccumulate                m_Sum;
+  SizeValueType              m_Size;
+  std::vector< TInputPixel > m_Values;
 };
-} // namespace Functor
+} // end namespace Function
 
-template <typename TInputImage,
+template< typename TInputImage,
           typename TOutputImage,
-          typename TAccumulate = typename NumericTraits<typename TOutputImage::PixelType>::AccumulateType>
-class StandardDeviationProjectionImageFilter
-  : public ProjectionImageFilter<TInputImage,
-                                 TOutputImage,
-                                 Functor::StandardDeviationAccumulator<typename TInputImage::PixelType, TAccumulate>>
+          typename TAccumulate = typename
+                              NumericTraits< typename TOutputImage::PixelType >
+                              ::AccumulateType >
+class StandardDeviationProjectionImageFilter:
+  public
+  ProjectionImageFilter< TInputImage, TOutputImage,
+                         Functor::StandardDeviationAccumulator< typename
+                                                                TInputImage::PixelType, TAccumulate > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StandardDeviationProjectionImageFilter);
+  typedef StandardDeviationProjectionImageFilter Self;
 
-  using Self = StandardDeviationProjectionImageFilter;
+  typedef ProjectionImageFilter< TInputImage, TOutputImage,
+                                 Functor::StandardDeviationAccumulator< typename
+                                                                        TInputImage::PixelType,
+                                                                        TAccumulate > > Superclass;
 
-  using Superclass =
-    ProjectionImageFilter<TInputImage,
-                          TOutputImage,
-                          Functor::StandardDeviationAccumulator<typename TInputImage::PixelType, TAccumulate>>;
+  typedef TInputImage                        InputImageType;
+  typedef typename InputImageType::PixelType InputPixelType;
 
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Runtime information support. */
   itkTypeMacro(StandardDeviationProjectionImageFilter, ProjectionImageFilter);
@@ -131,19 +130,27 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputPixelToOutputPixelTypeGreaterAdditiveOperatorCheck,
-                  (Concept::AdditiveOperators<TAccumulate, InputPixelType, TAccumulate>));
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputPixelToOutputPixelTypeGreaterAdditiveOperatorCheck,
+                   ( Concept::AdditiveOperators< TAccumulate,
+                                                 InputPixelType,
+                                                 TAccumulate > ) );
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
 
-  itkConceptMacro(AccumulateHasNumericTraitsCheck, (Concept::HasNumericTraits<TAccumulate>));
+  itkConceptMacro( AccumulateHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< TAccumulate > ) );
 
   // End concept checking
 #endif
 
 protected:
-  StandardDeviationProjectionImageFilter() = default;
-  ~StandardDeviationProjectionImageFilter() override = default;
-}; // end StandardDeviationProjectionImageFilter
-} // end namespace itk
+  StandardDeviationProjectionImageFilter() {}
+  virtual ~StandardDeviationProjectionImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(StandardDeviationProjectionImageFilter);
+
+};                              // end StandardDeviationProjectionImageFilter
+} //end namespace itk
 
 #endif

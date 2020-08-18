@@ -10,10 +10,8 @@
 #include <algorithm>
 #include "vnl_svd_fixed.h"
 
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
 
 #include <vnl/vnl_math.h>
 #include <vnl/vnl_fortran_copy_fixed.h>
@@ -54,7 +52,7 @@ vnl_svd_fixed<T,R,C>::vnl_svd_fixed(vnl_matrix_fixed<T,R,C> const& M, double zer
 
     // Call Linpack SVD
     long info = 0;
-    constexpr long job = 21; // min(n,p) svs in U, n svs in V (i.e. economy size)
+    const long job = 21; // min(n,p) svs in U, n svs in V (i.e. economy size)
     vnl_linpack_svdc_fixed((T*)X, &n, &n, &p,
                            wspace.data_block(),
                            espace.data_block(),

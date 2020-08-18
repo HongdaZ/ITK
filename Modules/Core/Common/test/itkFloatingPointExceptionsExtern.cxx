@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include <cfloat>
+#include <float.h>
 
 extern const double itkFloatingPointExceptionsTest_double_zero = 0.0;
 extern const double itkFloatingPointExceptionsTest_double_max = DBL_MAX;
+extern const int itkFloatingPointExceptionsTest_int_zero = 0;

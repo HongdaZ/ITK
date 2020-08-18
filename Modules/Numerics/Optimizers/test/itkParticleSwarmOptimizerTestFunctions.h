@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,45 +37,48 @@ namespace itk
 class ParticleSwarmTestF1 : public SingleValuedCostFunction
 {
 public:
-  using Self = ParticleSwarmTestF1;
-  using Superclass = SingleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  itkNewMacro(Self);
-  itkTypeMacro(ParticleSwarmTestF1, SingleValuedCostFunction);
 
-  using ParametersType = Superclass::ParametersType;
-  using MeasureType = Superclass::MeasureType;
+  typedef ParticleSwarmTestF1      Self;
+  typedef SingleValuedCostFunction Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
+  itkNewMacro( Self );
+  itkTypeMacro( ParticleSwarmTestF1, SingleValuedCostFunction );
 
-  ParticleSwarmTestF1() = default;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::MeasureType    MeasureType;
 
-  double
-  GetValue(const ParametersType & parameters) const override
+  ParticleSwarmTestF1()
+  {
+  }
+
+  virtual double GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
     double val;
 
-    if (parameters[0] < 0)
-    {
+    if( parameters[0] < 0 )
+      {
       val = parameters[0] * parameters[0] + 4 * parameters[0];
-    }
+      }
     else
-    {
+      {
       val = 2 * parameters[0] * parameters[0] - 8 * parameters[0];
-    }
+      }
     return val;
   }
 
-  void
-  GetDerivative(const ParametersType & itkNotUsed(parameters), DerivativeType & itkNotUsed(derivative)) const override
+  void GetDerivative( const ParametersType & itkNotUsed(parameters),
+                      DerivativeType & itkNotUsed(derivative) ) const ITK_OVERRIDE
   {
-    throw ExceptionObject(__FILE__, __LINE__, "no derivative available");
+    throw ExceptionObject( __FILE__, __LINE__,
+                                "no derivative available" );
   }
 
-  unsigned int
-  GetNumberOfParameters() const override
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
     return 1;
   }
+
 };
 
 /**
@@ -93,49 +96,49 @@ public:
 class ParticleSwarmTestF2 : public SingleValuedCostFunction
 {
 public:
-  using Self = ParticleSwarmTestF2;
-  using Superclass = SingleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  itkNewMacro(Self);
-  itkTypeMacro(ParticleSwarmTestF2, SingleValuedCostFunction);
 
-  using ParametersType = Superclass::ParametersType;
-  using DerivativeType = Superclass::DerivativeType;
-  using MeasureType = Superclass::MeasureType;
+  typedef ParticleSwarmTestF2      Self;
+  typedef SingleValuedCostFunction Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
+  itkNewMacro( Self );
+  itkTypeMacro( ParticleSwarmTestF2, SingleValuedCostFunction );
 
-  using VectorType = vnl_vector<double>;
-  using MatrixType = vnl_matrix<double>;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::DerivativeType DerivativeType;
+  typedef Superclass::MeasureType    MeasureType;
 
-  ParticleSwarmTestF2()
-    : m_A(2, 2)
-    , m_Intercept(2)
+  typedef vnl_vector<double> VectorType;
+  typedef vnl_matrix<double> MatrixType;
+
+  ParticleSwarmTestF2() : m_A( 2, 2 ), m_Intercept(2)
   {
-    m_A[0][0] = 3;
-    m_A[0][1] = 2;
-    m_A[1][0] = 2;
-    m_A[1][1] = 6;
+    m_A[0][0] =  3;
+    m_A[0][1] =  2;
+    m_A[1][0] =  2;
+    m_A[1][1] =  6;
 
-    m_Intercept[0] = 2;
-    m_Intercept[1] = -8;
+    m_Intercept[0]    =  2;
+    m_Intercept[1]    = -8;
   }
 
-  double
-  GetValue(const ParametersType & parameters) const override
+  virtual double GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
-    return 0.5 * (m_A(0, 0) * parameters[0] * parameters[0] + m_A(0, 1) * parameters[0] * parameters[1] +
-                  m_A(1, 0) * parameters[0] * parameters[1] + m_A(1, 1) * parameters[1] * parameters[1]) -
-           m_Intercept[0] * parameters[0] - m_Intercept[1] * parameters[1];
+    return 0.5 * ( m_A(0, 0) * parameters[0] * parameters[0]
+                   + m_A(0, 1) * parameters[0] * parameters[1]
+                   + m_A(1, 0) * parameters[0] * parameters[1]
+                   + m_A(1, 1) * parameters[1] * parameters[1] )
+           - m_Intercept[0] * parameters[0] - m_Intercept[1] * parameters[1];
   }
 
-  void
-  GetDerivative(const ParametersType & itkNotUsed(parameters), DerivativeType & itkNotUsed(derivative)) const override
+  void GetDerivative( const ParametersType & itkNotUsed(parameters),
+                      DerivativeType & itkNotUsed(derivative) ) const ITK_OVERRIDE
   {
-    throw ExceptionObject(__FILE__, __LINE__, "no derivative available");
+    throw ExceptionObject( __FILE__, __LINE__,
+                                "no derivative available" );
   }
 
-  unsigned int
-  GetNumberOfParameters() const override
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
     return 2;
   }
@@ -153,76 +156,80 @@ private:
 class ParticleSwarmTestF3 : public SingleValuedCostFunction
 {
 public:
-  using Self = ParticleSwarmTestF3;
-  using Superclass = SingleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  itkNewMacro(Self);
-  itkTypeMacro(ParticleSwarmTestF3, SingleValuedCostFunction);
 
-  using ParametersType = Superclass::ParametersType;
-  using MeasureType = Superclass::MeasureType;
+  typedef ParticleSwarmTestF3      Self;
+  typedef SingleValuedCostFunction Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
+  itkNewMacro( Self );
+  itkTypeMacro( ParticleSwarmTestF3, SingleValuedCostFunction );
 
-  ParticleSwarmTestF3() = default;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::MeasureType    MeasureType;
 
-  double
-  GetValue(const ParametersType & parameters) const override
+  ParticleSwarmTestF3()
   {
-    return (1 - parameters[0]) * (1 - parameters[0]) +
-           100 * (parameters[1] - parameters[0] * parameters[0]) * (parameters[1] - parameters[0] * parameters[0]);
   }
 
-  void
-  GetDerivative(const ParametersType & itkNotUsed(parameters), DerivativeType & itkNotUsed(derivative)) const override
+  virtual double GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
-    throw ExceptionObject(__FILE__, __LINE__, "no derivative available");
+    return (1 - parameters[0]) * (1 - parameters[0])
+           + 100 * (parameters[1] - parameters[0] * parameters[0])
+           * (parameters[1] - parameters[0] * parameters[0]);
   }
 
-  unsigned int
-  GetNumberOfParameters() const override
+  void GetDerivative( const ParametersType & itkNotUsed(parameters),
+                      DerivativeType & itkNotUsed(derivative) ) const ITK_OVERRIDE
+  {
+    throw ExceptionObject( __FILE__, __LINE__,
+                                "no derivative available" );
+  }
+
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
     return 2;
   }
+
 };
 
 class CommandIterationUpdateParticleSwarm : public Command
 {
 public:
-  using Self = CommandIterationUpdateParticleSwarm;
-  using Superclass = Command;
-  using Pointer = SmartPointer<Self>;
-  itkNewMacro(Self);
+  typedef  CommandIterationUpdateParticleSwarm Self;
+  typedef  Command                             Superclass;
+  typedef SmartPointer<Self>                   Pointer;
+  itkNewMacro( Self );
 
-  void
-  Reset()
+  void Reset()
   {
     m_IterationNumber = 0;
   }
 
-  itkSetMacro(PrintOptimizer, bool);
+  itkSetMacro( PrintOptimizer, bool );
 
-  void
-  Execute(Object * caller, const EventObject & event) override
+  virtual void Execute(Object *caller, const EventObject & event) ITK_OVERRIDE
   {
-    Execute((const Object *)caller, event);
+    Execute( (const Object *)caller, event);
   }
 
-  void
-  Execute(const Object * object, const EventObject & event) override
+  virtual void Execute(const Object * object, const EventObject & event) ITK_OVERRIDE
   {
-    const auto * optimizer = static_cast<const ParticleSwarmOptimizerBase *>(object);
+    const ParticleSwarmOptimizerBase *optimizer =
+      static_cast<const ParticleSwarmOptimizerBase *>( object );
 
-    if (dynamic_cast<const IterationEvent *>(&event) != nullptr || dynamic_cast<const StartEvent *>(&event) != nullptr)
-    {
+    if( dynamic_cast<const IterationEvent *>( &event ) != ITK_NULLPTR ||
+          dynamic_cast<const StartEvent *>( &event ) != ITK_NULLPTR )
+      {
       std::cout << m_IterationNumber++ << ":  ";
       std::cout << "x: " << optimizer->GetCurrentPosition() << "  ";
       std::cout << "f(x): " << optimizer->GetValue() << std::endl;
-      if (m_PrintOptimizer)
-      {
-        ParticleSwarmOptimizerBase::Pointer optimizerPtr = const_cast<ParticleSwarmOptimizerBase *>(optimizer);
+      if( m_PrintOptimizer )
+        {
+        ParticleSwarmOptimizerBase::Pointer optimizerPtr =
+          const_cast<ParticleSwarmOptimizerBase *>(optimizer);
         std::cout << optimizerPtr;
+        }
       }
-    }
   }
 
 protected:
@@ -237,5 +244,5 @@ private:
   bool          m_PrintOptimizer;
 };
 
-} // namespace itk
-#endif // itkParticleSwarmOptimizerTestFunctions_h
+} // itk namespace
+#endif //itkParticleSwarmOptimizerTestFunctions_h

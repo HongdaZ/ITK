@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -61,13 +61,11 @@ namespace itk
 class ITKIOXML_EXPORT DOMNodeXMLWriter : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DOMNodeXMLWriter);
-
-  /** Standard class type aliases. */
-  using Self = DOMNodeXMLWriter;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DOMNodeXMLWriter            Self;
+  typedef Object                      Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -75,8 +73,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DOMNodeXMLWriter, Object);
 
-  using InputType = DOMNode;
-  using ConstInputPointer = InputType::ConstPointer;
+  typedef DOMNode                 InputType;
+  typedef InputType::ConstPointer ConstInputPointer;
 
   /** Set the output XML filename. */
   itkSetStringMacro(FileName);
@@ -85,26 +83,26 @@ public:
   itkGetStringMacro(FileName);
 
   /** Get/Set the input DOM object to be written. */
-  itkSetConstObjectMacro(Input, InputType);
-  itkGetConstObjectMacro(Input, InputType);
+  itkSetConstObjectMacro( Input, InputType );
+  itkGetConstObjectMacro(Input, InputType );
 
   /**
    * Function called by Update() or end-users to write the input DOM object
    * to an output stream such as file, string, console, etc.
    */
-  void
-  Update(std::ostream & os, std::string indent = "");
+  void Update( std::ostream& os, std::string indent = "" );
 
   /**
    * Function called by end-users to write the input DOM object to the output XML file.
    */
-  virtual void
-  Update();
+  virtual void Update();
 
 protected:
   DOMNodeXMLWriter();
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DOMNodeXMLWriter);
+
   /** Variable to hold the output XML file name. */
   std::string m_FileName;
 
@@ -118,12 +116,11 @@ private:
 } // namespace itk
 
 /** The operator "<<" is overloaded such that a DOM object can be conveniently write to an output stream. */
-inline std::ostream &
-operator<<(std::ostream & os, const itk::DOMNode & object)
+inline std::ostream& operator<<( std::ostream& os, const itk::DOMNode& object )
 {
   itk::DOMNodeXMLWriter::Pointer writer = itk::DOMNodeXMLWriter::New();
-  writer->SetInput(&object);
-  writer->Update(os);
+  writer->SetInput( &object );
+  writer->Update( os );
   return os;
 }
 

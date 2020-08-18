@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,63 +21,58 @@
 namespace itk
 {
 /*
- * ====================================================================================
- * ====================================================================================
- * ====================================================================================
- */
-OctreeNode::OctreeNode()
+     * ====================================================================================
+     * ====================================================================================
+     * ====================================================================================
+     */
+OctreeNode::OctreeNode(void)
 {
-  m_Parent = nullptr;
-  m_Branch = nullptr;
+  m_Parent = ITK_NULLPTR;
+  m_Branch = ITK_NULLPTR;
 }
 
-OctreeNode::~OctreeNode()
+OctreeNode::~OctreeNode(void)
 {
   this->RemoveChildren();
 }
 
-OctreeNode &
-OctreeNode::GetChild(const LeafIdentifierEnum ChildID) const
+OctreeNode & OctreeNode::GetChild(const enum LeafIdentifier ChildID) const
 {
   return *m_Branch->GetLeaf(ChildID);
 }
 
-OctreeNode &
-OctreeNode::GetChild(const LeafIdentifierEnum ChildID)
+OctreeNode & OctreeNode::GetChild(const enum LeafIdentifier ChildID)
 {
   return *m_Branch->GetLeaf(ChildID);
 }
 
-long int
-OctreeNode::GetColor() const
+long int OctreeNode::GetColor(void) const
 {
-  if (m_Parent != nullptr)
-  {
-    const long int x = m_Branch - m_Parent->GetColorTable();
+  if ( m_Parent != ITK_NULLPTR )
+    {
+    const long int x =  m_Branch - m_Parent->GetColorTable();
 
     //
     // you'll want to indicate that the branch
     // is a subtree and not in fact a color.
-    if (x >= 0 && x < m_Parent->GetColorTableSize())
-    {
+    if ( x >= 0 && x < m_Parent->GetColorTableSize() )
+      {
       return x;
+      }
     }
-  }
   return -1;
 }
 
-void
-OctreeNode::SetColor(int color)
+void OctreeNode::SetColor(int color)
 {
-  if (m_Parent != nullptr)
-  {
+  if ( m_Parent != ITK_NULLPTR )
+    {
     this->RemoveChildren();
-    m_Branch = const_cast<OctreeNodeBranch *>(m_Parent->GetColorTable()) + color;
-  }
+    m_Branch = const_cast< OctreeNodeBranch * >( m_Parent->GetColorTable() ) + color;
+    }
 }
 
-void
-OctreeNode::SetBranch(OctreeNodeBranch * NewBranch)
+void OctreeNode::SetBranch(OctreeNodeBranch *NewBranch)
 {
   this->RemoveChildren();
   m_Branch = NewBranch;
@@ -88,37 +83,35 @@ OctreeNode::SetBranch(OctreeNodeBranch * NewBranch)
  * \param void
  * \return  bool true if this node is colored
  */
-bool
-OctreeNode::IsNodeColored() const
+bool OctreeNode::IsNodeColored(void) const
 {
-  if (m_Parent != nullptr)
-  {
-    const OctreeNodeBranch * colorTable = m_Parent->GetColorTable();
-    const OctreeNodeBranch * first = &(colorTable[0]);
-    const OctreeNodeBranch * last = &(colorTable[m_Parent->GetColorTableSize() - 1]);
+  if ( m_Parent != ITK_NULLPTR )
+    {
+    const OctreeNodeBranch *colorTable = m_Parent->GetColorTable();
+    const OctreeNodeBranch *first = &( colorTable[0] );
+    const OctreeNodeBranch *last = &( colorTable[m_Parent->GetColorTableSize() - 1] );
 
     return this->m_Branch >= first && this->m_Branch <= last;
-  }
+    }
   else
-  {
+    {
     return false;
-  }
+    }
 }
 
-void
-OctreeNode::RemoveChildren()
+void OctreeNode::RemoveChildren(void)
 {
-  if (!this->IsNodeColored())
-  {
+  if ( !this->IsNodeColored() )
+    {
     delete m_Branch;
-    if (m_Parent != nullptr)
-    {
-      m_Branch = &(const_cast<OctreeNodeBranch *>(m_Parent->GetColorTable())[0]);
-    }
+    if ( m_Parent != ITK_NULLPTR )
+      {
+      m_Branch = &( const_cast< OctreeNodeBranch * >( m_Parent->GetColorTable() )[0] );
+      }
     else
-    {
-      m_Branch = nullptr;
+      {
+      m_Branch =  ITK_NULLPTR;
+      }
     }
-  }
 }
-} // namespace itk
+} //End of itk Namespace

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@
 
 // Define support for VXLVideo
 #ifndef ITK_VIDEO_USE_VXL
-#  define ITK_VIDEO_USE_VXL
+#define ITK_VIDEO_USE_VXL
 #endif
 
 #ifdef _MSC_VER
-#  pragma warning(disable : 4786)
+#pragma warning ( disable : 4786 )
 #endif
 
 #include "itkVideoIOBase.h"
@@ -35,28 +35,25 @@
 
 namespace itk
 {
-/**
- *\class VXLVideoIO
+/** \class VXLVideoIO
  *
  * \brief VideoIO object for reading and writing videos using VXL
  *
  * \ingroup ITKVideoBridgeVXL
  *
  */
-class VXLVideoIO : public VideoIOBase
+class VXLVideoIO:public VideoIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VXLVideoIO);
+  /** Standard class typedefs. */
+  typedef VXLVideoIO           Self;
+  typedef VideoIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
-  /** Standard class type aliases. */
-  using Self = VXLVideoIO;
-  using Superclass = VideoIOBase;
-  using Pointer = SmartPointer<Self>;
-
-  using TemporalOffsetType = Superclass::TemporalOffsetType;
-  using FrameOffsetType = Superclass::FrameOffsetType;
-  using TemporalRatioType = Superclass::TemporalRatioType;
-  using CameraIDType = Superclass::CameraIDType;
+  typedef Superclass::TemporalOffsetType TemporalOffsetType;
+  typedef Superclass::FrameOffsetType    FrameOffsetType;
+  typedef Superclass::TemporalRatioType  TemporalRatioType;
+  typedef Superclass::CameraIDType       CameraIDType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -64,141 +61,110 @@ public:
   itkTypeMacro(VXLVideoIO, Superclass);
 
   /** Close the reader and writer and reset members */
-  void
-  FinishReadingOrWriting() override;
+  virtual void FinishReadingOrWriting();
 
   /*-------- This part of the interface deals with reading data. ------ */
 
   /** Set to reading from file */
-  void
-  SetReadFromFile() override;
+  virtual void SetReadFromFile();
 
   /** Set to reading from a camera */
-  void
-  SetReadFromCamera() override;
+  virtual void SetReadFromCamera();
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *);
 
   /** Return whether or not the VideoIO can read from a camera */
-  bool
-  CanReadCamera(CameraIDType cameraID) const override;
+  virtual bool CanReadCamera( CameraIDType cameraID ) const;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation();
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer);
 
 
   /** Set the next frame that should be read. Return true if you operation
    * successful */
-  bool
-  SetNextFrameToRead(FrameOffsetType frameNumber) override;
+  virtual bool SetNextFrameToRead( FrameOffsetType frameNumber);
 
   /** Accessor functions for video specific information */
-  TemporalOffsetType
-  GetPositionInMSec() const override;
-  TemporalRatioType
-  GetRatio() const override;
-  FrameOffsetType
-  GetFrameTotal() const override;
-  TemporalRatioType
-  GetFramesPerSecond() const override;
-  FrameOffsetType
-  GetCurrentFrame() const override;
-  FrameOffsetType
-  GetLastIFrame() const override;
-  virtual FrameOffsetType
-  GetIFrameInterval() const;
+  virtual TemporalOffsetType GetPositionInMSec() const;
+  virtual TemporalRatioType GetRatio() const;
+  virtual FrameOffsetType GetFrameTotal() const;
+  virtual TemporalRatioType GetFramesPerSecond() const;
+  virtual FrameOffsetType  GetCurrentFrame() const;
+  virtual FrameOffsetType GetIFrameInterval() const;
+  virtual FrameOffsetType  GetLastIFrame() const;
 
   /** Get/Set the camera index */
-  virtual void
-  SetCameraIndex(int idx);
-  virtual int
-  GetCameraIndex();
+  virtual void SetCameraIndex(int idx);
+  virtual int GetCameraIndex();
 
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *);
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation();
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer);
 
   /** Set Writer Parameters */
-  void
-  SetWriterParameters(TemporalRatioType                  fps,
-                      const std::vector<SizeValueType> & dim,
-                      const char *                       fourCC,
-                      unsigned int                       nChannels,
-                      IOComponentType                    componentType) override;
+  virtual void SetWriterParameters(TemporalRatioType fps, const std::vector<SizeValueType>& dim, const char* fourCC,
+                                   unsigned int nChannels, IOComponentType componentType);
 
 protected:
   VXLVideoIO();
   ~VXLVideoIO();
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Update the local members from the internal capture */
-  void
-  UpdateReaderProperties();
+  void UpdateReaderProperties();
 
   /** Reset member variables to empty state closed */
-  void
-  ResetMembers();
+  void ResetMembers();
 
   /** Open the reader iff the writer is not open */
-  void
-  OpenReader();
+  void OpenReader();
 
   /** Open the writer iff the reader is not open */
-  void
-  OpenWriter();
+  void OpenWriter();
 
 
   /** Translate a FourCC string into to a VXL encoder */
-  vidl_ffmpeg_ostream_params::encoder_type
-  FourCCtoEncoderType(const char * fourCC);
+  vidl_ffmpeg_ostream_params::encoder_type FourCCtoEncoderType(const char* fourCC);
 
   /** Get the number of channels from the pixel format */
-  unsigned int
-  GetNChannelsFromPixelFormat(vidl_pixel_format fmt);
+  unsigned int GetNChannelsFromPixelFormat(vidl_pixel_format fmt);
 
   /** Get the size of the vidl pixel format */
-  unsigned int
-  GetSizeFromPixelFormat(vidl_pixel_format fmt);
+  unsigned int GetSizeFromPixelFormat(vidl_pixel_format fmt);
 
   /** Decide whether or not the pixel format is supported as is (mono, RGB, RGBA) */
-  bool
-  PixelFormatSupported(vidl_pixel_format fmt);
+  bool PixelFormatSupported(vidl_pixel_format fmt);
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VXLVideoIO);
+
   /** Member Variables */
-  vidl_pixel_format                        m_PixelFormat;
-  vidl_frame_sptr                          m_VIDLFrame;
-  vidl_ffmpeg_istream *                    m_Reader;
-  vidl_ffmpeg_ostream *                    m_Writer;
-  vidl_ffmpeg_ostream_params::encoder_type m_Encoder;
+  vidl_pixel_format                         m_PixelFormat;
+  vidl_frame_sptr                           m_VIDLFrame;
+  vidl_ffmpeg_istream*                      m_Reader;
+  vidl_ffmpeg_ostream*                      m_Writer;
+  vidl_ffmpeg_ostream_params::encoder_type  m_Encoder;
 
 
   /** device index for reading from a camera (may move to base class) */
-  int m_CameraIndex;
+  int                 m_CameraIndex;
 };
 } // end namespace itk
 

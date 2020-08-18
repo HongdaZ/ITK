@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,72 +44,79 @@ namespace itk
  * \ingroup ITKRegistrationCommon
  */
 
-template <typename TFixedPointSet, typename TMovingImage>
-class ITK_TEMPLATE_EXPORT PointSetToImageMetric : public SingleValuedCostFunction
+template< typename TFixedPointSet,  typename TMovingImage >
+class ITK_TEMPLATE_EXPORT PointSetToImageMetric:public SingleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToImageMetric);
-
-  /** Standard class type aliases. */
-  using Self = PointSetToImageMetric;
-  using Superclass = SingleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PointSetToImageMetric      Self;
+  typedef SingleValuedCostFunction   Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Type used for representing point components  */
-  using CoordinateRepresentationType = Superclass::ParametersValueType;
+  typedef Superclass::ParametersValueType CoordinateRepresentationType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PointSetToImageMetric, SingleValuedCostFunction);
 
   /**  Type of the moving Image. */
-  using MovingImageType = TMovingImage;
-  using MovingImagePixelType = typename TMovingImage::PixelType;
-  using MovingImageConstPointer = typename MovingImageType::ConstPointer;
+  typedef TMovingImage                           MovingImageType;
+  typedef typename TMovingImage::PixelType       MovingImagePixelType;
+  typedef typename MovingImageType::ConstPointer MovingImageConstPointer;
 
   /**  Type of the fixed Image. */
-  using FixedPointSetType = TFixedPointSet;
-  using FixedPointSetConstPointer = typename FixedPointSetType::ConstPointer;
+  typedef TFixedPointSet                           FixedPointSetType;
+  typedef typename FixedPointSetType::ConstPointer FixedPointSetConstPointer;
 
   /** Constants for the image dimensions */
-  static constexpr unsigned int MovingImageDimension = TMovingImage::ImageDimension;
-  static constexpr unsigned int FixedPointSetDimension = TFixedPointSet::PointDimension;
+  itkStaticConstMacro(MovingImageDimension, unsigned int,
+                      TMovingImage::ImageDimension);
+  itkStaticConstMacro(FixedPointSetDimension, unsigned int,
+                      TFixedPointSet::PointDimension);
 
-  using PointIterator = typename FixedPointSetType::PointsContainer::ConstIterator;
-  using PointDataIterator = typename FixedPointSetType::PointDataContainer::ConstIterator;
+  typedef typename FixedPointSetType::PointsContainer::ConstIterator    PointIterator;
+  typedef typename FixedPointSetType::PointDataContainer::ConstIterator PointDataIterator;
 
   /**  Type of the Transform Base class */
-  using TransformType =
-    Transform<CoordinateRepresentationType, Self::MovingImageDimension, Self::FixedPointSetDimension>;
+  typedef Transform< CoordinateRepresentationType,
+                     itkGetStaticConstMacro(MovingImageDimension),
+                     itkGetStaticConstMacro(FixedPointSetDimension) > TransformType;
 
-  using TransformPointer = typename TransformType::Pointer;
-  using InputPointType = typename TransformType::InputPointType;
-  using OutputPointType = typename TransformType::OutputPointType;
-  using TransformParametersType = typename TransformType::ParametersType;
-  using TransformJacobianType = typename TransformType::JacobianType;
+  typedef typename TransformType::Pointer         TransformPointer;
+  typedef typename TransformType::InputPointType  InputPointType;
+  typedef typename TransformType::OutputPointType OutputPointType;
+  typedef typename TransformType::ParametersType  TransformParametersType;
+  typedef typename TransformType::JacobianType    TransformJacobianType;
 
   /**  Type of the Interpolator Base class */
-  using InterpolatorType = InterpolateImageFunction<MovingImageType, CoordinateRepresentationType>;
+  typedef InterpolateImageFunction<
+    MovingImageType,
+    CoordinateRepresentationType > InterpolatorType;
 
   /** Gaussian filter to compute the gradient of the Moving Image */
-  using RealType = typename NumericTraits<MovingImagePixelType>::RealType;
-  using GradientPixelType = CovariantVector<RealType, Self::MovingImageDimension>;
-  using GradientImageType = Image<GradientPixelType, Self::MovingImageDimension>;
-  using GradientImagePointer = SmartPointer<GradientImageType>;
-  using GradientImageFilterType = GradientRecursiveGaussianImageFilter<MovingImageType, GradientImageType>;
+  typedef typename NumericTraits< MovingImagePixelType >::RealType RealType;
+  typedef CovariantVector< RealType,
+                           itkGetStaticConstMacro(MovingImageDimension) > GradientPixelType;
+  typedef Image< GradientPixelType,
+                 itkGetStaticConstMacro(MovingImageDimension) > GradientImageType;
+  typedef SmartPointer< GradientImageType > GradientImagePointer;
+  typedef GradientRecursiveGaussianImageFilter< MovingImageType,
+                                                GradientImageType >
+  GradientImageFilterType;
 
-  using GradientImageFilterPointer = typename GradientImageFilterType::Pointer;
+  typedef typename GradientImageFilterType::Pointer GradientImageFilterPointer;
 
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
+  typedef typename InterpolatorType::Pointer InterpolatorPointer;
 
   /**  Type of the measure. */
-  using MeasureType = Superclass::MeasureType;
+  typedef Superclass::MeasureType MeasureType;
 
   /**  Type of the derivative. */
-  using DerivativeType = Superclass::DerivativeType;
+  typedef Superclass::DerivativeType DerivativeType;
 
   /**  Type of the parameters. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
   /** Get/Set the Fixed Image.  */
   itkSetConstObjectMacro(FixedPointSet, FixedPointSetType);
@@ -138,8 +145,7 @@ public:
   itkGetConstReferenceMacro(NumberOfPixelsCounted, SizeValueType);
 
   /** Set the parameters defining the Transform. */
-  void
-  SetTransformParameters(const ParametersType & parameters) const;
+  void SetTransformParameters(const ParametersType & parameters) const;
 
   /** Set/Get the flag for computing the image gradient.
    *  When ON the metric derivative is computed using the Jacobian of the
@@ -152,22 +158,17 @@ public:
   itkGetConstReferenceMacro(ComputeGradient, bool);
 
   /** Return the number of parameters required by the Transform */
-  unsigned int
-  GetNumberOfParameters() const override
-  {
-    return m_Transform->GetNumberOfParameters();
-  }
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
+  { return m_Transform->GetNumberOfParameters(); }
 
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
-  virtual void
-  Initialize();
+  virtual void Initialize(void);
 
 protected:
   PointSetToImageMetric();
-  ~PointSetToImageMetric() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~PointSetToImageMetric() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   mutable SizeValueType m_NumberOfPixelsCounted;
 
@@ -182,11 +183,14 @@ protected:
   bool m_ComputeGradient;
 
   GradientImagePointer m_GradientImage;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToImageMetric);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPointSetToImageMetric.hxx"
+#include "itkPointSetToImageMetric.hxx"
 #endif
 
 #endif

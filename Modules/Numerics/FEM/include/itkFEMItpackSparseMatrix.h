@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,9 +40,10 @@ class ItpackLinearSystemWrapper;
 class ITKFEM_EXPORT ItpackSparseMatrix
 {
 public:
-  /** type alias from f2c.h  */
-  using integer = long;
-  using doublereal = double;
+
+  /** typedefs from f2c.h  */
+  typedef long   integer;
+  typedef double doublereal;
 
   /** Constructor */
   ItpackSparseMatrix();
@@ -71,8 +72,7 @@ public:
    * \param order the order of the matrix
    * \note the order must be set before any values are entered
    */
-  void
-  SetOrder(integer order)
+  void SetOrder(integer order)
   {
     m_N = order;
   }
@@ -82,8 +82,7 @@ public:
    * \param maxNonZeroValues maximum number of non-zero values that may appear in matrix
    * \note the maxNonZeroValues must be set before any values are entered
    */
-  void
-  SetMaxNonZeroValues(integer maxNonZeroValues)
+  void SetMaxNonZeroValues(integer maxNonZeroValues)
   {
     m_NZ = maxNonZeroValues;
   }
@@ -94,8 +93,7 @@ public:
    * \param j column index
    * \param value value to be added at (i,j)
    */
-  void
-  Set(integer i, integer j, doublereal value);
+  void Set(integer i, integer j, doublereal value);
 
   /**
    * Add to existing entry of matrix
@@ -103,21 +101,18 @@ public:
    * \param j column index
    * \param value value to add to current value at (i,j)
    */
-  void
-  Add(integer i, integer j, doublereal value);
+  void Add(integer i, integer j, doublereal value);
 
   /** Get a value from the matrix
    * \param i row index
    * \param j column index
    */
-  doublereal
-  Get(integer i, integer j);
+  doublereal Get(integer i, integer j);
 
   /**
    * Get the order of the matrix (via "itpack-like" naming scheme)
    */
-  integer *
-  GetN()
+  integer *    GetN()
   {
     return &m_N;
   }
@@ -125,8 +120,7 @@ public:
   /**
    * Get the row indices of the matrix (via "itpack-like" naming scheme)
    */
-  integer *
-  GetIA();
+  integer *     GetIA();
 
   /**
    * Pass pointers to compressed row format arrays
@@ -134,26 +128,22 @@ public:
    * \param ja column indices
    * \param a matrix values
    */
-  void
-  SetCompressedRow(integer * ia, integer * ja, doublereal * a);
+  void  SetCompressedRow(integer *ia, integer *ja, doublereal *a);
 
   /**
    * Get the column indices of the matrix (via "itpack-like" naming scheme)
    */
-  integer *
-  GetJA();
+  integer *     GetJA();
 
   /**
    * Get the values of the matrix (via "itpack-like" naming scheme)
    */
-  doublereal *
-  GetA();
+  doublereal *  GetA();
 
   /**
    * Get the values of the matrix
    */
-  doublereal *
-  GetValueArray()
+  doublereal * GetValueArray()
   {
     return GetA();
   }
@@ -161,8 +151,7 @@ public:
   /**
    * Get the column indices
    */
-  integer *
-  GetColumnArray()
+  integer *    GetColumnArray()
   {
     return GetJA();
   }
@@ -170,8 +159,7 @@ public:
   /**
    * Get the row indices
    */
-  integer *
-  GetRowArray()
+  integer *    GetRowArray()
   {
     return GetIA();
   }
@@ -179,8 +167,7 @@ public:
   /**
    * Get the order of the matrix
    */
-  integer
-  GetOrder() const
+  integer     GetOrder()       const
   {
     return m_N;
   }
@@ -188,8 +175,7 @@ public:
   /**
    * Get the maximum number of non-zero values allowed in the matrix
    */
-  integer
-  GetMaxNonZeroValues() const
+  integer     GetMaxNonZeroValues() const
   {
     return m_NZ;
   }
@@ -197,40 +183,34 @@ public:
   /**
    * Clear the memory
    */
-  void
-  Clear();
+  void Clear();
 
   /**
    * Multiply the matrix by a vector
    */
-  void
-  mult(doublereal * vector, doublereal * result);
+  void mult(doublereal *vector, doublereal *result);
 
   /**
    * Multiply the matrix by another ItpackSparseMatrix
    */
-  void
-  mult(ItpackSparseMatrix * rightMatrix, ItpackSparseMatrix * resultMatrix);
+  void mult(ItpackSparseMatrix *rightMatrix, ItpackSparseMatrix *resultMatrix);
 
   /** output compressed row vectors: IA, JA, A */
-  void
-  PrintCompressedRow();
+  void PrintCompressedRow();
 
 private:
+
   /** friend class */
   friend class LinearSystemWrapperItpack;
 
   /** initialize matrix */
-  void
-  Initialize();
+  void Initialize();
 
   /** unfinalize matrix */
-  void
-  UnFinalize();
+  void UnFinalize();
 
   /** finalize matrix form */
-  void
-  Finalize();
+  void Finalize();
 
   /** flag indicating whether the matrix representation has been finalized */
   integer m_MatrixFinalized;
@@ -244,17 +224,17 @@ private:
   /** Maximum number of non-zero elements in master stiffness matrix */
   integer m_NZ;
 
-  /** row pointers used in compressed row storage format */
-  integer * m_IA;
+  /** row pointegerers used in compressed row storage format */
+  integer *m_IA;
 
   /** column indices used in compressed row storage format */
-  integer * m_JA;
+  integer *m_JA;
 
   /** nonzero entries in compressed row storage format */
-  doublereal * m_A;
+  doublereal *m_A;
 
   /** integer workspace used in matrix building */
-  integer * m_IWORK;
+  integer *m_IWORK;
 
   /**
    * flag indicating mode of matrix building for repeat entries
@@ -296,22 +276,22 @@ private:
 class ITK_ABI_EXPORT FEMExceptionItpackSparseMatrixSbagn : public FEMException
 {
 public:
-  /** type alias from f2c.h  */
-  using integer = long;
-  using doublereal = double;
+
+  /** typedefs from f2c.h  */
+  typedef long   integer;
+  typedef double doublereal;
 
   /**
    * Constructor. In order to construct this exception object, five parameters
    * must be provided: file, lineNumber, location and a detailed description
    * of the exception, and the invalid index
    */
-  FEMExceptionItpackSparseMatrixSbagn(const char * file,
-                                      unsigned int lineNumber,
-                                      std::string  location,
-                                      integer      errorCode);
+  FEMExceptionItpackSparseMatrixSbagn(const char *file, unsigned int lineNumber, std::string location,
+                                      integer errorCode);
 
   /** Virtual destructor needed for subclasses. Has to have empty throw(). */
-  ~FEMExceptionItpackSparseMatrixSbagn() noexcept override;
+  virtual ~FEMExceptionItpackSparseMatrixSbagn()
+  ITK_NOEXCEPT ITK_OVERRIDE;
 
   /** Type related information. */
   itkTypeMacro(FEMExceptionItpackSparseMatrixSbagn, FEMException);
@@ -327,27 +307,26 @@ public:
 class ITK_ABI_EXPORT FEMExceptionItpackSparseMatrixSbsij : public FEMException
 {
 public:
-  /** type alias from f2c.h  */
-  using integer = long;
-  using doublereal = double;
+  /** typedefs from f2c.h  */
+  typedef long   integer;
+  typedef double doublereal;
 
   /**
    * Constructor. In order to construct this exception object, five parameters
    * must be provided: file, lineNumber, location and a detailed description
    * of the exception, and the invalid index
    */
-  FEMExceptionItpackSparseMatrixSbsij(const char * file,
-                                      unsigned int lineNumber,
-                                      std::string  location,
-                                      integer      errorCode);
+  FEMExceptionItpackSparseMatrixSbsij(const char *file, unsigned int lineNumber, std::string location,
+                                      integer errorCode);
 
   /** Virtual destructor needed for subclasses. Has to have empty throw(). */
-  ~FEMExceptionItpackSparseMatrixSbsij() noexcept override;
+  virtual ~FEMExceptionItpackSparseMatrixSbsij()
+  ITK_NOEXCEPT ITK_OVERRIDE;
 
   /** Type related information. */
   itkTypeMacro(FEMExceptionItpackSparseMatrixSbsij, FEMException);
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif // itkFEMItpackSparseMatrix_h
+#endif

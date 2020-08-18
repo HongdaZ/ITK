@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,14 +24,12 @@
 namespace itk
 {
 // this class is used to send output to stdout and not the itk window
-class ITKCommon_EXPORT TextOutput : public OutputWindow
+class ITKCommon_EXPORT TextOutput:public OutputWindow
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TextOutput);
-
-  using Self = TextOutput;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef TextOutput                 Self;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(TextOutput, OutputWindow);
@@ -39,16 +37,16 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(TextOutput);
 
-  void
-  DisplayText(const char * s) override
-  {
-    std::cout << s << std::endl;
-  }
+  virtual void DisplayText(const char *s) ITK_OVERRIDE
+  { std::cout << s << std::endl; }
 
 protected:
   TextOutput();
-  ~TextOutput() override;
+  virtual ~TextOutput() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TextOutput);
 };
-} // namespace itk
+}
 
 #endif

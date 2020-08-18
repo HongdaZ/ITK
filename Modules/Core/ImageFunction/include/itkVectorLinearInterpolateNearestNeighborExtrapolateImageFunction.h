@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,69 +50,66 @@ namespace itk
  * \ingroup ITKImageFunction
  *
  */
-template <typename TInputImage, typename TCoordRep = float>
-class ITK_TEMPLATE_EXPORT VectorLinearInterpolateNearestNeighborExtrapolateImageFunction
-  : public VectorInterpolateImageFunction<TInputImage, TCoordRep>
+template< typename TInputImage, typename TCoordRep = float >
+class ITK_TEMPLATE_EXPORT VectorLinearInterpolateNearestNeighborExtrapolateImageFunction:
+  public VectorInterpolateImageFunction< TInputImage, TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction);
-
-  /** Standard class type aliases. */
-  using Self = VectorLinearInterpolateNearestNeighborExtrapolateImageFunction;
-  using Superclass = VectorInterpolateImageFunction<TInputImage, TCoordRep>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef VectorLinearInterpolateNearestNeighborExtrapolateImageFunction Self;
+  typedef VectorInterpolateImageFunction< TInputImage, TCoordRep >       Superclass;
+  typedef SmartPointer< Self >                                           Pointer;
+  typedef SmartPointer< const Self >                                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction, VectorInterpolateImageFunction);
+  itkTypeMacro(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction,
+               VectorInterpolateImageFunction);
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
-  using PixelType = typename Superclass::PixelType;
-  using ValueType = typename Superclass::ValueType;
-  using RealType = typename Superclass::RealType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
+  typedef typename Superclass::PixelType      PixelType;
+  typedef typename Superclass::ValueType      ValueType;
+  typedef typename Superclass::RealType       RealType;
 
-  using PointType = typename Superclass::PointType;
+  typedef typename Superclass::PointType PointType;
 
   /** Grab the vector dimension from the superclass. */
-  // static constexpr unsigned int Dimension = //                    Superclass::Dimension;
+  //itkStaticConstMacro(Dimension, unsigned int,
+  //                    Superclass::Dimension);
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, Superclass::ImageDimension);
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType      IndexType;
+  typedef typename Superclass::IndexValueType IndexValueType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Output type is Vector<double,Dimension> */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Should check if an index is inside the image buffer, however we
    * require that it answers true to use the extrapolation possibility. */
-  bool
-  IsInsideBuffer(const IndexType &) const override
+  virtual bool IsInsideBuffer(const IndexType &) const ITK_OVERRIDE
   {
     return true;
   }
 
   /** Should check if a point is inside the image buffer, however we
    * require that it answers true to use the extrapolation possibility. */
-  bool
-  IsInsideBuffer(const PointType &) const override
+  virtual bool IsInsideBuffer(const PointType &) const ITK_OVERRIDE
   {
     return true;
   }
 
   /** Should check if a continuous index is inside the image buffer, however we
    * require that it answers true to use the extrapolation possibility. */
-  bool
-  IsInsideBuffer(const ContinuousIndexType &) const override
+  virtual bool IsInsideBuffer(const ContinuousIndexType &) const ITK_OVERRIDE
   {
     return true;
   }
@@ -122,32 +119,37 @@ public:
    * Returns the linearly interpolated image intensity at a
    * specified point position. If the point does not lie within the
    * image buffer a nearest neighbor interpolation is done. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at an index position
    *
    * Simply returns the image value at the
    * specified index position. If the index does not lie within the
    * image buffer a nearest neighbor interpolation is done. */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
 protected:
-  VectorLinearInterpolateNearestNeighborExtrapolateImageFunction() = default;
-  ~VectorLinearInterpolateNearestNeighborExtrapolateImageFunction() override = default;
+  VectorLinearInterpolateNearestNeighborExtrapolateImageFunction();
+  virtual ~VectorLinearInterpolateNearestNeighborExtrapolateImageFunction() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  VectorLinearInterpolateNearestNeighborExtrapolateImageFunction(const Self &); //purposely
+                                                                                // not
+                                                                                // implemented
+  void operator=(const Self &);                                                 //purposely
+                                                                                // not
+                                                                                // implemented
+
   /** Number of neighbors used in the interpolation */
   static const unsigned int m_Neighbors;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction.hxx"
+#include "itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction.hxx"
 #endif
 
 #endif

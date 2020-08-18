@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@
 
 #include "vnl/vnl_vector.h"
 
-namespace itk
-{
+namespace itk {
 
 /**
  * \class N4BiasFieldCorrectionImageFilter
@@ -57,9 +56,9 @@ namespace itk
  *  3. A binary mask or a weighted image can be supplied.  If a binary mask
  *     is specified, those voxels in the input image which correspond to the
  *     voxels in the mask image are used to estimate the bias field. If a
- *     UseMaskLabel value is set to false (the default), all non-zero
- *     voxels in the  MaskImage will be masked; otherwise only voxels
- *     in the MaskImage that match  the MaskLabel will be used. If a confidence image is specified, the
+ *     UseMaskLabel value is set to true, only voxels in the MaskImage that match
+ *     the MaskLabel will be used; otherwise, all non-zero voxels in the
+ *     MaskImage will be masked. If a confidence image is specified, the
  *     input voxels are weighted in the b-spline fitting routine according
  *     to the confidence voxel values.
  *  4. The filter returns the corrected image.  If the bias field is wanted, one
@@ -90,85 +89,83 @@ namespace itk
  * \ingroup ITKBiasCorrection
  */
 
-template <typename TInputImage,
-          typename TMaskImage = Image<unsigned char, TInputImage::ImageDimension>,
-          class TOutputImage = TInputImage>
-class N4BiasFieldCorrectionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template<typename TInputImage, typename TMaskImage =
+  Image<unsigned char, TInputImage::ImageDimension>,
+  class TOutputImage = TInputImage>
+class N4BiasFieldCorrectionImageFilter :
+  public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(N4BiasFieldCorrectionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = N4BiasFieldCorrectionImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef N4BiasFieldCorrectionImageFilter              Self;
+  typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
+  typedef SmartPointer<Self>                            Pointer;
+  typedef SmartPointer<const Self>                      ConstPointer;
 
   /** Runtime information support. */
-  itkTypeMacro(N4BiasFieldCorrectionImageFilter, ImageToImageFilter);
+  itkTypeMacro( N4BiasFieldCorrectionImageFilter, ImageToImageFilter );
 
   /** Standard New method. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro( ImageDimension, unsigned int,
+                       TInputImage::ImageDimension );
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using MaskImageType = TMaskImage;
-  using MaskPixelType = typename MaskImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                       InputImageType;
+  typedef TOutputImage                      OutputImageType;
+  typedef TMaskImage                        MaskImageType;
+  typedef typename MaskImageType::PixelType MaskPixelType;
 
-  using RealType = float;
-  using RealImageType = Image<RealType, ImageDimension>;
-  using RealImagePointer = typename RealImageType::Pointer;
-  using VariableSizeArrayType = Array<unsigned int>;
+  typedef float                           RealType;
+  typedef Image<RealType, ImageDimension> RealImageType;
+  typedef typename RealImageType::Pointer RealImagePointer;
+  typedef Array<unsigned int>             VariableSizeArrayType;
 
-  /** B-spline smoothing filter argument type alias */
-  using ScalarType = Vector<RealType, 1>;
-  using PointSetType = PointSet<ScalarType, Self::ImageDimension>;
-  using ScalarImageType = Image<ScalarType, Self::ImageDimension>;
-  using PointSetPointer = typename PointSetType::Pointer;
-  using PointType = typename PointSetType::PointType;
+  /** B-spline smoothing filter argument typedefs */
+  typedef Vector<RealType, 1>                                             ScalarType;
+  typedef PointSet<ScalarType, itkGetStaticConstMacro( ImageDimension )>  PointSetType;
+  typedef Image<ScalarType, itkGetStaticConstMacro( ImageDimension )>     ScalarImageType;
+  typedef typename PointSetType::Pointer                                  PointSetPointer;
+  typedef typename PointSetType::PointType                                PointType;
 
-  /** B-sline filter type alias */
-  using BSplineFilterType = BSplineScatteredDataPointSetToImageFilter<PointSetType, ScalarImageType>;
-  using BiasFieldControlPointLatticeType = typename BSplineFilterType::PointDataImageType;
-  using ArrayType = typename BSplineFilterType::ArrayType;
-
-  /** Ensures that this filter can compute the entire output at once.  */
-  void
-  EnlargeOutputRequestedRegion(DataObject *) override;
+  /** B-sline filter typedefs */
+  typedef BSplineScatteredDataPointSetToImageFilter<
+    PointSetType, ScalarImageType>                          BSplineFilterType;
+  typedef typename BSplineFilterType::PointDataImageType    BiasFieldControlPointLatticeType;
+  typedef typename BSplineFilterType::ArrayType             ArrayType;
 
   /**
    * The image expected for input for bias correction.
    */
-  void
-  SetInput1(const InputImageType * image)
-  {
-    this->SetInput(image);
-  }
+  void SetInput1( const InputImageType *image ) { this->SetInput( image ); }
+
 
   /**
    * Set mask image function.  If a binary mask image is specified, only
    * those input image voxels inside the mask image values are used in
    * estimating the bias field.
    */
-  itkSetInputMacro(MaskImage, MaskImageType);
-  void
-  SetInput2(const MaskImageType * mask)
-  {
-    this->SetMaskImage(mask);
-  }
+  void SetMaskImage( const MaskImageType *mask )
+    {
+    this->SetNthInput( 1, const_cast<MaskImageType *>( mask ) );
+    }
+  void SetInput2( const MaskImageType *mask ) { this->SetMaskImage( mask ); }
 
   /**
    * Get mask image function.  If a binary mask image is specified, only
    * those input image voxels inside the mask image values are used in
    * estimating the bias field.
    */
-  itkGetInputMacro(MaskImage, MaskImageType);
+  const MaskImageType* GetMaskImage() const
+    {
+    return static_cast<const MaskImageType*>( this->ProcessObject::GetInput( 1 ) );
+    }
 
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
   /**
+   * \deprecated
    * Set/Get mask label value. If a binary mask image is specified and if
    * UseMaskValue is true, only those input image voxels corresponding
    * with mask image values equal to MaskLabel are used in estimating the
@@ -176,15 +173,16 @@ public:
    * input image voxels corresponding to non-zero voxels in the MaskImage
    * are used in estimating the bias field. Default = 1.
    */
-  itkSetMacro(MaskLabel, MaskPixelType);
-  itkGetConstMacro(MaskLabel, MaskPixelType);
+  itkSetMacro( MaskLabel, MaskPixelType );
+  itkGetConstMacro( MaskLabel, MaskPixelType );
 
   /**
    * Use a mask label for identifying mask functionality. See SetMaskLabel.
-   * Defaults to false. */
-  itkSetMacro(UseMaskLabel, bool);
-  itkGetConstMacro(UseMaskLabel, bool);
-  itkBooleanMacro(UseMaskLabel);
+   * Defaults to true. */
+  itkSetMacro( UseMaskLabel, bool );
+  itkGetConstMacro( UseMaskLabel, bool );
+  itkBooleanMacro( UseMaskLabel );
+#endif
 
   /**
    * Set confidence image function.  If a confidence image is specified,
@@ -196,12 +194,11 @@ public:
    * been done in the literature) as an alternative strategy to estimating the
    * bias field.
    */
-  itkSetInputMacro(ConfidenceImage, RealImageType);
-  void
-  SetInput3(const RealImageType * image)
-  {
-    this->SetConfidenceImage(image);
-  }
+  void SetConfidenceImage( const RealImageType *image )
+    {
+    this->SetNthInput( 2, const_cast<RealImageType *>( image ) );
+    }
+  void SetInput3( const RealImageType *image ) { this->SetConfidenceImage( image ); }
 
   /**
    * Get confidence image function.  If a confidence image is specified,
@@ -213,7 +210,10 @@ public:
    * been done in the literature) as an alternative strategy to estimating the
    * bias field.
    */
-  itkGetInputMacro(ConfidenceImage, RealImageType);
+  const RealImageType* GetConfidenceImage() const
+    {
+    return static_cast<const RealImageType*>( this->ProcessObject::GetInput( 2 ) );
+    }
 
   // Sharpen histogram parameters: in estimating the bias field, the
   // first step is to sharpen the intensity histogram by Wiener deconvolution
@@ -224,47 +224,47 @@ public:
    * Set number of bins defining the log input intensity histogram.
    * Default = 200.
    */
-  itkSetMacro(NumberOfHistogramBins, unsigned int);
+  itkSetMacro( NumberOfHistogramBins, unsigned int );
 
   /**
    * Get number of bins defining the log input intensity histogram.
    * Default = 200.
    */
-  itkGetConstMacro(NumberOfHistogramBins, unsigned int);
+  itkGetConstMacro( NumberOfHistogramBins, unsigned int );
 
   /**
    * Set the noise estimate defining the Wiener filter.  Default = 0.01.
    */
-  itkSetMacro(WienerFilterNoise, RealType);
+  itkSetMacro( WienerFilterNoise, RealType );
 
   /**
    * Get the noise estimate defining the Wiener filter.  Default = 0.01.
    */
-  itkGetConstMacro(WienerFilterNoise, RealType);
+  itkGetConstMacro( WienerFilterNoise, RealType );
 
   /**
    * Set the full width at half maximum parameter characterizing the width of
    * the Gaussian deconvolution.  Default = 0.15.
    */
-  itkSetMacro(BiasFieldFullWidthAtHalfMaximum, RealType);
+  itkSetMacro( BiasFieldFullWidthAtHalfMaximum, RealType );
 
   /**
    * Get the full width at half maximum parameter characterizing the width of
    * the Gaussian deconvolution.  Default = 0.15.
    */
-  itkGetConstMacro(BiasFieldFullWidthAtHalfMaximum, RealType);
+  itkGetConstMacro( BiasFieldFullWidthAtHalfMaximum, RealType );
 
   // B-spline parameters governing the fitting routine
 
   /**
    * Set the spline order defining the bias field estimate.  Default = 3.
    */
-  itkSetMacro(SplineOrder, unsigned int);
+  itkSetMacro( SplineOrder, unsigned int );
 
   /**
    * Get the spline order defining the bias field estimate.  Default = 3.
    */
-  itkGetConstMacro(SplineOrder, unsigned int);
+  itkGetConstMacro( SplineOrder, unsigned int );
 
   /**
    * Set the control point grid size defining the B-spline estimate of the
@@ -273,7 +273,7 @@ public:
    * Default = 4 control points in each dimension for a mesh size of 1 in each
    * dimension.
    */
-  itkSetMacro(NumberOfControlPoints, ArrayType);
+  itkSetMacro( NumberOfControlPoints, ArrayType );
 
   /**
    * Get the control point grid size defining the B-spline estimate of the
@@ -282,7 +282,7 @@ public:
    * Default = 4 control points in each dimension for a mesh size of 1 in each
    * dimension.
    */
-  itkGetConstMacro(NumberOfControlPoints, ArrayType);
+  itkGetConstMacro( NumberOfControlPoints, ArrayType );
 
   /**
    * Set the number of fitting levels.  One of the contributions of N4 is the
@@ -290,7 +290,7 @@ public:
    * specify a B-spline mesh size for initial fitting followed by a doubling of
    * the mesh resolution for each subsequent fitting level.  Default = 1 level.
    */
-  itkSetMacro(NumberOfFittingLevels, ArrayType);
+  itkSetMacro( NumberOfFittingLevels, ArrayType );
 
   /**
    * Set the number of fitting levels.  One of the contributions of N4 is the
@@ -298,14 +298,13 @@ public:
    * specify a B-spline mesh size for initial fitting followed by a doubling of
    * the mesh resolution for each subsequent fitting level.  Default = 1 level.
    */
-  void
-  SetNumberOfFittingLevels(unsigned int n)
-  {
+  void SetNumberOfFittingLevels( unsigned int n )
+    {
     ArrayType nlevels;
 
-    nlevels.Fill(n);
-    this->SetNumberOfFittingLevels(nlevels);
-  }
+    nlevels.Fill( n );
+    this->SetNumberOfFittingLevels( nlevels );
+    }
 
   /**
    * Get the number of fitting levels.  One of the contributions of N4 is the
@@ -313,19 +312,19 @@ public:
    * specify a B-spline mesh size for initial fitting followed by a doubling of
    * the mesh resolution for each subsequent fitting level.  Default = 1 level.
    */
-  itkGetConstMacro(NumberOfFittingLevels, ArrayType);
+  itkGetConstMacro( NumberOfFittingLevels, ArrayType );
 
   /**
    * Set the maximum number of iterations specified at each fitting level.
    * Default = 50.
    */
-  itkSetMacro(MaximumNumberOfIterations, VariableSizeArrayType);
+  itkSetMacro( MaximumNumberOfIterations, VariableSizeArrayType );
 
   /**
    * Get the maximum number of iterations specified at each fitting level.
    * Default = 50.
    */
-  itkGetConstMacro(MaximumNumberOfIterations, VariableSizeArrayType);
+  itkGetConstMacro( MaximumNumberOfIterations, VariableSizeArrayType );
 
   /**
    * Set the convergence threshold.  Convergence is determined by the
@@ -334,7 +333,7 @@ public:
    * specified threshold, the algorithm proceeds to the next fitting level or
    * terminates if it is at the last level.
    */
-  itkSetMacro(ConvergenceThreshold, RealType);
+  itkSetMacro( ConvergenceThreshold, RealType );
 
   /**
    * Get the convergence threshold.  Convergence is determined by the
@@ -343,7 +342,7 @@ public:
    * specified threshold, the algorithm proceeds to the next fitting level or
    * terminates if it is at the last level.
    */
-  itkGetConstMacro(ConvergenceThreshold, RealType);
+  itkGetConstMacro( ConvergenceThreshold, RealType );
 
   /**
    * Typically, a reduced size image is used as input to the N4 filter using
@@ -354,42 +353,36 @@ public:
    * at the full image resolution (using the class
    * BSplineControlPointImageFilter).
    */
-  itkGetConstObjectMacro(LogBiasFieldControlPointLattice, BiasFieldControlPointLatticeType);
+  itkGetConstObjectMacro( LogBiasFieldControlPointLattice, BiasFieldControlPointLatticeType );
 
   /**
    * Get the number of elapsed iterations.  This is a helper function for
    * reporting observations.
    */
-  itkGetConstMacro(ElapsedIterations, unsigned int);
+  itkGetConstMacro( ElapsedIterations, unsigned int );
 
   /**
    * Get the current convergence measurement.  This is a helper function for
    * reporting observations.
    */
-  itkGetConstMacro(CurrentConvergenceMeasurement, RealType);
+  itkGetConstMacro( CurrentConvergenceMeasurement, RealType );
 
   /**
    * Get the current fitting level.  This is a helper function for
    * reporting observations.
    */
-  itkGetConstMacro(CurrentLevel, unsigned int);
-
-  /**
-   * Reconstruct bias field given the control point lattice.
-   */
-  RealImagePointer
-  ReconstructBiasField(const BiasFieldControlPointLatticeType *);
+  itkGetConstMacro( CurrentLevel, unsigned int );
 
 protected:
   N4BiasFieldCorrectionImageFilter();
-  ~N4BiasFieldCorrectionImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~N4BiasFieldCorrectionImageFilter() ITK_OVERRIDE {}
+  void PrintSelf( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(N4BiasFieldCorrectionImageFilter);
+
   // N4 algorithm functions:  The basic algorithm iterates between sharpening
   // the intensity histogram of the corrected input image and spatially
   // smoothing those results with a B-spline scalar field estimate of the
@@ -403,54 +396,60 @@ private:
    * image and map those results to a new estimate of the unsmoothed corrected
    * image.
    */
-  void
-  SharpenImage(const RealImageType * uncorrected, RealImageType * sharpened) const;
+  RealImagePointer SharpenImage( const RealImageType * ) const;
 
   /**
    * Given the unsmoothed estimate of the bias field, this function smooths
    * the estimate and adds the resulting control point values to the total
    * bias field estimate.
    */
-  RealImagePointer
-  UpdateBiasFieldEstimate(RealImageType *, std::size_t);
+  RealImagePointer UpdateBiasFieldEstimate( RealImageType * );
+
+  /**
+   * Reconstruct bias field given the control point lattice.
+   */
+  RealImagePointer ReconstructBiasField( BiasFieldControlPointLatticeType * );
 
   /**
    * Convergence is determined by the coefficient of variation of the difference
    * image between the current bias field estimate and the previous estimate.
    */
-  RealType
-  CalculateConvergenceMeasurement(const RealImageType *, const RealImageType *) const;
+  RealType CalculateConvergenceMeasurement( const RealImageType *, const RealImageType * ) const;
 
+#if ! defined ( ITK_FUTURE_LEGACY_REMOVE )
   MaskPixelType m_MaskLabel;
-  bool          m_UseMaskLabel{ false };
+  bool          m_UseMaskLabel;
+#endif
 
   // Parameters for deconvolution with Wiener filter
 
-  unsigned int m_NumberOfHistogramBins{ 200 };
-  RealType     m_WienerFilterNoise{ static_cast<RealType>(0.01) };
-  RealType     m_BiasFieldFullWidthAtHalfMaximum{ static_cast<RealType>(0.15) };
+  unsigned int m_NumberOfHistogramBins;
+  RealType     m_WienerFilterNoise;
+  RealType     m_BiasFieldFullWidthAtHalfMaximum;
 
   // Convergence parameters
 
   VariableSizeArrayType m_MaximumNumberOfIterations;
-  unsigned int          m_ElapsedIterations{ 0 };
-  RealType              m_ConvergenceThreshold{ static_cast<RealType>(0.001) };
+  unsigned int          m_ElapsedIterations;
+  RealType              m_ConvergenceThreshold;
   RealType              m_CurrentConvergenceMeasurement;
-  unsigned int          m_CurrentLevel{ 0 };
+  unsigned int          m_CurrentLevel;
 
   // B-spline fitting parameters
 
-  typename BiasFieldControlPointLatticeType::Pointer m_LogBiasFieldControlPointLattice;
+  typename
+  BiasFieldControlPointLatticeType::Pointer m_LogBiasFieldControlPointLattice;
 
-  unsigned int m_SplineOrder{ 3 };
+  unsigned int m_SplineOrder;
   ArrayType    m_NumberOfControlPoints;
   ArrayType    m_NumberOfFittingLevels;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkN4BiasFieldCorrectionImageFilter.hxx"
+#include "itkN4BiasFieldCorrectionImageFilter.hxx"
 #endif
 
 #endif

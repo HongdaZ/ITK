@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,62 +22,62 @@
 #include "itkMath.h"
 
 
-int
-itkGradientRecursiveGaussianFilterTest4(int argc, char * argv[])
+int itkGradientRecursiveGaussianFilterTest4(int argc, char* argv[] )
 {
 
-  if (argc != 3)
-  {
+  if ( argc != 3 )
+    {
     std::cerr << "Missing Parameters!" << std::endl;
     std::cerr << " inputImageFile outputImageFile" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::string inFileName = argv[1];
 
   std::string outFileName = argv[2];
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 2;
+  const unsigned int myDimension = 2;
 
   // Declare the types of the images
-  using FloatType = float;
-  using DoubleType = double;
-  using myImageType = itk::Image<FloatType, myDimension>;
-  using myGradientImageType = itk::VectorImage<FloatType, myDimension>;
+  typedef float                                      FloatType;
+  typedef double                                     DoubleType;
+  typedef itk::Image< FloatType, myDimension >       myImageType;
+  typedef itk::VectorImage< FloatType, myDimension > myGradientImageType;
 
   // Create the image
   myImageType::Pointer inputImage = myImageType::New();
 
-  using myReaderType = itk::ImageFileReader<myImageType>;
+  typedef itk::ImageFileReader< myImageType > myReaderType;
   myReaderType::Pointer reader = myReaderType::New();
-  reader->SetFileName(inFileName);
+  reader->SetFileName( inFileName );
 
   // Declare the type for the
-  using myFilterType = itk::GradientRecursiveGaussianImageFilter<myImageType, myGradientImageType>;
+  typedef itk::GradientRecursiveGaussianImageFilter< myImageType, myGradientImageType >  myFilterType;
 
   // Create a  Filter
   myFilterType::Pointer filter = myFilterType::New();
 
   // Connect the input images
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
 
   // Select the value of Sigma
-  filter->SetSigma(2.5);
+  filter->SetSigma( 2.5 );
 
-  using myWriterType = itk::ImageFileWriter<myGradientImageType>;
+  typedef itk::ImageFileWriter< myGradientImageType > myWriterType;
   myWriterType::Pointer writer = myWriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(outFileName);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( outFileName );
   writer->Update();
 
   // Test also that setting and getting sigma arrays is working
-  itk::FixedArray<DoubleType, 2> sigmas;
+  itk::FixedArray< DoubleType, 2 > sigmas;
 
   if (filter->GetSigma() != 2.5)
   {
     std::cerr << "Exception detected: wrong sigma after SetSigma" << std::endl;
-    std::cerr << "Sigma is: " << filter->GetSigma() << ", expected 2.5" << std::endl;
+    std::cerr <<
+      "Sigma is: " << filter->GetSigma() << ", expected 2.5"<< std::endl;
     return EXIT_FAILURE;
   }
 
@@ -96,8 +96,7 @@ itkGradientRecursiveGaussianFilterTest4(int argc, char * argv[])
   filter->SetSigmaArray(sigmas);
 
   sigmas = filter->GetSigmaArray();
-  if (itk::Math::NotExactlyEquals(sigmas[0], 1.8) || itk::Math::NotExactlyEquals(sigmas[1], 1.8) ||
-      itk::Math::NotExactlyEquals(filter->GetSigma(), 1.8))
+  if (itk::Math::NotExactlyEquals(sigmas[0], 1.8) || itk::Math::NotExactlyEquals(sigmas[1], 1.8) || itk::Math::NotExactlyEquals(filter->GetSigma() , 1.8))
   {
     std::cerr << "Exception detected: wrong sigmas after SetSigmaArray" << std::endl;
     std::cerr << "Sigma Array: " << sigmas[0] << ", " << sigmas[1] << std::endl;

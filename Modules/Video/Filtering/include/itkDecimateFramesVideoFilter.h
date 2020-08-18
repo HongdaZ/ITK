@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 namespace itk
 {
 
-/**
- *\class DecimateFramesVideoFilter
+/** \class DecimateFramesVideoFilter
  * \brief Reduce a video's frame-rate by keeping every Nth frame
  *
  * This filter simply takes an input video and passes every Nth frame through
@@ -32,57 +31,60 @@ namespace itk
  *
  * \ingroup ITKVideoFiltering
  */
-template <typename TVideoStream>
-class ITK_TEMPLATE_EXPORT DecimateFramesVideoFilter : public VideoToVideoFilter<TVideoStream, TVideoStream>
+template<typename TVideoStream>
+class ITK_TEMPLATE_EXPORT DecimateFramesVideoFilter :
+  public VideoToVideoFilter<TVideoStream, TVideoStream>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DecimateFramesVideoFilter);
 
-  /** Standard class type aliases */
-  using VideoStreamType = TVideoStream;
-  using InputVideoStreamType = TVideoStream;
-  using OutputVideoStreamType = TVideoStream;
-  using Self = DecimateFramesVideoFilter<VideoStreamType>;
-  using Superclass = VideoToVideoFilter<VideoStreamType, VideoStreamType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using ConstWeakPointer = WeakPointer<const Self>;
+  /** Standard class typedefs */
+  typedef TVideoStream                                 VideoStreamType;
+  typedef TVideoStream                                 InputVideoStreamType;
+  typedef TVideoStream                                 OutputVideoStreamType;
+  typedef DecimateFramesVideoFilter< VideoStreamType > Self;
+  typedef VideoToVideoFilter< VideoStreamType,
+                              VideoStreamType >        Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
+  typedef WeakPointer< const Self >                    ConstWeakPointer;
 
-  using FrameType = typename TVideoStream::FrameType;
-  using PixelType = typename FrameType::PixelType;
-  using FrameSpatialRegionType = typename FrameType::RegionType;
+  typedef typename TVideoStream::FrameType FrameType;
+  typedef typename FrameType::PixelType    PixelType;
+  typedef typename FrameType::RegionType   FrameSpatialRegionType;
 
   itkNewMacro(Self);
 
   itkTypeMacro(DecimateFramesVideoFilter, VideoToVideoFilter);
 
   /** Get/Set the spacing of the preserved frames */
-  void
-  SetPreservedFrameSpacing(SizeValueType numFrames);
-  SizeValueType
-  GetPreservedFrameSpacing();
+  void SetPreservedFrameSpacing(SizeValueType numFrames);
+  SizeValueType GetPreservedFrameSpacing();
 
 protected:
+
   /** Constructor and Destructor */
   DecimateFramesVideoFilter();
-  ~DecimateFramesVideoFilter() override = default;
+  virtual ~DecimateFramesVideoFilter() ITK_OVERRIDE {}
 
   /** PrintSelf */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** DecimateFramesVideoFilter is implemented as a temporal streaming and
    * spatially multithreaded filter, so we override ThreadedGenerateData */
-  void
-  ThreadedGenerateData(const FrameSpatialRegionType & outputRegionForThread, int threadId) override;
+  virtual void ThreadedGenerateData(
+                const FrameSpatialRegionType& outputRegionForThread,
+                int threadId) ITK_OVERRIDE;
 
 private:
-}; // end class DecimateFramesVideoFilter
+  ITK_DISALLOW_COPY_AND_ASSIGN(DecimateFramesVideoFilter);
+
+
+};  // end class DecimateFramesVideoFilter
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDecimateFramesVideoFilter.hxx"
+#include "itkDecimateFramesVideoFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,18 +21,20 @@
 #include "itkMetaImageIO.h"
 
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkMetaImageIOGzTest(int ac, char * av[])
+int itkMetaImageIOGzTest(int ac, char* av[])
 {
-  if (ac < 2)
-  {
-    std::cerr << "Usage: itkMetaImageIOGzTest testDataDirectory" << std::endl;
-  }
+  if(ac < 2)
+    {
+    std::cerr << "Usage: itkMetaImageIOGzTest testDataDirectory"
+              <<    std::endl;
+    }
   int result(0);
-  std::cout << "Test whether MetaIO will search for a compressed data file" << std::endl
-            << "if it can't find the uncompressed data file" << std::endl;
+  std::cout << "Test whether MetaIO will search for a compressed data file"
+            << std::endl
+            << "if it can't find the uncompressed data file"
+            << std::endl;
   std::string headerName(av[1]);
   headerName += "/GzTest.mhd";
   std::ofstream hdr(headerName.c_str());
@@ -44,37 +46,38 @@ itkMetaImageIOGzTest(int ac, char * av[])
   hdr.close();
   std::string dataName(av[1]);
   dataName += "/GzTest.raw.gz";
-  gzFile compressed = gzopen(dataName.c_str(), "wb");
-  for (unsigned short i = 0; i < (32 * 32); i++)
-  {
-    unsigned short pixel = i & 0xff;
-    if (gzwrite(compressed, &pixel, sizeof(pixel)) != sizeof(pixel))
+  gzFile compressed = gzopen(dataName.c_str(),"wb");
+  for(unsigned short i = 0; i < (32 * 32); i++)
     {
+    unsigned short pixel = i & 0xff;
+    if( gzwrite(compressed,&pixel,sizeof(pixel)) != sizeof(pixel) )
+      {
       std::cerr << "Write error for " << dataName << std::endl;
       break;
+      }
     }
-  }
   gzclose(compressed);
 
-  using PixelType = unsigned short;
-  using myImage = itk::Image<PixelType, 3>;
+  typedef unsigned short           PixelType;
+  typedef itk::Image<PixelType, 3> myImage;
 
-  itk::ImageFileReader<myImage>::Pointer reader = itk::ImageFileReader<myImage>::New();
+  itk::ImageFileReader<myImage>::Pointer reader
+    = itk::ImageFileReader<myImage>::New();
   reader->SetFileName(headerName.c_str());
 
   itk::MetaImageIO::Pointer io = itk::MetaImageIO::New();
   reader->SetImageIO(io);
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     result++;
-  }
+    }
   std::cout << "Test whether absolute path in MetaIO header works" << std::endl;
   // re-write header
   headerName = av[1];
@@ -85,19 +88,20 @@ itkMetaImageIOGzTest(int ac, char * av[])
        << "DimSize = 32 32" << std::endl
        << "ElementType = MET_USHORT" << std::endl
        << "CompressedData = True" << std::endl
-       << "ElementDataFile = " << dataName << std::endl;
+       << "ElementDataFile = " << dataName
+       << std::endl;
   hdr2.close();
   reader->SetFileName(headerName.c_str());
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "Test failed " << std::endl;
     std::cerr << e << std::endl;
     result++;
-  }
+    }
 
   return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

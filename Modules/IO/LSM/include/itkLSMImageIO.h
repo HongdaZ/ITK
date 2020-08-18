@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@
 
 namespace itk
 {
-/**
- *\class LSMImageIO
+/** \class LSMImageIO
  *
  *  \brief ImageIO class for reading LSM (Zeiss) images
  * LSM is a line of confocal laser scanning microscopes produced by the Zeiss company
@@ -45,15 +44,13 @@ namespace itk
  *
  * \ingroup ITKIOLSM
  */
-class ITKIOLSM_EXPORT LSMImageIO : public TIFFImageIO
+class ITKIOLSM_EXPORT LSMImageIO:public TIFFImageIO
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIO);
-
-  /** Standard class type aliases. */
-  using Self = LSMImageIO;
-  using Superclass = TIFFImageIO;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef LSMImageIO           Self;
+  typedef TIFFImageIO          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,44 +62,37 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
-  /** Set the spacing and dimension information for the current filename. */
-  void
-  ReadImageInformation() override;
+  /** Set the spacing and dimesion information for the current filename. */
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Writes the spacing and dimensions of the image.
    * Assumes SetFileName has been called with a valid file name. */
-  void
-  WriteImageInformation() override
-  {}
+  virtual void WriteImageInformation() ITK_OVERRIDE {}
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
 protected:
   LSMImageIO();
-  ~LSMImageIO() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~LSMImageIO() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  void
-  FillZeissStruct(char * z);
+  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIO);
+
+  void FillZeissStruct(char *z);
 };
 } // end namespace itk
 

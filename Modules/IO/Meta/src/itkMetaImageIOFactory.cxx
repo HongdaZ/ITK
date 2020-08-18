@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,11 +23,15 @@ namespace itk
 {
 MetaImageIOFactory::MetaImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkMetaImageIO", "Meta Image IO", true, CreateObjectFunction<MetaImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkMetaImageIO",
+                          "Meta Image IO",
+                          1,
+                          CreateObjectFunction< MetaImageIO >::New() );
 }
 
-MetaImageIOFactory::~MetaImageIOFactory() = default;
+MetaImageIOFactory::~MetaImageIOFactory()
+{}
 
 const char *
 MetaImageIOFactory::GetITKSourceVersion() const
@@ -46,14 +50,13 @@ MetaImageIOFactory::GetDescription() const
 
 static bool MetaImageIOFactoryHasBeenRegistered;
 
-void ITKIOMeta_EXPORT
-     MetaImageIOFactoryRegister__Private()
+void ITKIOMeta_EXPORT MetaImageIOFactoryRegister__Private(void)
 {
-  if (!MetaImageIOFactoryHasBeenRegistered)
-  {
+  if( ! MetaImageIOFactoryHasBeenRegistered )
+    {
     MetaImageIOFactoryHasBeenRegistered = true;
     MetaImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

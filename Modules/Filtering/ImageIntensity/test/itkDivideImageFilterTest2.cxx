@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,33 +22,32 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkDivideImageFilterTest2(int, char *[])
+int itkDivideImageFilterTest2( int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
   // Declare the pixel types of the images
-  using ElementPixelType = float;
+  typedef float ElementPixelType;
 
   // Declare the types of the images
-  using InputImageType1 = itk::VectorImage<ElementPixelType, Dimension>;
-  using InputImageType2 = itk::Image<ElementPixelType, Dimension>;
-  using OutputImageType = itk::VectorImage<ElementPixelType, Dimension>;
+  typedef itk::VectorImage< ElementPixelType, Dimension >  InputImageType1;
+  typedef itk::Image< ElementPixelType, Dimension >        InputImageType2;
+  typedef itk::VectorImage< ElementPixelType, Dimension >  OutputImageType;
 
   // Declare appropriate Iterator types for each image
-  using OutputImageIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex< OutputImageType > OutputImageIteratorType;
 
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<Dimension>;
+  typedef itk::Index< Dimension >         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<Dimension>;
+  typedef itk::Size< Dimension >          SizeType;
 
   // Declare the type of the region
-  using RegionType = itk::ImageRegion<Dimension>;
+  typedef itk::ImageRegion< Dimension >   RegionType;
 
   // Create two images
   InputImageType1::Pointer inputImageA = InputImageType1::New();
@@ -66,86 +65,92 @@ itkDivideImageFilterTest2(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
-  inputImageA->SetNumberOfComponentsPerPixel(4);
+  inputImageA->SetLargestPossibleRegion( region );
+  inputImageA->SetBufferedRegion( region );
+  inputImageA->SetRequestedRegion( region );
+  inputImageA->SetNumberOfComponentsPerPixel( 4 );
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetLargestPossibleRegion( region );
+  inputImageB->SetBufferedRegion( region );
+  inputImageB->SetRequestedRegion( region );
   inputImageB->Allocate();
 
   // Initialize the content of Image A
-  InputImageType1::PixelType            valueA(inputImageA->GetNumberOfComponentsPerPixel());
+  InputImageType1::PixelType valueA( inputImageA->GetNumberOfComponentsPerPixel() );
   InputImageType1::PixelType::ValueType elementValueA = 2.0;
-  valueA.Fill(elementValueA);
-  inputImageA->FillBuffer(valueA);
+  valueA.Fill( elementValueA );
+  inputImageA->FillBuffer( valueA );
 
   // Initialize the content of Image B
-  constexpr InputImageType2::PixelType valueB = 3.0;
-  inputImageB->FillBuffer(valueB);
+  const InputImageType2::PixelType valueB = 3.0;
+  inputImageB->FillBuffer( valueB );
 
 
   // Declare the type for the itk::DivideImageFilter
-  using FilterType = itk::DivideImageFilter<InputImageType1, InputImageType2, OutputImageType>;
+  typedef itk::DivideImageFilter<
+                                InputImageType1,
+                                InputImageType2,
+                                OutputImageType > FilterType;
 
   // Create the filter
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, DivideImageFilter, BinaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, DivideImageFilter,
+    BinaryFunctorImageFilter );
 
   // Set the input images
-  filter->SetInput1(inputImageA);
-  filter->SetInput2(inputImageB);
+  filter->SetInput1( inputImageA );
+  filter->SetInput2( inputImageB );
 
+  filter->SetFunctor( filter->GetFunctor() );
 
   // Execute the filter
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+  TRY_EXPECT_NO_EXCEPTION( filter->Update() );
 
 
   // Get the filter output
   OutputImageType::Pointer outputImage = filter->GetOutput();
 
   // Create an iterator for going through the image output
-  OutputImageIteratorType oIt(outputImage, outputImage->GetBufferedRegion());
+  OutputImageIteratorType oIt( outputImage, outputImage->GetBufferedRegion() );
 
 
   // Check the content of the result image
   //
-  const auto expectedValue = static_cast<OutputImageType::PixelType::ValueType>(elementValueA / valueB);
+  const OutputImageType::PixelType::ValueType expectedValue =
+    static_cast< OutputImageType::PixelType::ValueType >( elementValueA / valueB );
   const OutputImageType::PixelType::ValueType epsilon = 1e-6;
-  while (!oIt.IsAtEnd())
-  {
-    for (unsigned int i = 0; i < oIt.GetImageDimension(); ++i)
+  while( !oIt.IsAtEnd() )
     {
-      if (!itk::Math::FloatAlmostEqual(oIt.Get()[i], expectedValue, 2, epsilon))
+    for( unsigned int i = 0; i < oIt.GetImageDimension(); ++i )
       {
-        std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
+      if( !itk::Math::FloatAlmostEqual( oIt.Get()[i], expectedValue, 2, epsilon ) )
+        {
+        std::cerr.precision( static_cast< int >( itk::Math::abs( std::log10( epsilon ) ) ) );
         std::cerr << "Test failed!" << std::endl;
-        std::cerr << "Error in pixel value at index [" << oIt.GetIndex() << ":" << i << "]" << std::endl;
+        std::cerr << "Error in pixel value at index [" << oIt.GetIndex()
+          << ":" << i << "]" << std::endl;
         std::cerr << "Expected value " << expectedValue << std::endl;
         std::cerr << " differs from " << oIt.Get()[i];
         std::cerr << " by more than " << epsilon << std::endl;
         return EXIT_FAILURE;
+        }
       }
-    }
     ++oIt;
-  }
+    }
 
 
   // Check for exception if constant is 0
-  filter->SetInput2(0.0);
-  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+  filter->SetInput2( 0.0 );
+  TRY_EXPECT_EXCEPTION( filter->Update() );
 
 
   // All objects should be automatically destroyed at this point
   std::cout << "Test finished." << std::endl;
-  return EXIT_SUCCESS;
-}
+  return EXIT_SUCCESS;}

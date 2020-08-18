@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ namespace itk
 {
 namespace Accessor
 {
-/**
- *\class CosPixelAccessor
+/** \class CosPixelAccessor
  * \brief Give access to the std::cos() function of a value
  *
  * CosPixelAccessor is templated over an internal type and an
@@ -37,34 +36,27 @@ namespace Accessor
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TInternalType, typename TExternalType>
+template< typename TInternalType, typename TExternalType >
 class CosPixelAccessor
 {
 public:
-  /** External type alias. It defines the external aspect
+  /** External typedef. It defines the external aspect
    * that this class will exhibit. */
-  using ExternalType = TExternalType;
+  typedef TExternalType ExternalType;
 
-  /** Internal type alias. It defines the internal real
+  /** Internal typedef. It defines the internal real
    * representation of data. */
-  using InternalType = TInternalType;
+  typedef TInternalType InternalType;
 
-  static inline void
-  Set(TInternalType & output, const TExternalType & input)
-  {
-    output = (TInternalType)std::cos((double)input);
-  }
+  static inline void Set(TInternalType & output, const TExternalType & input)
+  { output = (TInternalType)std::cos( (double)input ); }
 
-  static inline TExternalType
-  Get(const TInternalType & input)
-  {
-    return (TExternalType)std::cos((double)input);
-  }
+  static inline TExternalType Get(const TInternalType & input)
+  { return (TExternalType)std::cos( (double)input ); }
 };
 } // end namespace Accessor
 
-/**
- *\class CosImageAdaptor
+/** \class CosImageAdaptor
  * \brief Presents an image as being composed of the std::cos() of its pixels
  *
  * Additional casting is performed according to the input and output image
@@ -73,19 +65,21 @@ public:
  * \ingroup ImageAdaptors
  * \ingroup ITKImageAdaptors
  */
-template <typename TImage, typename TOutputPixelType>
-class CosImageAdaptor
-  : public ImageAdaptor<TImage, Accessor::CosPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
+template< typename TImage, typename TOutputPixelType >
+class CosImageAdaptor:public
+  ImageAdaptor< TImage, Accessor::CosPixelAccessor<
+                  typename TImage::PixelType,
+                  TOutputPixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CosImageAdaptor);
+  /** Standard class typedefs. */
+  typedef CosImageAdaptor Self;
+  typedef ImageAdaptor< TImage, Accessor::CosPixelAccessor<
+                          typename TImage::PixelType,
+                          TOutputPixelType > >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = CosImageAdaptor;
-  using Superclass = ImageAdaptor<TImage, Accessor::CosPixelAccessor<typename TImage::PixelType, TOutputPixelType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -94,8 +88,11 @@ public:
   itkTypeMacro(CosImageAdaptor, ImageAdaptor);
 
 protected:
-  CosImageAdaptor() = default;
-  ~CosImageAdaptor() override = default;
+  CosImageAdaptor() {}
+  virtual ~CosImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CosImageAdaptor);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,18 +35,17 @@ namespace itk
  * example of creating an Ellipsoid in an image.
  * \ingroup ITKCommon
  */
-template <unsigned int VDimension = 3, typename TInput = Point<double, VDimension>>
-class ITK_TEMPLATE_EXPORT EllipsoidInteriorExteriorSpatialFunction
-  : public InteriorExteriorSpatialFunction<VDimension, TInput>
+template< unsigned int VDimension = 3,
+          typename TInput = Point< double, VDimension > >
+class ITK_TEMPLATE_EXPORT EllipsoidInteriorExteriorSpatialFunction:
+  public InteriorExteriorSpatialFunction< VDimension, TInput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EllipsoidInteriorExteriorSpatialFunction);
-
-  /** Standard class type aliases. */
-  using Self = EllipsoidInteriorExteriorSpatialFunction;
-  using Superclass = InteriorExteriorSpatialFunction<VDimension, TInput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef EllipsoidInteriorExteriorSpatialFunction              Self;
+  typedef InteriorExteriorSpatialFunction< VDimension, TInput > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(EllipsoidInteriorExteriorSpatialFunction, InteriorExteriorSpatialFunction);
@@ -55,13 +54,13 @@ public:
   itkNewMacro(Self);
 
   /** Input type for the function */
-  using InputType = typename Superclass::InputType;
+  typedef typename Superclass::InputType InputType;
 
   /** Output type for the function */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Typedef for the orientation matrix */
-  using OrientationType = vnl_matrix_fixed<double, VDimension, VDimension>;
+  typedef vnl_matrix_fixed< double, VDimension, VDimension > OrientationType;
 
   /** Set/Get and set the center of the ellipsoid. */
   itkGetConstMacro(Center, InputType);
@@ -73,21 +72,20 @@ public:
 
   /** Set the orientation vectors (must be orthogonal) of the ellipsoid axes.
    * Must be normalized!!!!! */
-  void
-  SetOrientations(const OrientationType &);
+  void SetOrientations(const OrientationType &);
 
   /** Evaluates the function at a given position. */
-  OutputType
-  Evaluate(const InputType & position) const override;
+  OutputType Evaluate(const InputType & position) const ITK_OVERRIDE;
 
 protected:
   EllipsoidInteriorExteriorSpatialFunction();
-  ~EllipsoidInteriorExteriorSpatialFunction() override;
+  virtual ~EllipsoidInteriorExteriorSpatialFunction() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EllipsoidInteriorExteriorSpatialFunction);
+
   /** The center of the ellipsoid. */
   InputType m_Center;
 
@@ -95,12 +93,12 @@ private:
   InputType m_Axes;
 
   /** The orientation vectors (must be orthogonal) of the ellipsoid axes. */
-  double ** m_Orientations;
+  double **m_Orientations;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEllipsoidInteriorExteriorSpatialFunction.hxx"
+#include "itkEllipsoidInteriorExteriorSpatialFunction.hxx"
 #endif
 
 #endif

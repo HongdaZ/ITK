@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,52 +52,55 @@ namespace itk
  * is recommended, as the estimation of the radius involves floating point
  * calculations. Usually, 'double' is the best choice for this pixel type.
  *
+ * By default, TRadiusPixelType = TOutputPixelType, in order to preserve backward
+ * compatibility with ITK <= 4.12.2.
+ *
  * \ingroup ImageFeatureExtraction
  *
  * \ingroup ITKImageFeature
  */
 
-template <typename TInputPixelType, typename TOutputPixelType, typename TRadiusPixelType>
-class ITK_TEMPLATE_EXPORT HoughTransform2DCirclesImageFilter
-  : public ImageToImageFilter<Image<TInputPixelType, 2>, Image<TOutputPixelType, 2>>
+template< typename TInputPixelType, typename TOutputPixelType, typename TRadiusPixelType = TOutputPixelType  >
+class ITK_TEMPLATE_EXPORT HoughTransform2DCirclesImageFilter:
+  public ImageToImageFilter< Image< TInputPixelType, 2 >, Image< TOutputPixelType, 2 > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HoughTransform2DCirclesImageFilter);
 
-  /** Standard class type aliases. */
-  using Self = HoughTransform2DCirclesImageFilter;
-  using Superclass = ImageToImageFilter<Image<TInputPixelType, 2>, Image<TOutputPixelType, 2>>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef HoughTransform2DCirclesImageFilter                  Self;
+  typedef ImageToImageFilter< Image< TInputPixelType, 2 >,
+                              Image< TOutputPixelType, 2 > >  Superclass;
+  typedef SmartPointer< Self >                                Pointer;
+  typedef SmartPointer< const Self >                          ConstPointer;
 
-  /** Input Image type alias. */
-  using InputImageType = Image<TInputPixelType, 2>;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  /** Input Image typedefs. */
+  typedef Image< TInputPixelType, 2 >           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
-  /** Output Image type alias. */
-  using OutputImageType = Image<TOutputPixelType, 2>;
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  /** Output Image typedefs. */
+  typedef Image< TOutputPixelType, 2 >      OutputImageType;
+  typedef typename OutputImageType::Pointer OutputImagePointer;
 
-  /** Radius Image type alias. */
-  using RadiusImageType = Image<TRadiusPixelType, 2>;
-  using RadiusImagePointer = typename RadiusImageType::Pointer;
+  /** Radius Image typedefs. */
+  typedef Image< TRadiusPixelType, 2 >      RadiusImageType;
+  typedef typename RadiusImageType::Pointer RadiusImagePointer;
 
-  /** Image index type alias. */
-  using IndexType = typename InputImageType::IndexType;
+  /** Image index typedef. */
+  typedef typename InputImageType::IndexType IndexType;
 
-  /** Image pixel value type alias. */
-  using PixelType = typename InputImageType::PixelType;
+  /** Image pixel value typedef. */
+  typedef typename InputImageType::PixelType PixelType;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::RegionType OutputImageRegionType;
 
-  /** Circle type alias. */
-  using CircleType = EllipseSpatialObject<2>;
-  using CirclePointer = typename CircleType::Pointer;
-  using CirclesListType = std::list<CirclePointer>;
+  /** Circle typedefs. */
+  typedef EllipseSpatialObject< 2 >    CircleType;
+  typedef typename CircleType::Pointer CirclePointer;
+  typedef std::list< CirclePointer >   CirclesListType;
 
-  using CirclesListSizeType = typename CirclesListType::size_type;
+  typedef typename CirclesListType::size_type CirclesListSizeType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(HoughTransform2DCirclesImageFilter, ImageToImageFilter);
@@ -105,17 +108,11 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** Verifies the preconditions of this filter. */
-  void
-  VerifyPreconditions() ITKv5_CONST override;
-
   /** Method for evaluating the implicit function over the image. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** Set both Minimum and Maximum radius values. */
-  void
-  SetRadius(double radius);
+  void SetRadius(double radius);
 
   /** Set the minimum radius value the filter should look for. */
   itkSetMacro(MinimumRadius, double);
@@ -132,11 +129,6 @@ public:
   /** Get the threshold value. */
   itkGetConstMacro(Threshold, double);
 
-  /** Threshold for the norm of the gradient: Only pixels whose gradient norm is
-   * above this threshold are processed by the filter. The threshold must be >= 0. */
-  itkSetMacro(GradientNormThreshold, double);
-  itkGetConstMacro(GradientNormThreshold, double);
-
   /** Get the radius image. */
   itkGetModifiableObjectMacro(RadiusImage, RadiusImageType);
 
@@ -146,12 +138,12 @@ public:
   /** Get the scale value. */
   itkGetConstMacro(SigmaGradient, double);
 
-  /** Get the list of circles. This recomputes the circles, if necessary.
-   * The pixel grid coordinates of the center of a circle from the list can
-   * be retrieved by calling circle->GetCenterPoint().
-   */
-  CirclesListType &
-  GetCircles();
+  /** Get the list of circles. This recomputes the circles. */
+  CirclesListType & GetCircles();
+
+  /** Get the list of circles.
+  * \deprecated Use GetCircles() without arguments instead! */
+  itkLegacyMacro(CirclesListType & GetCircles(unsigned int n));
 
   /** Set/Get the number of circles to extract. */
   itkSetMacro(NumberOfCircles, CirclesListSizeType);
@@ -159,72 +151,69 @@ public:
 
   /** Set/Get the radius of the disc to remove from the accumulator
    * for each circle found. */
-  itkSetMacro(DiscRadiusRatio, double);
-  itkGetConstMacro(DiscRadiusRatio, double);
+  itkSetMacro(DiscRadiusRatio, float);
+  itkGetConstMacro(DiscRadiusRatio, float);
 
   /** Set/Get the variance of the Gaussian blurring for the accumulator. */
-  itkSetMacro(Variance, double);
-  itkGetConstMacro(Variance, double);
+  itkSetMacro(Variance, float);
+  itkGetConstMacro(Variance, float);
 
   /** Set/Get the sweep angle. */
-  itkSetMacro(SweepAngle, double);
-  itkGetConstMacro(SweepAngle, double);
-
-  /** Specifies whether to use the spacing of the input image internally, when
-   * doing Gaussian Derivative calculation and Gaussian image filtering. */
-  itkSetMacro(UseImageSpacing, bool);
-  itkGetConstMacro(UseImageSpacing, bool);
-
+  itkSetMacro(SweepAngle, float);
+  itkGetConstMacro(SweepAngle, float);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(IntConvertibleToOutputCheck, (Concept::Convertible<int, TOutputPixelType>));
-  itkConceptMacro(InputGreaterThanDoubleCheck, (Concept::GreaterThanComparable<PixelType, double>));
-  itkConceptMacro(OutputPlusIntCheck, (Concept::AdditiveOperators<TOutputPixelType, int>));
-  itkConceptMacro(OutputDividedByIntCheck, (Concept::DivisionOperators<TOutputPixelType, int>));
+  itkConceptMacro( IntConvertibleToOutputCheck,
+                   ( Concept::Convertible< int, TOutputPixelType > ) );
+  itkConceptMacro( InputGreaterThanDoubleCheck,
+                   ( Concept::GreaterThanComparable< PixelType, double > ) );
+  itkConceptMacro( OutputPlusIntCheck,
+                   ( Concept::AdditiveOperators< TOutputPixelType, int > ) );
+  itkConceptMacro( OutputDividedByIntCheck,
+                   ( Concept::DivisionOperators< TOutputPixelType, int > ) );
   // End concept checking
 #endif
 
 protected:
-  HoughTransform2DCirclesImageFilter();
-  ~HoughTransform2DCirclesImageFilter() override = default;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  HoughTransform2DCirclesImageFilter();
+  virtual ~HoughTransform2DCirclesImageFilter() ITK_OVERRIDE {}
+
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** HoughTransform2DCirclesImageFilter needs the entire input. Therefore
    * it must provide an implementation GenerateInputRequestedRegion().
    * \sa ProcessObject::GenerateInputRequestedRegion(). */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** HoughTransform2DCirclesImageFilter's produces all the output.
    * Therefore, it must provide an implementation of
    * EnlargeOutputRequestedRegion.
    * \sa ProcessObject::EnlargeOutputRequestedRegion() */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) ) ITK_OVERRIDE;
 
 private:
-  double m_SweepAngle{ 0.0 };
-  double m_MinimumRadius{ 0.0 };
-  double m_MaximumRadius{ 10.0 };
-  double m_Threshold{ 0.0 };
-  double m_GradientNormThreshold{ 1.0 };
-  double m_SigmaGradient{ 1.0 };
 
-  RadiusImagePointer  m_RadiusImage;
-  CirclesListType     m_CirclesList;
-  CirclesListSizeType m_NumberOfCircles{ 1 };
-  double              m_DiscRadiusRatio{ 1 };
-  double              m_Variance{ 10 };
-  bool                m_UseImageSpacing{ true };
-  ModifiedTimeType    m_OldModifiedTime{ 0 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(HoughTransform2DCirclesImageFilter);
+
+  float                 m_SweepAngle;
+  double                m_MinimumRadius;
+  double                m_MaximumRadius;
+  double                m_Threshold;
+  double                m_SigmaGradient;
+
+  RadiusImagePointer    m_RadiusImage;
+  CirclesListType       m_CirclesList;
+  CirclesListSizeType   m_NumberOfCircles;
+  float                 m_DiscRadiusRatio;
+  float                 m_Variance;
+  ModifiedTimeType      m_OldModifiedTime;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkHoughTransform2DCirclesImageFilter.hxx"
+#include "itkHoughTransform2DCirclesImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@
 
 #include "itkMacro.h"
 
-namespace itk
-{
+namespace itk {
 
 /// \cond HIDE_META_PROGRAMMING
-namespace mpl
-{
+namespace mpl {
 
 /**\defgroup MetaProgrammingLibrary Meta Programming Library
  * This module contains definitions aimed at metaprogramming.
@@ -39,11 +37,11 @@ namespace mpl
  */
 struct TrueType
 {
-  using ValueType = bool;
-  using Type = TrueType;
+  typedef bool     ValueType;
+  typedef TrueType Type;
 
-  static constexpr ValueType Value = true;
-                             operator ValueType() { return Value; }
+  itkStaticConstMacro(Value, ValueType, true);
+  operator ValueType() { return Value; }
 };
 
 /** borrowed from `<type_traits>`.
@@ -52,10 +50,10 @@ struct TrueType
  */
 struct FalseType
 {
-  using ValueType = bool;
-  using Type = FalseType;
-  static constexpr ValueType Value = false;
-                             operator ValueType() { return Value; }
+  typedef bool      ValueType;
+  typedef FalseType Type;
+  itkStaticConstMacro(Value, ValueType, false);
+  operator ValueType() { return Value; }
 };
 
 /** MPL \c if control-statement.
@@ -65,19 +63,10 @@ struct FalseType
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <bool VP, typename T1, typename T2>
-struct If;
+template <bool VP, typename T1, typename T2> struct If;
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template <typename T1, typename T2>
-struct If<true, T1, T2>
-{
-  using Type = T1;
-};
-template <typename T1, typename T2>
-struct If<false, T1, T2>
-{
-  using Type = T2;
-};
+template <typename T1, typename T2> struct If<true , T1, T2>{ typedef T1 Type; };
+template <typename T1, typename T2> struct If<false, T1, T2>{ typedef T2 Type; };
 /// \endcond
 
 /** MPL \c OR operator on constants.
@@ -87,13 +76,9 @@ struct If<false, T1, T2>
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <bool VF1, bool VF2, bool VF3 = false>
-struct OrC : TrueType
-{};
+template < bool VF1, bool VF2, bool VF3=false> struct OrC : TrueType { };
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template <>
-struct OrC<false, false, false> : FalseType
-{};
+template <> struct OrC<false, false,false> : FalseType {};
 /// \endcond
 /** MPL \c OR operator on types.
  * \tparam TF1 First boolean type
@@ -107,11 +92,8 @@ struct OrC<false, false, false> : FalseType
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <typename TF1, typename TF2, typename TF3 = FalseType>
-struct Or : OrC<TF1::Value, TF2::Value, TF3::Value>
-{
-  using Type = typename OrC<TF1::Value, TF2::Value, TF3::Value>::Type;
-};
+template < typename TF1, typename TF2, typename TF3=FalseType> struct Or : OrC<TF1::Value, TF2::Value, TF3::Value>
+{ typedef typename OrC<TF1::Value, TF2::Value, TF3::Value>::Type Type; };
 
 /** MPL \c AND operator on constants.
  * \tparam VF1 First boolean expression
@@ -119,13 +101,9 @@ struct Or : OrC<TF1::Value, TF2::Value, TF3::Value>
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <bool VF1, bool VF2>
-struct AndC : FalseType
-{};
+template < bool VF1, bool VF2> struct AndC : FalseType { };
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template <>
-struct AndC<true, true> : TrueType
-{};
+template <> struct AndC<true, true> : TrueType {};
 /// \endcond
 /** MPL \c AND operator on types.
  * \tparam TF1 First boolean type
@@ -138,11 +116,8 @@ struct AndC<true, true> : TrueType
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <typename TF1, typename TF2>
-struct And : AndC<TF1::Value, TF2::Value>
-{
-  using Type = typename AndC<TF1::Value, TF2::Value>::Type;
-};
+template < typename TF1, typename TF2> struct And : AndC<TF1::Value, TF2::Value>
+{ typedef typename AndC<TF1::Value, TF2::Value>::Type Type; };
 
 /** MPL \c XOR operator on constants.
  * \tparam VF1 First boolean expression
@@ -150,16 +125,10 @@ struct And : AndC<TF1::Value, TF2::Value>
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <bool VF1, bool VF2>
-struct XorC : FalseType
-{};
+template < bool VF1, bool VF2> struct XorC : FalseType { };
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template <>
-struct XorC<true, false> : TrueType
-{};
-template <>
-struct XorC<false, true> : TrueType
-{};
+template <> struct XorC<true, false> : TrueType {};
+template <> struct XorC<false, true> : TrueType {};
 /// \endcond
 /** MPL \c XOR operator on types.
  * \tparam TF1 First boolean type
@@ -172,27 +141,18 @@ struct XorC<false, true> : TrueType
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <typename TF1, typename TF2>
-struct Xor : XorC<TF1::Value, TF2::Value>
-{
-  using Type = typename XorC<TF1::Value, TF2::Value>::Type;
-};
+template < typename TF1, typename TF2> struct Xor : XorC<TF1::Value, TF2::Value>
+{ typedef typename XorC<TF1::Value, TF2::Value>::Type Type; };
 
 /** MPL \c NOT operator on constants.
  * \tparam VF boolean expression to negate
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <bool VF>
-struct NotC : FalseType
-{};
+template < bool VF > struct NotC : FalseType { };
 /// \cond SPECIALIZATION_IMPLEMENTATION
-template <>
-struct NotC<false> : TrueType
-{};
-template <>
-struct NotC<true> : FalseType
-{};
+template <> struct NotC<false> : TrueType {};
+template <> struct NotC<true>  : FalseType {};
 /// \endcond
 /** MPL \c NOT operator on types.
  * \tparam TF Second boolean type
@@ -204,23 +164,10 @@ struct NotC<true> : FalseType
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <typename TF>
-struct Not : NotC<TF::Value>
-{
-  using Type = typename NotC<TF::Value>::Type;
-};
+template < typename TF> struct Not : NotC<TF::Value>
+{ typedef typename NotC<TF::Value>::Type Type; };
 
-/** MPL relational type trait to check if a static_cast conversion
- * exists.
- *
- * Identifies if "static_cast<TToType>(TFromType)" can be done.
- */
-template <typename TFromType, typename TToType>
-using is_static_castable = std::integral_constant<bool,
-                                                  std::is_constructible<TToType, TFromType>::value ||
-                                                    std::is_convertible<TFromType, TToType>::value>;
-} // namespace mpl
-
+} // mpl namespace
 
 // TrueType and FalseType have moved to itk::mpl.
 // Expect itk::TrueType and itk::False type to be deprecated.
@@ -228,5 +175,5 @@ using mpl::TrueType;
 using mpl::FalseType;
 
 /// \endcond
-} // namespace itk
+} // itk namespace
 #endif // itkMetaProgrammingLibrary_h

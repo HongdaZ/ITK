@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,58 +23,59 @@
 #include "itkAdditiveGaussianNoiseImageFilter.h"
 #include "itkTestingMacros.h"
 
-int
-itkAdditiveGaussianNoiseImageFilterTest(int argc, char * argv[])
+int itkAdditiveGaussianNoiseImageFilterTest(int argc, char * argv[])
 {
 
-  if (argc < 3)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " input output [std_dev [mean]]" << std::endl;
+  if( argc < 3 )
+    {
+    std::cerr << "usage: " << argv[0] << " input output [std_dev [mean]]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using AdditiveGaussianNoiseFilterType = itk::AdditiveGaussianNoiseImageFilter<ImageType, ImageType>;
+  typedef itk::AdditiveGaussianNoiseImageFilter< ImageType, ImageType >
+    AdditiveGaussianNoiseFilterType;
 
-  AdditiveGaussianNoiseFilterType::Pointer additiveGaussianNoiseFilter = AdditiveGaussianNoiseFilterType::New();
+  AdditiveGaussianNoiseFilterType::Pointer additiveGaussianNoiseFilter =
+    AdditiveGaussianNoiseFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(
-    additiveGaussianNoiseFilter, AdditiveGaussianNoiseImageFilter, NoiseBaseImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( additiveGaussianNoiseFilter, AdditiveGaussianNoiseImageFilter,
+    NoiseBaseImageFilter );
 
   double stdDev = 1.0;
-  if (argc >= 4)
-  {
-    stdDev = std::stod(argv[3]);
-  }
-  additiveGaussianNoiseFilter->SetStandardDeviation(stdDev);
-  ITK_TEST_SET_GET_VALUE(stdDev, additiveGaussianNoiseFilter->GetStandardDeviation());
+  if( argc >= 4 )
+    {
+    stdDev = atof( argv[3] );
+    }
+  additiveGaussianNoiseFilter->SetStandardDeviation( stdDev );
+  TEST_SET_GET_VALUE( stdDev, additiveGaussianNoiseFilter->GetStandardDeviation() );
 
   double mean = 0.0;
-  if (argc >= 5)
-  {
-    mean = std::stod(argv[4]);
-  }
-  additiveGaussianNoiseFilter->SetMean(mean);
-  ITK_TEST_SET_GET_VALUE(mean, additiveGaussianNoiseFilter->GetMean());
+  if( argc >= 5 )
+    {
+    mean = atof( argv[4] );
+    }
+  additiveGaussianNoiseFilter->SetMean( mean );
+  TEST_SET_GET_VALUE( mean, additiveGaussianNoiseFilter->GetMean() );
 
-  additiveGaussianNoiseFilter->SetInput(reader->GetOutput());
+  additiveGaussianNoiseFilter->SetInput( reader->GetOutput() );
 
-  itk::SimpleFilterWatcher watcher(additiveGaussianNoiseFilter, "AdditiveGaussianNoiseImageFilter");
+  itk::SimpleFilterWatcher watcher( additiveGaussianNoiseFilter, "AdditiveGaussianNoiseImageFilter" );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(additiveGaussianNoiseFilter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( additiveGaussianNoiseFilter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

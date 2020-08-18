@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class StatisticsRelabelLabelMapFilter
+/** \class StatisticsRelabelLabelMapFilter
  * \brief relabel objects according to their shape attributes
  *
  * StatisticsRelabelLabelMapFilter relabel a label collection image according to the statistics attributes of
@@ -42,36 +41,37 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT StatisticsRelabelLabelMapFilter : public ShapeRelabelLabelMapFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT StatisticsRelabelLabelMapFilter:
+  public ShapeRelabelLabelMapFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsRelabelLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef StatisticsRelabelLabelMapFilter      Self;
+  typedef ShapeRelabelLabelMapFilter< TImage > Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = StatisticsRelabelLabelMapFilter;
-  using Superclass = ShapeRelabelLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TImage                              ImageType;
+  typedef typename ImageType::Pointer         ImagePointer;
+  typedef typename ImageType::ConstPointer    ImageConstPointer;
+  typedef typename ImageType::PixelType       PixelType;
+  typedef typename ImageType::IndexType       IndexType;
+  typedef typename ImageType::LabelObjectType LabelObjectType;
 
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
-
-  using AttributeType = typename LabelObjectType::AttributeType;
+  typedef typename LabelObjectType::AttributeType AttributeType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(StatisticsRelabelLabelMapFilter, ShapeRelabelLabelMapFilter);
+  itkTypeMacro(StatisticsRelabelLabelMapFilter,
+               ShapeRelabelLabelMapFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -86,15 +86,17 @@ public:
 
 protected:
   StatisticsRelabelLabelMapFilter();
-  ~StatisticsRelabelLabelMapFilter() override = default;
+  ~StatisticsRelabelLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
-}; // end of class
+  void GenerateData() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsRelabelLabelMapFilter);
+};                                               // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkStatisticsRelabelLabelMapFilter.hxx"
+#include "itkStatisticsRelabelLabelMapFilter.hxx"
 #endif
 
 #endif

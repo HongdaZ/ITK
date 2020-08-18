@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,15 +25,17 @@ namespace itk
 /**
  *
  */
-template <typename TOutputPath>
-PathSource<TOutputPath>::PathSource()
+template< typename TOutputPath >
+PathSource< TOutputPath >
+::PathSource()
 {
   // Create the output. We use static_cast<> here because we know the default
   // output must be of type TOutputPath
-  OutputPathPointer output = static_cast<TOutputPath *>(this->MakeOutput(0).GetPointer());
+  OutputPathPointer output =
+    static_cast< TOutputPath * >( this->MakeOutput(0).GetPointer() );
 
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
-  this->ProcessObject::SetNthOutput(0, output.GetPointer());
+  this->ProcessObject::SetNthOutput( 0, output.GetPointer() );
 
   // Initialize PathSource member data
 }
@@ -41,29 +43,33 @@ PathSource<TOutputPath>::PathSource()
 /**
  *
  */
-template <typename TOutputPath>
-typename PathSource<TOutputPath>::OutputPathType *
-PathSource<TOutputPath>::GetOutput()
+template< typename TOutputPath >
+typename PathSource< TOutputPath >::OutputPathType *
+PathSource< TOutputPath >
+::GetOutput(void)
 {
-  return itkDynamicCastInDebugMode<TOutputPath *>(this->GetPrimaryOutput());
+  return itkDynamicCastInDebugMode< TOutputPath * >( this->GetPrimaryOutput() );
 }
 
 /**
  *
  */
-template <typename TOutputPath>
-typename PathSource<TOutputPath>::OutputPathType *
-PathSource<TOutputPath>::GetOutput(unsigned int idx)
+template< typename TOutputPath >
+typename PathSource< TOutputPath >::OutputPathType *
+PathSource< TOutputPath >
+::GetOutput(unsigned int idx)
 {
-  return itkDynamicCastInDebugMode<TOutputPath *>(this->ProcessObject::GetOutput(idx));
+  return itkDynamicCastInDebugMode< TOutputPath * >
+         ( this->ProcessObject::GetOutput(idx) );
 }
 
 /**
  *
  */
-template <typename TOutputPath>
+template< typename TOutputPath >
 void
-PathSource<TOutputPath>::GraftOutput(TOutputPath * graft)
+PathSource< TOutputPath >
+::GraftOutput(TOutputPath *graft)
 {
   this->GraftNthOutput(0, graft);
 }
@@ -71,16 +77,17 @@ PathSource<TOutputPath>::GraftOutput(TOutputPath * graft)
 /**
  *
  */
-template <typename TOutputPath>
+template< typename TOutputPath >
 void
-PathSource<TOutputPath>::GraftNthOutput(unsigned int idx, TOutputPath * graft)
+PathSource< TOutputPath >
+::GraftNthOutput(unsigned int idx, TOutputPath *graft)
 {
-  if (idx < this->GetNumberOfIndexedOutputs())
-  {
-    OutputPathType * output = this->GetOutput(idx);
-
-    if (output && graft)
+  if ( idx < this->GetNumberOfIndexedOutputs() )
     {
+    OutputPathType *output = this->GetOutput(idx);
+
+    if ( output && graft )
+      {
       // Paths do not have a generic pointer to their bulk data
       itkWarningMacro(<< "Warning:  GraftNthOutput() is broken");
 
@@ -103,26 +110,29 @@ PathSource<TOutputPath>::GraftNthOutput(unsigned int idx, TOutputPath * graft)
       // output->SetBufferedRegion( graft->GetBufferedRegion() );
 
       // copy the meta-information
-      // output->CopyInformation( graft );
+      //output->CopyInformation( graft );
+      }
     }
-  }
 }
 
 /**
  *
  */
-template <typename TOutputPath>
-typename PathSource<TOutputPath>::DataObjectPointer PathSource<TOutputPath>::MakeOutput(DataObjectPointerArraySizeType)
+template< typename TOutputPath >
+typename PathSource< TOutputPath >::DataObjectPointer
+PathSource< TOutputPath >
+::MakeOutput(DataObjectPointerArraySizeType)
 {
-  return itkDynamicCastInDebugMode<DataObject *>(TOutputPath::New().GetPointer());
+  return itkDynamicCastInDebugMode< DataObject * >( TOutputPath::New().GetPointer() );
 }
 
 /**
  *
  */
-template <typename TOutputPath>
+template< typename TOutputPath >
 void
-PathSource<TOutputPath>::PrintSelf(std::ostream & os, Indent indent) const
+PathSource< TOutputPath >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

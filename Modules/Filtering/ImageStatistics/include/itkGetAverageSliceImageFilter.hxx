@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,16 +25,17 @@ namespace itk
 /**
  * Constructor
  */
-template <typename TInputImage, typename TOutputImage>
-GetAverageSliceImageFilter<TInputImage, TOutputImage>::GetAverageSliceImageFilter()
+template< typename TInputImage, typename TOutputImage >
+GetAverageSliceImageFilter< TInputImage, TOutputImage >
+::GetAverageSliceImageFilter()
 {
   m_AveragedOutDimension = this->GetAccumulateDimension();
   this->AverageOn();
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-GetAverageSliceImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+GetAverageSliceImageFilter< TInputImage, TOutputImage >::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

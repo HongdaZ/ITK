@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,11 +19,21 @@
 #define itkIndex_h
 
 #include "itkOffset.h"
+#include "itkFixedArray.h"
+#include "itkMath.h"
+
+#include <memory>
 
 namespace itk
 {
+namespace Functor
+{
+// Forward reference because of circular dependencies
+template< unsigned int VIndexDimension >
+class ITK_TEMPLATE_EXPORT IndexLexicographicCompare;
+}
 
-/** \struct Index
+/** \class Index
  * \brief Represent a n-dimensional index in a n-dimensional image.
  *
  * Index is a templated class to represent a multi-dimensional index,
@@ -34,111 +44,95 @@ namespace itk
  * copy constructor, or an operator=. We rely on the compiler to provide
  * efficient bitwise copies.
  *
- * Index is an "aggregate" class.  Its data is public (m_InternalArray)
+ * Index is an "aggregate" class.  Its data is public (m_Index)
  * allowing for fast and convenient instantiations/assignments.
  *
- * The following syntax for assigning an aggregate type like this is allowed/suggested:
+ * The following syntax for assigning an index is allowed/suggested:
  *
+ *    Index<3> index = {{5, 2, 7}};
  *
- * Index<3> var{{ 256, 256, 20 }}; // Also prevent narrowing conversions
- * Index<3> var = {{ 256, 256, 20 }};
+ * The double braces {{ and }} are needed to prevent a compiler warning
+ * about a partly bracketed initializer.
  *
- * The doubled braces {{ and }} are required to prevent `gcc -Wall'
- * (and perhaps other compilers) from complaining about a partly
- * bracketed initializer.
- *
- * As an aggregate type that is intended to provide highest performance
- * characteristics, this class is not appropriate to inherit from,
- * so setting this struct as final.
+ * \remark
+ * Should there be an itkBoundedIndex to handle bounds checking? Or should
+ * there be an API to perform bounded increments in the iterator.
  *
  * \ingroup ImageAccess
  * \ingroup ImageObjects
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/DistanceBetweenIndices,Distance between two indices}
- * \sphinxexample{Core/Common/CreateAIndex,Create A Index}
- * \endsphinx
+ * \wiki
+ * \wikiexample{SimpleOperations/DistanceBetweenIndices,Distance between two indices}
+ * \wikiexample{Images/Index,An object which holds the index of a pixel}
+ * \endwiki
  */
 
-template <unsigned int VDimension = 2>
-struct ITK_TEMPLATE_EXPORT Index final
+template< unsigned int VIndexDimension = 2 >
+class ITK_TEMPLATE_EXPORT Index
 {
 public:
-  // Using the `rule of zero` to this aggregate type
-  // C++20 changes the definition of aggregate such that classes with any user-declared ctors are no longer aggregates.
+  /** Standard class typedefs. */
+  typedef Index Self;
 
-  /** Standard class type aliases. */
-  using Self = Index;
-
-  /** Compatible Index and value type alias */
-  using IndexType = Index<VDimension>;
-  using IndexValueType = ::itk::IndexValueType;
-
-  /** Compatible Size type alias. */
-  using SizeType = Size<VDimension>;
-
-  /** Compatible Offset and Offset value type alias. */
-  using OffsetType = Offset<VDimension>;
-  using OffsetValueType = ::itk::OffsetValueType;
+  /** Compatible Index and value typedef */
+  typedef   Index< VIndexDimension > IndexType;
+  typedef   ::itk::IndexValueType    IndexValueType;
 
   /** Dimension constant */
-  static constexpr unsigned int Dimension = VDimension;
+  itkStaticConstMacro(Dimension, unsigned int, VIndexDimension);
 
-  /** Get the dimension. */
-  static constexpr unsigned int
-  GetIndexDimension()
-  {
-    return VDimension;
-  }
+  /** Get the dimension (size) of the index. */
+  static unsigned int GetIndexDimension() { return VIndexDimension; }
 
+  /** Compatible Size typedef. */
+  typedef   Size< VIndexDimension > SizeType;
 
-  /** Add a size to an index.  */
+  /** Compatible Offset and Offset value typedef. */
+  typedef   Offset< VIndexDimension >            OffsetType;
+  typedef   ::itk::OffsetValueType               OffsetValueType;
+
+  /** Lexicographic ordering functor type.  */
+  typedef Functor::IndexLexicographicCompare< VIndexDimension > LexicographicCompare;
+
+  /** Add a size to an index. This method models a random access Index. */
   const Self
-  operator+(const SizeType & sz) const
+  operator+(const SizeType & size) const
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] + static_cast<IndexValueType>(sz[i]);
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] + static_cast< IndexValueType >( size[i] ); }
     return result;
   }
 
-  /** Increment index by a size.  */
+  /** Increment index by a size. This method models a random access Index. */
   const Self &
-  operator+=(const SizeType & sz)
+  operator+=(const SizeType & size)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      m_InternalArray[i] += static_cast<IndexValueType>(sz[i]);
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { m_Index[i] += static_cast< IndexValueType >( size[i] ); }
     return *this;
   }
 
-  /** Subtract a size from an index.
-   */
+  /** Subtract a size from an index. This method models a random access Index.
+    */
   const Self
-  operator-(const SizeType & sz) const
+  operator-(const SizeType & size) const
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] - static_cast<IndexValueType>(sz[i]);
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] - static_cast< IndexValueType >( size[i] ); }
     return result;
   }
 
-  /** Decrement index by a size.  */
+  /** Decrement index by a size. This method models a random access Index. */
   const Self &
-  operator-=(const SizeType & sz)
+  operator-=(const SizeType & size)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      m_InternalArray[i] -= static_cast<IndexValueType>(sz[i]);
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { m_Index[i] -= static_cast< IndexValueType >( size[i] ); }
     return *this;
   }
 
@@ -148,32 +142,26 @@ public:
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] + offset[i];
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] + offset[i]; }
     return result;
   }
 
-  /** Increment index by an offset.  */
+  /** Increment index by an offset. This method models a random access Index. */
   const Self &
   operator+=(const OffsetType & offset)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      m_InternalArray[i] += offset[i];
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { m_Index[i] += offset[i]; }
     return *this;
   }
 
-  /** Decrement index by an offset.  */
+  /** Decrement index by an offset. This method models a random access Index. */
   const Self &
   operator-=(const OffsetType & offset)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      m_InternalArray[i] -= offset[i];
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { m_Index[i] -= offset[i]; }
     return *this;
   }
 
@@ -183,394 +171,231 @@ public:
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] - off.m_InternalArray[i];
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] - off.m_Offset[i]; }
     return result;
   }
 
-  /** Subtract two indices.  */
+  /** Subtract two indices. This method models a random access Index. */
   const OffsetType
   operator-(const Self & vec) const
   {
     OffsetType result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] - vec.m_InternalArray[i];
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] - vec.m_Index[i]; }
     return result;
   }
 
-  /**
-   * Multiply an index by a size (elementwise product).
-   */
-  const Self operator*(const SizeType & vec) const
+  /** Multiply an index by a size (elementwise product). This method
+   * models a random access Index.  */
+  const Self
+  operator*(const SizeType & vec) const
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
-    {
-      result[i] = m_InternalArray[i] * static_cast<IndexValueType>(vec.m_InternalArray[i]);
-    }
+    for ( unsigned int i = 0; i < VIndexDimension; i++ )
+                { result[i] = m_Index[i] * static_cast< IndexValueType >( vec.m_Size[i] ); }
     return result;
   }
 
-  /** Get the index. This provides a read only pointer to the index.
-   * \sa SetIndex() */
-  const IndexValueType *
-  GetIndex() const
+  /** Compare two indices. */
+  bool
+  operator==(const Self & vec) const
   {
-    return m_InternalArray;
+    bool same = true;
+
+    for ( unsigned int i = 0; i < VIndexDimension && same; i++ )
+                { same = ( m_Index[i] == vec.m_Index[i] ); }
+    return same;
   }
+
+  /** Compare two indices. */
+  bool
+  operator!=(const Self & vec) const
+  {
+    bool same = true;
+
+    for ( unsigned int i = 0; i < VIndexDimension && same; i++ )
+                { same = ( m_Index[i] == vec.m_Index[i] ); }
+    return !same;
+  }
+
+// false positive warnings with GCC 4.9
+#if defined( __GNUC__ )
+#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ == 9 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
+  /** Access an element of the index. Elements are numbered
+   * 0, ..., VIndexDimension-1. No bounds checking is performed. */
+  IndexValueType & operator[](unsigned int dim)
+  {
+    return m_Index[dim];
+  }
+#if defined( __GNUC__ )
+#if ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ == 9 )
+#pragma GCC diagnostic pop
+#endif
+#endif
+
+  /** Access an element of the index. Elements are numbered
+   * 0, ..., VIndexDimension-1. This version can only be an rvalue.
+   * No bounds checking is performed. */
+  IndexValueType operator[](unsigned int dim) const
+  { return m_Index[dim]; }
+
+  /** Get the index. This provides a read only reference to the index.
+   * \sa SetIndex() */
+  const IndexValueType * GetIndex() const { return m_Index; }
 
   /** Set the index.
    * Try to prototype this function so that val has to point to a block of
    * memory that is the appropriate size.
    * \sa GetIndex() */
-  void
-  SetIndex(const IndexValueType val[VDimension])
+  void SetIndex(const IndexValueType val[VIndexDimension])
   {
-    std::copy_n(val, VDimension, m_InternalArray);
+    std::copy(val,
+              val+VIndexDimension,
+              m_Index);
   }
 
-  /** Sets the value of one of the elements.
+  /** Sets the value of one of the elements in the index.
    * This method is mainly intended to facilitate the access to elements
    * from Tcl and Python where C++ notation is not very convenient.
-   * \warning No bound checking is performed.
+   * \warning No bound checking is performed
    * \sa SetIndex()
    * \sa GetElement() */
-  void
-  SetElement(unsigned long element, IndexValueType val)
-  {
-    m_InternalArray[element] = val;
-  }
+  void SetElement(unsigned long element, IndexValueType val)
+  { m_Index[element] = val;  }
 
-  /** Gets the value of one of the elements.
+  /** Gets the value of one of the elements in the index.
    * This method is mainly intended to facilitate the access to elements
    * from Tcl and Python where C++ notation is not very convenient.
    * \warning No bound checking is performed
    * \sa GetIndex()
    * \sa SetElement() */
-  IndexValueType
-  GetElement(unsigned long element) const
-  {
-    return m_InternalArray[element];
-  }
-
-  /** Set one value for the index in all dimensions.  Useful for initializing
-   * an offset to zero. */
-  void
-  Fill(IndexValueType value)
-  {
-    std::fill_n(begin(), size(), value);
-  } // MATCH std::array assign, ITK Fill
-
-  /** Index is an "aggregate" class.  Its data is public (m_InternalArray)
-   * allowing for fast and convenient instantiations/assignments.
-   * ( See main class documentation for an example of initialization)
-   */
-  /*
-   *  Ask the compiler to align a type to the maximum useful alignment for the target
-   *  machine you are compiling for. Whenever you leave out the alignment factor in an
-   *  aligned attribute specification, the compiler automatically sets the alignment
-   *  for the type to the largest alignment that is ever used for any data type on
-   *  the target machine you are compiling for. Doing this can often make copy
-   *  operations more efficient, because the compiler can use whatever instructions
-   *  copy the biggest chunks of memory when performing copies to or from the variables
-   *  that have types that you have aligned this way.
-   */
-  static_assert(VDimension > 0, "Error: Only positive value sized VDimension allowed");
-  alignas(IndexValueType) IndexValueType m_InternalArray[VDimension];
-
-  /** Copy values from a FixedArray by rounding each one of the components */
-  template <typename TCoordRep>
-  inline void
-  CopyWithRound(const FixedArray<TCoordRep, VDimension> & point)
-  {
-    for (unsigned int i = 0; i < VDimension; ++i)
-    {
-      m_InternalArray[i] = Math::Round<IndexValueType>(point[i]);
-    }
-  }
-
-  /** Copy values from a FixedArray by casting each one of the components */
-  template <typename TCoordRep>
-  inline void
-  CopyWithCast(const FixedArray<TCoordRep, VDimension> & point)
-  {
-    for (unsigned int i = 0; i < VDimension; ++i)
-    {
-      m_InternalArray[i] = static_cast<IndexValueType>(point[i]);
-    }
-  }
+  IndexValueType GetElement(unsigned long element) const
+  { return m_Index[element]; }
 
   /** Return a basis vector of the form [0, ..., 0, 1, 0, ... 0] where the "1"
    * is positioned in the location specified by the parameter "dim". Valid
-   * values of "dim" are 0, ..., VDimension-1. */
-  static Self
-  GetBasisIndex(unsigned int dim);
+   * values of "dim" are 0, ..., VIndexDimension-1. */
+  static Self GetBasisIndex(unsigned int dim);
 
+  /** Set one value for the index in all dimensions.  Useful for initializing
+   * an offset to zero. */
+  void Fill(IndexValueType value)
+  { for ( unsigned int i = 0; i < VIndexDimension; ++i ) { m_Index[i] = value; } }
 
-  // ======================= Mirror the access pattern behavior of the std::array class
-  /**
-   * Mirror the std::array type aliases and member function
-   * so that the Index class can be treated as a container
-   * class in a way that is similar to the std::array.
-   */
-  using value_type = ::itk::IndexValueType;
-  using reference = value_type &;
-  using const_reference = const value_type &;
-  using iterator = value_type *;
-  using const_iterator = const value_type *;
-  using size_type = unsigned int;
-  using difference_type = std::ptrdiff_t;
-  using reverse_iterator = std::reverse_iterator<iterator>;
-  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+  /** Index is an "aggregate" class.  Its data is public (m_Index)
+   * allowing for fast and convenient instantiations/assignments.
+   *
+   * The following syntax for assigning an index is allowed/suggested:
+   *    Index<3> index = {5, 2, 7}; */
+  IndexValueType m_Index[VIndexDimension];
 
-  /**
-   * Mirror behavior of the std::array manipulations
-   * See std::array for documentation on these methods
-   */
-  void
-  assign(const value_type & newValue)
+  /** Copy values from a FixedArray by rounding each one of the components */
+  template< typename TCoordRep >
+  inline void CopyWithRound(const FixedArray< TCoordRep, VIndexDimension > & point)
   {
-    std::fill_n(begin(), size(), newValue);
+    itkForLoopRoundingAndAssignmentMacro(IndexType,
+                                         ContinuousIndexType,
+                                         IndexValueType,
+                                         m_Index,
+                                         point,
+                                         VIndexDimension);
+    /* NON TEMPLATE_META_PROGRAMMING_LOOP_UNROLLING data version
+     * Leaving here for documentation purposes
+     * for ( unsigned int i = 0; i < VIndexDimension; ++i )
+     *   {
+     *   m_Index[i] = Math::Round< IndexValueType >(point[i]);
+     *   }
+     */
   }
 
-  void
-  swap(Index & other)
+  /** Copy values from a FixedArray by casting each one of the components */
+  template< typename TCoordRep >
+  inline void CopyWithCast(const FixedArray< TCoordRep, VIndexDimension > & point)
   {
-    std::swap(m_InternalArray, other.m_InternalArray);
+    for ( unsigned int i = 0; i < VIndexDimension; ++i )
+      {
+      m_Index[i] = static_cast< IndexValueType >( point[i] );
+      }
   }
 
-  iterator
-  begin()
-  {
-    return iterator(&m_InternalArray[0]);
-  }
+#if defined( ITK_WRAPPING_PARSER )
+  // Do not use c++11 'delete' keyword here.  This code block is here to
+  // explicitly provide the wrapping facilities with handles to the default and
+  // copy constructors, and the assignment operator that are otherwise declared
+  // implicitly.
+  Index();
+  Index(const Self&);
+  void operator=(const Self&);
+#endif
+};
 
-  const_iterator
-  begin() const
+namespace Functor
+{
+/** \class IndexLexicographicCompare
+ * \brief Order Index instances lexicographically.
+ *
+ * This is a comparison functor suitable for storing Index instances
+ * in an STL container.  The ordering is total and unique but has
+ * little geometric meaning.
+ * \ingroup ITKCommon
+ */
+template< unsigned int VIndexDimension >
+class ITK_TEMPLATE_EXPORT IndexLexicographicCompare
+{
+public:
+  bool operator()(Index< VIndexDimension > const & l,
+                  Index< VIndexDimension > const & r) const
   {
-    return const_iterator(&m_InternalArray[0]);
-  }
-
-  iterator
-  end()
-  {
-    return iterator(&m_InternalArray[VDimension]);
-  }
-
-  const_iterator
-  end() const
-  {
-    return const_iterator(&m_InternalArray[VDimension]);
-  }
-
-  reverse_iterator
-  rbegin()
-  {
-    return reverse_iterator(end());
-  }
-
-  const_reverse_iterator
-  rbegin() const
-  {
-    return const_reverse_iterator(end());
-  }
-
-  reverse_iterator
-  rend()
-  {
-    return reverse_iterator(begin());
-  }
-
-  const_reverse_iterator
-  rend() const
-  {
-    return const_reverse_iterator(begin());
-  }
-
-  constexpr size_type
-  size() const
-  {
-    return VDimension;
-  }
-
-  constexpr size_type
-  max_size() const
-  {
-    return VDimension;
-  }
-
-  constexpr bool
-  empty() const
-  {
+    for ( unsigned int i = 0; i < VIndexDimension; ++i )
+      {
+      if ( l.m_Index[i] < r.m_Index[i] )
+        {
+        return true;
+        }
+      else if ( l.m_Index[i] > r.m_Index[i] )
+        {
+        return false;
+        }
+      }
     return false;
   }
+};
+}
 
-  reference operator[](size_type pos) { return m_InternalArray[pos]; }
-
-  const_reference operator[](size_type pos) const { return m_InternalArray[pos]; }
-
-  reference
-  at(size_type pos)
-  {
-    ExceptionThrowingBoundsCheck(pos);
-    return m_InternalArray[pos];
-  }
-
-  const_reference
-  at(size_type pos) const
-  {
-    ExceptionThrowingBoundsCheck(pos);
-    return m_InternalArray[pos];
-  }
-
-  reference
-  front()
-  {
-    return *begin();
-  }
-
-  const_reference
-  front() const
-  {
-    return *begin();
-  }
-
-  reference
-  back()
-  {
-    return VDimension ? *(end() - 1) : *end();
-  }
-
-  const_reference
-  back() const
-  {
-    return VDimension ? *(end() - 1) : *end();
-  }
-
-  IndexValueType *
-  data()
-  {
-    return &m_InternalArray[0];
-  }
-
-  const IndexValueType *
-  data() const
-  {
-    return &m_InternalArray[0];
-  }
-
-
-  /** Returns an Index object, filled with the specified value for each element.
-   */
-  static Self
-  Filled(const IndexValueType value)
-  {
-    Self result;
-    result.Fill(value);
-    return result;
-  }
-
-
-private:
-  void
-  ExceptionThrowingBoundsCheck(size_type pos) const
-  {
-    if (pos >= VDimension)
-    {
-      throw std::out_of_range("array::ExceptionThrowingBoundsCheck");
-    }
-  }
-
-}; //------------ End struct Index
-
-template <unsigned int VDimension>
-Index<VDimension>
-Index<VDimension>::GetBasisIndex(unsigned int dim)
+template< unsigned int VIndexDimension >
+Index< VIndexDimension >
+Index< VIndexDimension >
+::GetBasisIndex(unsigned int dim)
 {
-  Self ind{ { 0 } };
+  Self ind;
 
-  ind.m_InternalArray[dim] = 1;
+  memset(ind.m_Index, 0, sizeof( IndexValueType ) * VIndexDimension);
+  ind.m_Index[dim] = 1;
   return ind;
 }
 
-template <unsigned int VDimension>
-std::ostream &
-operator<<(std::ostream & os, const Index<VDimension> & obj)
+template< unsigned int VIndexDimension >
+std::ostream & operator<<(std::ostream & os, const Index< VIndexDimension > & ind)
 {
   os << "[";
-  for (unsigned int i = 0; i + 1 < VDimension; ++i)
-  {
-    os << obj[i] << ", ";
-  }
-  if (VDimension >= 1)
-  {
-    os << obj[VDimension - 1];
-  }
+  for ( unsigned int i = 0; i + 1 < VIndexDimension; ++i )
+    {
+    os << ind[i] << ", ";
+    }
+  if ( VIndexDimension >= 1 )
+    {
+    os << ind[VIndexDimension - 1];
+    }
   os << "]";
   return os;
 }
-
-// ======================= Mirror the access pattern behavior of the std::array class
-// Array comparisons.
-template <unsigned int VDimension>
-inline bool
-operator==(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return std::equal(one.begin(), one.end(), two.begin());
-}
-
-template <unsigned int VDimension>
-inline bool
-operator!=(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return !(one == two);
-}
-
-template <unsigned int VDimension>
-inline bool
-operator<(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return std::lexicographical_compare(one.begin(), one.end(), two.begin(), two.end());
-}
-
-template <unsigned int VDimension>
-inline bool
-operator>(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return two < one;
-}
-
-template <unsigned int VDimension>
-inline bool
-operator<=(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return !(one > two);
-}
-
-template <unsigned int VDimension>
-inline bool
-operator>=(const Index<VDimension> & one, const Index<VDimension> & two)
-{
-  return !(one < two);
-}
-
-// Specialized algorithms [6.2.2.2].
-template <unsigned int VDimension>
-inline void
-swap(Index<VDimension> & one, Index<VDimension> & two)
-{
-  std::swap(one.m_InternalArray, two.m_InternalArray);
-}
-
-// static constexpr definition explicitly needed in C++11
-template <unsigned int VDimension>
-constexpr unsigned int Index<VDimension>::Dimension;
 } // end namespace itk
 
 #endif

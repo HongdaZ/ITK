@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class PathAndImageToPathFilter
+/** \class PathAndImageToPathFilter
  * \brief Base class for filters that take both a path and an image as input and produce a path as output.
  *
  * This class is the base class for filters that take both a path and an image
@@ -35,17 +34,16 @@ namespace itk
  * \ingroup PathFilters
  * \ingroup ITKPath
  */
-template <typename TInputPath, typename TInputImage, typename TOutputPath>
-class ITK_TEMPLATE_EXPORT PathAndImageToPathFilter : public PathToPathFilter<TInputPath, TOutputPath>
+template< typename TInputPath, typename TInputImage, typename TOutputPath >
+class ITK_TEMPLATE_EXPORT PathAndImageToPathFilter:
+  public PathToPathFilter< TInputPath, TOutputPath >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PathAndImageToPathFilter);
-
-  /** Standard class type aliases. */
-  using Self = PathAndImageToPathFilter;
-  using Superclass = PathToPathFilter<TInputPath, TOutputPath>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PathAndImageToPathFilter                    Self;
+  typedef PathToPathFilter< TInputPath, TOutputPath > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,48 +51,44 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(PathAndImageToPathFilter, PathToPathFilter);
 
-  /** Some convenient type alias. */
-  using InputPathType = TInputPath;
-  using InputPathPointer = typename InputPathType::Pointer;
-  using InputPathConstPointer = typename InputPathType::ConstPointer;
-  using InputPathInputType = typename InputPathType::InputType;
-  using InputPathOutputType = typename InputPathType::OutputType;
-  using InputPathIndexType = typename InputPathType::IndexType;
-  using InputPathOffsetType = typename InputPathType::OffsetType;
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputPathType = TOutputPath;
-  using OutputPathPointer = typename OutputPathType::Pointer;
-  using OutputPathInputType = typename OutputPathType::InputType;
-  using OutputPathOutputType = typename OutputPathType::OutputType;
-  using OutputPathIndexType = typename OutputPathType::IndexType;
-  using OutputPathOffsetType = typename OutputPathType::OffsetType;
+  /** Some convenient typedefs. */
+  typedef          TInputPath                   InputPathType;
+  typedef typename InputPathType::Pointer       InputPathPointer;
+  typedef typename InputPathType::ConstPointer  InputPathConstPointer;
+  typedef typename InputPathType::InputType     InputPathInputType;
+  typedef typename InputPathType::OutputType    InputPathOutputType;
+  typedef typename InputPathType::IndexType     InputPathIndexType;
+  typedef typename InputPathType::OffsetType    InputPathOffsetType;
+  typedef          TInputImage                  InputImageType;
+  typedef typename InputImageType::ConstPointer InputImagePointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
+  typedef          TOutputPath                  OutputPathType;
+  typedef typename OutputPathType::Pointer      OutputPathPointer;
+  typedef typename OutputPathType::InputType    OutputPathInputType;
+  typedef typename OutputPathType::OutputType   OutputPathOutputType;
+  typedef typename OutputPathType::IndexType    OutputPathIndexType;
+  typedef typename OutputPathType::OffsetType   OutputPathOffsetType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Set/Get the path input of this process object. */
-  virtual void
-  SetPathInput(const TInputPath * path);
+  virtual void SetPathInput(const TInputPath *path);
 
-  const InputPathType *
-  GetPathInput();
+  const InputPathType * GetPathInput();
 
   /** Set/Get the image input of this process object. */
-  virtual void
-  SetImageInput(const TInputImage * image);
+  virtual void SetImageInput(const TInputImage *image);
 
-  const InputImageType *
-  GetImageInput();
+  const InputImageType * GetImageInput();
 
 protected:
   PathAndImageToPathFilter();
-  ~PathAndImageToPathFilter() override = default;
+  virtual ~PathAndImageToPathFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** What is the input requested region that is required to produce the output
    * requested region?  Up till and including now, the base assumption is that
@@ -103,13 +97,15 @@ protected:
    * its first step.
    *
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PathAndImageToPathFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPathAndImageToPathFilter.hxx"
+#include "itkPathAndImageToPathFilter.hxx"
 #endif
 
 #endif

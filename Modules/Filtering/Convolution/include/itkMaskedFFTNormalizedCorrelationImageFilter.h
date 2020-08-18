@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -109,16 +109,16 @@ namespace itk
  * size(fixedImage) + size(movingImage) - 1.
  *
  * Example filter usage:
-   \code
-   using FilterType = itk::MaskedFFTNormalizedCorrelationImageFilter< ShortImageType, DoubleImageType >;
-   FilterType::Pointer filter = FilterType::New();
-   filter->SetFixedImage( fixedImage );
-   filter->SetMovingImage( movingImage );
-   filter->SetFixedImageMask( fixedMask );
-   filter->SetMovingImageMask( movingMask );
-   filter->SetRequiredNumberOfOverlappingPixels(20);
-   filter->Update();
-   \endcode
+ * \code
+ * typedef itk::MaskedFFTNormalizedCorrelationImageFilter< ShortImageType, DoubleImageType > FilterType;
+ * FilterType::Pointer filter = FilterType::New();
+ * filter->SetFixedImage( fixedImage );
+ * filter->SetMovingImage( movingImage );
+ * filter->SetFixedImageMask( fixedMask );
+ * filter->SetMovingImageMask( movingMask );
+ * filter->SetRequiredNumberOfOverlappingPixels(20);
+ * filter->Update();
+ * \endcode
  *
  * \warning The pixel type of the output image must be of real type
  * (float or double). ConceptChecking is used to enforce the output pixel
@@ -133,25 +133,18 @@ namespace itk
  *
  * \author: Dirk Padfield, GE Global Research, padfield\@research.ge.com
  * \ingroup ITKConvolution
- *
- * \sphinx
- * \sphinxexample{Filtering/Convolution/NormalizedCorrelationUsingFFTWithMaskImages,Normalized Correlation Using FFT
- With Mask Images For Input Images}
- * \endsphinx
  */
 
-template <typename TInputImage, typename TOutputImage, typename TMaskImage = TInputImage>
-class ITK_TEMPLATE_EXPORT MaskedFFTNormalizedCorrelationImageFilter
-  : public ImageToImageFilter<TInputImage, TOutputImage>
+template <typename TInputImage, typename TOutputImage, typename TMaskImage=TInputImage >
+class ITK_TEMPLATE_EXPORT MaskedFFTNormalizedCorrelationImageFilter :
+    public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskedFFTNormalizedCorrelationImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MaskedFFTNormalizedCorrelationImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MaskedFFTNormalizedCorrelationImageFilter                     Self;
+  typedef ImageToImageFilter < TInputImage, TOutputImage >              Superclass;
+  typedef SmartPointer<Self>                                            Pointer;
+  typedef SmartPointer<const Self>                                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -161,33 +154,34 @@ public:
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Extract some information from the image types. */
-  using InputImageType = TInputImage;
-  using InputRegionType = typename InputImageType::RegionType;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputSizeType = typename InputImageType::SizeType;
-  using SizeValueType = itk::SizeValueType;
+  typedef TInputImage                               InputImageType;
+  typedef typename InputImageType::RegionType       InputRegionType;
+  typedef typename InputImageType::Pointer          InputImagePointer;
+  typedef typename InputImageType::ConstPointer     InputImageConstPointer;
+  typedef typename InputImageType::SizeType         InputSizeType;
+  typedef typename itk::SizeValueType               SizeValueType;
 
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputPixelType = typename OutputImageType::PixelType;
+  typedef TOutputImage                              OutputImageType;
+  typedef typename OutputImageType::Pointer         OutputImagePointer;
+  typedef typename OutputImageType::PixelType       OutputPixelType;
 
-  using RealPixelType = OutputPixelType;
-  using RealImageType = Image<RealPixelType, ImageDimension>;
-  using RealImagePointer = typename RealImageType::Pointer;
-  using RealIndexType = typename RealImageType::IndexType;
-  using RealSizeType = typename RealImageType::SizeType;
-  using RealRegionType = typename RealImageType::RegionType;
-  using RealPointType = typename RealImageType::PointType;
+  typedef OutputPixelType                           RealPixelType;
+  typedef Image< RealPixelType, ImageDimension>     RealImageType;
+  typedef typename RealImageType::Pointer           RealImagePointer;
+  typedef typename RealImageType::IndexType         RealIndexType;
+  typedef typename RealImageType::SizeType          RealSizeType;
+  typedef typename RealImageType::RegionType        RealRegionType;
+  typedef typename RealImageType::PointType         RealPointType;
 
-  using MaskImageType = TMaskImage;
-  using MaskImagePointer = typename MaskImageType::Pointer;
+  typedef TMaskImage                                MaskImageType;
+  typedef typename MaskImageType::Pointer           MaskImagePointer;
 
-  using FFTImageType = Image<std::complex<RealPixelType>, ImageDimension>;
-  using FFTImagePointer = typename FFTImageType::Pointer;
+  typedef Image< std::complex<RealPixelType>, ImageDimension >  FFTImageType;
+  typedef typename FFTImageType::Pointer                        FFTImagePointer;
 
   /** Set and get the fixed image */
   itkSetInputMacro(FixedImage, InputImageType);
@@ -206,24 +200,25 @@ public:
   itkGetInputMacro(MovingImageMask, MaskImageType);
 
   /** Set and get the required number of overlapping pixels */
-  itkSetMacro(RequiredNumberOfOverlappingPixels, SizeValueType);
-  itkGetMacro(RequiredNumberOfOverlappingPixels, SizeValueType);
+  itkSetMacro(RequiredNumberOfOverlappingPixels,SizeValueType);
+  itkGetMacro(RequiredNumberOfOverlappingPixels,SizeValueType);
 
   /** Set and get the required fraction of overlapping pixels */
-  itkGetMacro(RequiredFractionOfOverlappingPixels, RealPixelType);
+  itkGetMacro(RequiredFractionOfOverlappingPixels,RealPixelType);
   itkSetClampMacro(RequiredFractionOfOverlappingPixels, RealPixelType, 0.0f, 1.0f);
 
   /** Get the maximum number of overlapping pixels. */
-  itkGetMacro(MaximumNumberOfOverlappingPixels, SizeValueType);
+  itkGetMacro(MaximumNumberOfOverlappingPixels,SizeValueType);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputPixelTypeIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputPixelType>));
+  itkConceptMacro( OutputPixelTypeIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  MaskedFFTNormalizedCorrelationImageFilter()
+  MaskedFFTNormalizedCorrelationImageFilter():m_TotalForwardAndInverseFFTs(12)
   {
     // #0 "FixedImage" required
     Self::SetPrimaryInputName("FixedImage");
@@ -242,110 +237,94 @@ protected:
     m_MaximumNumberOfOverlappingPixels = 0;
     m_AccumulatedProgress = 0.0;
   }
-  ~MaskedFFTNormalizedCorrelationImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MaskedFFTNormalizedCorrelationImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /** Overlap the VerifyInputInformation method */
-  void
-  VerifyInputInformation() ITKv5_CONST override;
+  void VerifyInputInformation() ITK_OVERRIDE;
 
   /** Standard pipeline method.*/
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** This filter needs a different input requested region than the output
    * requested region.  As such, it needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Since the output of this filter is a different
    * size than the input, it must provide an implementation of
    * GenerateOutputInformation.
    * \sa ProcessObject::GenerateOutputRequestedRegion() */
-  void
-  GenerateOutputInformation() override;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  void EnlargeOutputRequestedRegion( DataObject *output ) ITK_OVERRIDE;
 
-  typename TMaskImage::Pointer
-  PreProcessMask(const InputImageType * inputImage, const MaskImageType * inputMask);
+  typename TMaskImage::Pointer PreProcessMask( const InputImageType * inputImage, const MaskImageType * inputMask );
 
-  typename TInputImage::Pointer
-  PreProcessImage(const InputImageType * inputImage, const MaskImageType * inputMask);
+  typename TInputImage::Pointer PreProcessImage( const InputImageType * inputImage, const MaskImageType * inputMask );
 
-  template <typename LocalInputImageType>
-  typename LocalInputImageType::Pointer
-  RotateImage(LocalInputImageType * inputImage);
+  template< typename LocalInputImageType >
+  typename LocalInputImageType::Pointer RotateImage( LocalInputImageType * inputImage );
 
-  template <typename LocalInputImageType, typename LocalOutputImageType>
-  typename LocalOutputImageType::Pointer
-  CalculateForwardFFT(LocalInputImageType * inputImage, InputSizeType & FFTImageSize);
+  template< typename LocalInputImageType, typename LocalOutputImageType >
+  typename LocalOutputImageType::Pointer CalculateForwardFFT( LocalInputImageType * inputImage, InputSizeType & FFTImageSize );
 
-  template <typename LocalInputImageType, typename LocalOutputImageType>
-  typename LocalOutputImageType::Pointer
-  CalculateInverseFFT(LocalInputImageType * inputImage, RealSizeType & combinedImageSize);
+  template< typename LocalInputImageType, typename LocalOutputImageType >
+  typename LocalOutputImageType::Pointer CalculateInverseFFT( LocalInputImageType * inputImage, RealSizeType & combinedImageSize );
 
   // Helper math methods.
-  template <typename LocalInputImageType, typename LocalOutputImageType>
-  typename LocalOutputImageType::Pointer
-  ElementProduct(LocalInputImageType * inputImage1, LocalInputImageType * inputImage2);
+  template< typename LocalInputImageType, typename LocalOutputImageType >
+  typename LocalOutputImageType::Pointer ElementProduct( LocalInputImageType * inputImage1, LocalInputImageType * inputImage2 );
 
-  template <typename LocalInputImageType>
-  typename LocalInputImageType::Pointer
-  ElementQuotient(LocalInputImageType * inputImage1, LocalInputImageType * inputImage2);
+  template< typename LocalInputImageType >
+  typename LocalInputImageType::Pointer ElementQuotient( LocalInputImageType * inputImage1, LocalInputImageType * inputImage2 );
 
-  template <typename LocalInputImageType>
-  typename LocalInputImageType::Pointer
-  ElementSubtraction(LocalInputImageType * inputImage1, LocalInputImageType * inputImage2);
+  template< typename LocalInputImageType >
+  typename LocalInputImageType::Pointer ElementSubtraction( LocalInputImageType * inputImage1, LocalInputImageType * inputImage2 );
 
-  template <typename LocalInputImageType>
-  typename LocalInputImageType::Pointer
-  ElementPositive(LocalInputImageType * inputImage);
+  template< typename LocalInputImageType >
+  typename LocalInputImageType::Pointer ElementPositive( LocalInputImageType * inputImage );
 
-  template <typename LocalInputImageType, typename LocalOutputImageType>
-  typename LocalOutputImageType::Pointer
-  ElementRound(LocalInputImageType * inputImage);
+  template< typename LocalInputImageType, typename LocalOutputImageType >
+  typename LocalOutputImageType::Pointer ElementRound( LocalInputImageType * inputImage );
 
   // This function factorizes the image size uses factors of 2, 3, and
   // 5.  After this factorization, if there are any remaining values,
   // the function returns this value.
-  int
-  FactorizeNumber(int n);
+  int FactorizeNumber( int n );
 
   // Find the closest valid dimension above the desired dimension.  This
   // will be a combination of 2s, 3s, and 5s.
-  int
-  FindClosestValidDimension(int n);
+  int FindClosestValidDimension( int n );
 
-  template <typename LocalInputImageType>
-  double
-  CalculatePrecisionTolerance(LocalInputImageType * inputImage);
+  template< typename LocalInputImageType >
+  double CalculatePrecisionTolerance( LocalInputImageType * inputImage );
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaskedFFTNormalizedCorrelationImageFilter);
+
   /** Larger values zero-out pixels on a larger border around the correlation image.
    * Thus, larger values remove less stable computations but also limit the capture range.
    * The default is set to 0. */
   SizeValueType m_RequiredNumberOfOverlappingPixels;
-  /** Similar to m_RequiredNumberOfOverlappingPixels except that the m_RequiredFractionOfOverlappingPixels is multiplied
-   * by the m_MaximumNumberOfOverlappingPixels to determine the requiredNumberOfOverlappingPixels. The default is 0. */
+  /** Similar to m_RequiredNumberOfOverlappingPixels except that the m_RequiredFractionOfOverlappingPixels is multiplied by the
+   * m_MaximumNumberOfOverlappingPixels to determine the requiredNumberOfOverlappingPixels.
+   * The default is 0. */
   RealPixelType m_RequiredFractionOfOverlappingPixels;
   /** This is computed internally */
   SizeValueType m_MaximumNumberOfOverlappingPixels;
 
   /** This is used for the progress reporter */
-  const unsigned int m_TotalForwardAndInverseFFTs{ 12 };
+  const unsigned int m_TotalForwardAndInverseFFTs;
   /** The total accumulated progress */
   float m_AccumulatedProgress;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMaskedFFTNormalizedCorrelationImageFilter.hxx"
+#include "itkMaskedFFTNormalizedCorrelationImageFilter.hxx"
 #endif
 
 #endif

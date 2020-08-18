@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,86 +25,95 @@
 #include "itkMath.h"
 #include "itkTestingMacros.h"
 
-int
-itkRobustAutomaticThresholdImageFilterTest(int argc, char * argv[])
+int itkRobustAutomaticThresholdImageFilterTest( int argc, char *argv[] )
 {
 
-  if (argc != 7)
-  {
+  if( argc != 7 )
+    {
     std::cerr << "Missing parameters." << std::endl;
-    std::cerr << "Usage: " << argv[0] << " inputImage outputImage pow insideValue outsideValue expectedThreshold"
-              << std::endl;
+    std::cerr << "Usage: " << argv[0]
+      << " inputImage outputImage pow insideValue outsideValue expectedThreshold"
+      << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned short;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned short                      PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using RealPixelType = float;
-  using RealImageType = itk::Image<RealPixelType, Dimension>;
+  typedef float                                   RealPixelType;
+  typedef itk::Image< RealPixelType, Dimension >  RealImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using GradientType = itk::GradientMagnitudeRecursiveGaussianImageFilter<ImageType, RealImageType>;
+  typedef itk::GradientMagnitudeRecursiveGaussianImageFilter< ImageType, RealImageType >
+    GradientType;
   GradientType::Pointer gradient = GradientType::New();
-  gradient->SetInput(reader->GetOutput());
-  gradient->SetSigma(10);
+  gradient->SetInput( reader->GetOutput() );
+  gradient->SetSigma( 10 );
   gradient->Update();
 
-  using FilterType = itk::RobustAutomaticThresholdImageFilter<ImageType, RealImageType>;
+  typedef itk::RobustAutomaticThresholdImageFilter< ImageType, RealImageType >
+    FilterType;
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, RobustAutomaticThresholdImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter,
+    RobustAutomaticThresholdImageFilter, ImageToImageFilter );
 
-  itk::SimpleFilterWatcher watcher(filter, "RobustAutomaticThresholdImageFilter");
-
-
-  filter->SetGradientImage(gradient->GetOutput());
-
-  double pow = std::stod(argv[3]);
-  filter->SetPow(pow);
-  ITK_TEST_SET_GET_VALUE(pow, filter->GetPow());
-
-  auto insideValue = static_cast<FilterType::InputPixelType>(std::stod(argv[4]));
-  filter->SetInsideValue(insideValue);
-  ITK_TEST_SET_GET_VALUE(insideValue, filter->GetInsideValue());
-
-  auto outsideValue = static_cast<FilterType::InputPixelType>(std::stod(argv[5]));
-  filter->SetOutsideValue(outsideValue);
-  ITK_TEST_SET_GET_VALUE(outsideValue, filter->GetOutsideValue());
+  itk::SimpleFilterWatcher watcher( filter, "RobustAutomaticThresholdImageFilter" );
 
 
-  filter->SetInput(reader->GetOutput());
+  filter->SetGradientImage( gradient->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+  double pow = atof( argv[3] );
+  filter->SetPow( pow );
+  TEST_SET_GET_VALUE( pow, filter->GetPow() );
+
+  FilterType::InputPixelType insideValue =
+    static_cast< FilterType::InputPixelType >( atof( argv[4] ) );
+  filter->SetInsideValue( insideValue );
+  TEST_SET_GET_VALUE( insideValue, filter->GetInsideValue() );
+
+  FilterType::OutputPixelType outsideValue =
+    static_cast< FilterType::InputPixelType >( atof( argv[5] ) );
+  filter->SetOutsideValue( outsideValue );
+  TEST_SET_GET_VALUE( outsideValue, filter->GetOutsideValue() );
+
+
+  filter->SetInput( reader->GetOutput() );
+
+  TRY_EXPECT_NO_EXCEPTION( filter->Update() );
 
 
   // Regression test
-  auto                       expectedThreshold = static_cast<FilterType::InputPixelType>(std::stod(argv[6]));
+  FilterType::InputPixelType expectedThreshold =
+    static_cast< FilterType::InputPixelType >( atof( argv[6] ) );
   FilterType::InputPixelType computedThreshold = filter->GetThreshold();
-  if (itk::Math::NotAlmostEquals(expectedThreshold, computedThreshold))
-  {
+  if( itk::Math::NotAlmostEquals( expectedThreshold, computedThreshold ) )
+    {
     std::cout << "Test failed!" << std::endl;
     std::cout << "Error in GetThreshold()" << std::endl;
     std::cout << "Expected: "
-              << static_cast<itk::NumericTraits<FilterType::InputPixelType>::PrintType>(expectedThreshold)
-              << ", but got: "
-              << static_cast<itk::NumericTraits<FilterType::InputPixelType>::PrintType>(computedThreshold) << std::endl;
+      << static_cast< itk::NumericTraits<
+      FilterType::InputPixelType >::PrintType >( expectedThreshold )
+      << ", but got: "
+      << static_cast< itk::NumericTraits<
+      FilterType::InputPixelType >::PrintType >( computedThreshold )
+      << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
 
   std::cout << "Test finished." << std::endl;

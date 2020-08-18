@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,17 +53,16 @@ namespace itk
  * \ingroup IntensityImageFilters SingleThreaded
  * \ingroup ITKImageStatistics
  */
-template <typename TInputImage, typename TOutputImage, typename TAccumulator>
-class ITK_TEMPLATE_EXPORT ProjectionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage, typename TAccumulator >
+class ITK_TEMPLATE_EXPORT ProjectionImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ProjectionImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ProjectionImageFilter                           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -71,28 +70,32 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ProjectionImageFilter, ImageToImageFilter);
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename    InputImageType::Pointer      InputImagePointer;
+  typedef typename    InputImageType::RegionType   InputImageRegionType;
+  typedef typename    InputImageType::PixelType    InputImagePixelType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename     OutputImageType::Pointer    OutputImagePointer;
+  typedef typename     OutputImageType::RegionType OutputImageRegionType;
+  typedef typename     OutputImageType::PixelType  OutputImagePixelType;
 
-  using AccumulatorType = TAccumulator;
+  typedef TAccumulator AccumulatorType;
 
   /** ImageDimension enumeration */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Input and output images must be the same dimension, or the output's
       dimension must be one less than that of the input. */
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(ImageDimensionCheck,
-                  (Concept::SameDimensionOrMinusOne<Self::InputImageDimension, Self::OutputImageDimension>));
+  itkConceptMacro( ImageDimensionCheck,
+                   ( Concept::SameDimensionOrMinusOne<
+                       itkGetStaticConstMacro(InputImageDimension),
+                       itkGetStaticConstMacro(OutputImageDimension) > ) );
   // End concept checking
 #endif
 
@@ -103,31 +106,29 @@ public:
 
 protected:
   ProjectionImageFilter();
-  ~ProjectionImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ProjectionImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Apply changes to the output image information. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Apply changes to the input image requested region. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  virtual void ThreadedGenerateData(
+    const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
-
-  virtual AccumulatorType NewAccumulator(SizeValueType) const;
+  virtual AccumulatorType NewAccumulator( SizeValueType ) const;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionImageFilter);
+
   unsigned int m_ProjectionDimension;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkProjectionImageFilter.hxx"
+#include "itkProjectionImageFilter.hxx"
 #endif
 
 #endif

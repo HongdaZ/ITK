@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,46 +41,47 @@ namespace itk
  *
  * \ingroup ITKImageFeature
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/SobelEdgeDetectionImageFilter,Sobel Edge Detection Image Filter}
- * \endsphinx
+ * \wiki
+ * \wikiexample{EdgesAndGradients/SobelEdgeDetectionImageFilter,SobelEdgeDetectionImageFilter}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT SobelEdgeDetectionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT SobelEdgeDetectionImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SobelEdgeDetectionImageFilter);
-
   /**
-   * Standard "Self" & Superclass type alias.
+   * Standard "Self" & Superclass typedef.
    */
-  using Self = SobelEdgeDetectionImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  typedef SobelEdgeDetectionImageFilter                   Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
 
   /**
    * Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same.
    */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename TInputImage::PixelType          InputPixelType;
+  typedef typename TInputImage::InternalPixelType  InputInternalPixelType;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /**
-   * Image type alias support
+   * Image typedef support
    */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
+  typedef TInputImage                      InputImageType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename InputImageType::Pointer InputImagePointer;
 
   /**
-   * Smart pointer type alias support
+   * Smart pointer typedef support
    */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /**
    * Run-time type information (and related methods)
@@ -101,20 +102,26 @@ public:
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion()
    */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, ImageDimension>));
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputPixelType>));
-  itkConceptMacro(OutputPixelIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputPixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, ImageDimension > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< OutputPixelType > ) );
+
+#ifdef ITK_USE_STRICT_CONCEPT_CHECKING
+  itkConceptMacro( OutputPixelIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< OutputPixelType > ) );
+#endif
+
   // End concept checking
 #endif
 
 protected:
-  SobelEdgeDetectionImageFilter() = default;
-  ~SobelEdgeDetectionImageFilter() override = default;
+  SobelEdgeDetectionImageFilter() {}
+  virtual ~SobelEdgeDetectionImageFilter() ITK_OVERRIDE {}
 
   /**
    * Standard pipeline method. While this class does not implement a
@@ -123,19 +130,21 @@ protected:
    * NeighborhoodOperatorImageFilter is multithreaded, this filter is
    * multithreaded by default.
    */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     Superclass::PrintSelf(os, indent);
   }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SobelEdgeDetectionImageFilter);
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSobelEdgeDetectionImageFilter.hxx"
+#include "itkSobelEdgeDetectionImageFilter.hxx"
 #endif
 
 #endif

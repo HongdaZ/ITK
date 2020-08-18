@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,38 +41,39 @@ namespace Statistics
  *
  * \ingroup ITKStatistics
  */
-template <typename TVector>
-class ITK_TEMPLATE_EXPORT DistanceToCentroidMembershipFunction : public MembershipFunctionBase<TVector>
+template< typename TVector >
+class ITK_TEMPLATE_EXPORT DistanceToCentroidMembershipFunction:
+  public MembershipFunctionBase< TVector >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DistanceToCentroidMembershipFunction);
-
-  /** Standard class type aliases */
-  using Self = DistanceToCentroidMembershipFunction;
-  using Superclass = MembershipFunctionBase<TVector>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef DistanceToCentroidMembershipFunction Self;
+  typedef MembershipFunctionBase< TVector >    Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
   /** Strandard macros */
-  itkTypeMacro(DistanceToCentroidMembershipFunction, MembershipFunctionBase);
+  itkTypeMacro(DistanceToCentroidMembershipFunction,
+               MembershipFunctionBase);
   itkNewMacro(Self);
 
   /** SmartPointer class for superclass */
-  using MembershipFunctionPointer = typename Superclass::Pointer;
+  typedef typename Superclass::Pointer MembershipFunctionPointer;
 
   /** Typedef alias for the measurement vectors */
-  using MeasurementVectorType = TVector;
+  typedef TVector MeasurementVectorType;
 
   /** Typedef to represent the length of measurement vectors */
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
+  typedef typename Superclass::MeasurementVectorSizeType
+  MeasurementVectorSizeType;
 
   /**  Set the length of each measurement vector. */
-  void SetMeasurementVectorSize(MeasurementVectorSizeType) override;
+  virtual void SetMeasurementVectorSize(MeasurementVectorSizeType) ITK_OVERRIDE;
 
   /** Type of the DistanceMetric to use */
-  using DistanceMetricType = DistanceMetric<MeasurementVectorType>;
-  using DistanceMetricPointer = typename DistanceMetricType::Pointer;
-  using CentroidType = typename DistanceMetricType::OriginType;
+  typedef DistanceMetric< MeasurementVectorType > DistanceMetricType;
+  typedef typename DistanceMetricType::Pointer    DistanceMetricPointer;
+  typedef typename DistanceMetricType::OriginType CentroidType;
 
   /** Set the DistanceMetric to be used when calling the Evaluate() method */
   itkSetObjectMacro(DistanceMetric, DistanceMetricType);
@@ -85,37 +86,34 @@ public:
    * function directly. */
 
   /** Set the centroid of the class (propagated to the DistanceMetric) */
-  void
-  SetCentroid(const CentroidType & centroid);
+  void SetCentroid(const CentroidType & centroid);
 
   /** Get the centroid of the class (requested from the DistanceMetric */
-  const CentroidType &
-  GetCentroid() const;
+  const CentroidType & GetCentroid() const;
 
   /**
    * Method to get probability of an instance. The return value is the
    * value of the density function, not probability. */
-  double
-  Evaluate(const MeasurementVectorType & measurement) const override;
+  double Evaluate(const MeasurementVectorType & measurement) const ITK_OVERRIDE;
 
 protected:
   DistanceToCentroidMembershipFunction();
-  ~DistanceToCentroidMembershipFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~DistanceToCentroidMembershipFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Return a copy of the current membership function */
-  typename LightObject::Pointer
-  InternalClone() const override;
+  virtual typename LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DistanceToCentroidMembershipFunction);
+
   DistanceMetricPointer m_DistanceMetric;
 };
 } // end of namespace Statistics
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDistanceToCentroidMembershipFunction.hxx"
+#include "itkDistanceToCentroidMembershipFunction.hxx"
 #endif
 
 #endif

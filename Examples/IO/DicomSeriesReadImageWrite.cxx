@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,30 +60,28 @@
 #include "itkDICOMSeriesFileNames.h"
 #include "itkImageFileWriter.h"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char* argv[] )
 {
 
-  if (argc < 3)
-  {
-    std::cerr << "Usage: " << argv[0] << " DicomDirectory  outputFileName  [seriesName]"
-              << std::endl;
+  if( argc < 3 )
+    {
+    std::cerr << "Usage: " << argv[0] << " DicomDirectory  outputFileName  [seriesName]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using ImageType = itk::Image<short, 3>;
-  using ReaderType = itk::ImageSeriesReader<ImageType>;
+  typedef itk::Image<short,3>                  ImageType;
+  typedef itk::ImageSeriesReader< ImageType >  ReaderType;
 
   itk::DICOMImageIO2::Pointer dicomIO = itk::DICOMImageIO2::New();
 
   // Get the DICOM filenames from the directory
   itk::DICOMSeriesFileNames::Pointer nameGenerator = itk::DICOMSeriesFileNames::New();
-  nameGenerator->SetDirectory(argv[1]);
+  nameGenerator->SetDirectory( argv[1] );
 
 
   try
-  {
-    using seriesIdContainer = std::vector<std::string>;
+    {
+    typedef std::vector<std::string> seriesIdContainer;
     const seriesIdContainer & seriesUID = nameGenerator->GetSeriesUIDs();
 
     seriesIdContainer::const_iterator seriesItr = seriesUID.begin();
@@ -94,69 +92,70 @@ main(int argc, char * argv[])
     std::cout << "Contains the following DICOM Series: ";
     std::cout << std::endl << std::endl;
 
-    while (seriesItr != seriesEnd)
-    {
+    while( seriesItr != seriesEnd )
+      {
       std::cout << seriesItr->c_str() << std::endl;
       ++seriesItr;
-    }
+      }
 
     std::cout << std::endl << std::endl;
     std::cout << "Now reading series: " << std::endl << std::endl;
 
-    using fileNamesContainer = std::vector<std::string>;
+    typedef std::vector<std::string> fileNamesContainer;
     fileNamesContainer fileNames;
 
-    if (argc < 4) // If no optional third argument
-    {
+    if( argc < 4 ) // If no optional third argument
+      {
       std::cout << seriesUID.begin()->c_str() << std::endl;
       fileNames = nameGenerator->GetFileNames();
-    }
+      }
     else
-    {
+      {
       std::cout << argv[3] << std::endl;
-      fileNames = nameGenerator->GetFileNames(argv[3]);
-    }
+      fileNames = nameGenerator->GetFileNames( argv[3] );
+      }
     std::cout << std::endl << std::endl;
 
     ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileNames(fileNames);
-    reader->SetImageIO(dicomIO);
+    reader->SetFileNames( fileNames );
+    reader->SetImageIO( dicomIO );
 
     try
-    {
+      {
       reader->Update();
-    }
-    catch (const itk::ExceptionObject & ex)
-    {
+      }
+    catch (itk::ExceptionObject &ex)
+      {
       std::cout << ex << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
-    using WriterType = itk::ImageFileWriter<ImageType>;
+    typedef itk::ImageFileWriter< ImageType > WriterType;
     WriterType::Pointer writer = WriterType::New();
 
-    std::cout << "Writing the image as " << std::endl << std::endl;
-    std::cout << argv[2] << std::endl << std::endl;
+    std::cout  << "Writing the image as " << std::endl << std::endl;
+    std::cout  << argv[2] << std::endl << std::endl;
 
-    writer->SetFileName(argv[2]);
+    writer->SetFileName( argv[2] );
 
-    writer->SetInput(reader->GetOutput());
+    writer->SetInput( reader->GetOutput() );
 
     try
-    {
+      {
       writer->Update();
-    }
-    catch (const itk::ExceptionObject & ex)
-    {
+      }
+    catch (itk::ExceptionObject &ex)
+      {
       std::cout << ex;
       return EXIT_FAILURE;
+      }
     }
-  }
-  catch (const itk::ExceptionObject & ex)
-  {
+  catch (itk::ExceptionObject &ex)
+    {
     std::cout << ex;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
+
 }

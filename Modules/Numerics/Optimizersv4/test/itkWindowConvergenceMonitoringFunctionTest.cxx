@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,32 +18,31 @@
 
 #include "itkWindowConvergenceMonitoringFunction.h"
 
-int
-itkWindowConvergenceMonitoringFunctionTest(int itkNotUsed(argc), char *[])
+int itkWindowConvergenceMonitoringFunctionTest( int itkNotUsed( argc ), char * [] )
 {
-  using RealType = float;
+  typedef float RealType;
 
-  using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<RealType>;
+  typedef itk::Function::WindowConvergenceMonitoringFunction<RealType> ConvergenceMonitoringType;
   ConvergenceMonitoringType::Pointer convergenceMonitoring = ConvergenceMonitoringType::New();
 
-  convergenceMonitoring->SetWindowSize(10);
+  convergenceMonitoring->SetWindowSize( 10 );
 
-  for (RealType x = 0.0; x < 20; x += 1.0)
-  {
-    convergenceMonitoring->AddEnergyValue(std::pow(static_cast<RealType>(2.0), -x));
+  for( RealType x = 0.0; x < 20; x += 1.0 )
+    {
+    convergenceMonitoring->AddEnergyValue( std::pow( static_cast<RealType>(2.0), -x ) );
     try
-    {
+      {
       std::cout << "convergence value: " << convergenceMonitoring->GetConvergenceValue() << std::endl;
-    }
-    catch (...)
-    {
+      }
+    catch(...)
+      {
       std::cout << "GetConvergenceValue() failed." << std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
   convergenceMonitoring->GetWindowSize();
-  convergenceMonitoring->Print(std::cout, 3);
+  convergenceMonitoring->Print( std::cout, 3 );
 
   return EXIT_SUCCESS;
 }

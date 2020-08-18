@@ -58,7 +58,7 @@ class SequenceOfFragments;
 class GDCM_EXPORT DataElement
 {
 public:
-  DataElement(const Tag& t = Tag(0), const VL& vl = 0, const VR &vr = VR::INVALID):TagField(t),ValueLengthField(vl),VRField(vr),ValueField(nullptr) {}
+  DataElement(const Tag& t = Tag(0), const VL& vl = 0, const VR &vr = VR::INVALID):TagField(t),ValueLengthField(vl),VRField(vr),ValueField(0) {}
   //DataElement( Attribute const &att );
 
   friend std::ostream& operator<<(std::ostream &_os, const DataElement &_val);
@@ -103,17 +103,17 @@ public:
     ValueLengthField = vl.GetLength();
   }
   /// Check if Data Element is empty
-  bool IsEmpty() const { return ValueField == nullptr || (GetByteValue() && GetByteValue()->IsEmpty()); }
+  bool IsEmpty() const { return ValueField == 0 || (GetByteValue() && GetByteValue()->IsEmpty()); }
 
   /// Make Data Element empty (no Value)
-  void Empty() { ValueField = nullptr; ValueLengthField = 0; }
+  void Empty() { ValueField = 0; ValueLengthField = 0; }
 
   /// Clear Data Element (make Value empty and invalidate Tag & VR)
   void Clear()
     {
     TagField = 0;
     VRField = VR::INVALID;
-    ValueField = nullptr;
+    ValueField = 0;
     ValueLengthField = 0;
     }
 
@@ -166,8 +166,14 @@ public:
     {
     return GetTag() < de.GetTag();
     }
-  DataElement &operator=(const DataElement &)
-    = default;
+  DataElement &operator=(const DataElement &de)
+    {
+    TagField = de.TagField;
+    ValueLengthField = de.ValueLengthField;
+    VRField = de.VRField;
+    ValueField = de.ValueField; // Pointer copy
+    return *this;
+    }
 
   bool operator==(const DataElement &de) const
     {

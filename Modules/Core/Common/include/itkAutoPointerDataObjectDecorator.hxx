@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,29 +32,42 @@
 
 namespace itk
 {
+/** Constructor */
+template< typename T >
+AutoPointerDataObjectDecorator< T >
+::AutoPointerDataObjectDecorator():m_Component()
+{}
+
+/** Destructor */
+template< typename T >
+AutoPointerDataObjectDecorator< T >
+::~AutoPointerDataObjectDecorator()
+{}
 
 /** Set value */
-template <typename T>
+template< typename T >
 void
-AutoPointerDataObjectDecorator<T>::Set(T * val)
+AutoPointerDataObjectDecorator< T >
+::Set(T *val)
 {
-  if (m_Component.get() != val)
-  {
+  if ( m_Component.get() != val )
+    {
     // store the pointer and take ownership of the memory
     ComponentPointer aPointer(val);
-    m_Component = std::move(aPointer);
+    m_Component = aPointer;
     this->Modified();
-  }
+    }
 }
 
 /** PrintSelf method */
-template <typename T>
+template< typename T >
 void
-AutoPointerDataObjectDecorator<T>::PrintSelf(std::ostream & os, Indent indent) const
+AutoPointerDataObjectDecorator< T >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Component: " << typeid(m_Component).name() << std::endl;
+  os << indent << "Component: " << typeid( m_Component ).name() << std::endl;
 }
 } // end namespace itk
 

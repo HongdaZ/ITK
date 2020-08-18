@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*-------------------------------------------------------------------------
@@ -26,8 +28,7 @@
 /* Module Setup */
 /****************/
 
-#include "H5HFmodule.h"         /* This source code file is part of the H5HF module */
-
+#define H5HF_PACKAGE		/*suppress error about including H5HFpkg  */
 
 /***********/
 /* Headers */
@@ -109,7 +110,7 @@ H5HF_man_iter_init(H5HF_block_iter_t *biter)
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5HF__man_iter_start_offset
+ * Function:	H5HF_man_iter_start_offset
  *
  * Purpose:	Initialize a block iterator to a particular location, given
  *              an offset in the heap
@@ -123,8 +124,8 @@ H5HF_man_iter_init(H5HF_block_iter_t *biter)
  *-------------------------------------------------------------------------
  */
 herr_t
-H5HF__man_iter_start_offset(H5HF_hdr_t *hdr, H5HF_block_iter_t *biter,
-    hsize_t offset)
+H5HF_man_iter_start_offset(H5HF_hdr_t *hdr, hid_t dxpl_id,
+    H5HF_block_iter_t *biter, hsize_t offset)
 {
     H5HF_indirect_t *iblock;        /* Indirect block for location context */
     haddr_t iblock_addr;            /* Address of indirect block */
@@ -137,7 +138,7 @@ H5HF__man_iter_start_offset(H5HF_hdr_t *hdr, H5HF_block_iter_t *biter,
     hbool_t root_block = TRUE;  /* Flag to indicate the current block is the root indirect block */
     herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_PACKAGE
+    FUNC_ENTER_NOAPI_NOINIT
 
     /*
      * Check arguments.
@@ -216,7 +217,7 @@ H5HF__man_iter_start_offset(H5HF_hdr_t *hdr, H5HF_block_iter_t *biter,
         } /* end else */
 
         /* Load indirect block for this context location */
-        if(NULL == (iblock = H5HF__man_iblock_protect(hdr, iblock_addr, iblock_nrows, iblock_parent, iblock_par_entry, FALSE, H5AC__NO_FLAGS_SET, &did_protect)))
+        if(NULL == (iblock = H5HF_man_iblock_protect(hdr, dxpl_id, iblock_addr, iblock_nrows, iblock_parent, iblock_par_entry, FALSE, H5AC_WRITE, &did_protect)))
             HGOTO_ERROR(H5E_HEAP, H5E_CANTPROTECT, FAIL, "unable to protect fractal heap indirect block")
 
         /* Make indirect block the context for the current location */
@@ -227,7 +228,7 @@ H5HF__man_iter_start_offset(H5HF_hdr_t *hdr, H5HF_block_iter_t *biter,
             HGOTO_ERROR(H5E_HEAP, H5E_CANTINC, FAIL, "can't increment reference count on shared indirect block")
 
         /* Release the current indirect block */
-        if(H5HF__man_iblock_unprotect(iblock, H5AC__NO_FLAGS_SET, did_protect) < 0)
+        if(H5HF_man_iblock_unprotect(iblock, dxpl_id, H5AC__NO_FLAGS_SET, did_protect) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTUNPROTECT, FAIL, "unable to release fractal heap indirect block")
         iblock = NULL;
 
@@ -261,7 +262,7 @@ H5HF__man_iter_start_offset(H5HF_hdr_t *hdr, H5HF_block_iter_t *biter,
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5HF__man_iter_start_offset() */
+} /* end H5HF_man_iter_start_offset() */
 
 
 /*-------------------------------------------------------------------------
@@ -395,7 +396,7 @@ H5HF_man_iter_reset(H5HF_block_iter_t *biter)
 
             /* If this node is holding an indirect block, release the block */
             if(curr_loc->context)
-                if(H5HF__iblock_decr(curr_loc->context) < 0)
+                if(H5HF_iblock_decr(curr_loc->context) < 0)
                     HGOTO_ERROR(H5E_HEAP, H5E_CANTDEC, FAIL, "can't decrement reference count on shared indirect block")
 
             /* Free the current location context */
@@ -484,7 +485,7 @@ H5HF_man_iter_up(H5HF_block_iter_t *biter)
     HDassert(biter->curr->context);
 
     /* Release hold on current location's indirect block */
-    if(H5HF__iblock_decr(biter->curr->context) < 0)
+    if(H5HF_iblock_decr(biter->curr->context) < 0)
         HGOTO_ERROR(H5E_HEAP, H5E_CANTDEC, FAIL, "can't decrement reference count on shared indirect block")
 
     /* Get pointer to location context above this one */

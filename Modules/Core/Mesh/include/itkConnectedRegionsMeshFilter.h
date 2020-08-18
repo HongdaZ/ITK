@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,78 +46,71 @@ namespace itk
  * \ingroup ITKMesh
  */
 
-template <typename TInputMesh, typename TOutputMesh>
-class ITK_TEMPLATE_EXPORT ConnectedRegionsMeshFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh >
+class ITK_TEMPLATE_EXPORT ConnectedRegionsMeshFilter:
+  public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConnectedRegionsMeshFilter);
+  /**
+   * Standard class typedefs.
+   */
+  typedef ConnectedRegionsMeshFilter Self;
 
   /**
-   * Standard class type aliases.
+   * Standard "Superclass" typedef.
    */
-  using Self = ConnectedRegionsMeshFilter;
+  typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
 
   /**
-   * Standard "Superclass" type alias.
+   * Smart pointer typedef support
    */
-  using Superclass = MeshToMeshFilter<TInputMesh, TOutputMesh>;
-
-  /**
-   * Smart pointer type alias support
-   */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /**
    * Method for creation through the object factory.
    */
-
   itkNewMacro(Self);
 
-  /** Run-time type information (and related methods). */
-  itkTypeMacro(ConnectedRegionsMeshFilter, MeshToMeshFilter);
-
   /**
-   * Convenient type alias for this filter.
+   * Convenient typedefs for this filter.
    */
-  using InputMeshType = TInputMesh;
-  using OutputMeshType = TOutputMesh;
-  using InputMeshConstPointer = typename TInputMesh::ConstPointer;
-  using OutputMeshPointer = typename TOutputMesh::Pointer;
+  typedef TInputMesh                        InputMeshType;
+  typedef TOutputMesh                       OutputMeshType;
+  typedef typename TInputMesh::ConstPointer InputMeshConstPointer;
+  typedef typename TOutputMesh::Pointer     OutputMeshPointer;
 
-  static constexpr unsigned int PointDimension = TInputMesh::PointDimension;
+  itkStaticConstMacro(PointDimension, unsigned int,
+                      TInputMesh::PointDimension);
 
-  using InputMeshPointType = typename TInputMesh::PointType;
-  using InputMeshPointIdentifier = typename TInputMesh::PointIdentifier;
-  using InputMeshPointsContainerConstPointer = typename TInputMesh::PointsContainerConstPointer;
-  using InputMeshCellsContainer = typename TInputMesh::CellsContainer;
-  using InputMeshCellsContainerPointer = typename TInputMesh::CellsContainerPointer;
-  using InputMeshCellsContainerConstPointer = typename TInputMesh::CellsContainerConstPointer;
-  using InputMeshCellDataContainer = typename TInputMesh::CellDataContainer;
-  using InputMeshCellDataContainerPointer = typename TInputMesh::CellDataContainerPointer;
-  using InputMeshCellDataContainerConstPointer = typename TInputMesh::CellDataContainerConstPointer;
-  using PointsContainerConstIterator = typename InputMeshType::PointsContainer::ConstIterator;
-  using CellsContainerConstIterator = typename InputMeshType::CellsContainer::ConstIterator;
-  using CellDataContainerConstIterator = typename InputMeshType::CellDataContainer::ConstIterator;
-  using InputMeshCellPointer = typename TInputMesh::CellAutoPointer;
-  using InputMeshPointIdConstIterator = typename TInputMesh::CellTraits::PointIdConstIterator;
-  using InputMeshCellLinksContainerConstPointer = typename TInputMesh::CellLinksContainerConstPointer;
-  using InputMeshCellLinksContainer = typename TInputMesh::PointCellLinksContainer;
-  using InputMeshCellIdentifier = typename TInputMesh::CellIdentifier;
+  typedef typename TInputMesh::PointType                           InputMeshPointType;
+  typedef typename TInputMesh::PointIdentifier                     InputMeshPointIdentifier;
+  typedef typename TInputMesh::PointsContainerConstPointer         InputMeshPointsContainerConstPointer;
+  typedef typename TInputMesh::CellsContainer                      InputMeshCellsContainer;
+  typedef typename TInputMesh::CellsContainerPointer               InputMeshCellsContainerPointer;
+  typedef typename TInputMesh::CellsContainerConstPointer          InputMeshCellsContainerConstPointer;
+  typedef typename TInputMesh::CellDataContainer                   InputMeshCellDataContainer;
+  typedef typename TInputMesh::CellDataContainerPointer            InputMeshCellDataContainerPointer;
+  typedef typename TInputMesh::CellDataContainerConstPointer       InputMeshCellDataContainerConstPointer;
+  typedef typename InputMeshType::PointsContainer::ConstIterator   PointsContainerConstIterator;
+  typedef typename InputMeshType::CellsContainer::ConstIterator    CellsContainerConstIterator;
+  typedef typename InputMeshType::CellDataContainer::ConstIterator CellDataContainerConstIterator;
+  typedef typename TInputMesh::CellAutoPointer                     InputMeshCellPointer;
+  typedef typename TInputMesh::CellTraits::PointIdConstIterator    InputMeshPointIdConstIterator;
+  typedef typename TInputMesh::CellLinksContainerConstPointer      InputMeshCellLinksContainerConstPointer;
+  typedef typename TInputMesh::PointCellLinksContainer             InputMeshCellLinksContainer;
+  typedef typename TInputMesh::CellIdentifier                      InputMeshCellIdentifier;
 
   /**
    * Different modes of operation. Use these to specify
    * how to extract the regions.
    */
-  enum
-  {
-    PointSeededRegions = 0,
-    CellSeededRegions = 1,
-    SpecifiedRegions = 2,
-    LargestRegion = 3,
-    AllRegions = 4,
-    ClosestPointRegion = 5
-  };
+  enum { PointSeededRegions = 0,
+         CellSeededRegions = 1,
+         SpecifiedRegions = 2,
+         LargestRegion = 3,
+         AllRegions = 4,
+         ClosestPointRegion = 5 };
 
   /**
    * Methods specify mode of operation for the filter. Note that
@@ -128,38 +121,32 @@ public:
   itkSetMacro(ExtractionMode, int);
   itkGetConstMacro(ExtractionMode, int);
 
-  void
-  SetExtractionModeToPointSeededRegions()
+  void SetExtractionModeToPointSeededRegions(void)
   {
     this->SetExtractionMode(Self::PointSeededRegions);
   }
 
-  void
-  SetExtractionModeToCellSeededRegions()
+  void SetExtractionModeToCellSeededRegions(void)
   {
     this->SetExtractionMode(Self::CellSeededRegions);
   }
 
-  void
-  SetExtractionModeToSpecifiedRegions()
+  void SetExtractionModeToSpecifiedRegions(void)
   {
     this->SetExtractionMode(Self::SpecifiedRegions);
   }
 
-  void
-  SetExtractionModeToLargestRegion()
+  void SetExtractionModeToLargestRegion(void)
   {
     this->SetExtractionMode(Self::LargestRegion);
   }
 
-  void
-  SetExtractionModeToAllRegions()
+  void SetExtractionModeToAllRegions(void)
   {
     this->SetExtractionMode(Self::AllRegions);
   }
 
-  void
-  SetExtractionModeToClosestPointRegion()
+  void SetExtractionModeToClosestPointRegion(void)
   {
     this->SetExtractionMode(Self::ClosestPointRegion);
   }
@@ -167,8 +154,7 @@ public:
   /**
    * Initialize list of point ids/cell ids used to seed regions.
    */
-  void
-  InitializeSeedList()
+  void InitializeSeedList(void)
   {
     this->Modified();
     m_SeedList.clear();
@@ -177,8 +163,7 @@ public:
   /**
    * Add a seed id (point or cell id). Note: ids are 0-offset.
    */
-  void
-  AddSeed(IdentifierType id)
+  void AddSeed(IdentifierType id)
   {
     this->Modified();
     m_SeedList.push_back(id);
@@ -187,14 +172,12 @@ public:
   /**
    * Delete a seed id (point or cell id). Note: ids are 0-offset.
    */
-  void
-  DeleteSeed(IdentifierType id);
+  void DeleteSeed(IdentifierType id);
 
   /**
    * Initialize list of region ids to extract.
    */
-  void
-  InitializeSpecifiedRegionList()
+  void InitializeSpecifiedRegionList(void)
   {
     this->Modified();
     m_RegionList.clear();
@@ -203,8 +186,7 @@ public:
   /**
    * Add a region id to extract. Note: ids are 0-offset.
    */
-  void
-  AddSpecifiedRegion(IdentifierType id)
+  void AddSpecifiedRegion(IdentifierType id)
   {
     this->Modified();
     m_RegionList.push_back(id);
@@ -213,25 +195,22 @@ public:
   /**
    * Delete a region id to extract. Note: ids are 0-offset.
    */
-  void
-  DeleteSpecifiedRegion(IdentifierType id);
+  void DeleteSpecifiedRegion(IdentifierType id);
 
   /**
    * Use to specify x-y-z point coordinates when extracting the region
    * closest to a specified point.
    */
-  void
-  SetClosestPoint(InputMeshPointType & p)
+  void SetClosestPoint(InputMeshPointType & p)
   {
-    if (m_ClosestPoint != p)
-    {
+    if ( m_ClosestPoint != p )
+      {
       m_ClosestPoint = p;
       this->Modified();
-    }
+      }
   }
 
-  InputMeshPointType &
-  GetClosestPoint(InputMeshPointType &)
+  InputMeshPointType & GetClosestPoint(InputMeshPointType &)
   {
     return m_ClosestPoint;
   }
@@ -239,42 +218,42 @@ public:
   /**
    * Obtain the number of connected regions.
    */
-  SizeValueType
-  GetNumberOfExtractedRegions()
+  SizeValueType GetNumberOfExtractedRegions()
   {
     return m_RegionList.size();
   }
 
 protected:
+
   ConnectedRegionsMeshFilter();
-  ~ConnectedRegionsMeshFilter() override = default;
+  virtual ~ConnectedRegionsMeshFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  void
-  PropagateConnectedWave();
+  void PropagateConnectedWave();
 
 private:
-  int                         m_ExtractionMode;
-  InputMeshPointType          m_ClosestPoint;
-  std::vector<IdentifierType> m_SeedList;
-  std::vector<IdentifierType> m_RegionList;
-  std::vector<SizeValueType>  m_RegionSizes;
 
-  std::vector<OffsetValueType>  m_Visited;
-  SizeValueType                 m_NumberOfCellsInRegion;
-  IdentifierType                m_RegionNumber;
-  std::vector<IdentifierType> * m_Wave{ nullptr };
-  std::vector<IdentifierType> * m_Wave2{ nullptr };
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConnectedRegionsMeshFilter);
+
+  int                            m_ExtractionMode;
+  InputMeshPointType             m_ClosestPoint;
+  std::vector< IdentifierType >  m_SeedList;
+  std::vector< IdentifierType >  m_RegionList;
+  std::vector< SizeValueType >   m_RegionSizes;
+
+  std::vector< OffsetValueType > m_Visited;
+  SizeValueType                  m_NumberOfCellsInRegion;
+  IdentifierType                 m_RegionNumber;
+  std::vector< IdentifierType > *m_Wave;
+  std::vector< IdentifierType > *m_Wave2;
 }; // class declaration
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkConnectedRegionsMeshFilter.hxx"
+#include "itkConnectedRegionsMeshFilter.hxx"
 #endif
 
 #endif

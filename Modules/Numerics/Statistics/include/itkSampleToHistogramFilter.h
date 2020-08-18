@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,33 +23,20 @@
 #include "itkMeasurementVectorTraits.h"
 #include "itkSimpleDataObjectDecorator.h"
 
-itkDeclareExceptionMacro(SampleToHistogramFilterException, ExceptionObject, "Histogram-related Exception");
-itkDeclareExceptionMacro(MissingHistogramSizeInput,
-                         SampleToHistogramFilterException,
-                         "Histogram Size input is missing");
-itkDeclareExceptionMacro(MissingHistogramMarginalScaleInput,
-                         SampleToHistogramFilterException,
-                         "Histogram marginal scale input is missing");
-itkDeclareExceptionMacro(NullSizeHistogramInputMeasurementVectorSize,
-                         SampleToHistogramFilterException,
-                         "Input sample MeasurementVectorSize is zero");
-itkDeclareExceptionMacro(MissingHistogramBinMaximumInput,
-                         SampleToHistogramFilterException,
-                         "Histogram Bin Maximum input is missing");
-itkDeclareExceptionMacro(MissingHistogramBinMinimumInput,
-                         SampleToHistogramFilterException,
-                         "Histogram Bin Minimum input is missing");
-itkDeclareExceptionMacro(HistogramWrongNumberOfComponents,
-                         SampleToHistogramFilterException,
-                         "Histogram has wrong number of components");
+itkDeclareExceptionMacro( SampleToHistogramFilterException, ExceptionObject, "Histogram-related Exception");
+itkDeclareExceptionMacro( MissingHistogramSizeInput, SampleToHistogramFilterException, "Histogram Size input is missing");
+itkDeclareExceptionMacro( MissingHistogramMarginalScaleInput, SampleToHistogramFilterException, "Histogram marginal scale input is missing");
+itkDeclareExceptionMacro( NullSizeHistogramInputMeasurementVectorSize, SampleToHistogramFilterException, "Input sample MeasurementVectorSize is zero");
+itkDeclareExceptionMacro( MissingHistogramBinMaximumInput, SampleToHistogramFilterException, "Histogram Bin Maximum input is missing");
+itkDeclareExceptionMacro( MissingHistogramBinMinimumInput, SampleToHistogramFilterException, "Histogram Bin Minimum input is missing");
+itkDeclareExceptionMacro( HistogramWrongNumberOfComponents, SampleToHistogramFilterException, "Histogram has wrong number of components");
 
 namespace itk
 {
 namespace Statistics
 {
 
-/**
- *\class SampleToHistogramFilter
+/** \class SampleToHistogramFilter
  *  \brief Computes the Histogram corresponding to a Sample.
  *
  * This filter produces as output the histogram corresponding to
@@ -59,22 +46,20 @@ namespace Statistics
  *
  * \ingroup ITKStatistics
  *
- * \sphinx
- * \sphinxexample{Numerics/Statistics/CreateHistogramFromListOfMeasurements,Create Histogram From List Of Measurements}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Statistics/SampleToHistogramFilter,Create a histogram from a list of sample measurements}
+ * \endwiki
  */
 
-template <typename TSample, typename THistogram>
-class ITK_TEMPLATE_EXPORT SampleToHistogramFilter : public ProcessObject
+template< typename TSample, typename THistogram >
+class ITK_TEMPLATE_EXPORT SampleToHistogramFilter:public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SampleToHistogramFilter);
-
-  /** Standard class type aliases */
-  using Self = SampleToHistogramFilter;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef SampleToHistogramFilter    Self;
+  typedef ProcessObject              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(SampleToHistogramFilter, ProcessObject);
@@ -82,43 +67,43 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** MeasurementVector type alias support */
-  using SampleType = TSample;
-  using HistogramType = THistogram;
-  using MeasurementVectorType = typename SampleType::MeasurementVectorType;
-  using MeasurementType = typename MeasurementVectorType::ValueType;
-  using HistogramSizeType = typename HistogramType::SizeType;
-  using HistogramMeasurementType = typename HistogramType::MeasurementType;
-  using HistogramMeasurementVectorType = typename HistogramType::MeasurementVectorType;
+  /** MeasurementVector typedef support */
+  typedef TSample                                       SampleType;
+  typedef THistogram                                    HistogramType;
+  typedef typename SampleType::MeasurementVectorType    MeasurementVectorType;
+  typedef typename MeasurementVectorType::ValueType     MeasurementType;
+  typedef typename HistogramType::SizeType              HistogramSizeType;
+  typedef typename HistogramType::MeasurementType       HistogramMeasurementType;
+  typedef typename HistogramType::MeasurementVectorType HistogramMeasurementVectorType;
 
   /** Type for the data object output */
-  using DataObjectPointer = typename Superclass::DataObjectPointer;
+  typedef typename Superclass::DataObjectPointer DataObjectPointer;
 
   using Superclass::SetInput;
 
   /** Set/Get the input sample */
-  virtual void
-  SetInput(const SampleType * sample);
+  virtual void SetInput(const SampleType *sample);
 
-  virtual const SampleType *
-  GetInput() const;
+  virtual const SampleType * GetInput() const;
 
   /** Get the output Histogram */
-  const HistogramType *
-  GetOutput() const;
+  const HistogramType  * GetOutput() const;
 
   /** Type of DataObjects to use for Size inputs */
-  using InputHistogramSizeObjectType = SimpleDataObjectDecorator<HistogramSizeType>;
+  typedef SimpleDataObjectDecorator<
+    HistogramSizeType > InputHistogramSizeObjectType;
 
   /** Type of DataObjects to use for Marginal Scale inputs */
-  using InputHistogramMeasurementObjectType = SimpleDataObjectDecorator<HistogramMeasurementType>;
+  typedef SimpleDataObjectDecorator<
+    HistogramMeasurementType > InputHistogramMeasurementObjectType;
 
   /** Type of DataObjects to use for Minimum and Maximums values of the
    * histogram bins. */
-  using InputHistogramMeasurementVectorObjectType = SimpleDataObjectDecorator<HistogramMeasurementVectorType>;
+  typedef SimpleDataObjectDecorator<
+    HistogramMeasurementVectorType > InputHistogramMeasurementVectorObjectType;
 
   /** Type of DataObjects to use for AutoMinimumMaximum input */
-  using InputBooleanObjectType = SimpleDataObjectDecorator<bool>;
+  typedef SimpleDataObjectDecorator< bool > InputBooleanObjectType;
 
   /** Methods for setting and getting the histogram size.  The histogram size
    * is encapsulated inside a decorator class. For this reason, it is possible
@@ -129,7 +114,7 @@ public:
   itkSetGetDecoratedInputMacro(HistogramSize, HistogramSizeType);
 
   /** Methods for setting and getting the Marginal scale value.  The marginal
-   * scale is used when the type of the measurement vector components are of
+   * scale is used when the type of the measurement vector componets are of
    * integer type. */
   itkSetGetDecoratedInputMacro(MarginalScale, HistogramMeasurementType);
 
@@ -147,15 +132,13 @@ public:
 
   /** Method that facilitates the use of this filter in the internal
    * pipeline of another filter. */
-  virtual void
-  GraftOutput(DataObject * output);
+  virtual void GraftOutput(DataObject *output);
 
 protected:
   SampleToHistogramFilter();
-  ~SampleToHistogramFilter() override = default;
+  virtual ~SampleToHistogramFilter() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Make a DataObject of the correct type to used as the specified
    * output. This method
@@ -163,43 +146,44 @@ protected:
    * called.
    * \sa ProcessObject
    */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   // Where the histogram is actually computed
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SampleToHistogramFilter);
+
   /** SafeAssign -- avoid numeric overflow/underflow */
-  HistogramMeasurementType
-  SafeAssign(MeasurementType from) const
+  HistogramMeasurementType SafeAssign(MeasurementType from) const
   {
-    if (NumericTraits<HistogramMeasurementType>::is_integer)
-    {
-      auto fromMax = static_cast<MeasurementType>(NumericTraits<HistogramMeasurementType>::max());
-      auto fromMin = static_cast<MeasurementType>(NumericTraits<HistogramMeasurementType>::min());
+    if(NumericTraits<HistogramMeasurementType>::is_integer)
+      {
+      MeasurementType fromMax = static_cast<MeasurementType>
+        (NumericTraits<HistogramMeasurementType>::max());
+      MeasurementType fromMin = static_cast<MeasurementType>
+        (NumericTraits<HistogramMeasurementType>::min());
 
       if (from >= fromMax)
-      {
+        {
         return NumericTraits<HistogramMeasurementType>::max();
-      }
+        }
       else if (from <= fromMin)
-      {
+        {
         return NumericTraits<HistogramMeasurementType>::min();
+        }
       }
-    }
     return static_cast<HistogramMeasurementType>(from);
   }
 
-}; // end of class
+};                                       // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSampleToHistogramFilter.hxx"
+#include "itkSampleToHistogramFilter.hxx"
 #endif
 
 #endif

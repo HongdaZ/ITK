@@ -6,7 +6,7 @@
 // Work-around CMake dependency scanning limitation.  This must
 // duplicate the above list of headers.
 #if 0
-#  include "CommandLineArguments.hxx.in"
+#include "CommandLineArguments.hxx.in"
 #endif
 
 #include <iostream>
@@ -21,11 +21,11 @@ int testCommandLineArguments1(int argc, char* argv[])
   arg.Initialize(argc, argv);
 
   int n = 0;
-  char* m = nullptr;
+  char* m = 0;
   std::string p;
   int res = 0;
 
-  using argT = kwsys::CommandLineArguments;
+  typedef kwsys::CommandLineArguments argT;
   arg.AddArgument("-n", argT::SPACE_ARGUMENT, &n, "Argument N");
   arg.AddArgument("-m", argT::EQUAL_ARGUMENT, &m, "Argument M");
   arg.AddBooleanArgument("-p", &p, "Argument P");
@@ -55,11 +55,11 @@ int testCommandLineArguments1(int argc, char* argv[])
     delete[] m;
   }
 
-  char** newArgv = nullptr;
+  char** newArgv = 0;
   int newArgc = 0;
   arg.GetUnusedArguments(&newArgc, &newArgv);
   int cc;
-  const char* valid_unused_args[9] = { nullptr,
+  const char* valid_unused_args[9] = { 0,
                                        "--ignored",
                                        "--second-ignored",
                                        "third-ignored",

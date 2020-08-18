@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,22 +33,16 @@ namespace itk
  * \ingroup OSSystemObjects
  *
  * \ingroup ITKCommon
- *
- * \sphinx
- * \sphinxexample{Core/Common/DirectWarningToFile,Direct Warning To File}
- * \endsphinx
  */
 
-class ITKCommon_EXPORT FileOutputWindow : public OutputWindow
+class ITKCommon_EXPORT FileOutputWindow:public OutputWindow
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FileOutputWindow);
-
-  /** Standard class type aliases. */
-  using Self = FileOutputWindow;
-  using Superclass = OutputWindow;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FileOutputWindow           Self;
+  typedef OutputWindow               Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -57,8 +51,7 @@ public:
   itkTypeMacro(FileOutputWindow, OutputWindow);
 
   /** Send a string to display. */
-  void
-  DisplayText(const char *) override;
+  virtual void DisplayText(const char *) ITK_OVERRIDE;
 
   /** Set the filename for the log file */
   itkSetStringMacro(FileName);
@@ -81,19 +74,20 @@ public:
 
 protected:
   FileOutputWindow();
-  ~FileOutputWindow() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~FileOutputWindow() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  Initialize();
+  void Initialize();
 
-  std::ofstream * m_Stream;
+  std::ofstream *m_Stream;
 
   std::string m_FileName;
 
   bool m_Flush;
   bool m_Append;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FileOutputWindow);
 };
 } // end namespace itk
 

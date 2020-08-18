@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -74,77 +74,73 @@ namespace watershed
  * \ingroup WatershedSegmentation
  * \ingroup ITKWatersheds
  */
-template <typename TScalar>
-class ITK_TEMPLATE_EXPORT SegmentTreeGenerator : public ProcessObject
+template< typename TScalar >
+class ITK_TEMPLATE_EXPORT SegmentTreeGenerator:public ProcessObject
 {
 public:
   /**  Standard itk smart pointer declarations    */
-  using Self = SegmentTreeGenerator;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SegmentTreeGenerator       Self;
+  typedef ProcessObject              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   itkTypeMacro(WatershedSegmentTreeGenerator, ProcessObject);
 
   /** Convenient type definitions */
-  using ScalarType = TScalar;
-  using SegmentTableType = SegmentTable<ScalarType>;
-  using SegmentTreeType = SegmentTree<ScalarType>;
-  using EquivalencyTableType = EquivalencyTable;
-  using OneWayEquivalencyTableType = OneWayEquivalencyTable;
-  using DataObjectPointer = DataObject::Pointer;
+  typedef TScalar                    ScalarType;
+  typedef SegmentTable< ScalarType > SegmentTableType;
+  typedef SegmentTree< ScalarType >  SegmentTreeType;
+  typedef EquivalencyTable           EquivalencyTableType;
+  typedef OneWayEquivalencyTable     OneWayEquivalencyTableType;
+  typedef DataObject::Pointer        DataObjectPointer;
 
   /** Typedefs to avoid internal compiler error bug on Microsoft VC++ */
-  using SegmentTableTypePointer = typename SegmentTableType::Pointer;
-  using OneWayEquivalencyTableTypePointer = typename OneWayEquivalencyTableType::Pointer;
-  using SegmentTreeTypePointer = typename SegmentTreeType::Pointer;
+  typedef typename SegmentTableType::Pointer           SegmentTableTypePointer;
+  typedef typename OneWayEquivalencyTableType::Pointer OneWayEquivalencyTableTypePointer;
+  typedef typename SegmentTreeType::Pointer            SegmentTreeTypePointer;
 
   /** Get/Set the input table of segments to process */
-  SegmentTableType *
-  GetInputSegmentTable()
+  SegmentTableType * GetInputSegmentTable()
   {
-    return static_cast<SegmentTableType *>(this->ProcessObject::GetInput(0));
+    return static_cast< SegmentTableType * >( this->ProcessObject::GetInput(0) );
   }
 
-  void
-  SetInputSegmentTable(SegmentTableType * st)
+  void SetInputSegmentTable(SegmentTableType *st)
   {
     // Reset the highest calculated flood level if we are given a
     // different input image.
-    if (st != this->GetInput(0))
-    {
+    if ( st != this->GetInput(0) )
+      {
       m_HighestCalculatedFloodLevel = 0.0;
-    }
+      }
     this->ProcessObject::SetNthInput(0, st);
   }
 
   /** Get/Set input table of equivalencies to pre-merge before
    * running the tree generator algorithm.  Only useful for
    * streaming applications */
-  void
-  SetInputEquivalencyTable(EquivalencyTableType * eq)
+  void SetInputEquivalencyTable(EquivalencyTableType *eq)
   {
     this->ProcessObject::SetNthInput(1, eq);
   }
 
-  EquivalencyTableType *
-  GetInputEquivalencyTable()
+  EquivalencyTableType * GetInputEquivalencyTable()
   {
-    return static_cast<EquivalencyTableType *>(this->ProcessObject::GetInput(1));
+    return
+      static_cast< EquivalencyTableType * >( this->ProcessObject::GetInput(1) );
   }
 
   /** Get/Set the output data */
-  SegmentTreeType *
-  GetOutputSegmentTree()
+  SegmentTreeType * GetOutputSegmentTree()
   {
-    return static_cast<SegmentTreeType *>(this->ProcessObject::GetOutput(0));
+    return static_cast< SegmentTreeType * >
+           ( this->ProcessObject::GetOutput(0) );
   }
 
   /** Standard non-threaded itk pipeline method */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Get/Set a boolean flag indicating whether or not to pre-merge the
     segments marked  as equivalent in the EquivalencyTable.  This is only
@@ -158,8 +154,7 @@ public:
    segment table was derived. A value of 0.0 calculates no merges.  A value of
    1.0 calculates all of the potential merges that can occur as the FloodLevel
    is increased to the  maximum saliency value.    */
-  void
-  SetFloodLevel(double);
+  void SetFloodLevel(double);
 
   itkGetConstMacro(FloodLevel, double);
 
@@ -179,35 +174,32 @@ public:
 
   /** Performs a merge of two segments in a SegmentTable according
    * to criteria specific to this algorithm.   */
-  static void
-  MergeSegments(SegmentTableTypePointer, OneWayEquivalencyTableTypePointer, const IdentifierType, const IdentifierType);
+  static void MergeSegments(SegmentTableTypePointer,
+                            OneWayEquivalencyTableTypePointer,
+                            const IdentifierType,
+                            const IdentifierType);
 
   /** This method should not be used.  It will be removed in future versions
    * of this filter. */
-  static void
-  PruneMergeSegments(SegmentTableTypePointer,
-                     OneWayEquivalencyTableTypePointer,
-                     const IdentifierType,
-                     const IdentifierType,
-                     ScalarType);
+  static void PruneMergeSegments(SegmentTableTypePointer,
+                                 OneWayEquivalencyTableTypePointer,
+                                 const IdentifierType,
+                                 const IdentifierType,
+                                 ScalarType);
 
   /** Standard itk::ProcessObject subclass method. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
 protected:
   SegmentTreeGenerator();
-  ~SegmentTreeGenerator() override = default;
+  virtual ~SegmentTreeGenerator() ITK_OVERRIDE {}
   SegmentTreeGenerator(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void operator=(const Self &) {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  /** Generates an initial list of all potential merges in
+  /** Generates an initial list of all potentential merges in
    * the segment table.   */
   void CompileMergeList(SegmentTableTypePointer, SegmentTreeTypePointer);
 
@@ -215,22 +207,20 @@ protected:
    * flood level, recomputing new potential merges as it goes.   */
   void ExtractMergeHierarchy(SegmentTableTypePointer, SegmentTreeTypePointer);
 
-  void
-  MergeEquivalencies();
+  void MergeEquivalencies();
 
   /** Methods required by the itk pipeline */
-  void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  virtual void GenerateOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
-  bool   m_Merge{ false };
-  double m_FloodLevel{ 0.0 };
-  bool   m_ConsumeInput{ false };
+  bool   m_Merge;
+  double m_FloodLevel;
+  bool   m_ConsumeInput;
 
-  using HashMapType = std::unordered_map<IdentifierType, bool>;
+  typedef itksys::hash_map< IdentifierType, bool,
+                            itksys::hash< IdentifierType > >  HashMapType;
 
   OneWayEquivalencyTableType::Pointer m_MergedSegmentsTable;
 
@@ -238,13 +228,13 @@ private:
    *  calculated.  m_FloodLevel can be manipulated anywhere below this
    *  level without re-executing the filter, preventing unnecessary
    *  updates. */
-  double m_HighestCalculatedFloodLevel{ 0.0 };
+  double m_HighestCalculatedFloodLevel;
 };
 } // end namespace watershed
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWatershedSegmentTreeGenerator.hxx"
+#include "itkWatershedSegmentTreeGenerator.hxx"
 #endif
 
 #endif

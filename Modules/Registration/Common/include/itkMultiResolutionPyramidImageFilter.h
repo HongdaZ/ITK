@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ namespace itk
  *   8 4 4
  *   4 4 2
  *
- * is a schedule for two computation level. In the first (coarsest)
+ * is a schedule for two computation level. In the first (coarest)
  * level the image is reduce by a factor of 8 in the column dimension,
  * factor of 4 in the row dimension and factor of 4 in the slice dimension.
  * In the second level, the image is reduce by a factor of 4 in the column
@@ -105,17 +105,19 @@ namespace itk
  * \ingroup PyramidImageFilter MultiThreaded Streamed
  * \ingroup ITKRegistrationCommon
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT MultiResolutionPyramidImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template<
+  typename TInputImage,
+  typename TOutputImage
+  >
+class ITK_TEMPLATE_EXPORT MultiResolutionPyramidImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiResolutionPyramidImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MultiResolutionPyramidImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultiResolutionPyramidImageFilter               Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -123,19 +125,21 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MultiResolutionPyramidImageFilter, ImageToImageFilter);
 
-  /** ScheduleType type alias support */
-  using ScheduleType = Array2D<unsigned int>;
+  /** ScheduleType typedef support. */
+  typedef Array2D< unsigned int > ScheduleType;
 
   /** ImageDimension enumeration. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Inherit types from Superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::OutputImageType        OutputImageType;
+  typedef typename Superclass::InputImagePointer      InputImagePointer;
+  typedef typename Superclass::OutputImagePointer     OutputImagePointer;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
 
   /** Set the number of multi-resolution levels. The matrix containing the
    * schedule will be resized accordingly.  The schedule is populated with
@@ -143,8 +147,7 @@ public:
    * 2^(nlevel - 1) for all dimension. These shrink factors are halved for
    * subsequent levels.  The number of levels is clamped to a minimum value
    * of 1.  All shrink factors are also clamped to a minimum value of 1. */
-  virtual void
-  SetNumberOfLevels(unsigned int num);
+  virtual void SetNumberOfLevels(unsigned int num);
 
   /** Get the number of multi-resolution levels. */
   itkGetConstMacro(NumberOfLevels, unsigned int);
@@ -152,11 +155,10 @@ public:
   /** Set a multi-resolution schedule.  The input schedule must have only
    * ImageDimension number of columns and NumberOfLevels number of rows.  For
    * each dimension, the shrink factor must be non-increasing with respect to
-   * subsequent levels. This function will clamp shrink factors to satisfy
+   * subsequent levels. This function will clamp shrink factors to satisify
    * this condition.  All shrink factors less than one will also be clamped
    * to the value of 1. */
-  virtual void
-  SetSchedule(const ScheduleType & schedule);
+  virtual void SetSchedule(const ScheduleType & schedule);
 
   /** Get the multi-resolution schedule. */
   itkGetConstReferenceMacro(Schedule, ScheduleType);
@@ -165,21 +167,17 @@ public:
    * level. The schedule is then populated with defaults values obtained by
    * halving the factors at the previous level.  All shrink factors are
    * clamped to a minimum value of 1. */
-  virtual void
-  SetStartingShrinkFactors(unsigned int factor);
+  virtual void SetStartingShrinkFactors(unsigned int factor);
 
-  virtual void
-  SetStartingShrinkFactors(const unsigned int * factors);
+  virtual void SetStartingShrinkFactors(unsigned int *factors);
 
   /** Get the starting shrink factors */
-  const unsigned int *
-  GetStartingShrinkFactors() const;
+  const unsigned int * GetStartingShrinkFactors() const;
 
   /** Test if the schedule is downward divisible. This method returns true if
-   * at every level, the shrink factors are divisible by the shrink factors at
+   * at every level, the shrink factors are divisble by the shrink factors at
    * the next level. */
-  static bool
-  IsScheduleDownwardDivisible(const ScheduleType & schedule);
+  static bool IsScheduleDownwardDivisible(const ScheduleType & schedule);
 
   /** MultiResolutionPyramidImageFilter produces images which are of
    * different resolution and different pixel spacing than its input image.
@@ -187,15 +185,13 @@ public:
    * implementation for GenerateOutputInformation() in order to inform the
    * pipeline execution model.  The original documentation of this method is
    * below.  \sa ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Given one output whose requested region has been set, this method sets
    * the requested region for the remaining output images.  The original
    * documentation of this method is below.  \sa
    * ProcessObject::GenerateOutputRequestedRegion(); */
-  void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  virtual void GenerateOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
   /** MultiResolutionPyramidImageFilter requires a larger input requested
    * region than the output requested regions to accommodate the shrinkage and
@@ -203,8 +199,7 @@ public:
    * to provide an implementation for GenerateInputRequestedRegion().  The
    * original documentation of this method is below.  \sa
    * ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   itkSetMacro(MaximumError, double);
   itkGetConstReferenceMacro(MaximumError, double);
@@ -215,20 +210,20 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, OutputImageDimension>));
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename TOutputImage::PixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   MultiResolutionPyramidImageFilter();
-  ~MultiResolutionPyramidImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MultiResolutionPyramidImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate the output data. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   double m_MaximumError;
 
@@ -236,11 +231,14 @@ protected:
   ScheduleType m_Schedule;
 
   bool m_UseShrinkImageFilter;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultiResolutionPyramidImageFilter);
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMultiResolutionPyramidImageFilter.hxx"
+#include "itkMultiResolutionPyramidImageFilter.hxx"
 #endif
 
 #endif

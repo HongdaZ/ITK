@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_float_3.h
 #ifndef vnl_float_3_h_
 #define vnl_float_3_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Contains class vnl_float_3
@@ -14,7 +17,7 @@
 //   Peter Vanroose, 24 Mar. 2007: removed deprecated cross_3d() alias
 // \endverbatim
 
-#include "vnl_T_n.h"
+#include <vnl/vnl_T_n.h>
 
 //: class vnl_float_3 : a vnl_vector of 3 floats.
 vnl_T_n_impl(float,3);

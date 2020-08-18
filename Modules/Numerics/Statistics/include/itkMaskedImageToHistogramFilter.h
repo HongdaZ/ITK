@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,39 +20,33 @@
 
 #include "itkHistogram.h"
 #include "itkImageToHistogramFilter.h"
+#include "itkBarrier.h"
 #include "itkSimpleDataObjectDecorator.h"
 
 namespace itk
 {
 namespace Statistics
 {
-/**
- *\class MaskedImageToHistogramFilter
- *  \brief Generate a histogram from the masked pixels of an image.
+/** \class MaskedImageToHistogramFilter
+ *  \brief This class generates an histogram from an image.
  *
- * This class expands the features of the ImageToHistogramFilter by
- * adding a required MaskImage input image. Only the pixel in the
- * input image where the MaskImage's value is the MaskValue will be
- * added to the computed histogram.
+ *  The concept of Histogram in ITK is quite generic. It has been designed to
+ *  manage multiple components data. This class facilitates the computation of
+ *  an histogram from an image. Internally it creates a List that is feed into
+ *  the SampleToHistogramFilter.
  *
  * \ingroup ITKStatistics
- *
- * \sphinx
- * \sphinxexample{Numerics/Statistics/ComputeHistogramOfMaskedRegion,Compute Histogram Of Masked Region In Image}
- * \endsphinx
  */
 
-template <typename TImage, typename TMaskImage>
-class ITK_TEMPLATE_EXPORT MaskedImageToHistogramFilter : public ImageToHistogramFilter<TImage>
+template< typename TImage, typename TMaskImage >
+class ITK_TEMPLATE_EXPORT MaskedImageToHistogramFilter:public ImageToHistogramFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskedImageToHistogramFilter);
-
-  /** Standard type alias */
-  using Self = MaskedImageToHistogramFilter;
-  using Superclass = ImageToHistogramFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs */
+  typedef MaskedImageToHistogramFilter     Self;
+  typedef ImageToHistogramFilter<TImage>   Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(MaskedImageToHistogramFilter, ImageToHistogramFilter);
@@ -60,21 +54,21 @@ public:
   /** standard New() method support */
   itkNewMacro(Self);
 
-  using ImageType = TImage;
-  using PixelType = typename ImageType::PixelType;
-  using RegionType = typename ImageType::RegionType;
-  using ValueType = typename NumericTraits<PixelType>::ValueType;
-  using ValueRealType = typename NumericTraits<ValueType>::RealType;
+  typedef TImage                                         ImageType;
+  typedef typename ImageType::PixelType                  PixelType;
+  typedef typename ImageType::RegionType                 RegionType;
+  typedef typename NumericTraits< PixelType >::ValueType ValueType;
+  typedef typename NumericTraits< ValueType >::RealType  ValueRealType;
 
-  using HistogramType = Histogram<ValueRealType>;
-  using HistogramPointer = typename HistogramType::Pointer;
-  using HistogramConstPointer = typename HistogramType::ConstPointer;
-  using HistogramSizeType = typename HistogramType::SizeType;
-  using HistogramMeasurementType = typename HistogramType::MeasurementType;
-  using HistogramMeasurementVectorType = typename HistogramType::MeasurementVectorType;
+  typedef Histogram< ValueRealType >                    HistogramType;
+  typedef typename HistogramType::Pointer               HistogramPointer;
+  typedef typename HistogramType::ConstPointer          HistogramConstPointer;
+  typedef typename HistogramType::SizeType              HistogramSizeType;
+  typedef typename HistogramType::MeasurementType       HistogramMeasurementType;
+  typedef typename HistogramType::MeasurementVectorType HistogramMeasurementVectorType;
 
-  using MaskImageType = TMaskImage;
-  using MaskPixelType = typename MaskImageType::PixelType;
+  typedef TMaskImage                                     MaskImageType;
+  typedef typename MaskImageType::PixelType              MaskPixelType;
 
   /** Method to set/get the mask */
   itkSetInputMacro(MaskImage, MaskImageType);
@@ -87,18 +81,20 @@ public:
 
 protected:
   MaskedImageToHistogramFilter();
-  ~MaskedImageToHistogramFilter() override = default;
+  virtual ~MaskedImageToHistogramFilter() ITK_OVERRIDE {}
 
-  void
-  ThreadedStreamedGenerateData(const RegionType & inputRegionForThread) override;
-  void
-  ThreadedComputeMinimumAndMaximum(const RegionType & inputRegionForThread) override;
+  virtual void ThreadedComputeMinimumAndMaximum( const RegionType & inputRegionForThread, ThreadIdType threadId, ProgressReporter & progress ) ITK_OVERRIDE;
+  virtual void ThreadedComputeHistogram( const RegionType & inputRegionForThread, ThreadIdType threadId, ProgressReporter & progress ) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaskedImageToHistogramFilter);
+
 };
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMaskedImageToHistogramFilter.hxx"
+#include "itkMaskedImageToHistogramFilter.hxx"
 #endif
 
 #endif

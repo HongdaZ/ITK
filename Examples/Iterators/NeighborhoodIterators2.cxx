@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,36 +54,37 @@
 #include "itkNeighborhoodInnerProduct.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int argc, char ** argv)
+int main( int argc, char ** argv )
 {
-  if (argc < 4)
-  {
-    std::cerr << "Missing parameters. " << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " inputImageFile outputImageFile direction" << std::endl;
-    return EXIT_FAILURE;
-  }
+  if ( argc < 4 )
+    {
+      std::cerr << "Missing parameters. " << std::endl;
+      std::cerr << "Usage: " << std::endl;
+      std::cerr << argv[0]
+                << " inputImageFile outputImageFile direction"
+                << std::endl;
+      return EXIT_FAILURE;
+    }
 
-  using PixelType = float;
-  using ImageType = itk::Image<PixelType, 2>;
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef float                             PixelType;
+  typedef itk::Image< PixelType, 2 >        ImageType;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
 
-  using NeighborhoodIteratorType = itk::ConstNeighborhoodIterator<ImageType>;
-  using IteratorType = itk::ImageRegionIterator<ImageType>;
+  typedef itk::ConstNeighborhoodIterator< ImageType > NeighborhoodIteratorType;
+  typedef itk::ImageRegionIterator< ImageType>        IteratorType;
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch ( itk::ExceptionObject &err)
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   ImageType::Pointer output = ImageType::New();
   output->SetRegions(reader->GetOutput()->GetRequestedRegion());
@@ -101,15 +102,15 @@ main(int argc, char ** argv)
   // setting up the output image and iterator.
   //
   // The following code creates a Sobel operator.  The Sobel operator requires
-  // a direction for its partial derivatives.  This direction is read from the command
-  // line. Changing the direction of the derivatives changes the bias of the edge
+  // a direction for its partial derivatives.  This direction is read from the command line.
+  // Changing the direction of the derivatives changes the bias of the edge
   // detection, i.e. maximally vertical or maximally horizontal.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   itk::SobelOperator<PixelType, 2> sobelOperator;
-  sobelOperator.SetDirection(::std::stoi(argv[3]));
+  sobelOperator.SetDirection( ::atoi(argv[3]) );
   sobelOperator.CreateDirectional();
   // Software Guide : EndCodeSnippet
 
@@ -124,8 +125,8 @@ main(int argc, char ** argv)
 
   // Software Guide : BeginCodeSnippet
   NeighborhoodIteratorType::RadiusType radius = sobelOperator.GetRadius();
-  NeighborhoodIteratorType             it(
-    radius, reader->GetOutput(), reader->GetOutput()->GetRequestedRegion());
+  NeighborhoodIteratorType it( radius, reader->GetOutput(),
+                               reader->GetOutput()->GetRequestedRegion() );
 
   itk::NeighborhoodInnerProduct<ImageType> innerProduct;
   // Software Guide : EndCodeSnippet
@@ -141,9 +142,9 @@ main(int argc, char ** argv)
 
   // Software Guide : BeginCodeSnippet
   for (it.GoToBegin(), out.GoToBegin(); !it.IsAtEnd(); ++it, ++out)
-  {
-    out.Set(innerProduct(it, sobelOperator));
-  }
+    {
+    out.Set( innerProduct( it, sobelOperator ) );
+    }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -155,31 +156,32 @@ main(int argc, char ** argv)
   //
   // Software Guide : EndLatex
 
-  using WritePixelType = unsigned char;
-  using WriteImageType = itk::Image<WritePixelType, 2>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef unsigned char                          WritePixelType;
+  typedef itk::Image< WritePixelType, 2 >        WriteImageType;
+  typedef itk::ImageFileWriter< WriteImageType > WriterType;
 
-  using RescaleFilterType = itk::RescaleIntensityImageFilter<ImageType, WriteImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+               ImageType, WriteImageType > RescaleFilterType;
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
   rescaler->SetInput(output);
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
   writer->SetInput(rescaler->GetOutput());
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch ( itk::ExceptionObject &err)
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

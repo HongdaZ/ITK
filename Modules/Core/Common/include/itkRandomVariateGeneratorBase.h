@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,28 +30,27 @@ namespace Statistics
  * \ingroup Common
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT RandomVariateGeneratorBase : public Object
+class ITKCommon_EXPORT RandomVariateGeneratorBase:public Object
 {
 public:
-  /** Standard class type aliases. */
-  using Self = RandomVariateGeneratorBase;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef RandomVariateGeneratorBase Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(RandomVariateGeneratorBase, Object);
 
   /** get a variate using FastNorm function */
-  virtual double
-  GetVariate() = 0;
+  virtual double GetVariate() = 0;
 
 protected:
   RandomVariateGeneratorBase();
-  ~RandomVariateGeneratorBase() override;
+  virtual ~RandomVariateGeneratorBase() ITK_OVERRIDE;
 
 private:
-}; // end of class
+};  // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 

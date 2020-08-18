@@ -27,8 +27,8 @@ namespace gdcm
 class GDCM_EXPORT CommandDataSet : public DataSet
 {
 public:
-  CommandDataSet() = default;
- ~CommandDataSet() = default;
+  CommandDataSet() {}
+ ~CommandDataSet() {}
 
   friend std::ostream &operator<<(std::ostream &_os, const CommandDataSet &_val);
 

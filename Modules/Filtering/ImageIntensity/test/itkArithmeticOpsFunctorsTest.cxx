@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,63 +20,62 @@
 
 #include "itkArithmeticOpsFunctors.h"
 
-TEST(ArithmeticOpsTest, DivFloorFloat)
+TEST(ArithmeticOpsTest,DivFloor_float)
 {
-  using OpType = itk::Functor::DivFloor<float, float, float>;
+typedef itk::Functor::DivFloor<float,float,float> OpType;
 
-  OpType op1;
-  OpType op2;
+OpType op1;
+OpType op2;
 
-  EXPECT_EQ(op1, op1);
-  EXPECT_EQ(op1, op2);
+EXPECT_EQ(op1, op1);
+EXPECT_EQ(op1, op2);
 
-  op1 = op2;
+op1=op2;
 
-  EXPECT_EQ(2.0, op1(5.0f, 2.0f));
-  EXPECT_EQ(-3.0, op1(-5.0f, 2.0f));
-  EXPECT_NO_THROW(op1(5.0f, 0.0f));
+EXPECT_EQ(2.0, op1(5.0f,2.0f));
+EXPECT_EQ(-3.0, op1(-5.0f,2.0f));
+EXPECT_NO_THROW(op1(5.0f,0.0f));
 }
 
-TEST(ArithmeticOpsTest, DivFloorShort)
+TEST(ArithmeticOpsTest,DivFloor_short)
 {
-  using OpType = itk::Functor::DivFloor<short, short, short>;
+typedef itk::Functor::DivFloor<short,short,short> OpType;
 
-  OpType op1;
-  OpType op2;
+OpType op1;
+OpType op2;
 
-  EXPECT_EQ(op1, op1);
-  EXPECT_EQ(op1, op2);
+EXPECT_EQ(op1, op1);
+EXPECT_EQ(op1, op2);
 
-  op1 = op2;
+op1=op2;
 
-  EXPECT_EQ(2, op1(5, 2));
-  EXPECT_EQ(-3, op1(-5, 2));
-  EXPECT_NO_THROW(op1(5, 0));
+EXPECT_EQ(2, op1(5,2));
+EXPECT_EQ(-3, op1(-5,2));
+EXPECT_NO_THROW(op1(5,0));
 }
 
-TEST(ArithmeticOpsTest, DivReal)
-{
+TEST(ArithmeticOpsTest,DivReal) {
 
-  using OpType = itk::Functor::DivReal<float, float, float>;
+typedef itk::Functor::DivReal<float,float,float> OpType;
 
-  OpType op1;
-  OpType op2;
+OpType op1;
+OpType op2;
 
-  EXPECT_EQ(op1, op1);
-  EXPECT_EQ(op1, op2);
+EXPECT_EQ(op1, op1);
+EXPECT_EQ(op1, op2);
 
-  op1 = op2;
+op1=op2;
 
-  EXPECT_EQ(2.5f, op1(5.0f, 2.0f));
-  EXPECT_EQ(-2.5f, op1(-5.0f, 2.0f));
-  EXPECT_NO_THROW(op1(5.0f, 0.0f));
+EXPECT_EQ(2.5f, op1(5.0f,2.0f));
+EXPECT_EQ(-2.5f, op1(-5.0f,2.0f));
+EXPECT_NO_THROW(op1(5.0f,0.0f));
+
 }
 
 
-TEST(ArithmeticOpsTest, UnaryMinus)
-{
+TEST(ArithmeticOpsTest, UnaryMinus) {
 
-  using OpType = itk::Functor::UnaryMinus<short, short>;
+  typedef itk::Functor::UnaryMinus<short, short> OpType;
 
   OpType op1;
   OpType op2;
@@ -84,8 +83,9 @@ TEST(ArithmeticOpsTest, UnaryMinus)
   EXPECT_EQ(op1, op1);
   EXPECT_EQ(op1, op2);
 
-  op1 = op2;
+  op1=op2;
 
   EXPECT_EQ(-1, op1(1));
   EXPECT_EQ(2, op1(-2));
+
 }

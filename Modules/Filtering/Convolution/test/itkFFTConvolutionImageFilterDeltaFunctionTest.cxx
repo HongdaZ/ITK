@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,69 +22,68 @@
 #include "itkImageFileWriter.h"
 #include "itkTestingMacros.h"
 
-int
-itkFFTConvolutionImageFilterDeltaFunctionTest(int argc, char * argv[])
+int itkFFTConvolutionImageFilterDeltaFunctionTest(int argc, char * argv[])
 {
-  if (argc < 3)
-  {
-    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << " kernelImage outputImage sizeGreatestPrimeFactor"
-              << std::endl;
+  if ( argc < 3 )
+    {
+    std::cout << "Usage: " << argv[0] << " kernelImage outputImage sizeGreatestPrimeFactor" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int ImageDimension = 2;
+  const unsigned int ImageDimension = 2;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, ImageDimension>;
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef unsigned char                            PixelType;
+  typedef itk::Image< PixelType, ImageDimension >  ImageType;
+  typedef itk::ImageFileReader< ImageType >        ReaderType;
 
   // Read kernel image
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
   // Set up delta function image
   ImageType::RegionType region = reader->GetOutput()->GetLargestPossibleRegion();
-  ImageType::Pointer    deltaFunctionImage = ImageType::New();
-  deltaFunctionImage->SetRegions(region);
+  ImageType::Pointer deltaFunctionImage = ImageType::New();
+  deltaFunctionImage->SetRegions( region );
   deltaFunctionImage->Allocate(true); // initialize buffer to zero
 
   // Set the middle pixel (rounded up) to 1
   ImageType::IndexType middleIndex;
-  for (unsigned int i = 0; i < ImageDimension; ++i)
-  {
+  for ( unsigned int i = 0; i < ImageDimension; ++i )
+    {
     ImageType::SizeValueType sizeInDimension = region.GetSize()[i];
-    middleIndex[i] = itk::Math::Floor<ImageType::IndexValueType>(0.5 * sizeInDimension);
-  }
-  deltaFunctionImage->SetPixel(middleIndex, 1);
+    middleIndex[i] =
+      itk::Math::Floor< ImageType::IndexValueType >( 0.5 * sizeInDimension );
+    }
+  deltaFunctionImage->SetPixel( middleIndex, 1 );
 
-  using ConvolutionFilterType = itk::FFTConvolutionImageFilter<ImageType>;
+  typedef itk::FFTConvolutionImageFilter<ImageType> ConvolutionFilterType;
   ConvolutionFilterType::Pointer convolver = ConvolutionFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(convolver, FFTConvolutionImageFilter, ConvolutionImageFilterBase);
+  EXERCISE_BASIC_OBJECT_METHODS( convolver, FFTConvolutionImageFilter, ConvolutionImageFilterBase );
 
-  convolver->SetInput(deltaFunctionImage);
-  convolver->SetKernelImage(reader->GetOutput());
+  convolver->SetInput( deltaFunctionImage );
+  convolver->SetKernelImage( reader->GetOutput() );
 
-  ConvolutionFilterType::SizeValueType sizeGreatestPrimeFactor = std::stoi(argv[3]);
-  if (!itk::Math::IsPrime(sizeGreatestPrimeFactor))
-  {
+  ConvolutionFilterType::SizeValueType sizeGreatestPrimeFactor = atoi( argv[3] );
+  if( !itk::Math::IsPrime( sizeGreatestPrimeFactor ) )
+    {
     std::cerr << "A prime number is expected for the greatest prime factor size!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  convolver->SetSizeGreatestPrimeFactor(sizeGreatestPrimeFactor);
-  ITK_TEST_SET_GET_VALUE(sizeGreatestPrimeFactor, convolver->GetSizeGreatestPrimeFactor());
+  convolver->SetSizeGreatestPrimeFactor( sizeGreatestPrimeFactor );
+  TEST_SET_GET_VALUE( sizeGreatestPrimeFactor, convolver->GetSizeGreatestPrimeFactor() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(convolver->Update());
+  TRY_EXPECT_NO_EXCEPTION( convolver->Update() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter<ImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
-  writer->SetInput(convolver->GetOutput());
+  writer->SetFileName( argv[2] );
+  writer->SetInput( convolver->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

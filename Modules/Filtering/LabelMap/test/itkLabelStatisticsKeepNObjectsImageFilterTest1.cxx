@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,71 +23,70 @@
 
 #include "itkTestingMacros.h"
 
-int
-itkLabelStatisticsKeepNObjectsImageFilterTest1(int argc, char * argv[])
+int itkLabelStatisticsKeepNObjectsImageFilterTest1(int argc, char * argv[])
 {
 
-  if (argc != 8)
-  {
+  if( argc != 8 )
+    {
     std::cerr << "Usage: " << argv[0] << " input feature output";
     std::cerr << " background numberOfObjectsToKeep";
     std::cerr << " reverseOrdering attribute" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int dim = 2;
+  const unsigned int dim = 2;
 
-  using IType = itk::Image<unsigned char, dim>;
+  typedef itk::Image< unsigned char, dim > IType;
 
-  using ReaderType = itk::ImageFileReader<IType>;
+  typedef itk::ImageFileReader< IType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   ReaderType::Pointer reader2 = ReaderType::New();
-  reader2->SetFileName(argv[2]);
+  reader2->SetFileName( argv[2] );
 
-  using LabelKeepNObjectsType = itk::LabelStatisticsKeepNObjectsImageFilter<IType, IType>;
+  typedef itk::LabelStatisticsKeepNObjectsImageFilter< IType, IType > LabelKeepNObjectsType;
   LabelKeepNObjectsType::Pointer KeepNObjects = LabelKeepNObjectsType::New();
 
-  KeepNObjects->SetInput(reader->GetOutput());
-  KeepNObjects->SetFeatureImage(reader2->GetOutput());
+  KeepNObjects->SetInput( reader->GetOutput() );
+  KeepNObjects->SetFeatureImage( reader2->GetOutput() );
 
-  // testing get/set BackgroundValue macro
-  int BackgroundValue = (std::stoi(argv[4]));
-  KeepNObjects->SetBackgroundValue(BackgroundValue);
-  ITK_TEST_SET_GET_VALUE(BackgroundValue, KeepNObjects->GetBackgroundValue());
+  //testing get/set BackgroundValue macro
+  int BackgroundValue = ( atoi(argv[4]) );
+  KeepNObjects->SetBackgroundValue( BackgroundValue );
+  TEST_SET_GET_VALUE( BackgroundValue, KeepNObjects->GetBackgroundValue() );
 
-  // testing get and set macros for Lambda
-  unsigned int numberOfObjects = std::stoi(argv[5]);
-  KeepNObjects->SetNumberOfObjects(numberOfObjects);
-  ITK_TEST_SET_GET_VALUE(numberOfObjects, KeepNObjects->GetNumberOfObjects());
+  //testing get and set macros for Lambda
+  unsigned int numberOfObjects = atoi( argv[5] );
+  KeepNObjects->SetNumberOfObjects( numberOfObjects );
+  TEST_SET_GET_VALUE( numberOfObjects, KeepNObjects->GetNumberOfObjects() );
 
-  // testing boolean macro for ReverseOrdering
+  //testing boolean macro for ReverseOrdering
   KeepNObjects->ReverseOrderingOn();
-  ITK_TEST_SET_GET_VALUE(true, KeepNObjects->GetReverseOrdering());
+  TEST_SET_GET_VALUE( true, KeepNObjects->GetReverseOrdering() );
 
   KeepNObjects->ReverseOrderingOff();
-  ITK_TEST_SET_GET_VALUE(false, KeepNObjects->GetReverseOrdering());
+  TEST_SET_GET_VALUE( false, KeepNObjects->GetReverseOrdering() );
 
-  // testing get and set macros or ReverseOrdering
-  bool reverseOrdering = std::stoi(argv[6]);
-  KeepNObjects->SetReverseOrdering(reverseOrdering);
-  ITK_TEST_SET_GET_VALUE(reverseOrdering, KeepNObjects->GetReverseOrdering());
+  //testing get and set macros or ReverseOrdering
+  bool reverseOrdering = atoi( argv[6] );
+  KeepNObjects->SetReverseOrdering( reverseOrdering );
+  TEST_SET_GET_VALUE( reverseOrdering , KeepNObjects->GetReverseOrdering() );
 
-  // testing get and set macros for Attribute
-  LabelKeepNObjectsType::AttributeType attribute = std::stoi(argv[7]);
-  KeepNObjects->SetAttribute(attribute);
-  ITK_TEST_SET_GET_VALUE(attribute, KeepNObjects->GetAttribute());
+  //testing get and set macros for Attribute
+  LabelKeepNObjectsType::AttributeType attribute = atoi( argv[7] );
+  KeepNObjects->SetAttribute( attribute );
+  TEST_SET_GET_VALUE( attribute, KeepNObjects->GetAttribute() );
 
   itk::SimpleFilterWatcher watcher(KeepNObjects, "filter");
 
-  using WriterType = itk::ImageFileWriter<IType>;
+  typedef itk::ImageFileWriter< IType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(KeepNObjects->GetOutput());
-  writer->SetFileName(argv[3]);
+  writer->SetInput( KeepNObjects->GetOutput() );
+  writer->SetFileName( argv[3] );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   std::cout << "Test Complete!" << std::endl;
 

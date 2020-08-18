@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,15 +25,13 @@
 namespace itk
 {
 
-void ITKCommon_EXPORT
-     CompensatedSummationAddElement(float & compensation, float & sum, const float & element)
+void ITKCommon_EXPORT CompensatedSummationAddElement( float& compensation, float& sum, const float& element )
 {
-  CompensatedSummationAddElement(compensation, sum, element, 1);
+  CompensatedSummationAddElement( compensation, sum, element, 1 );
 }
-void ITKCommon_EXPORT
-     CompensatedSummationAddElement(double & compensation, double & sum, const double & element)
+void ITKCommon_EXPORT CompensatedSummationAddElement( double& compensation, double& sum, const double& element )
 {
-  CompensatedSummationAddElement(compensation, sum, element, 1);
+  CompensatedSummationAddElement( compensation, sum, element, 1 );
 }
 
 } // end namespace itk

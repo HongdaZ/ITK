@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,19 +30,20 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TValue>
+template< typename TValue >
 class ITK_TEMPLATE_EXPORT OptimizerParametersHelper
 {
 public:
+
   /** The element type stored at each location in the Array. */
-  using ValueType = TValue;
-  using Self = OptimizerParametersHelper;
+  typedef TValue                          ValueType;
+  typedef OptimizerParametersHelper       Self;
 
   /** Type of common data object used by OptimizerParameters. */
-  using CommonContainerType = Array<TValue>;
+  typedef Array< TValue >                 CommonContainerType;
 
   /** Default constructor. Nothing to do. */
-  OptimizerParametersHelper() = default;
+  OptimizerParametersHelper(){}
 
   /** Set a new data pointer for the parameter data, pointing it to a different
    * memory block. The size of the new memory block must equal the current
@@ -54,11 +55,12 @@ public:
    * Generally this will be called from the OptimizerParameters object to
    * which this helper is assigned.
    */
-  virtual void
-  MoveDataPointer(CommonContainerType * container, TValue * pointer)
-  {
-    container->SetData(pointer, container->GetSize(), false /*LetArrayManageMemory*/);
-  }
+  virtual void MoveDataPointer(CommonContainerType* container,
+                               TValue * pointer )
+    {
+    container->SetData(
+      pointer, container->GetSize(), false /*LetArrayManageMemory*/);
+    }
 
   /** Set an object that holds the parameters. Used by
    * derived classes that use an object other than itkArray to hold parameter
@@ -68,16 +70,17 @@ public:
    * \c container is the OptimizerParameters object to which this helper
    * is assigned.
    */
-  virtual void
-  SetParametersObject(CommonContainerType *, LightObject *)
-  {
+  virtual void SetParametersObject(CommonContainerType *,
+                                   LightObject *)
+    {
     itkGenericExceptionMacro("OptimizerParametersHelper::SetParametersObject: "
-                             "Not implemented for base class.");
-  }
+      "Not implemented for base class.");
+    }
 
-  virtual ~OptimizerParametersHelper() = default;
+  virtual ~OptimizerParametersHelper(){}
+
 };
 
-} // namespace itk
+}//namespace itk
 
 #endif

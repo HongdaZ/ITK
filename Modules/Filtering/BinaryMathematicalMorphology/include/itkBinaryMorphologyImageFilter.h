@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -92,35 +92,37 @@ namespace itk
  * This code was contributed by Jerome Schmid from the University of
  * Strasbourg who provided a fast dilation implementation. Gaetan
  * Lehmann from INRA de Jouy-en-Josas then provided a fast erosion
- * implementation based on Jerome's implementation.  The common
+ * implementaton based on Jerome's implementation.  The common
  * portions of these two implementations were then placed in this
  * superclass.
  *
  * \sa ImageToImageFilter BinaryErodeImageFilter BinaryDilateImageFilter
  * \ingroup ITKBinaryMathematicalMorphology
  */
-template <typename TInputImage, typename TOutputImage, typename TKernel>
-class ITK_TEMPLATE_EXPORT BinaryMorphologyImageFilter : public KernelImageFilter<TInputImage, TOutputImage, TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
+class ITK_TEMPLATE_EXPORT BinaryMorphologyImageFilter:
+  public KernelImageFilter< TInputImage, TOutputImage, TKernel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMorphologyImageFilter);
-
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Extract the dimension of the kernel */
-  static constexpr unsigned int KernelDimension = TKernel::NeighborhoodDimension;
+  itkStaticConstMacro(KernelDimension, unsigned int,
+                      TKernel::NeighborhoodDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  /** Standard class type aliases. */
-  using Self = BinaryMorphologyImageFilter;
-  using Superclass = KernelImageFilter<InputImageType, OutputImageType, TKernel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BinaryMorphologyImageFilter                                   Self;
+  typedef KernelImageFilter< InputImageType, OutputImageType, TKernel > Superclass;
+  typedef SmartPointer< Self >                                          Pointer;
+  typedef SmartPointer< const Self >                                    ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -128,27 +130,29 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(BinaryMorphologyImageFilter, ImageToImageFilter);
 
-  /** Kernel type alias. */
-  using KernelType = TKernel;
+  /** Kernel typedef. */
+  typedef TKernel KernelType;
 
   /** Kernel (structuring element) iterator. */
-  using KernelIteratorType = typename KernelType::ConstIterator;
+  typedef typename KernelType::ConstIterator KernelIteratorType;
 
-  /** Image type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using InputRealType = typename NumericTraits<InputPixelType>::RealType;
-  using OffsetType = typename InputImageType::OffsetType;
-  using IndexType = typename InputImageType::IndexType;
-  using IndexValueType = typename InputImageType::IndexValueType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType                 InputPixelType;
+  typedef typename OutputImageType::PixelType                OutputPixelType;
+  typedef typename NumericTraits< InputPixelType >::RealType InputRealType;
+  typedef typename InputImageType::OffsetType                OffsetType;
+  typedef typename InputImageType::IndexType                 IndexType;
+  typedef typename InputImageType::IndexValueType            IndexValueType;
 
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputSizeValueType = typename InputImageType::SizeValueType;
+  typedef typename InputImageType::RegionType    InputImageRegionType;
+  typedef typename OutputImageType::RegionType   OutputImageRegionType;
+  typedef typename InputImageType::SizeType      InputSizeType;
+  typedef typename InputImageType::SizeValueType InputSizeValueType;
 
   /** Input and output images must be the same dimension. */
-  itkConceptMacro(ImageDimensionCheck, (Concept::SameDimension<Self::InputImageDimension, Self::OutputImageDimension>));
+  itkConceptMacro( ImageDimensionCheck,
+                   ( Concept::SameDimension< itkGetStaticConstMacro(InputImageDimension),
+                                             itkGetStaticConstMacro(OutputImageDimension) > ) );
 
   /** Set the value in the image to consider as "foreground". Defaults to
    * maximum value of PixelType. Subclasses may alias this to
@@ -178,59 +182,50 @@ public:
   itkBooleanMacro(BoundaryToForeground);
 
   /** Set kernel (structuring element). */
-  void
-  SetKernel(const KernelType & kernel) override;
+  void SetKernel(const KernelType & kernel) ITK_OVERRIDE;
 
 protected:
   BinaryMorphologyImageFilter();
-  ~BinaryMorphologyImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~BinaryMorphologyImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /**
    * Analyze kernel and prepare data for GenerateData() function */
-  void
-  AnalyzeKernel();
+  void AnalyzeKernel();
 
   /** Type definition of container of neighbourhood index */
-  using NeighborIndexContainer = std::vector<OffsetType>;
+  typedef std::vector< OffsetType > NeighborIndexContainer;
 
   /** Type definition of container of container of neighbourhood index */
-  using NeighborIndexContainerContainer = std::vector<NeighborIndexContainer>;
+  typedef std::vector< NeighborIndexContainer > NeighborIndexContainerContainer;
 
   /** Type definition of the container for indices */
-  using ComponentVectorType = std::vector<OffsetType>;
+  typedef std::vector< OffsetType > ComponentVectorType;
 
   /** Iterator for ComponentVectorType */
-  using ComponentVectorConstIterator = typename ComponentVectorType::const_iterator;
+  typedef typename ComponentVectorType::const_iterator
+  ComponentVectorConstIterator;
 
   /**
    * Get the difference set for a particular offset */
-  NeighborIndexContainer &
-  GetDifferenceSet(unsigned int code)
-  {
-    return m_KernelDifferenceSets[code];
-  }
+  NeighborIndexContainer & GetDifferenceSet(unsigned int code)
+  { return m_KernelDifferenceSets[code]; }
 
   /**
    * Get an iterator to the start of the connected component vector */
-  ComponentVectorConstIterator
-  KernelCCVectorBegin()
-  {
-    return m_KernelCCVector.begin();
-  }
+  ComponentVectorConstIterator KernelCCVectorBegin()
+  { return m_KernelCCVector.begin(); }
 
   /**
    * Get an iterator to the end of the connected component vector */
-  ComponentVectorConstIterator
-  KernelCCVectorEnd()
-  {
-    return m_KernelCCVector.end();
-  }
+  ComponentVectorConstIterator KernelCCVectorEnd()
+  { return m_KernelCCVector.end(); }
 
   bool m_BoundaryToForeground;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMorphologyImageFilter);
+
   /** Pixel value to dilate */
   InputPixelType m_ForegroundValue;
 
@@ -243,12 +238,12 @@ private:
   /** For each Connected Component ( CC ) of structuring element we
    * store the position of one element, arbitrary chosen, which belongs
    * to the CC */
-  std::vector<OffsetType> m_KernelCCVector;
+  std::vector< OffsetType > m_KernelCCVector;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBinaryMorphologyImageFilter.hxx"
+#include "itkBinaryMorphologyImageFilter.hxx"
 #endif
 
 #endif

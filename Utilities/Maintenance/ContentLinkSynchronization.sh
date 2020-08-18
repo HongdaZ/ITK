@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #==========================================================================
 #
-#   Copyright NumFOCUS
+#   Copyright Insight Software Consortium
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 # Girder stores should be executed.
 
 die() {
-  echo "$@" 1>&2; exit 1
+  echo -e "$@" 1>&2; exit 1
 }
 do_cleanup=false
 object_store=""
@@ -97,7 +97,7 @@ verify_and_create() {
     echo "Verifying    ${algo_file}..."
     object_algo_hash=$(${algo}sum "${object_store}/${algo_upper}/${algo_hash}" | cut -f 1 -d ' ')
     if test "${algo_hash}" != "${object_algo_hash}"; then
-      die "${algo}sum for ${object_store}/${algo_upper}/${algo_hash} does not equal hash in ${algo_file}!"
+      die "Error!: ${algo}sum in file ${algo_file} does not equal hash for \n\n${object_store}/${algo_upper}/${algo_hash}"
     fi
 
     object_alt_algo_hash=$(${alt_algo}sum "${object_store}/${algo_upper}/${algo_hash}" | cut -f 1 -d ' ')
@@ -105,12 +105,12 @@ verify_and_create() {
       echo "Verifying    ${alt_algo_file}..."
       alt_algo_hash=$(cat "${alt_algo_file}" | tr -d '[[:space:]]')
       if test "${alt_algo_hash}" != "${object_alt_algo_hash}"; then
-        die "${alt_algo}sum for ${object_store}/${algo_upper}/${algo_hash} does not equal hash in ${alt_algo_file}!"
+        die "Error!: ${alt_algo}sum in file ${alt_ago_file} does not equal hash for \n\n${object_store}/${algo_upper}/${algo_hash}"
       fi
     else
       echo "Creating     ${alt_algo_file}..."
       echo "${object_alt_algo_hash}" > "${alt_algo_file}"
-      cp "${object_store}/${algo_upper}/${algo_hash}" "${object_store}/${alt_algo_upper}/${object_alt_algo_hash}"
+      cp "${object_store}/${algo_upper}/${algo_hash}" "${object_store}/${alt_algo_upper}/${alt_algo_hash}"
     fi
   done || exit 1
 }

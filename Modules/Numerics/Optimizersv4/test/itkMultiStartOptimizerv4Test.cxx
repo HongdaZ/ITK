@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,46 +34,42 @@
  *   the solution is the vector | 2 -2 |
  *
  */
-class MultiStartOptimizerv4TestMetric : public itk::ObjectToObjectMetricBase
+class MultiStartOptimizerv4TestMetric
+  : public itk::ObjectToObjectMetricBase
 {
 public:
-  using Self = MultiStartOptimizerv4TestMetric;
-  using Superclass = itk::ObjectToObjectMetricBase;
-  using Pointer = itk::SmartPointer<Self>;
-  using ConstPointer = itk::SmartPointer<const Self>;
-  itkNewMacro(Self);
-  itkTypeMacro(MultiStartOptimizerv4TestMetric, ObjectToObjectMetricBase);
 
-  enum
-  {
-    SpaceDimension = 2
-  };
+  typedef MultiStartOptimizerv4TestMetric       Self;
+  typedef itk::ObjectToObjectMetricBase         Superclass;
+  typedef itk::SmartPointer<Self>               Pointer;
+  typedef itk::SmartPointer<const Self>         ConstPointer;
+  itkNewMacro( Self );
+  itkTypeMacro( MultiStartOptimizerv4TestMetric, ObjectToObjectMetricBase );
 
-  using ParametersType = Superclass::ParametersType;
-  using ParametersValueType = Superclass::ParametersValueType;
-  using DerivativeType = Superclass::DerivativeType;
-  using MeasureType = Superclass::MeasureType;
+  enum { SpaceDimension=2 };
+
+  typedef Superclass::ParametersType        ParametersType;
+  typedef Superclass::ParametersValueType   ParametersValueType;
+  typedef Superclass::DerivativeType        DerivativeType;
+  typedef Superclass::MeasureType           MeasureType;
 
   MultiStartOptimizerv4TestMetric()
   {
-    m_Parameters.SetSize(SpaceDimension);
-    m_Parameters.Fill(0);
+    m_Parameters.SetSize( SpaceDimension );
+    m_Parameters.Fill( 0 );
   }
 
-  void
-  Initialize() throw(itk::ExceptionObject) override
-  {}
+  virtual void Initialize(void) throw ( itk::ExceptionObject ) ITK_OVERRIDE {}
 
-  void
-  GetDerivative(DerivativeType & derivative) const override
-  {
-    derivative.Fill(itk::NumericTraits<ParametersValueType>::ZeroValue());
-  }
+  virtual void GetDerivative( DerivativeType & derivative ) const ITK_OVERRIDE
+    {
+    derivative.Fill( itk::NumericTraits< ParametersValueType >::ZeroValue() );
+    }
 
-  void
-  GetValueAndDerivative(MeasureType & value, DerivativeType & derivative) const override
+  void GetValueAndDerivative( MeasureType & value,
+                              DerivativeType & derivative ) const ITK_OVERRIDE
   {
-    if (derivative.Size() != 2)
+    if( derivative.Size() != 2 )
       derivative.SetSize(2);
 
     double x = m_Parameters[0];
@@ -83,7 +79,7 @@ public:
     std::cout << x << " ";
     std::cout << y << ") = " << std::endl;
 
-    value = 0.5 * (3 * x * x + 4 * x * y + 6 * y * y) - 2 * x + 8 * y;
+    value = 0.5*(3*x*x+4*x*y+6*y*y) - 2*x + 8*y;
 
     std::cout << "value: " << value << std::endl;
 
@@ -91,84 +87,78 @@ public:
      * and adds it to the transform after scaling. So instead of
      * setting a 'minimize' option in the gradient, we return
      * a minimizing derivative. */
-    derivative[0] = -(3 * x + 2 * y - 2);
-    derivative[1] = -(2 * x + 6 * y + 8);
+    derivative[0] = -( 3 * x + 2 * y -2 );
+    derivative[1] = -( 2 * x + 6 * y +8 );
 
     std::cout << "derivative: " << derivative << std::endl;
   }
 
-  MeasureType
-  GetValue() const override
+  virtual MeasureType  GetValue() const ITK_OVERRIDE
   {
     double x = m_Parameters[0];
     double y = m_Parameters[1];
-    double metric = 0.5 * (3 * x * x + 4 * x * y + 6 * y * y) - 2 * x + 8 * y;
-    std::cout << m_Parameters << " metric " << metric << std::endl;
+    double metric = 0.5*(3*x*x+4*x*y+6*y*y) - 2*x + 8*y;
+    std::cout << m_Parameters <<" metric " << metric << std::endl;
     return metric;
   }
 
-  void
-  UpdateTransformParameters(const DerivativeType & update, ParametersValueType) override
+  virtual void UpdateTransformParameters( const DerivativeType & update, ParametersValueType ) ITK_OVERRIDE
   {
     m_Parameters += update;
   }
 
-  unsigned int
-  GetNumberOfParameters() const override
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
     return SpaceDimension;
   }
 
-  bool
-  HasLocalSupport() const override
-  {
+  virtual bool HasLocalSupport() const ITK_OVERRIDE
+    {
     return false;
-  }
+    }
 
-  unsigned int
-  GetNumberOfLocalParameters() const override
+  virtual unsigned int GetNumberOfLocalParameters() const ITK_OVERRIDE
   {
     return SpaceDimension;
   }
 
   /* These Set/Get methods are only needed for this test derivation that
    * isn't using a transform */
-  void
-  SetParameters(ParametersType & parameters) override
+  virtual void SetParameters( ParametersType & parameters ) ITK_OVERRIDE
   {
     m_Parameters = parameters;
   }
 
-  const ParametersType &
-  GetParameters() const override
+  virtual const ParametersType & GetParameters() const ITK_OVERRIDE
   {
     return m_Parameters;
   }
 
 private:
+
   ParametersType m_Parameters;
 };
 
 ///////////////////////////////////////////////////////////
-int
-MultiStartOptimizerv4RunTest(itk::MultiStartOptimizerv4::Pointer & itkOptimizer)
+int MultiStartOptimizerv4RunTest(
+  itk::MultiStartOptimizerv4::Pointer & itkOptimizer )
 {
   try
-  {
+    {
     std::cout << "currentPosition before optimization: " << itkOptimizer->GetCurrentPosition() << std::endl;
     itkOptimizer->StartOptimization();
     std::cout << "currentPosition after optimization: " << itkOptimizer->GetCurrentPosition() << std::endl;
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch( itk::ExceptionObject & e )
+    {
     std::cout << "Exception thrown ! " << std::endl;
     std::cout << "An error occurred during Optimization" << std::endl;
-    std::cout << "Location    = " << e.GetLocation() << std::endl;
+    std::cout << "Location    = " << e.GetLocation()    << std::endl;
     std::cout << "Description = " << e.GetDescription() << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using ParametersType = MultiStartOptimizerv4TestMetric::ParametersType;
+  typedef MultiStartOptimizerv4TestMetric::ParametersType    ParametersType;
   ParametersType finalPosition = itkOptimizer->GetMetric()->GetParameters();
   ParametersType bestPosition = itkOptimizer->GetBestParameters();
 
@@ -185,64 +175,64 @@ MultiStartOptimizerv4RunTest(itk::MultiStartOptimizerv4::Pointer & itkOptimizer)
   ParametersType trueParameters(2);
   trueParameters[0] = 2.0;
   trueParameters[1] = -2.0;
-  for (itk::SizeValueType j = 0; j < 2; j++)
-  {
-    if (fabs(bestPosition[j] - trueParameters[j]) > 0.01)
+  for( itk::SizeValueType j = 0; j < 2; j++ )
     {
+    if( fabs( bestPosition[j] - trueParameters[j] ) > 0.01 )
+      {
       std::cerr << "Results do not match: " << std::endl
                 << "expected: " << trueParameters << std::endl
                 << "returned: " << finalPosition << std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
   return EXIT_SUCCESS;
 }
 ///////////////////////////////////////////////////////////
-int
-itkMultiStartOptimizerv4Test(int, char *[])
+int itkMultiStartOptimizerv4Test(int, char* [] )
 {
   std::cout << "MultiStart  Optimizer Test ";
   std::cout << std::endl << std::endl;
 
-  using OptimizerType = itk::MultiStartOptimizerv4;
+  typedef itk::MultiStartOptimizerv4 OptimizerType;
 
   // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  OptimizerType::Pointer  itkOptimizer = OptimizerType::New();
 
   // Declaration of the Metric
   MultiStartOptimizerv4TestMetric::Pointer metric = MultiStartOptimizerv4TestMetric::New();
 
-  itkOptimizer->SetMetric(metric);
+  itkOptimizer->SetMetric( metric );
 
-  using ParametersType = MultiStartOptimizerv4TestMetric::ParametersType;
+  typedef MultiStartOptimizerv4TestMetric::ParametersType    ParametersType;
 
-  const unsigned int spaceDimension = metric->GetNumberOfParameters();
+  const unsigned int spaceDimension =
+                      metric->GetNumberOfParameters();
 
   /*
    * Test 1
    */
   // We start not so far from  | 2 -2 |
   OptimizerType::ParametersListType parametersList = itkOptimizer->GetParametersList();
-  for (int i = -3; i < 3; i++)
-  {
-    for (int j = -3; j < 3; j++)
+  for (  int i = -3; i < 3; i++ )
     {
-      ParametersType testPosition(spaceDimension);
-      testPosition[0] = (double)i;
-      testPosition[1] = (double)j;
-      parametersList.push_back(testPosition);
+    for (  int j = -3; j < 3; j++ )
+      {
+      ParametersType  testPosition( spaceDimension );
+      testPosition[0]=(double)i;
+      testPosition[1]=(double)j;
+      parametersList.push_back( testPosition );
+      }
     }
-  }
 
-  metric->SetParameters(parametersList[0]);
-  itkOptimizer->SetParametersList(parametersList);
+  metric->SetParameters( parametersList[0] );
+  itkOptimizer->SetParametersList( parametersList );
   // test the optimization
   std::cout << "Test optimization 1 without local optimizer:" << std::endl;
-  if (MultiStartOptimizerv4RunTest(itkOptimizer) == EXIT_FAILURE)
-  {
+  if( MultiStartOptimizerv4RunTest( itkOptimizer ) == EXIT_FAILURE )
+    {
     return EXIT_FAILURE;
-  }
+    }
   std::cout << "Test 1 passed." << std::endl;
 
   /*
@@ -251,22 +241,22 @@ itkMultiStartOptimizerv4Test(int, char *[])
   std::cout << "Test optimization 2: with local optimizer" << std::endl;
   itkOptimizer->InstantiateLocalOptimizer();
   parametersList.clear();
-  for (int i = -99; i < 103; i += 100)
-  {
-    for (int j = -3; j < -2; j++)
+  for (  int i = -99; i < 103; i+=100 )
     {
-      ParametersType testPosition(spaceDimension);
-      testPosition[0] = (double)i;
-      testPosition[1] = (double)j;
-      parametersList.push_back(testPosition);
+    for (  int j = -3; j < -2; j++ )
+      {
+      ParametersType  testPosition( spaceDimension );
+      testPosition[0]=(double)i;
+      testPosition[1]=(double)j;
+      parametersList.push_back( testPosition );
+      }
     }
-  }
-  metric->SetParameters(parametersList[0]);
-  itkOptimizer->SetParametersList(parametersList);
-  if (MultiStartOptimizerv4RunTest(itkOptimizer) == EXIT_FAILURE)
-  {
+  metric->SetParameters( parametersList[0] );
+  itkOptimizer->SetParametersList( parametersList );
+  if( MultiStartOptimizerv4RunTest( itkOptimizer ) == EXIT_FAILURE )
+    {
     return EXIT_FAILURE;
-  }
+    }
   std::cout << "Test 2 passed." << std::endl;
 
   /*
@@ -274,26 +264,27 @@ itkMultiStartOptimizerv4Test(int, char *[])
    */
   std::cout << "Test optimization 3: with local optimizer passed by user" << std::endl;
   parametersList.clear();
-  for (int i = 1; i < 2; i++)
-  {
-    for (int j = -103; j < 99; j += 100)
+  for (  int i = 1; i < 2; i++ )
     {
-      ParametersType testPosition(spaceDimension);
-      testPosition[0] = (double)i;
-      testPosition[1] = (double)j;
-      parametersList.push_back(testPosition);
+    for (  int j = -103; j < 99; j+=100 )
+      {
+      ParametersType  testPosition( spaceDimension );
+      testPosition[0]=(double)i;
+      testPosition[1]=(double)j;
+      parametersList.push_back( testPosition );
+      }
     }
-  }
-  metric->SetParameters(parametersList[0]);
-  itkOptimizer->SetParametersList(parametersList);
+  metric->SetParameters( parametersList[0] );
+  itkOptimizer->SetParametersList( parametersList );
   OptimizerType::LocalOptimizerPointer optimizer = OptimizerType::LocalOptimizerType::New();
-  optimizer->SetLearningRate(1.e-1);
-  optimizer->SetNumberOfIterations(25);
+  optimizer->SetLearningRate( 1.e-1);
+  optimizer->SetNumberOfIterations( 25 );
   itkOptimizer->SetLocalOptimizer(optimizer);
-  if (MultiStartOptimizerv4RunTest(itkOptimizer) == EXIT_FAILURE)
-  {
+  if( MultiStartOptimizerv4RunTest( itkOptimizer ) == EXIT_FAILURE )
+    {
     return EXIT_FAILURE;
-  }
+    }
   std::cout << "Test 3 passed." << std::endl;
   return EXIT_SUCCESS;
+
 }

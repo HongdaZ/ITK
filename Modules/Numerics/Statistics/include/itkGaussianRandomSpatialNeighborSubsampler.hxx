@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,28 +19,31 @@
 #define itkGaussianRandomSpatialNeighborSubsampler_hxx
 #include "itkGaussianRandomSpatialNeighborSubsampler.h"
 
-namespace itk
-{
-namespace Statistics
-{
+namespace itk {
+namespace Statistics {
 
 template <typename TSample, typename TRegion>
-GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::GaussianRandomSpatialNeighborSubsampler()
+GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>
+::GaussianRandomSpatialNeighborSubsampler()
 {
   m_Variance = DefaultVariance;
 }
 
 template <typename TSample, typename TRegion>
 typename LightObject::Pointer
-GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::InternalClone() const
+GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>
+::InternalClone() const
 {
   typename LightObject::Pointer loPtr = Superclass::InternalClone();
 
-  typename Self::Pointer rval = dynamic_cast<Self *>(loPtr.GetPointer());
-  if (rval.IsNull())
-  {
-    itkExceptionMacro(<< "downcast to type " << this->GetNameOfClass() << " failed.");
-  }
+  typename Self::Pointer rval =
+    dynamic_cast<Self *>(loPtr.GetPointer());
+  if(rval.IsNull())
+    {
+    itkExceptionMacro(<< "downcast to type "
+                      << this->GetNameOfClass()
+                      << " failed.");
+    }
 
   rval->m_Variance = this->m_Variance;
   return loPtr;
@@ -48,28 +51,34 @@ GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::InternalClone() const
 
 template <typename TSample, typename TRegion>
 typename GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::RandomIntType
-GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::GetIntegerVariate(RandomIntType lowerBound,
-                                                                             RandomIntType upperBound,
-                                                                             RandomIntType mean)
+GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>
+::GetIntegerVariate(RandomIntType lowerBound,
+                    RandomIntType upperBound,
+                    RandomIntType mean)
 {
   if (upperBound < lowerBound)
-  {
-    itkExceptionMacro(<< "upperBound (" << upperBound << ") not >= to lowerBound(" << lowerBound << ")");
-  }
+    {
+    itkExceptionMacro(<< "upperBound (" << upperBound
+                      << ") not >= to lowerBound(" << lowerBound
+                      << ")");
+    }
 
   RandomIntType randInt = 0;
 
   do
-  {
-    RealType randVar = this->m_RandomNumberGenerator->GetNormalVariate(mean, m_Variance);
+    {
+    RealType randVar = this->m_RandomNumberGenerator->GetNormalVariate(mean,
+                                                                       m_Variance);
     randInt = static_cast<RandomIntType>(std::floor(randVar));
-  } while ((randInt < lowerBound) || (randInt > upperBound));
+    } while ((randInt < lowerBound) ||
+             (randInt > upperBound));
   return randInt;
 }
 
 template <typename TSample, typename TRegion>
 void
-GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::PrintSelf(std::ostream & os, Indent indent) const
+GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -77,7 +86,7 @@ GaussianRandomSpatialNeighborSubsampler<TSample, TRegion>::PrintSelf(std::ostrea
   os << std::endl;
 }
 
-} // end namespace Statistics
-} // end namespace itk
+}// end namespace Statistics
+}// end namespace itk
 
 #endif

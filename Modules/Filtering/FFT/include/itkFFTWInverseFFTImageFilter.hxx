@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,45 +20,44 @@
 
 #include "itkFullToHalfHermitianImageFilter.h"
 #include "itkFFTWInverseFFTImageFilter.h"
+#include "itkInverseFFTImageFilter.hxx"
 
 #include "itkImageRegionIterator.h"
 #include "itkProgressReporter.h"
-#include "itkMultiThreaderBase.h"
 
 namespace itk
 {
 
-template <typename TInputImage, typename TOutputImage>
-FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::FFTWInverseFFTImageFilter()
+template< typename TInputImage, typename TOutputImage >
+FFTWInverseFFTImageFilter< TInputImage, TOutputImage >
+::FFTWInverseFFTImageFilter()
 {
-#ifndef ITK_USE_CUFFTW
   m_PlanRigor = FFTWGlobalConfiguration::GetPlanRigor();
-#endif
-  this->DynamicMultiThreadingOn();
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+FFTWInverseFFTImageFilter< TInputImage, TOutputImage >
+::BeforeThreadedGenerateData()
 {
   // Get pointers to the input and output.
-  typename InputImageType::ConstPointer inputPtr = this->GetInput();
-  typename OutputImageType::Pointer     outputPtr = this->GetOutput();
+  typename InputImageType::ConstPointer inputPtr  = this->GetInput();
+  typename OutputImageType::Pointer outputPtr = this->GetOutput();
 
-  if (!inputPtr || !outputPtr)
-  {
+  if ( !inputPtr || !outputPtr )
+    {
     return;
-  }
+    }
 
   // We don't have a nice progress to report, but at least this simple line
   // reports the beginning and the end of the process.
-  ProgressReporter progress(this, 0, 1);
+  ProgressReporter progress( this, 0, 1 );
 
   // Allocate output buffer memory.
-  outputPtr->SetBufferedRegion(outputPtr->GetRequestedRegion());
+  outputPtr->SetBufferedRegion( outputPtr->GetRequestedRegion() );
   outputPtr->Allocate();
 
-  const InputSizeType  inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
+  const InputSizeType inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
   const OutputSizeType outputSize = outputPtr->GetLargestPossibleRegion().GetSize();
 
   // Figure out sizes.
@@ -68,68 +67,69 @@ FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
   unsigned int totalOutputSize = 1;
   unsigned int totalInputSize = 1;
 
-  for (unsigned i = 0; i < ImageDimension; i++)
-  {
+  for ( unsigned i = 0; i < ImageDimension; i++ )
+    {
     totalOutputSize *= outputSize[i];
     totalInputSize *= inputSize[i];
-  }
+    }
 
   // Cut the full complex image to just the portion needed by FFTW.
-  using FullToHalfFilterType = FullToHalfHermitianImageFilter<InputImageType>;
+  typedef FullToHalfHermitianImageFilter< InputImageType > FullToHalfFilterType;
   typename FullToHalfFilterType::Pointer fullToHalfFilter = FullToHalfFilterType::New();
-  fullToHalfFilter->SetInput(this->GetInput());
-  fullToHalfFilter->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
+  fullToHalfFilter->SetInput( this->GetInput() );
+  fullToHalfFilter->SetNumberOfThreads( this->GetNumberOfThreads() );
   fullToHalfFilter->UpdateLargestPossibleRegion();
 
-  auto * in = (typename FFTWProxyType::ComplexType *)fullToHalfFilter->GetOutput()->GetBufferPointer();
+  typename FFTWProxyType::ComplexType * in =
+    (typename FFTWProxyType::ComplexType *) fullToHalfFilter->GetOutput()->GetBufferPointer();
 
-  OutputPixelType *                out = outputPtr->GetBufferPointer();
+  OutputPixelType * out = outputPtr->GetBufferPointer();
   typename FFTWProxyType::PlanType plan;
 
   int sizes[ImageDimension];
-  for (unsigned int i = 0; i < ImageDimension; i++)
-  {
+  for( unsigned int i = 0; i < ImageDimension; i++ )
+    {
     sizes[(ImageDimension - 1) - i] = outputSize[i];
-  }
+    }
 
-  plan = FFTWProxyType::Plan_dft_c2r(
-    ImageDimension, sizes, in, out, m_PlanRigor, MultiThreaderBase::GetGlobalDefaultNumberOfThreads(), false);
-  FFTWProxyType::Execute(plan);
+  plan = FFTWProxyType::Plan_dft_c2r( ImageDimension, sizes, in, out, m_PlanRigor,
+                                      this->GetNumberOfThreads(), false );
+  FFTWProxyType::Execute( plan );
 
   // Some cleanup.
-  FFTWProxyType::DestroyPlan(plan);
+  FFTWProxyType::DestroyPlan( plan );
 }
 
 template <typename TInputImage, typename TOutputImage>
 void
-FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+FFTWInverseFFTImageFilter< TInputImage, TOutputImage >
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  using IteratorType = ImageRegionIterator<OutputImageType>;
+  typedef ImageRegionIterator< OutputImageType > IteratorType;
   unsigned long totalOutputSize = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
-  IteratorType  it(this->GetOutput(), outputRegionForThread);
-  while (!it.IsAtEnd())
-  {
-    it.Set(it.Value() / totalOutputSize);
+  IteratorType it( this->GetOutput(), outputRegionForThread );
+  while( !it.IsAtEnd() )
+    {
+    it.Set( it.Value() / totalOutputSize );
     ++it;
-  }
+    }
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 void
-FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+FFTWInverseFFTImageFilter< TInputImage, TOutputImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
-  Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf( os, indent );
 
-#ifndef ITK_USE_CUFFTW
-  os << indent << "PlanRigor: " << FFTWGlobalConfiguration::GetPlanRigorName(m_PlanRigor) << " (" << m_PlanRigor << ")"
-     << std::endl;
-#endif
+  os << indent << "PlanRigor: " << FFTWGlobalConfiguration::GetPlanRigorName( m_PlanRigor )
+     << " (" << m_PlanRigor << ")" << std::endl;
 }
 
-template <typename TInputImage, typename TOutputImage>
+template< typename TInputImage, typename TOutputImage >
 SizeValueType
-FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::GetSizeGreatestPrimeFactor() const
+FFTWInverseFFTImageFilter< TInputImage, TOutputImage >
+::GetSizeGreatestPrimeFactor() const
 {
   return FFTWProxyType::GREATEST_PRIME_FACTOR;
 }

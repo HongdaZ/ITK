@@ -7,6 +7,7 @@ itkStatisticsPrintTest.cxx
 itkCommonPrintTest.cxx
 itkIOPrintTest.cxx
 itkBasicFiltersPrintTest.cxx
+itkNeuralNetworksPrintTest.cxx
 itkSpatialObjectPrintTest.cxx
 itkShrinkImagePreserveObjectPhysicalLocations.cxx
 )
@@ -54,6 +55,8 @@ itk_add_test(NAME itkBasicFiltersPrintTest
     itkBasicFiltersPrintTest)
 set_tests_properties(itkBasicFiltersPrintTest PROPERTIES ATTACHED_FILES_ON_FAIL ${TEMP}/itkBasicFiltersPrintTest.txt)
 
+itk_add_test(NAME itkNeuralNetworksPrintTest
+      COMMAND ITKIntegratedTestTestDriver itkNeuralNetworksPrintTest)
 itk_add_test(NAME itkNumericsPrintTest
      COMMAND ITKIntegratedTestTestDriver itkNumericsPrintTest)
 

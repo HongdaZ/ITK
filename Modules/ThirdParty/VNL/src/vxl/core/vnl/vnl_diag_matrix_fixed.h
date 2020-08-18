@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_diag_matrix_fixed.h
 #ifndef vnl_diag_matrix_fixed_h_
 #define vnl_diag_matrix_fixed_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Contains class for diagonal matrices
@@ -18,17 +21,15 @@
 // \endverbatim
 
 #include <iosfwd>
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_vector_fixed.h"
-#include "vnl_matrix_fixed.h"
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
+#include <vnl/vnl_vector_fixed.h>
+#include <vnl/vnl_matrix_fixed.h>
 #include "vnl/vnl_export.h"
 
 // forward declarations
 template <class T, unsigned int N> class vnl_diag_matrix_fixed;
-template <class T, unsigned int N> VNL_EXPORT vnl_vector_fixed<T,N> operator*(vnl_diag_matrix_fixed<T,N> const&, vnl_vector_fixed<T,N> const&);
+template <class T, unsigned int N> VNL_TEMPLATE_EXPORT vnl_vector_fixed<T,N> operator*(vnl_diag_matrix_fixed<T,N> const&, vnl_vector_fixed<T,N> const&);
 
 //: stores a diagonal matrix as a single vector.
 //  vnl_diag_matrix_fixed stores a diagonal matrix for time and space efficiency.
@@ -36,18 +37,14 @@ template <class T, unsigned int N> VNL_EXPORT vnl_vector_fixed<T,N> operator*(vn
 //  operations (currently *, + and -) are overloaded to use more efficient
 //  algorithms.
 
+VCL_TEMPLATE_EXPORT
 template <class T, unsigned int N>
-class VNL_EXPORT vnl_diag_matrix_fixed
+class VNL_TEMPLATE_EXPORT vnl_diag_matrix_fixed
 {
   vnl_vector_fixed<T,N> diagonal_;
 
  public:
-  vnl_diag_matrix_fixed() = default;
-  vnl_diag_matrix_fixed(const vnl_diag_matrix_fixed<T,N> & that) = default;
-  vnl_diag_matrix_fixed(vnl_diag_matrix_fixed<T,N> && that) = default;
-  vnl_diag_matrix_fixed& operator=(const vnl_diag_matrix_fixed<T,N> & that) = default;
-  vnl_diag_matrix_fixed& operator=(vnl_diag_matrix_fixed<T,N> && that) = default;
-  ~vnl_diag_matrix_fixed() = default;
+  vnl_diag_matrix_fixed() : diagonal_() {}
 
 
   //: Construct a diagonal matrix with diagonal elements equal to value.
@@ -56,6 +53,12 @@ class VNL_EXPORT vnl_diag_matrix_fixed
   //: Construct a diagonal matrix from a vnl_vector_fixed.
   //  The vector elements become the diagonal elements.
   explicit vnl_diag_matrix_fixed(vnl_vector_fixed<T,N> const& that): diagonal_(that) {}
+ ~vnl_diag_matrix_fixed() {}
+
+  inline vnl_diag_matrix_fixed& operator=(vnl_diag_matrix_fixed<T,N> const& that) {
+    this->diagonal_ = that.diagonal_;
+    return *this;
+  }
 
   // Operations----------------------------------------------------------------
 
@@ -79,8 +82,6 @@ class VNL_EXPORT vnl_diag_matrix_fixed
 
   inline T& operator () (unsigned i, unsigned j) {
     assert(i == j);
-    // Avoid unused parameter warning
-    (void)j;
     return diagonal_[i];
   }
   inline T& operator() (unsigned i) { return diagonal_[i]; }
@@ -104,11 +105,11 @@ class VNL_EXPORT vnl_diag_matrix_fixed
   // iterators
 
   typedef typename vnl_vector_fixed<T,N>::iterator iterator;
-  iterator begin();
-  iterator end();
+  inline iterator begin() { return diagonal_.begin(); }
+  inline iterator end() { return diagonal_.end(); }
   typedef typename vnl_vector_fixed<T,N>::const_iterator const_iterator;
-  const_iterator begin() const;
-  const_iterator end() const;
+  inline const_iterator begin() const { return diagonal_.begin(); }
+  inline const_iterator end() const { return diagonal_.end(); }
 
   //: Return the total number of elements stored by the matrix.
   // Since vnl_diag_matrix_fixed only stores values on the diagonal
@@ -172,7 +173,7 @@ class VNL_EXPORT vnl_diag_matrix_fixed
 
 //:
 // \relatesalso vnl_diag_matrix_fixed
-template <class T, unsigned int N> VNL_EXPORT
+template <class T, unsigned int N> VNL_TEMPLATE_EXPORT
 std::ostream& operator<< (std::ostream&, vnl_diag_matrix_fixed<T,N> const&);
 
 //: Convert a vnl_diag_matrix_fixed to a Matrix.

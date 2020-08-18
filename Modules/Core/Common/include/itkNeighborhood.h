@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,271 +50,212 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TPixel, unsigned int VDimension = 2, typename TAllocator = NeighborhoodAllocator<TPixel>>
+template< typename TPixel, unsigned int VDimension = 2,
+          typename TAllocator = NeighborhoodAllocator< TPixel > >
 class ITK_TEMPLATE_EXPORT Neighborhood
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Neighborhood;
+  /** Standard class typedefs. */
+  typedef Neighborhood Self;
 
   /** External support for allocator type. */
-  using AllocatorType = TAllocator;
+  typedef TAllocator AllocatorType;
 
   /** External support for dimensionality. */
-  static constexpr unsigned int NeighborhoodDimension = VDimension;
+  itkStaticConstMacro(NeighborhoodDimension, unsigned int, VDimension);
 
   /** Run-time type information (and related methods). */
   itkTypeMacroNoParent(Neighborhood);
 
   /** External support for pixel type. */
-  using PixelType = TPixel;
+  typedef TPixel PixelType;
 
-  /** Iterator type alias support Note the naming is intentional, i.e.,
-   * AllocatorType::iterator and AllocatorType::const_iterator, because the
-   * allocator may be a vnl object or other type, which uses this form. */
-  using Iterator = typename AllocatorType::iterator;
-  using ConstIterator = typename AllocatorType::const_iterator;
+  /** Iterator typedef support. Note the naming is intentional, i.e.,
+  * AllocatorType::iterator and AllocatorType::const_iterator, because the
+  * allocator may be a vnl object or other type, which uses this form. */
+  typedef typename AllocatorType::iterator       Iterator;
+  typedef typename AllocatorType::const_iterator ConstIterator;
 
-  /** Size and value type alias support */
-  using SizeType = ::itk::Size<VDimension>;
-  using SizeValueType = typename SizeType::SizeValueType;
+  /** Size and value typedef support. */
+  typedef::itk::Size< VDimension >         SizeType;
+  typedef typename SizeType::SizeValueType SizeValueType;
 
-  /** Radius type alias support */
-  using RadiusType = ::itk::Size<VDimension>;
+  /** Radius typedef support. */
+  typedef::itk::Size< VDimension > RadiusType;
 
   /** Offset type used to reference neighbor locations */
-  using OffsetType = Offset<VDimension>;
+  typedef Offset< VDimension > OffsetType;
 
-  /** External slice iterator type type alias support */
-  using SliceIteratorType = SliceIterator<TPixel, Self>;
+  /** External slice iterator type typedef support. */
+  typedef SliceIterator< TPixel, Self > SliceIteratorType;
 
   /** Type used to refer to space dimensions */
-  using DimensionValueType = unsigned int;
+  typedef unsigned int                  DimensionValueType;
 
   /** Type used to refer to the elements of the pixel list
    * that are part of the neighborhood. */
-  using NeighborIndexType = SizeValueType;
+  typedef SizeValueType                 NeighborIndexType;
 
   /** Default constructor. */
   Neighborhood()
   {
     m_Radius.Fill(0);
     m_Size.Fill(0);
-    for (DimensionValueType i = 0; i < VDimension; i++)
-    {
+    for ( DimensionValueType i = 0; i < VDimension; i++ )
+      {
       m_StrideTable[i] = 0;
-    }
+      }
   }
 
   /** Default destructor. */
-  virtual ~Neighborhood() = default;
+  virtual ~Neighborhood() {}
 
   /** Copy constructor. */
   Neighborhood(const Self & other);
 
-  /** Move-constructor. */
-  Neighborhood(Self &&) = default;
-
   /** Assignment operator. */
-  Self &
-  operator=(const Self & other);
-
-  /** Move-assignment. */
-  Self &
-  operator=(Self &&) = default;
+  Self & operator=(const Self & other);
 
   /** Comparison operator. */
   bool
   operator==(const Self & other) const
   {
-    return (m_Radius == other.m_Radius && m_Size == other.m_Size && m_DataBuffer == other.m_DataBuffer);
+    return ( m_Radius == other.m_Radius
+             && m_Size   == other.m_Size
+             && m_DataBuffer == other.m_DataBuffer );
   }
 
   /** Not Equal operator. */
-  bool
-  operator!=(const Self & other) const
+  bool operator!=(const Self & other) const
   {
-    return (m_Radius != other.m_Radius || m_Size != other.m_Size || m_DataBuffer != other.m_DataBuffer);
+    return ( m_Radius != other.m_Radius
+             || m_Size   != other.m_Size
+             || m_DataBuffer != other.m_DataBuffer );
   }
 
   /** Returns the radius of the neighborhood. */
-  const SizeType
-  GetRadius() const
-  {
-    return m_Radius;
-  }
+  const SizeType GetRadius() const
+  { return m_Radius; }
 
   /** Returns the radius of the neighborhood along a specified
    * dimension. */
-  SizeValueType
-  GetRadius(DimensionValueType n) const
-  {
-    return m_Radius[n];
-  }
+  SizeValueType GetRadius(DimensionValueType n) const
+  { return m_Radius[n]; }
 
   /** Returns the size (total length) of the neighborhood along
    * a specified dimension. */
-  SizeValueType
-  GetSize(DimensionValueType n) const
-  {
-    return m_Size[n];
-  }
+  SizeValueType GetSize(DimensionValueType n) const
+  { return m_Size[n]; }
 
   /** Returns the size (total length of sides) of the neighborhood. */
-  SizeType
-  GetSize() const
-  {
-    return m_Size;
-  }
+  SizeType GetSize() const
+  { return m_Size; }
 
   /** Returns the stride length for the specified dimension. Stride
    * length is the number of pixels between adjacent pixels along the
    * given dimension. */
-  OffsetValueType
-  GetStride(DimensionValueType axis) const
-  {
-    return (axis < VDimension) ? m_StrideTable[axis] : 0;
-  }
+  OffsetValueType GetStride(DimensionValueType axis) const
+  { return ( axis < VDimension ) ? m_StrideTable[axis] : 0;  }
 
   /** STL-style iterator support. */
-  Iterator
-  End()
-  {
-    return m_DataBuffer.end();
-  }
-  Iterator
-  Begin()
-  {
-    return m_DataBuffer.begin();
-  }
-  ConstIterator
-  End() const
-  {
-    return m_DataBuffer.end();
-  }
-  ConstIterator
-  Begin() const
-  {
-    return m_DataBuffer.begin();
-  }
+  Iterator End()
+  { return m_DataBuffer.end(); }
+  Iterator Begin()
+  { return m_DataBuffer.begin(); }
+  ConstIterator End() const
+  { return m_DataBuffer.end(); }
+  ConstIterator Begin() const
+  { return m_DataBuffer.begin(); }
 
   /** More STL-style support. */
-  NeighborIndexType
-  Size() const
-  {
-    return m_DataBuffer.size();
-  }
+  NeighborIndexType Size() const
+  { return m_DataBuffer.size(); }
 
   /** Pass-through data access methods to the buffer. */
-  TPixel &       operator[](NeighborIndexType i) { return m_DataBuffer[i]; }
-  const TPixel & operator[](NeighborIndexType i) const { return m_DataBuffer[i]; }
-  TPixel &
-  GetElement(NeighborIndexType i)
-  {
-    return m_DataBuffer[i];
-  }
+  TPixel & operator[](NeighborIndexType i)
+  { return m_DataBuffer[i]; }
+  const TPixel & operator[](NeighborIndexType i) const
+  { return m_DataBuffer[i]; }
+  TPixel & GetElement(NeighborIndexType i)
+  { return m_DataBuffer[i]; }
 
   /** Returns the element at the center of the neighborhood. */
-  TPixel
-  GetCenterValue() const
-  {
-    return (this->operator[]((this->Size()) >> 1));
-  }
+  TPixel GetCenterValue() const
+  { return ( this->operator[]( ( this->Size() ) >> 1 ) ); }
 
   /** Sets the radius for the neighborhood, calculates size from the
    * radius, and allocates storage. */
-  void
-  SetRadius(const SizeType &);
+  void SetRadius(const SizeType &);
 
   /** Sets the radius for the neighborhood. Overloaded to support an unsigned
    * long array. */
-  void
-  SetRadius(const SizeValueType * rad)
+  void SetRadius(const SizeValueType *rad)
   {
     SizeType s;
-    std::copy_n(rad, VDimension, s.m_InternalArray);
+    std::copy(rad,
+              rad+VDimension,
+              s.m_Size);
     this->SetRadius(s);
   }
 
   /** Overloads SetRadius to allow a single long integer argument
    * that is used as the radius of all the dimensions of the
    * Neighborhood (resulting in a "square" neighborhood). */
-  void
-  SetRadius(const SizeValueType);
+  void SetRadius(const SizeValueType);
 
   /** Standard itk object method. */
-  void
-  Print(std::ostream & os) const
-  {
-    this->PrintSelf(os, Indent(0));
-  }
+  void Print(std::ostream & os) const
+  { this->PrintSelf( os, Indent(0) );  }
 
   /** Returns a reference to the data buffer structure. */
-  AllocatorType &
-  GetBufferReference()
-  {
-    return m_DataBuffer;
-  }
-  const AllocatorType &
-  GetBufferReference() const
-  {
-    return m_DataBuffer;
-  }
+  AllocatorType & GetBufferReference()
+  { return m_DataBuffer; }
+  const AllocatorType & GetBufferReference() const
+  { return m_DataBuffer; }
 
   /** Get pixel value by offset */
-  TPixel &       operator[](const OffsetType & o) { return this->operator[](this->GetNeighborhoodIndex(o)); }
-  const TPixel & operator[](const OffsetType & o) const { return this->operator[](this->GetNeighborhoodIndex(o)); }
+  TPixel & operator[](const OffsetType & o)
+  { return this->operator[]( this->GetNeighborhoodIndex(o) ); }
+  const TPixel & operator[](const OffsetType & o) const
+  { return this->operator[]( this->GetNeighborhoodIndex(o) ); }
 
   /** Returns the itk::Offset from the center of the Neighborhood to
       the requested neighbor index. */
-  OffsetType
-  GetOffset(NeighborIndexType i) const
+  OffsetType GetOffset(NeighborIndexType i) const
+  { return m_OffsetTable[i]; }
+
+  virtual NeighborIndexType GetNeighborhoodIndex(const OffsetType &) const;
+
+  NeighborIndexType GetCenterNeighborhoodIndex() const
   {
-    return m_OffsetTable[i];
+    return static_cast< NeighborIndexType >( this->Size() / 2 );
   }
 
-  virtual NeighborIndexType
-  GetNeighborhoodIndex(const OffsetType &) const;
-
-  NeighborIndexType
-  GetCenterNeighborhoodIndex() const
-  {
-    return static_cast<NeighborIndexType>(this->Size() / 2);
-  }
-
-  std::slice
-  GetSlice(unsigned int) const;
+  std::slice GetSlice(unsigned int) const;
 
 protected:
   /** Sets the length along each dimension. */
-  void
-  SetSize()
+  void SetSize()
   {
-    for (DimensionValueType i = 0; i < VDimension; ++i)
-    {
+    for ( DimensionValueType i = 0; i < VDimension; ++i )
+      {
       m_Size[i] = m_Radius[i] * 2 + 1;
-    }
+      }
   }
 
   /** Allocates the neighborhood's memory buffer. */
-  virtual void
-  Allocate(NeighborIndexType i)
-  {
-    m_DataBuffer.set_size(i);
-  }
+  virtual void Allocate(NeighborIndexType i)
+  { m_DataBuffer.set_size(i); }
 
   /** Standard itk object method. */
-  virtual void
-  PrintSelf(std::ostream &, Indent) const;
+  virtual void PrintSelf(std::ostream &, Indent) const;
 
   /** Computes the entries for the stride table */
-  virtual void
-  ComputeNeighborhoodStrideTable();
+  virtual void ComputeNeighborhoodStrideTable();
 
   /** Fills entries into the offset lookup table. Called once on
       initialization. */
-  virtual void
-  ComputeNeighborhoodOffsetTable();
+  virtual void ComputeNeighborhoodOffsetTable();
 
 private:
   /** Number of neighbors to include (symmetrically) along each axis.
@@ -333,12 +274,11 @@ private:
   OffsetValueType m_StrideTable[VDimension];
 
   /** */
-  std::vector<OffsetType> m_OffsetTable;
+  std::vector< OffsetType > m_OffsetTable;
 };
 
-template <typename TPixel, unsigned int VDimension, typename TContainer>
-std::ostream &
-operator<<(std::ostream & os, const Neighborhood<TPixel, VDimension, TContainer> & neighborhood)
+template< typename TPixel, unsigned int VDimension, typename TContainer >
+std::ostream & operator<<(std::ostream & os, const Neighborhood< TPixel, VDimension, TContainer > & neighborhood)
 {
   os << "Neighborhood:" << std::endl;
   os << "    Radius:" << neighborhood.GetRadius() << std::endl;
@@ -350,7 +290,7 @@ operator<<(std::ostream & os, const Neighborhood<TPixel, VDimension, TContainer>
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNeighborhood.hxx"
+#include "itkNeighborhood.hxx"
 #endif
 
 /*

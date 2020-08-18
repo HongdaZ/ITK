@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ namespace itk
  * This filter is templated over the Input Mesh type, the Output Mesh type
  * and the SpatialFunctionType. However the only requirement for the Spatial
  * function is to support SmartPointers and to provide an Execute() method,
- * along with a type alias for OutputType (for the type returned by Execute() ).
+ * along with a typedef for OutputType (for the type returned by Execute() ).
  *
  * The additional content of the mesh is passed untouched. Including the
  * connectivity and the additional information contained on cells and points.
@@ -44,28 +44,27 @@ namespace itk
  * \ingroup MeshFilters
  * \ingroup ITKMesh
  */
-template <typename TInputMesh, typename TOutputMesh, typename TSpatialFunction>
-class ITK_TEMPLATE_EXPORT InteriorExteriorMeshFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh, typename TSpatialFunction >
+class ITK_TEMPLATE_EXPORT InteriorExteriorMeshFilter:
+  public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InteriorExteriorMeshFilter);
+  /** Standard class typedefs. */
+  typedef InteriorExteriorMeshFilter                  Self;
+  typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = InteriorExteriorMeshFilter;
-  using Superclass = MeshToMeshFilter<TInputMesh, TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using InputMeshType = TInputMesh;
-  using OutputMeshType = TOutputMesh;
-  using InputMeshPointer = typename InputMeshType::Pointer;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
+  typedef TInputMesh                       InputMeshType;
+  typedef TOutputMesh                      OutputMeshType;
+  typedef typename InputMeshType::Pointer  InputMeshPointer;
+  typedef typename OutputMeshType::Pointer OutputMeshPointer;
 
   /** Type for representing coordinates. */
-  using CoordRepType = typename TInputMesh::CoordRepType;
+  typedef typename TInputMesh::CoordRepType CoordRepType;
 
   /** Type of the  transform. */
-  using SpatialFunctionType = TSpatialFunction;
+  typedef TSpatialFunction SpatialFunctionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -77,26 +76,35 @@ public:
   itkSetObjectMacro(SpatialFunction, SpatialFunctionType);
   itkGetModifiableObjectMacro(SpatialFunction, SpatialFunctionType);
 
-  using SpatialFunctionDataObjectType = DataObjectDecorator<SpatialFunctionType>;
-  using SpatialFunctionDataObjectPointer = typename SpatialFunctionDataObjectType::Pointer;
+  typedef DataObjectDecorator< SpatialFunctionType >
+  SpatialFunctionDataObjectType;
+  typedef typename SpatialFunctionDataObjectType::Pointer
+  SpatialFunctionDataObjectPointer;
 
 protected:
   InteriorExteriorMeshFilter();
-  ~InteriorExteriorMeshFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~InteriorExteriorMeshFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate requested data. */
-  void
-  GenerateData() override;
+  virtual void GenerateData(void) ITK_OVERRIDE;
 
   /** Transform applied to all the mesh points. */
   typename SpatialFunctionType::Pointer m_SpatialFunction;
+
+private:
+  InteriorExteriorMeshFilter(const InteriorExteriorMeshFilter &); //purposely
+                                                                  // not
+                                                                  // implemented
+  void operator=(const InteriorExteriorMeshFilter &);             //purposely
+
+  // not
+  // implemented
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkInteriorExteriorMeshFilter.hxx"
+#include "itkInteriorExteriorMeshFilter.hxx"
 #endif
 
 #endif

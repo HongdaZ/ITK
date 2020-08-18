@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,13 +29,11 @@ namespace itk
 class DOMTestObjectDOMWriter : public DOMWriter<DOMTestObject>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DOMTestObjectDOMWriter);
-
-  /** Standard class type aliases. */
-  using Self = DOMTestObjectDOMWriter;
-  using Superclass = DOMWriter<DOMTestObject>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DOMTestObjectDOMWriter      Self;
+  typedef DOMWriter<DOMTestObject>    Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -44,40 +42,42 @@ public:
   itkTypeMacro(DOMTestObjectDOMWriter, DOMWriter);
 
 protected:
-  DOMTestObjectDOMWriter() = default;
+  DOMTestObjectDOMWriter() {}
 
   /**
    * This function is called automatically when update functions are performed.
    * It should fill the contents of the intermediate DOM object by pulling information from the input object.
    */
-  void
-  GenerateData(DOMNodeType * outputdom, const void *) const override;
+  virtual void GenerateData( DOMNodeType* outputdom, const void* ) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DOMTestObjectDOMWriter);
 };
 
 inline void
-DOMTestObjectDOMWriter::GenerateData(DOMNodeType * outputdom, const void *) const
+DOMTestObjectDOMWriter::GenerateData( DOMNodeType* outputdom, const void* ) const
 {
-  const InputType * input = this->GetInput();
+  const InputType* input = this->GetInput();
 
   std::ofstream ofs;
-  FancyString   fn;
+  FancyString fn;
 
-  outputdom->SetName("DOMTestObject");
+  outputdom->SetName( "DOMTestObject" );
 
   // write child foo
   fn = input->GetFooFileName();
   DOMNodePointer foo = DOMNodeType::New();
-  foo->SetName("foo");
-  foo->SetAttribute("fname", fn);
-  outputdom->AddChild(foo);
+  foo->SetName( "foo" );
+  foo->SetAttribute( "fname", fn );
+  outputdom->AddChild( foo );
   // create the output file if it does not exist
-  FileTools::CreateFile(fn);
+  FileTools::CreateFile( fn );
   // write the foo value to file
-  ofs.open(fn.ToString().c_str());
-  if (!ofs.is_open())
-  {
-    itkExceptionMacro("cannot write foo file");
-  }
+  ofs.open( fn.ToString().c_str() );
+  if ( !ofs.is_open() )
+    {
+    itkExceptionMacro( "cannot write foo file" );
+    }
   ofs << input->GetFooValue();
   ofs.close();
 }

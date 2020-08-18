@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,29 +24,30 @@
 
 namespace itk
 {
-SpatialObjectFactoryBase * SpatialObjectFactoryBase::m_Factory = nullptr;
+SpatialObjectFactoryBase *SpatialObjectFactoryBase:: m_Factory = ITK_NULLPTR;
 
-SpatialObjectFactoryBase::SpatialObjectFactoryBase() = default;
+SpatialObjectFactoryBase::SpatialObjectFactoryBase()
+{}
 
-SpatialObjectFactoryBase::~SpatialObjectFactoryBase() = default;
+SpatialObjectFactoryBase::~SpatialObjectFactoryBase()
+{}
 
-void
-SpatialObjectFactoryBase::RegisterDefaultSpatialObjects()
+void SpatialObjectFactoryBase::RegisterDefaultSpatialObjects()
 {
-  if (!m_Factory)
-  {
+  if ( !m_Factory )
+    {
     // 3D Objects
-    using EllipseType3D = EllipseSpatialObject<3>;
-    using GroupType3D = GroupSpatialObject<3>;
-    using DTITubeType3D = DTITubeSpatialObject<3>;
-    SpatialObjectFactory<EllipseType3D>::RegisterSpatialObject();
-    SpatialObjectFactory<GroupType3D>::RegisterSpatialObject();
-    SpatialObjectFactory<DTITubeType3D>::RegisterSpatialObject();
-  }
+    typedef EllipseSpatialObject< 3 > EllipseType3D;
+    typedef GroupSpatialObject< 3 >   GroupType3D;
+    typedef DTITubeSpatialObject< 3 > DTITubeType3D;
+    SpatialObjectFactory< EllipseType3D >::RegisterSpatialObject();
+    SpatialObjectFactory< GroupType3D >::RegisterSpatialObject();
+    SpatialObjectFactory< DTITubeType3D >::RegisterSpatialObject();
+    }
 }
 
 const char *
-SpatialObjectFactoryBase::GetITKSourceVersion() const
+SpatialObjectFactoryBase::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }

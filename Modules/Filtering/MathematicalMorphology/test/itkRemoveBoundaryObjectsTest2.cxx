@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,66 +24,68 @@
 #include "itkGrayscaleGrindPeakImageFilter.h"
 #include "itkXorImageFilter.h"
 
-int
-itkRemoveBoundaryObjectsTest2(int argc, char * argv[])
+int itkRemoveBoundaryObjectsTest2( int argc, char * argv[] )
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile  " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //
   //  The following code defines the input and output pixel types and their
   //  associated image types.
   //
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
-  using WritePixelType = unsigned char;
+  typedef unsigned char   InputPixelType;
+  typedef unsigned char   OutputPixelType;
+  typedef unsigned char   WritePixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using WriteImageType = itk::Image<WritePixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::Image< WritePixelType, Dimension >    WriteImageType;
 
 
   // readers/writers
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileReader< InputImageType  > ReaderType;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
 
   // define the fillhole filter
-  using GrindPeakFilterType = itk::GrayscaleGrindPeakImageFilter<InputImageType, OutputImageType>;
+  typedef itk::GrayscaleGrindPeakImageFilter<
+                            InputImageType,
+                            OutputImageType >  GrindPeakFilterType;
 
   // define the xor and not filters
-  using XorFilterType = itk::XorImageFilter<InputImageType, InputImageType, OutputImageType>;
+  typedef itk::XorImageFilter<InputImageType, InputImageType, OutputImageType>
+    XorFilterType;
 
   // Creation of Reader and Writer filters
   ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  WriterType::Pointer writer  = WriterType::New();
 
   // Create the filter
-  GrindPeakFilterType::Pointer grindpeak = GrindPeakFilterType::New();
+  GrindPeakFilterType::Pointer  grindpeak = GrindPeakFilterType::New();
 
   // Create the xor and not filter
   XorFilterType::Pointer xorfilter = XorFilterType::New();
 
   // Setup the input and output files
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
   // Setup the grindpeak method
-  grindpeak->SetInput(reader->GetOutput());
+  grindpeak->SetInput( reader->GetOutput() );
 
   // Setup the xor and not
-  xorfilter->SetInput1(grindpeak->GetOutput());
-  xorfilter->SetInput2(reader->GetOutput());
+  xorfilter->SetInput1( grindpeak->GetOutput() );
+  xorfilter->SetInput2( reader->GetOutput() );
 
   // Run the filter
-  writer->SetInput(xorfilter->GetOutput());
+  writer->SetInput( xorfilter->GetOutput() );
   writer->Update();
 
   return EXIT_SUCCESS;

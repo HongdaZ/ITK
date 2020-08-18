@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ class ULEvent;
       ULAction* mAction;
       Transition(){
         mEnd = eStaDoesNotExist;
-        mAction = nullptr;
+        mAction = NULL;
       }
       ~Transition(){
-        if (mAction != nullptr){
+        if (mAction != NULL){
           delete mAction;
-          mAction = nullptr;
+          mAction = NULL;
         }
       }
       Transition(int inEndState, ULAction* inAction){
@@ -64,7 +64,7 @@ class ULEvent;
       TableRow() {
         for(int stateIndex = 0; stateIndex < cMaxStateID; ++stateIndex)
           {
-          transitions[stateIndex] = nullptr;
+          transitions[stateIndex] = NULL;
           }
       }
       ~TableRow() {

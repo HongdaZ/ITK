@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,96 +38,95 @@ namespace itk
  *
  * \ingroup ITKRegistrationCommon
  */
-template <typename TPointsContainer = VectorContainer<IdentifierType, Point<float, 3>>>
+template<
+  typename TPointsContainer = VectorContainer< IdentifierType, Point< float, 3 > >
+  >
 class ITK_TEMPLATE_EXPORT PointsLocator : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointsLocator);
-
-  /** Standard class type aliases. */
-  using Self = PointsLocator;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PointsLocator               Self;
+  typedef Object                      Superclass;
+  typedef SmartPointer<Self>          Pointer;
+  typedef SmartPointer<const Self>    ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Standard part of every itk Object. */
-  itkTypeMacro(PointsLocator, Object);
+  itkTypeMacro( PointsLocator, Object );
 
   /** Hold on to the type information specified by the template parameters. */
-  using PointsContainer = TPointsContainer;
-  using PointsContainerPointer = typename PointsContainer::Pointer;
-  using PointsContainerConstPointer = typename PointsContainer::ConstPointer;
-  using PointIdentifier = typename PointsContainer::ElementIdentifier;
-  using PointType = typename PointsContainer::Element;
+  typedef TPointsContainer                            PointsContainer;
+  typedef typename PointsContainer::Pointer           PointsContainerPointer;
+  typedef typename PointsContainer::ConstPointer      PointsContainerConstPointer;
+  typedef typename PointsContainer::ElementIdentifier PointIdentifier;
+  typedef typename PointsContainer::Element           PointType;
 
   /** Hold on to the dimensions specified by the template parameters. */
-  static constexpr unsigned int PointDimension = PointType::PointDimension;
+  itkStaticConstMacro( PointDimension, unsigned int, PointType::PointDimension );
 
-  /** Convenient type alias. */
-  using PointsContainerConstIterator = typename PointsContainer::ConstIterator;
-  using PointsContainerIterator = typename PointsContainer::Iterator;
+  /** Convenient typedefs. */
+  typedef typename PointsContainer::ConstIterator PointsContainerConstIterator;
+  typedef typename PointsContainer::Iterator      PointsContainerIterator;
 
   /** Type of the PointsContainer to List Adaptor. */
-  using SampleAdaptorType = Statistics::VectorContainerToListSampleAdaptor<PointsContainer>;
-  using SampleAdaptorPointer = typename SampleAdaptorType::Pointer;
+  typedef Statistics::VectorContainerToListSampleAdaptor
+    <PointsContainer>                                   SampleAdaptorType;
+  typedef typename SampleAdaptorType::Pointer           SampleAdaptorPointer;
 
   /** Types fo the KdTreeGenerator */
-  using TreeGeneratorType = Statistics::KdTreeGenerator<SampleAdaptorType>;
-  using TreeGeneratorPointer = typename TreeGeneratorType::Pointer;
-  using TreeType = typename TreeGeneratorType::KdTreeType;
-  using TreeConstPointer = typename TreeType::ConstPointer;
-  using NeighborsIdentifierType = typename TreeType::InstanceIdentifierVectorType;
+  typedef Statistics::KdTreeGenerator<SampleAdaptorType>    TreeGeneratorType;
+  typedef typename TreeGeneratorType::Pointer               TreeGeneratorPointer;
+  typedef typename TreeGeneratorType::KdTreeType            TreeType;
+  typedef typename TreeType::ConstPointer                   TreeConstPointer;
+  typedef typename TreeType::InstanceIdentifierVectorType   NeighborsIdentifierType;
 
   /** Set/Get the points from which the bounding box should be computed. */
-  itkSetObjectMacro(Points, PointsContainer);
+  itkSetObjectMacro( Points, PointsContainer );
 
   /** Set/Get the points from which the bounding box should be computed. */
-  itkGetModifiableObjectMacro(Points, PointsContainer);
+  itkGetModifiableObjectMacro(Points, PointsContainer );
 
   /** Compute the kd-tree that will facilitate the querying the points. */
-  void
-  Initialize();
+  void Initialize();
 
   /** Find the closest point */
-  PointIdentifier
-  FindClosestPoint(const PointType & query) const;
+  PointIdentifier FindClosestPoint( const PointType &query ) const;
 
   /** Find the k-nearest neighbors.  Returns the point ids. */
-  void
-  Search(const PointType &, unsigned int, NeighborsIdentifierType &) const;
+  void Search( const PointType &, unsigned int, NeighborsIdentifierType & )
+    const;
 
   /** Find the closest N points.  Returns the point ids. */
-  void
-  FindClosestNPoints(const PointType &, unsigned int, NeighborsIdentifierType &) const;
+  void FindClosestNPoints( const PointType &, unsigned int,
+    NeighborsIdentifierType & ) const;
 
   /** Find all the points within a specified radius.  Returns the point ids. */
-  void
-  Search(const PointType &, double, NeighborsIdentifierType &) const;
+  void Search( const PointType &, double, NeighborsIdentifierType & ) const;
 
   /** Find all the points within a specified radius.  Returns the point ids. */
-  void
-  FindPointsWithinRadius(const PointType &, double, NeighborsIdentifierType &) const;
+  void FindPointsWithinRadius( const PointType &, double,
+    NeighborsIdentifierType & ) const;
 
 protected:
   PointsLocator();
-  ~PointsLocator() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~PointsLocator() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  PointsContainerPointer m_Points;
-  SampleAdaptorPointer   m_SampleAdaptor;
-  TreeGeneratorPointer   m_KdTreeGenerator;
-  TreeConstPointer       m_Tree;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PointsLocator);
+
+  PointsContainerPointer   m_Points;
+  SampleAdaptorPointer     m_SampleAdaptor;
+  TreeGeneratorPointer     m_KdTreeGenerator;
+  TreeConstPointer         m_Tree;
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPointsLocator.hxx"
+#include "itkPointsLocator.hxx"
 #endif
 
 #endif

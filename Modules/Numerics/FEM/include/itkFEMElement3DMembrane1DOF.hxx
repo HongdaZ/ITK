@@ -1,20 +1,20 @@
 /*=========================================================================
- *
- * Copyright NumFOCUS
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- *=========================================================================*/
+*
+* Copyright Insight Software Consortium
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+*=========================================================================*/
 
 #ifndef itkFEMElement3DMembrane1DOF_hxx
 #define itkFEMElement3DMembrane1DOF_hxx
@@ -26,10 +26,10 @@ namespace itk
 namespace fem
 {
 template <typename TBaseClass>
-Element3DMembrane1DOF<TBaseClass>::Element3DMembrane1DOF()
-  : Superclass()
-  , m_Mat(nullptr)
-{}
+Element3DMembrane1DOF<TBaseClass>
+::Element3DMembrane1DOF() : Superclass(), m_Mat(ITK_NULLPTR)
+{
+}
 
 // ////////////////////////////////////////////////////////////////////////
 /*
@@ -38,15 +38,16 @@ Element3DMembrane1DOF<TBaseClass>::Element3DMembrane1DOF()
 
 template <typename TBaseClass>
 void
-Element3DMembrane1DOF<TBaseClass>::GetStrainDisplacementMatrix(MatrixType & /*HACK B*/,
-                                                               const MatrixType & /*HACK shapeDgl*/) const
+Element3DMembrane1DOF<TBaseClass>
+::GetStrainDisplacementMatrix(MatrixType & /*HACK B*/, const MatrixType & /*HACK shapeDgl*/) const
 {
-  // HACK:  Comment.
+  //HACK:  Comment.
 }
 
 template <typename TBaseClass>
 void
-Element3DMembrane1DOF<TBaseClass>::GetMassMatrix(MatrixType & Me) const
+Element3DMembrane1DOF<TBaseClass>
+::GetMassMatrix(MatrixType & Me) const
 {
   // Call the parent's get matrix function
   Superclass::GetMassMatrix(Me);
@@ -58,7 +59,8 @@ Element3DMembrane1DOF<TBaseClass>::GetMassMatrix(MatrixType & Me) const
 
 template <typename TBaseClass>
 void
-Element3DMembrane1DOF<TBaseClass>::GetMaterialMatrix(MatrixType & D) const
+Element3DMembrane1DOF<TBaseClass>
+::GetMaterialMatrix(MatrixType & D) const
 {
   unsigned int d = 3;
 
@@ -69,28 +71,29 @@ Element3DMembrane1DOF<TBaseClass>::GetMaterialMatrix(MatrixType & D) const
   // This is the main difference from the linear elasticity problem.
   /* Material properties matrix.  Simpler than linear elasticity. */
   Float disot = m_Mat->GetYoungsModulus();
-  for (unsigned int i = 0; i < d; i++)
-  {
+  for( unsigned int i = 0; i < d; i++ )
+    {
     D[i][i] = disot;
-  }
+    }
 }
 
 template <typename TBaseClass>
-void
-Element3DMembrane1DOF<TBaseClass>::GetStiffnessMatrix(MatrixType & Ke) const
+void Element3DMembrane1DOF<TBaseClass>
+::GetStiffnessMatrix(MatrixType & Ke) const
 {
   Superclass::GetStiffnessMatrix(Ke);
 }
 
 template <typename TBaseClass>
 void
-Element3DMembrane1DOF<TBaseClass>::PrintSelf(std::ostream & os, Indent indent) const
+Element3DMembrane1DOF<TBaseClass>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Materials: " << this->m_Mat << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif
+#endif // #ifndef itkFEMElement3DMembrane1DOF_hxx

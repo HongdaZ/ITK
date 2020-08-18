@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,47 +22,51 @@
 
 namespace itk
 {
-MultipleValuedNonLinearOptimizer ::MultipleValuedNonLinearOptimizer()
+MultipleValuedNonLinearOptimizer
+::MultipleValuedNonLinearOptimizer()
 {
-  m_CostFunction = nullptr;
+  m_CostFunction = ITK_NULLPTR;
 }
 
 /**
  * Connect a Cost Function
  */
 void
-MultipleValuedNonLinearOptimizer ::SetCostFunction(CostFunctionType * costFunction)
+MultipleValuedNonLinearOptimizer
+::SetCostFunction(CostFunctionType *costFunction)
 {
-  if (m_CostFunction == costFunction)
-  {
+  if ( m_CostFunction.GetPointer() == costFunction )
+    {
     return;
-  }
+    }
 
-  itkDebugMacro("setting CostFunction  to " << costFunction);
+  itkDebugMacro("setting CostFunction  to " <<  costFunction);
 
   m_CostFunction = costFunction;
 
-  if (!m_ScalesInitialized)
-  {
-    const unsigned int numberOfParameters = m_CostFunction->GetNumberOfParameters();
+  if ( !m_ScalesInitialized )
+    {
+    const unsigned int numberOfParameters =
+      m_CostFunction->GetNumberOfParameters();
 
     ScalesType scales(numberOfParameters);
     scales.Fill(1.0f);
     SetScales(scales);
     m_ScalesInitialized = true;
-  }
+    }
 
   this->Modified();
 }
 
 void
-MultipleValuedNonLinearOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+MultipleValuedNonLinearOptimizer
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
-  if (m_CostFunction)
-  {
+  if ( m_CostFunction )
+    {
     os << indent << "Cost Function: " << m_CostFunction.GetPointer() << std::endl;
-  }
+    }
 }
 } // namespace itk
 

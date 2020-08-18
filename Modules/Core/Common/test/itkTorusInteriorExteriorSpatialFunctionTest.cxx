@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,43 +20,45 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkTorusInteriorExteriorSpatialFunctionTest(int, char *[])
+int itkTorusInteriorExteriorSpatialFunctionTest( int, char *[] )
 {
 
   // Define the dimensionality
-  constexpr unsigned int PointDimension = 3;
+  const unsigned int PointDimension = 3;
 
   // Define the point coordinate representation type
-  using PointCoordRepType = float;
+  typedef float PointCoordRepType;
 
   // Define the point type
-  using PointType = itk::Point<PointCoordRepType, PointDimension>;
+  typedef itk::Point< PointCoordRepType, PointDimension > PointType;
 
   // Define the type for the torus spatial function
-  using TorusInteriorExteriorSpatialFunctionType = itk::TorusInteriorExteriorSpatialFunction<PointDimension, PointType>;
+  typedef itk::TorusInteriorExteriorSpatialFunction< PointDimension, PointType >
+    TorusInteriorExteriorSpatialFunctionType;
+
 
   // Create the torus spatial function
   TorusInteriorExteriorSpatialFunctionType::Pointer torusInteriorExteriorSpatialFunction =
     TorusInteriorExteriorSpatialFunctionType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(
-    torusInteriorExteriorSpatialFunction, TorusInteriorExteriorSpatialFunction, InteriorExteriorSpatialFunction);
+  EXERCISE_BASIC_OBJECT_METHODS( torusInteriorExteriorSpatialFunction,
+    TorusInteriorExteriorSpatialFunction,
+    InteriorExteriorSpatialFunction );
 
   // Set the torus properties
   TorusInteriorExteriorSpatialFunctionType::InputType origin;
-  origin.Fill(1.0);
+  origin.Fill( 1.0 );
 
-  torusInteriorExteriorSpatialFunction->SetOrigin(origin);
-  ITK_TEST_SET_GET_VALUE(origin, torusInteriorExteriorSpatialFunction->GetOrigin());
+  torusInteriorExteriorSpatialFunction->SetOrigin( origin );
+  TEST_SET_GET_VALUE( origin, torusInteriorExteriorSpatialFunction->GetOrigin() );
 
   double majorRadius = 10.0;
-  torusInteriorExteriorSpatialFunction->SetMajorRadius(majorRadius);
-  ITK_TEST_SET_GET_VALUE(majorRadius, torusInteriorExteriorSpatialFunction->GetMajorRadius());
+  torusInteriorExteriorSpatialFunction->SetMajorRadius( majorRadius );
+  TEST_SET_GET_VALUE( majorRadius, torusInteriorExteriorSpatialFunction->GetMajorRadius() );
 
   double minorRadius = 4.0;
-  torusInteriorExteriorSpatialFunction->SetMinorRadius(minorRadius);
-  ITK_TEST_SET_GET_VALUE(minorRadius, torusInteriorExteriorSpatialFunction->GetMinorRadius());
+  torusInteriorExteriorSpatialFunction->SetMinorRadius( minorRadius );
+  TEST_SET_GET_VALUE( minorRadius, torusInteriorExteriorSpatialFunction->GetMinorRadius() );
 
   // Define a to test the function
   TorusInteriorExteriorSpatialFunctionType::InputType insidePoint;
@@ -70,30 +72,30 @@ itkTorusInteriorExteriorSpatialFunctionTest(int, char *[])
   outsidePoint[2] = 1.0;
 
   TorusInteriorExteriorSpatialFunctionType::OutputType insidePointOutputValue =
-    torusInteriorExteriorSpatialFunction->Evaluate(insidePoint);
+    torusInteriorExteriorSpatialFunction->Evaluate( insidePoint );
 
   TorusInteriorExteriorSpatialFunctionType::OutputType outsidePointOutputValue =
-    torusInteriorExteriorSpatialFunction->Evaluate(outsidePoint);
+    torusInteriorExteriorSpatialFunction->Evaluate( outsidePoint );
 
   int testStatus = EXIT_SUCCESS;
-  if (!insidePointOutputValue)
-  {
+  if( !insidePointOutputValue )
+    {
     std::cerr << "Error " << std::endl;
     std::cerr << " Expected : " << insidePoint << std::endl;
     std::cerr << " point to be inside torus" << std::endl;
     std::cerr << " is outside torus" << std::endl;
     std::cerr << "Test FAILED ! " << std::endl;
     testStatus = EXIT_FAILURE;
-  }
-  if (outsidePointOutputValue)
-  {
+    }
+  if( outsidePointOutputValue )
+    {
     std::cerr << "Error " << std::endl;
     std::cerr << " Expected : " << outsidePoint << std::endl;
     std::cerr << " point to be outside torus" << std::endl;
     std::cerr << " is inside torus" << std::endl;
     std::cerr << "Test FAILED ! " << std::endl;
     testStatus = EXIT_FAILURE;
-  }
+    }
 
   return testStatus;
 }

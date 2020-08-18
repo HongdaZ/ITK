@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,22 +18,19 @@
 
 #include "itkDistanceMetric.h"
 
-namespace itk
-{
-namespace Statistics
-{
-namespace DistanceMetricTest
-{
+namespace itk {
+namespace Statistics {
+namespace DistanceMetricTest {
 
 template <typename TMeasurementVector>
-class MyDistanceMetric : public DistanceMetric<TMeasurementVector>
+class MyDistanceMetric : public DistanceMetric< TMeasurementVector >
 {
 public:
-  /** Standard class type alias. */
-  using Self = MyDistanceMetric;
-  using Superclass = DistanceMetric<TMeasurementVector>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedef. */
+  typedef MyDistanceMetric                     Self;
+  typedef DistanceMetric< TMeasurementVector > Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer<const Self>             ConstPointer;
 
   /** Standard macros */
   itkTypeMacro(MyDistanceMetric, DistanceMetric);
@@ -42,40 +39,39 @@ public:
   itkNewMacro(Self);
 
   /** Evaluate membership score */
-  double
-  Evaluate(const TMeasurementVector &) const override
-  {
+  double Evaluate(const TMeasurementVector & ) const ITK_OVERRIDE
+    {
     double score;
     score = 1;
     return score;
-  }
+    }
 
-  double
-  Evaluate(const TMeasurementVector &, const TMeasurementVector &) const override
-  {
+  double Evaluate(const TMeasurementVector &, const TMeasurementVector & ) const ITK_OVERRIDE
+    {
     double score;
     score = 1;
     return score;
-  }
+    }
 };
 
-} // namespace DistanceMetricTest
-} // namespace Statistics
-} // namespace itk
-int
-itkDistanceMetricTest(int, char *[])
+}
+}
+}
+int itkDistanceMetricTest(int, char* [] )
 {
 
-  using MeasurementVectorSizeType = unsigned int;
+  typedef unsigned int MeasurementVectorSizeType;
 
-  constexpr MeasurementVectorSizeType MeasurementVectorSize = 17;
+  const MeasurementVectorSizeType MeasurementVectorSize = 17;
 
-  using MeasurementVectorType = itk::FixedArray<float, MeasurementVectorSize>;
+  typedef itk::FixedArray<
+    float, MeasurementVectorSize >  MeasurementVectorType;
 
 
-  using DistanceMetricType = itk::Statistics::DistanceMetricTest::MyDistanceMetric<MeasurementVectorType>;
+  typedef itk::Statistics::DistanceMetricTest::MyDistanceMetric<
+    MeasurementVectorType >   DistanceMetricType;
 
-  using MeasurementVectorSizeType = DistanceMetricType::MeasurementVectorSizeType;
+  typedef DistanceMetricType::MeasurementVectorSizeType MeasurementVectorSizeType;
 
   DistanceMetricType::Pointer distance = DistanceMetricType::New();
 
@@ -84,51 +80,51 @@ itkDistanceMetricTest(int, char *[])
 
   distance->Print(std::cout);
 
-  // try changing the measurement vector size, it should throw an exception
+  //try changing the measurment vector size, it should throw an exception
   try
-  {
+    {
     MeasurementVectorSizeType newSize = 20;
-    distance->SetMeasurementVectorSize(newSize);
+    distance->SetMeasurementVectorSize( newSize );
 
     std::cerr << "Changing measurement vector size is not allowed for a fixed array vector\n"
               << "an exception should have been thrown" << std::endl;
     return EXIT_FAILURE;
-  }
-  catch (const itk::ExceptionObject & excpt)
-  {
+    }
+  catch( itk::ExceptionObject & excpt )
+    {
     std::cerr << "Exception thrown: " << excpt << std::endl;
-  }
+    }
 
-  // try re-setting the measurement vector size to the same value, no exceptins should be
-  // thrown
+  //try re-setting the measurment vector size to the same value, no exceptins should be
+  //thrown
   try
-  {
+    {
     MeasurementVectorSizeType sameSize = 17;
-    distance->SetMeasurementVectorSize(sameSize);
-  }
-  catch (const itk::ExceptionObject & excpt)
-  {
+    distance->SetMeasurementVectorSize( sameSize );
+    }
+  catch( itk::ExceptionObject & excpt )
+    {
     std::cerr << "Exception thrown: " << excpt << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
-  // try setting an origin vector with a different size it should throw an exception
+  //try setting an origin vector with a different size it should throw an exception
   try
-  {
+    {
     DistanceMetricType::OriginType origin;
-    MeasurementVectorSizeType      newSize = 25;
-    origin.SetSize(newSize);
-    distance->SetOrigin(origin);
+    MeasurementVectorSizeType newSize = 25;
+    origin.SetSize( newSize );
+    distance->SetOrigin( origin );
 
     std::cerr << "Attempting to set an origin vector with a different size,"
               << "should result in an exception" << std::endl;
     return EXIT_FAILURE;
-  }
-  catch (const itk::ExceptionObject & excpt)
-  {
+    }
+  catch( itk::ExceptionObject & excpt )
+    {
     std::cerr << "Exception thrown: " << excpt << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

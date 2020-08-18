@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #include "itkCreateObjectFunction.h"
 #include "itkVersion.h"
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
 /**
  * Routine that is called when the shared library is loaded by
@@ -28,17 +28,15 @@
  *
  * itkLoad() is C (not C++) function.
  */
-extern "C"
-{
-  ITKIOImageBase_EXPORT itk::ObjectFactoryBase *
-                        itkLoad();
+extern "C" {
+  ITKIOImageBase_EXPORT itk::ObjectFactoryBase* itkLoad();
 }
 
 
-itk::ObjectFactoryBase *
-itkLoad()
+itk::ObjectFactoryBase* itkLoad()
 {
-  static itk::FileFreeImageIOFactory::Pointer f = itk::FileFreeImageIOFactory::New();
+  static itk::FileFreeImageIOFactory::Pointer f
+    = itk::FileFreeImageIOFactory::New();
   return f;
 }
 
@@ -50,19 +48,21 @@ FileFreeImageIOFactory::FileFreeImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "itkFileFreeImageIO",
                          "ImageIO that creates an in-memory file from a text description",
-                         true,
+                         1,
                          CreateObjectFunction<FileFreeImageIO>::New());
 }
 
-FileFreeImageIOFactory::~FileFreeImageIOFactory() {}
+FileFreeImageIOFactory::~FileFreeImageIOFactory()
+{
+}
 
-const char *
-FileFreeImageIOFactory::GetITKSourceVersion() const
+const char*
+FileFreeImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
-const char *
+const char*
 FileFreeImageIOFactory::GetDescription() const
 {
   return "ImageIO that creates an in-memory file from a text description";

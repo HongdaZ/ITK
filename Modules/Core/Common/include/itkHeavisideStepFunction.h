@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,40 +55,40 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename TInput = float, typename TOutput = double>
-class ITK_TEMPLATE_EXPORT HeavisideStepFunction : public HeavisideStepFunctionBase<TInput, TOutput>
+template< typename TInput = float, typename TOutput = double >
+class ITK_TEMPLATE_EXPORT HeavisideStepFunction:
+  public HeavisideStepFunctionBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HeavisideStepFunction);
-
-  using Self = HeavisideStepFunction;
-  using Superclass = HeavisideStepFunctionBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef HeavisideStepFunction                        Self;
+  typedef HeavisideStepFunctionBase< TInput, TOutput > Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
   itkNewMacro(Self);
 
   itkTypeMacro(HeavisideStepFunction, HeavisideStepFunctionBase);
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::InputType  InputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Evaluate at the specified input position */
-  OutputType
-  Evaluate(const InputType & input) const override;
+  OutputType Evaluate(const InputType & input) const ITK_OVERRIDE;
 
   /** Evaluate the derivative at the specified input position */
-  OutputType
-  EvaluateDerivative(const InputType & input) const override;
+  OutputType EvaluateDerivative(const InputType & input) const ITK_OVERRIDE;
 
 protected:
   HeavisideStepFunction();
-  ~HeavisideStepFunction() override = default;
+  ~HeavisideStepFunction() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HeavisideStepFunction);
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkHeavisideStepFunction.hxx"
+#include "itkHeavisideStepFunction.hxx"
 #endif
 
 #endif

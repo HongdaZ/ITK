@@ -23,7 +23,8 @@ Dicts::Dicts():PublicDict(),ShadowDict()
 }
 
 Dicts::~Dicts()
-= default;
+{
+}
 
 //void Dicts::AddPublicDict(const Dict& dict)
 //{
@@ -60,7 +61,7 @@ const DictEntry &Dicts::GetDictEntry(const Tag& tag, const char *owner) const
     }
   else if( tag.IsPublic() )
     {
-    assert( owner == nullptr );
+    assert( owner == NULL );
     return PublicDict.GetDictEntry(tag);
     }
   else
@@ -92,7 +93,7 @@ const DictEntry &Dicts::GetDictEntry(const Tag& tag, const char *owner) const
         assert( !tag.IsIllegal() );
         assert( tag.GetElement() ); // Not a group length !
         assert( tag.IsPrivate() );
-        assert( owner == nullptr );
+        assert( owner == 0x0 );
           {
           static const char pc[] = "Private Creator";
           static const char kw[] = "PrivateCreator";

@@ -21,6 +21,8 @@ output will be written (the file will be clobbered).
 # Author: Prabhu Ramachandran
 # License: BSD style
 
+from __future__ import print_function
+
 from xml.dom import minidom
 import re
 import textwrap
@@ -127,7 +129,10 @@ class Doxy2SWIG:
 
     def add_text(self, value):
         """Adds text corresponding to `value` into `self.pieces`."""
-        listTypes = (list, tuple)
+        if sys.version_info >= (3,0):
+          listTypes = (list, tuple)
+        else:
+          listTypes = (types.ListType, types.TupleType)
         if type(value) in listTypes:
             self.pieces.extend(value)
         else:

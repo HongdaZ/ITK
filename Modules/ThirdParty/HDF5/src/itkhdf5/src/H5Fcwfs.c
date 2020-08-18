@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
@@ -33,7 +35,7 @@
 /* Module Setup */
 /****************/
 
-#include "H5Fmodule.h"          /* This source code file is part of the H5F module */
+#define H5F_PACKAGE		/*suppress error about including H5Fpkg	  */
 
 
 /***********/
@@ -159,7 +161,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5F_cwfs_find_free_heap(H5F_t *f, size_t need, haddr_t *addr)
+H5F_cwfs_find_free_heap(H5F_t *f, hid_t dxpl_id, size_t need, haddr_t *addr)
 {
     unsigned    cwfsno;                 /* Local index for iterating over collections */
     hbool_t     found = FALSE;          /* Flag to indicate a heap with enough space was found */
@@ -210,11 +212,11 @@ H5F_cwfs_find_free_heap(H5F_t *f, size_t need, haddr_t *addr)
             if((H5HG_SIZE(f->shared->cwfs[cwfsno]) + new_need) <= H5HG_MAXSIZE) {
                 htri_t was_extended;        /* Whether the heap was extended */
 
-                was_extended = H5MF_try_extend(f, H5FD_MEM_GHEAP, H5HG_ADDR(f->shared->cwfs[cwfsno]), (hsize_t)H5HG_SIZE(f->shared->cwfs[cwfsno]), (hsize_t)new_need);
+                was_extended = H5MF_try_extend(f, dxpl_id, H5FD_MEM_GHEAP, H5HG_ADDR(f->shared->cwfs[cwfsno]), (hsize_t)H5HG_SIZE(f->shared->cwfs[cwfsno]), (hsize_t)new_need);
                 if(was_extended < 0)
                     HGOTO_ERROR(H5E_HEAP, H5E_CANTEXTEND, FAIL, "error trying to extend heap")
                 else if(was_extended == TRUE) {
-                    if(H5HG_extend(f, H5HG_ADDR(f->shared->cwfs[cwfsno]), new_need) < 0)
+                    if(H5HG_extend(f, dxpl_id, H5HG_ADDR(f->shared->cwfs[cwfsno]), new_need) < 0)
                         HGOTO_ERROR(H5E_HEAP, H5E_CANTRESIZE, FAIL, "unable to extend global heap collection")
                     *addr = H5HG_ADDR(f->shared->cwfs[cwfsno]);
                     found = TRUE;
@@ -258,9 +260,8 @@ herr_t
 H5F_cwfs_advance_heap(H5F_t *f, H5HG_heap_t *heap, hbool_t add_heap)
 {
     unsigned u;                         /* Local index variable */
-    herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_NOAPI(FAIL)
+    FUNC_ENTER_NOAPI_NOERR
 
     /* Check args */
     HDassert(f);
@@ -280,8 +281,7 @@ H5F_cwfs_advance_heap(H5F_t *f, H5HG_heap_t *heap, hbool_t add_heap)
         f->shared->cwfs[f->shared->ncwfs - 1] = heap;
     } /* end if */
 
-done:
-    FUNC_LEAVE_NOAPI(ret_value)
+    FUNC_LEAVE_NOAPI(SUCCEED)
 } /* H5F_cwfs_advance_heap() */
 
 
@@ -302,9 +302,8 @@ herr_t
 H5F_cwfs_remove_heap(H5F_file_t *shared, H5HG_heap_t *heap)
 {
     unsigned u;                         /* Local index variable */
-    herr_t ret_value = SUCCEED;         /* Return value */
 
-    FUNC_ENTER_NOAPI(FAIL)
+    FUNC_ENTER_NOAPI_NOERR
 
     /* Check args */
     HDassert(shared);
@@ -319,7 +318,6 @@ H5F_cwfs_remove_heap(H5F_file_t *shared, H5HG_heap_t *heap)
         } /* end if */
     } /* end for */
 
-done:
-    FUNC_LEAVE_NOAPI(ret_value)
+    FUNC_LEAVE_NOAPI(SUCCEED)
 } /* H5F_cwfs_remove_heap() */
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@
 
 namespace itk
 {
-/**
- *\class InterpolateImageFunction
- * \brief Base class for all image interpolators.
+/** \class InterpolateImageFunction
+ * \brief Base class for all image interpolaters.
  *
  * InterpolateImageFunction is the base for all ImageFunctions that
  * interpolates image intensity at a non-integer pixel position.
@@ -41,48 +40,46 @@ namespace itk
  *
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage, typename TCoordRep = double>
-class ITK_TEMPLATE_EXPORT InterpolateImageFunction
-  : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
+template< typename TInputImage, typename TCoordRep = double >
+class ITK_TEMPLATE_EXPORT InterpolateImageFunction:
+  public ImageFunction< TInputImage,
+                        typename NumericTraits< typename TInputImage::PixelType >::RealType, TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolateImageFunction);
+  /** Standard class typedefs. */
+  typedef InterpolateImageFunction Self;
+  typedef ImageFunction< TInputImage,
+                         typename NumericTraits< typename TInputImage::PixelType >::RealType,
+                         TCoordRep >                         Superclass;
 
-  /** Standard class type aliases. */
-  using Self = InterpolateImageFunction;
-  using Superclass =
-    ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(InterpolateImageFunction, ImageFunction);
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension);
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType      IndexType;
+  typedef typename Superclass::IndexValueType IndexValueType;
 
-  /** Size type alias support */
-  using SizeType = typename InputImageType::SizeType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
-
-  /** RealType type alias support */
-  using RealType = typename NumericTraits<typename TInputImage::PixelType>::RealType;
+  /** RealType typedef support. */
+  typedef typename NumericTraits< typename TInputImage::PixelType >::RealType RealType;
 
   /** Interpolate the image at a point position
    *
@@ -92,13 +89,12 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  Evaluate(const PointType & point) const override
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE
   {
     ContinuousIndexType index;
 
     this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
-    return (this->EvaluateAtContinuousIndex(index));
+    return ( this->EvaluateAtContinuousIndex(index) );
   }
 
   /** Interpolate the image at a continuous index position
@@ -111,8 +107,8 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override = 0;
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE = 0;
 
   /** Interpolate the image at an index position.
    *
@@ -122,43 +118,19 @@ public:
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE
   {
-    return (static_cast<RealType>(this->GetInputImage()->GetPixel(index)));
+    return ( static_cast< RealType >( this->GetInputImage()->GetPixel(index) ) );
   }
-
-/** Get the radius required for interpolation.
- *
- * This defines the number of surrounding pixels required to interpolate at
- * a given point.
- */
-#if defined(ITKV4_COMPATIBILITY)
-  virtual SizeType
-  GetRadius() const
-  {
-    // if ITKv4 compatibility is enabled then set the radius to the
-    // largest by default.
-    const InputImageType * input = this->GetInputImage();
-    if (!input)
-    {
-      itkExceptionMacro("Input image required!");
-    }
-    return input->GetLargestPossibleRegion().GetSize();
-  }
-#else
-  virtual SizeType
-  GetRadius() const = 0;
-#endif
 
 protected:
-  InterpolateImageFunction() = default;
-  ~InterpolateImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  InterpolateImageFunction(){}
+  ~InterpolateImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  { Superclass::PrintSelf(os, indent); }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolateImageFunction);
 };
 } // end namespace itk
 

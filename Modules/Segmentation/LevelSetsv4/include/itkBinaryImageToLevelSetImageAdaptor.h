@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@
 
 namespace itk
 {
-/**
- *\class BinaryImageToLevelSetImageAdator
+/** \class BinaryImageToLevelSetImageAdator
  *  \brief Converts one binary image to the appropriate level-set type
  *  provided by the template argument TLevelSet.
  *
@@ -47,393 +46,414 @@ namespace itk
  *
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TInputImage, typename TLevelSet>
+template< typename TInputImage, typename TLevelSet >
 class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor
 {};
 
 
 /** \brief Partial template specialization for LevelSetDenseImage
  */
-template <typename TInputImage, typename TLevelSetImage>
-class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<TInputImage, LevelSetDenseImage<TLevelSetImage>>
-  : public BinaryImageToLevelSetImageAdaptorBase<TInputImage, LevelSetDenseImage<TLevelSetImage>>
+template< typename TInputImage, typename TLevelSetImage >
+class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<
+    TInputImage,
+    LevelSetDenseImage< TLevelSetImage > > :
+public BinaryImageToLevelSetImageAdaptorBase<
+    TInputImage,
+    LevelSetDenseImage< TLevelSetImage > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+  typedef LevelSetDenseImage< TLevelSetImage >  LevelSetType;
 
-  using LevelSetType = LevelSetDenseImage<TLevelSetImage>;
-
-  using Self = BinaryImageToLevelSetImageAdaptor;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = BinaryImageToLevelSetImageAdaptorBase<TInputImage, LevelSetType>;
+  typedef BinaryImageToLevelSetImageAdaptor         Self;
+  typedef SmartPointer< Self >                      Pointer;
+  typedef SmartPointer< const Self >                ConstPointer;
+  typedef BinaryImageToLevelSetImageAdaptorBase<
+    TInputImage, LevelSetType >                     Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToLevelSetImageAdaptorBase, Object);
+  itkTypeMacro( BinaryImageToLevelSetImageAdaptorBase, Object );
 
-  using InputImageType = TInputImage;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using InputImageIndexType = typename InputImageType::IndexType;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputPixelRealType = typename NumericTraits<InputImagePixelType>::RealType;
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
+  typedef typename InputImageType::IndexType    InputImageIndexType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename NumericTraits< InputImagePixelType >::RealType
+                                                InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                       InputImageType::ImageDimension );
 
-  using LevelSetPointer = typename LevelSetType::Pointer;
-  using LevelSetImageType = typename LevelSetType::ImageType;
+  typedef typename LevelSetType::Pointer    LevelSetPointer;
+  typedef typename LevelSetType::ImageType  LevelSetImageType;
 
-  using SignedDistanceTransformFilterType = ImageToImageFilter<InputImageType, LevelSetImageType>;
-  using SignedDistanceTransformFilterPointer = typename SignedDistanceTransformFilterType::Pointer;
+  typedef ImageToImageFilter< InputImageType, LevelSetImageType >  SignedDistanceTransformFilterType;
+  typedef typename SignedDistanceTransformFilterType::Pointer      SignedDistanceTransformFilterPointer;
 
   /** Set the signed distance image filter.  Defaults to a
    * SignedMaurerDistanceMapImageFilter. */
-  itkSetObjectMacro(SignedDistanceTransformFilter, SignedDistanceTransformFilterType);
-  itkGetModifiableObjectMacro(SignedDistanceTransformFilter, SignedDistanceTransformFilterType);
+  itkSetObjectMacro( SignedDistanceTransformFilter, SignedDistanceTransformFilterType );
+  itkGetModifiableObjectMacro(SignedDistanceTransformFilter, SignedDistanceTransformFilterType );
 
   /**
    * Input is a binary image m_InputImage
    * Output is a WhitakerSparseLevelSetImagePointer  */
-  void
-  Initialize() override;
+  void Initialize() ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   BinaryImageToLevelSetImageAdaptor();
 
   /** Destructor */
-  ~BinaryImageToLevelSetImageAdaptor() override;
+  virtual ~BinaryImageToLevelSetImageAdaptor() ITK_OVERRIDE;
 
 private:
-  SignedDistanceTransformFilterPointer m_SignedDistanceTransformFilter;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+
+  SignedDistanceTransformFilterPointer   m_SignedDistanceTransformFilter;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- *\class BinaryImageToSparseLevelSetImageAdaptorBase
+/** \class BinaryImageToSparseLevelSetImageAdaptorBase
  *  \brief Abstract class for converting binary image to sparse level-set
  *
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TInput, typename TOutput>
-class ITK_TEMPLATE_EXPORT BinaryImageToSparseLevelSetImageAdaptorBase
-  : public BinaryImageToLevelSetImageAdaptorBase<TInput, TOutput>
+template< typename TInput, typename TOutput >
+class ITK_TEMPLATE_EXPORT BinaryImageToSparseLevelSetImageAdaptorBase :
+    public BinaryImageToLevelSetImageAdaptorBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToSparseLevelSetImageAdaptorBase);
-
-  using Self = BinaryImageToSparseLevelSetImageAdaptorBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = BinaryImageToLevelSetImageAdaptorBase<TInput, TOutput>;
+  typedef BinaryImageToSparseLevelSetImageAdaptorBase Self;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
+  typedef BinaryImageToLevelSetImageAdaptorBase< TInput, TOutput >
+    Superclass;
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToSparseLevelSetImageAdaptorBase, BinaryImageToLevelSetImageAdaptorBase);
+  itkTypeMacro( BinaryImageToSparseLevelSetImageAdaptorBase,
+                BinaryImageToLevelSetImageAdaptorBase );
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageIndexType = typename Superclass::InputImageIndexType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType       InputImageType;
+  typedef typename Superclass::InputImagePixelType  InputImagePixelType;
+  typedef typename Superclass::InputImageIndexType  InputImageIndexType;
+  typedef typename Superclass::InputImagePointer    InputImagePointer;
+  typedef typename Superclass::InputImageRegionType InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType   InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                       InputImageType::ImageDimension );
 
-  using LevelSetType = typename Superclass::LevelSetType;
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
+  typedef typename Superclass::LevelSetType             LevelSetType;
+  typedef typename Superclass::LevelSetPointer          LevelSetPointer;
 
-  using LevelSetInputType = typename LevelSetType::InputType;
-  using LevelSetOutputType = typename LevelSetType::OutputType;
+  typedef typename LevelSetType::InputType              LevelSetInputType;
+  typedef typename LevelSetType::OutputType             LevelSetOutputType;
 
-  using LevelSetLabelObjectType = typename LevelSetType::LabelObjectType;
-  using LayerIdType = typename LevelSetLabelObjectType::LabelType;
-  using LevelSetLabelObjectPointer = typename LevelSetType::LabelObjectPointer;
-  using LevelSetLabelObjectLengthType = typename LevelSetType::LabelObjectLengthType;
-  using LevelSetLabelObjectLineType = typename LevelSetType::LabelObjectLineType;
+  typedef typename LevelSetType::LabelObjectType        LevelSetLabelObjectType;
+  typedef typename LevelSetLabelObjectType::LabelType   LayerIdType;
+  typedef typename LevelSetType::LabelObjectPointer     LevelSetLabelObjectPointer;
+  typedef typename LevelSetType::LabelObjectLengthType  LevelSetLabelObjectLengthType;
+  typedef typename LevelSetType::LabelObjectLineType    LevelSetLabelObjectLineType;
 
-  using LevelSetLabelMapType = typename LevelSetType::LabelMapType;
-  using LevelSetLabelMapPointer = typename LevelSetType::LabelMapPointer;
+  typedef typename LevelSetType::LabelMapType           LevelSetLabelMapType;
+  typedef typename LevelSetType::LabelMapPointer        LevelSetLabelMapPointer;
 
-  using LevelSetLayerType = typename LevelSetType::LayerType;
-  using LevelSetLayerIterator = typename LevelSetType::LayerIterator;
-  using LevelSetLayerConstIterator = typename LevelSetType::LayerConstIterator;
+  typedef typename LevelSetType::LayerType              LevelSetLayerType;
+  typedef typename LevelSetType::LayerIterator          LevelSetLayerIterator;
+  typedef typename LevelSetType::LayerConstIterator     LevelSetLayerConstIterator;
 
-  using InternalImageType = Image<signed char, ImageDimension>;
-  using InternalImagePointer = typename InternalImageType::Pointer;
+  typedef Image< signed char, ImageDimension >  InternalImageType;
+  typedef typename InternalImageType::Pointer   InternalImagePointer;
 
-  using LayerPairType = std::pair<LevelSetInputType, LevelSetOutputType>;
+  typedef std::pair< LevelSetInputType, LevelSetOutputType >  LayerPairType;
 
-  using InputIteratorType = ImageRegionIteratorWithIndex<InputImageType>;
-  using InternalIteratorType = ImageRegionIteratorWithIndex<InternalImageType>;
+  typedef ImageRegionIteratorWithIndex< InputImageType >      InputIteratorType;
+  typedef ImageRegionIteratorWithIndex< InternalImageType >   InternalIteratorType;
 
-  using NeighborhoodIteratorType = ShapedNeighborhoodIterator<InternalImageType>;
+  typedef ShapedNeighborhoodIterator< InternalImageType > NeighborhoodIteratorType;
 
 protected:
-  BinaryImageToSparseLevelSetImageAdaptorBase()
-    : Superclass()
-  {}
-  ~BinaryImageToSparseLevelSetImageAdaptorBase() override = default;
+  BinaryImageToSparseLevelSetImageAdaptorBase() : Superclass() {}
+  virtual ~BinaryImageToSparseLevelSetImageAdaptorBase() ITK_OVERRIDE {}
 
   LevelSetLabelMapPointer m_LabelMap;
 
   InternalImagePointer m_InternalImage;
+
+private:
+  BinaryImageToSparseLevelSetImageAdaptorBase( const Self& );
+  void operator = ( const Self& );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Partial template specialization for WhitakerSparseLevelSetImage
  */
-template <typename TInput, typename TOutput>
-class ITK_TEMPLATE_EXPORT
-  BinaryImageToLevelSetImageAdaptor<TInput, WhitakerSparseLevelSetImage<TOutput, TInput::ImageDimension>>
-  : public BinaryImageToSparseLevelSetImageAdaptorBase<TInput,
-                                                       WhitakerSparseLevelSetImage<TOutput, TInput::ImageDimension>>
-{
+template< typename TInput, typename TOutput >
+class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<
+    TInput,
+    WhitakerSparseLevelSetImage< TOutput, TInput::ImageDimension > > :
+  public BinaryImageToSparseLevelSetImageAdaptorBase<
+      TInput,
+      WhitakerSparseLevelSetImage< TOutput, TInput::ImageDimension > >
+  {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+  typedef WhitakerSparseLevelSetImage< TOutput, TInput::ImageDimension >
+    LevelSetType;
 
-  using LevelSetType = WhitakerSparseLevelSetImage<TOutput, TInput::ImageDimension>;
-
-  using Self = BinaryImageToLevelSetImageAdaptor;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = BinaryImageToSparseLevelSetImageAdaptorBase<TInput, LevelSetType>;
+  typedef BinaryImageToLevelSetImageAdaptor       Self;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
+  typedef BinaryImageToSparseLevelSetImageAdaptorBase<
+    TInput, LevelSetType >                        Superclass;
 
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToLevelSetImageAdaptor, BinaryImageToSparseLevelSetImageAdaptorBase);
+  itkTypeMacro( BinaryImageToLevelSetImageAdaptor,
+                BinaryImageToSparseLevelSetImageAdaptorBase );
 
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageIndexType = typename Superclass::InputImageIndexType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImageType       InputImageType;
+  typedef typename Superclass::InputImagePixelType  InputImagePixelType;
+  typedef typename Superclass::InputImageIndexType  InputImageIndexType;
+  typedef typename Superclass::InputImagePointer    InputImagePointer;
+  typedef typename Superclass::InputImageRegionType InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType   InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                        InputImageType::ImageDimension );
 
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
+  typedef typename Superclass::LevelSetPointer                LevelSetPointer;
 
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
+  typedef typename Superclass::LevelSetInputType              LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType             LevelSetOutputType;
 
-  using LevelSetLabelObjectType = typename Superclass::LevelSetLabelObjectType;
-  using LayerIdType = typename Superclass::LayerIdType;
-  using LevelSetLabelObjectPointer = typename Superclass::LevelSetLabelObjectPointer;
-  using LevelSetLabelObjectLengthType = typename Superclass::LevelSetLabelObjectLengthType;
-  using LevelSetLabelObjectLineType = typename Superclass::LevelSetLabelObjectLineType;
+  typedef typename Superclass::LevelSetLabelObjectType        LevelSetLabelObjectType;
+  typedef typename Superclass::LayerIdType                    LayerIdType;
+  typedef typename Superclass::LevelSetLabelObjectPointer     LevelSetLabelObjectPointer;
+  typedef typename Superclass::LevelSetLabelObjectLengthType  LevelSetLabelObjectLengthType;
+  typedef typename Superclass::LevelSetLabelObjectLineType    LevelSetLabelObjectLineType;
 
-  using LevelSetLabelMapType = typename Superclass::LevelSetLabelMapType;
-  using LevelSetLabelMapPointer = typename Superclass::LevelSetLabelMapPointer;
+  typedef typename Superclass::LevelSetLabelMapType           LevelSetLabelMapType;
+  typedef typename Superclass::LevelSetLabelMapPointer        LevelSetLabelMapPointer;
 
-  using LevelSetLayerType = typename Superclass::LevelSetLayerType;
-  using LevelSetLayerIterator = typename Superclass::LevelSetLayerIterator;
-  using LevelSetLayerConstIterator = typename Superclass::LevelSetLayerConstIterator;
+  typedef typename Superclass::LevelSetLayerType              LevelSetLayerType;
+  typedef typename Superclass::LevelSetLayerIterator          LevelSetLayerIterator;
+  typedef typename Superclass::LevelSetLayerConstIterator     LevelSetLayerConstIterator;
 
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointer = typename Superclass::InternalImagePointer;
+  typedef typename Superclass::InternalImageType        InternalImageType;
+  typedef typename Superclass::InternalImagePointer     InternalImagePointer;
 
-  using LayerPairType = typename Superclass::LayerPairType;
+  typedef typename Superclass::LayerPairType            LayerPairType;
 
-  using InputIteratorType = typename Superclass::InputIteratorType;
-  using InternalIteratorType = typename Superclass::InternalIteratorType;
+  typedef typename Superclass::InputIteratorType        InputIteratorType;
+  typedef typename Superclass::InternalIteratorType     InternalIteratorType;
 
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  typedef typename Superclass::NeighborhoodIteratorType NeighborhoodIteratorType;
 
-  void
-  Initialize() override;
+  void Initialize() ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   BinaryImageToLevelSetImageAdaptor();
 
   /** Destructor */
-  ~BinaryImageToLevelSetImageAdaptor() override;
+  virtual ~BinaryImageToLevelSetImageAdaptor() ITK_OVERRIDE;
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+
   /** Fill layer adjacent (OutputLayer) to the layer (LayerToBeScanned) */
-  void
-  PropagateToOuterLayers(LayerIdType LayerToBeScanned, LayerIdType OutputLayer, LayerIdType TestValue);
+  void PropagateToOuterLayers( LayerIdType LayerToBeScanned, LayerIdType OutputLayer, LayerIdType TestValue );
 
   /** Fill the layer corresponding to zero level set */
-  void
-  FindActiveLayer();
+  void FindActiveLayer();
 
   /** Fill layers adjacent to the zero level set (i.e. layer -1 and +1 )*/
-  void
-  FindPlusOneMinusOneLayer();
+  void FindPlusOneMinusOneLayer();
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Partial template specialization for ShiSparseLevelSetImage
  */
-template <typename TInput>
-class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<TInput, ShiSparseLevelSetImage<TInput::ImageDimension>>
-  : public BinaryImageToSparseLevelSetImageAdaptorBase<TInput, ShiSparseLevelSetImage<TInput::ImageDimension>>
+template< typename TInput >
+class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<
+    TInput,
+    ShiSparseLevelSetImage< TInput::ImageDimension > > :
+public BinaryImageToSparseLevelSetImageAdaptorBase<
+    TInput,
+    ShiSparseLevelSetImage< TInput::ImageDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+  typedef ShiSparseLevelSetImage< TInput::ImageDimension > LevelSetType;
 
-  using LevelSetType = ShiSparseLevelSetImage<TInput::ImageDimension>;
-
-  using Self = BinaryImageToLevelSetImageAdaptor;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = BinaryImageToSparseLevelSetImageAdaptorBase<TInput, LevelSetType>;
+  typedef BinaryImageToLevelSetImageAdaptor       Self;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
+  typedef BinaryImageToSparseLevelSetImageAdaptorBase<
+    TInput, LevelSetType >                        Superclass;
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToLevelSetImageAdaptor, BinaryImageToSparseLevelSetImageAdaptorBase);
+  itkTypeMacro( BinaryImageToLevelSetImageAdaptor,
+                BinaryImageToSparseLevelSetImageAdaptorBase );
 
-  using InputImageType = typename Superclass::InputImageType;
+  typedef typename Superclass::InputImageType       InputImageType;
 
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageIndexType = typename Superclass::InputImageIndexType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImagePixelType  InputImagePixelType;
+  typedef typename Superclass::InputImageIndexType  InputImageIndexType;
+  typedef typename Superclass::InputImagePointer    InputImagePointer;
+  typedef typename Superclass::InputImageRegionType InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType   InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                       InputImageType::ImageDimension );
 
-  //  using LevelSetType = typename Superclass::LevelSetType;
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
+//  typedef typename Superclass::LevelSetType             LevelSetType;
+  typedef typename Superclass::LevelSetPointer                LevelSetPointer;
 
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
+  typedef typename Superclass::LevelSetInputType              LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType             LevelSetOutputType;
 
-  using LevelSetLabelObjectType = typename Superclass::LevelSetLabelObjectType;
-  using LayerIdType = typename Superclass::LayerIdType;
-  using LevelSetLabelObjectPointer = typename Superclass::LevelSetLabelObjectPointer;
-  using LevelSetLabelObjectLengthType = typename Superclass::LevelSetLabelObjectLengthType;
-  using LevelSetLabelObjectLineType = typename Superclass::LevelSetLabelObjectLineType;
+  typedef typename Superclass::LevelSetLabelObjectType        LevelSetLabelObjectType;
+  typedef typename Superclass::LayerIdType                    LayerIdType;
+  typedef typename Superclass::LevelSetLabelObjectPointer     LevelSetLabelObjectPointer;
+  typedef typename Superclass::LevelSetLabelObjectLengthType  LevelSetLabelObjectLengthType;
+  typedef typename Superclass::LevelSetLabelObjectLineType    LevelSetLabelObjectLineType;
 
-  using LevelSetLabelMapType = typename Superclass::LevelSetLabelMapType;
-  using LevelSetLabelMapPointer = typename Superclass::LevelSetLabelMapPointer;
+  typedef typename Superclass::LevelSetLabelMapType           LevelSetLabelMapType;
+  typedef typename Superclass::LevelSetLabelMapPointer        LevelSetLabelMapPointer;
 
-  using LevelSetLayerType = typename Superclass::LevelSetLayerType;
-  using LevelSetLayerIterator = typename Superclass::LevelSetLayerIterator;
-  using LevelSetLayerConstIterator = typename Superclass::LevelSetLayerConstIterator;
+  typedef typename Superclass::LevelSetLayerType              LevelSetLayerType;
+  typedef typename Superclass::LevelSetLayerIterator          LevelSetLayerIterator;
+  typedef typename Superclass::LevelSetLayerConstIterator     LevelSetLayerConstIterator;
 
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointer = typename Superclass::InternalImagePointer;
+  typedef typename Superclass::InternalImageType        InternalImageType;
+  typedef typename Superclass::InternalImagePointer     InternalImagePointer;
 
-  using LayerPairType = typename Superclass::LayerPairType;
+  typedef typename Superclass::LayerPairType            LayerPairType;
 
-  using InputIteratorType = typename Superclass::InputIteratorType;
-  using InternalIteratorType = typename Superclass::InternalIteratorType;
+  typedef typename Superclass::InputIteratorType        InputIteratorType;
+  typedef typename Superclass::InternalIteratorType     InternalIteratorType;
 
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  typedef typename Superclass::NeighborhoodIteratorType NeighborhoodIteratorType;
 
-  void
-  Initialize() override;
+  void Initialize() ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   BinaryImageToLevelSetImageAdaptor();
 
   /** Destructor */
-  ~BinaryImageToLevelSetImageAdaptor() override;
+  ~BinaryImageToLevelSetImageAdaptor() ITK_OVERRIDE;
 
   /** Find the active layer separating the foreground and background regions */
-  void
-  FindActiveLayer();
+  void FindActiveLayer();
 
 private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Partial template specialization for MalcolmSparseLevelSetImage
  */
-template <typename TInput>
-class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<TInput, MalcolmSparseLevelSetImage<TInput::ImageDimension>>
-  : public BinaryImageToSparseLevelSetImageAdaptorBase<TInput, MalcolmSparseLevelSetImage<TInput::ImageDimension>>
+template< typename TInput >
+class ITK_TEMPLATE_EXPORT BinaryImageToLevelSetImageAdaptor<
+    TInput,
+    MalcolmSparseLevelSetImage< TInput::ImageDimension > > :
+  public BinaryImageToSparseLevelSetImageAdaptorBase< TInput, MalcolmSparseLevelSetImage< TInput::ImageDimension > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
+  typedef MalcolmSparseLevelSetImage< TInput::ImageDimension > LevelSetType;
 
-  using LevelSetType = MalcolmSparseLevelSetImage<TInput::ImageDimension>;
-
-  using Self = BinaryImageToLevelSetImageAdaptor;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = BinaryImageToSparseLevelSetImageAdaptorBase<TInput, LevelSetType>;
+  typedef BinaryImageToLevelSetImageAdaptor       Self;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
+  typedef BinaryImageToSparseLevelSetImageAdaptorBase<
+    TInput, LevelSetType >                        Superclass;
 
 
   /** Method for creation through object factory */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToLevelSetImageAdaptor, BinaryImageToSparseLevelSetImageAdaptorBase);
+  itkTypeMacro( BinaryImageToLevelSetImageAdaptor,
+                BinaryImageToSparseLevelSetImageAdaptorBase );
 
-  using InputImageType = typename Superclass::InputImageType;
+  typedef typename Superclass::InputImageType       InputImageType;
 
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageIndexType = typename Superclass::InputImageIndexType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
-  using InputPixelRealType = typename Superclass::InputPixelRealType;
+  typedef typename Superclass::InputImagePixelType  InputImagePixelType;
+  typedef typename Superclass::InputImageIndexType  InputImageIndexType;
+  typedef typename Superclass::InputImagePointer    InputImagePointer;
+  typedef typename Superclass::InputImageRegionType InputImageRegionType;
+  typedef typename Superclass::InputPixelRealType   InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                       InputImageType::ImageDimension );
 
 
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
-  using LevelSetInputType = typename Superclass::LevelSetInputType;
-  using LevelSetOutputType = typename Superclass::LevelSetOutputType;
+  typedef typename Superclass::LevelSetPointer                LevelSetPointer;
+  typedef typename Superclass::LevelSetInputType              LevelSetInputType;
+  typedef typename Superclass::LevelSetOutputType             LevelSetOutputType;
 
-  using LevelSetLabelObjectType = typename Superclass::LevelSetLabelObjectType;
-  using LayerIdType = typename Superclass::LayerIdType;
-  using LevelSetLabelObjectPointer = typename Superclass::LevelSetLabelObjectPointer;
-  using LevelSetLabelObjectLengthType = typename Superclass::LevelSetLabelObjectLengthType;
-  using LevelSetLabelObjectLineType = typename Superclass::LevelSetLabelObjectLineType;
+  typedef typename Superclass::LevelSetLabelObjectType        LevelSetLabelObjectType;
+  typedef typename Superclass::LayerIdType                    LayerIdType;
+  typedef typename Superclass::LevelSetLabelObjectPointer     LevelSetLabelObjectPointer;
+  typedef typename Superclass::LevelSetLabelObjectLengthType  LevelSetLabelObjectLengthType;
+  typedef typename Superclass::LevelSetLabelObjectLineType    LevelSetLabelObjectLineType;
 
-  using LevelSetLabelMapType = typename Superclass::LevelSetLabelMapType;
-  using LevelSetLabelMapPointer = typename Superclass::LevelSetLabelMapPointer;
+  typedef typename Superclass::LevelSetLabelMapType           LevelSetLabelMapType;
+  typedef typename Superclass::LevelSetLabelMapPointer        LevelSetLabelMapPointer;
 
-  using LevelSetLayerType = typename Superclass::LevelSetLayerType;
-  using LevelSetLayerIterator = typename Superclass::LevelSetLayerIterator;
-  using LevelSetLayerConstIterator = typename Superclass::LevelSetLayerConstIterator;
+  typedef typename Superclass::LevelSetLayerType              LevelSetLayerType;
+  typedef typename Superclass::LevelSetLayerIterator          LevelSetLayerIterator;
+  typedef typename Superclass::LevelSetLayerConstIterator     LevelSetLayerConstIterator;
 
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointer = typename Superclass::InternalImagePointer;
+  typedef typename Superclass::InternalImageType        InternalImageType;
+  typedef typename Superclass::InternalImagePointer     InternalImagePointer;
 
-  using LayerPairType = typename Superclass::LayerPairType;
+  typedef typename Superclass::LayerPairType            LayerPairType;
 
-  using InputIteratorType = typename Superclass::InputIteratorType;
-  using InternalIteratorType = typename Superclass::InternalIteratorType;
+  typedef typename Superclass::InputIteratorType        InputIteratorType;
+  typedef typename Superclass::InternalIteratorType     InternalIteratorType;
 
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  typedef typename Superclass::NeighborhoodIteratorType NeighborhoodIteratorType;
 
-  void
-  Initialize() override;
+  void Initialize() ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   BinaryImageToLevelSetImageAdaptor();
 
   /** Destructor */
-  ~BinaryImageToLevelSetImageAdaptor() override;
+  virtual ~BinaryImageToLevelSetImageAdaptor() ITK_OVERRIDE;
 
   /** Find the active layer separating the foreground and background regions */
-  void
-  FindActiveLayer();
+  void FindActiveLayer();
 
   /** Ensure that the 0 level set layer is only of single pixel thickness */
-  void
-  CreateMinimalInterface();
+  void CreateMinimalInterface();
+
+private:
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptor);
 };
 
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBinaryImageToLevelSetImageAdaptor.hxx"
+#include "itkBinaryImageToLevelSetImageAdaptor.hxx"
 #endif
 #endif // itkBinaryImageToLevelSetImageAdaptorBase_h

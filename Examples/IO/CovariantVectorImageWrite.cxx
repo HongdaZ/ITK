@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,16 +59,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char ** argv)
+int main( int argc, char ** argv )
 {
   // Verify the number of parameters in the command line
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile  outputVectorImageFile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -80,14 +79,15 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = signed short;
-  using ComponentType = float;
-  constexpr unsigned int Dimension = 2;
+  typedef signed short          InputPixelType;
+  typedef float                 ComponentType;
+  const   unsigned int          Dimension = 2;
 
-  using OutputPixelType = itk::CovariantVector<ComponentType, Dimension>;
+  typedef itk::CovariantVector< ComponentType,
+                                    Dimension  >      OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >    InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >    OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -99,8 +99,8 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -113,8 +113,9 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType =
-    itk::GradientRecursiveGaussianImageFilter<InputImageType, OutputImageType>;
+  typedef itk::GradientRecursiveGaussianImageFilter<
+                                          InputImageType,
+                                          OutputImageType    > FilterType;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -130,7 +131,7 @@ main(int argc, char ** argv)
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetSigma(1.5); // Sigma in millimeters
+  filter->SetSigma( 1.5 );      // Sigma in millimeters
   // Software Guide : EndCodeSnippet
 
 
@@ -155,7 +156,7 @@ main(int argc, char ** argv)
   //
   // Here we recover the file names from the command line arguments
   //
-  const char * inputFilename = argv[1];
+  const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
 
@@ -172,8 +173,8 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName(inputFilename);
-  writer->SetFileName(outputFilename);
+  reader->SetFileName( inputFilename  );
+  writer->SetFileName( outputFilename );
   // Software Guide : EndCodeSnippet
 
 
@@ -185,8 +186,8 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -200,15 +201,15 @@ main(int argc, char ** argv)
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 

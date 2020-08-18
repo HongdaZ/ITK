@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,24 +24,23 @@
 #include "itkTestingComparisonImageFilter.h"
 
 
-int
-itkImageRandomIteratorTest2(int argc, char * argv[])
+int itkImageRandomIteratorTest2( int argc, char * argv [] )
 {
-  if (argc < 2)
-  {
+  if( argc < 2 )
+    {
     std::cerr << "Missing arguments " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  outputImageFile" << std::endl;
     std::cerr << "[baselineImage  differenceImage]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int ImageDimension = 2;
+  const unsigned int ImageDimension = 2;
 
-  using PixelType = unsigned long;
+  typedef unsigned long  PixelType;
 
-  using ImageType = itk::Image<PixelType, ImageDimension>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::Image< PixelType, ImageDimension >  ImageType;
+  typedef itk::ImageFileWriter< ImageType >        WriterType;
 
   ImageType::Pointer image = ImageType::New();
 
@@ -58,17 +57,17 @@ itkImageRandomIteratorTest2(int argc, char * argv[])
   start.Fill(0);
 
   ImageType::RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
-  image->SetRegions(region);
+  image->SetRegions( region );
   image->Allocate(true); // initialize buffer to zero
 
-  using RandomIteratorType = itk::ImageRandomIteratorWithIndex<ImageType>;
+  typedef itk::ImageRandomIteratorWithIndex< ImageType >      RandomIteratorType;
 
-  RandomIteratorType it(image, region);
+  RandomIteratorType it( image, region );
 
-  it.SetNumberOfSamples(numberOfSamples);
+  it.SetNumberOfSamples( numberOfSamples );
 
   it.GoToBegin();
 
@@ -77,56 +76,58 @@ itkImageRandomIteratorTest2(int argc, char * argv[])
   //
   // Write down the order in which pixels are visited
   //
-  while (!it.IsAtEnd())
-  {
-    it.Set(counter);
+  while( !it.IsAtEnd() )
+    {
+    it.Set( counter );
     ++it;
     ++counter;
-  }
+    }
 
-  writer->SetInput(image);
-  writer->SetFileName(argv[1]);
+  writer->SetInput( image );
+  writer->SetFileName( argv[1] );
   writer->Update();
 
-  if (argc > 4)
-  {
+  if( argc > 4 )
+    {
 
-    using ReaderType = itk::ImageFileReader<ImageType>;
+    typedef itk::ImageFileReader< ImageType > ReaderType;
 
     ReaderType::Pointer reader = ReaderType::New();
 
-    reader->SetFileName(argv[2]);
+    reader->SetFileName( argv[2] );
 
-    using DifferencePixelType = signed long;
-    using DifferenceImageType = itk::Image<DifferencePixelType, ImageDimension>;
+    typedef signed long    DifferencePixelType;
+    typedef itk::Image< DifferencePixelType, ImageDimension > DifferenceImageType;
 
-    using DifferenceFilterType = itk::Testing::ComparisonImageFilter<ImageType, DifferenceImageType>;
+    typedef itk::Testing::ComparisonImageFilter<
+      ImageType, DifferenceImageType > DifferenceFilterType;
 
     DifferenceFilterType::Pointer difference = DifferenceFilterType::New();
 
-    difference->SetValidInput(image);
-    difference->SetTestInput(reader->GetOutput());
-    difference->SetToleranceRadius(0);
-    difference->SetDifferenceThreshold(0);
+    difference->SetValidInput( image );
+    difference->SetTestInput( reader->GetOutput() );
+    difference->SetToleranceRadius( 0 );
+    difference->SetDifferenceThreshold( 0 );
 
-    using DifferenceWriterType = itk::ImageFileWriter<DifferenceImageType>;
+    typedef itk::ImageFileWriter< DifferenceImageType >  DifferenceWriterType;
     DifferenceWriterType::Pointer writer2 = DifferenceWriterType::New();
 
-    writer2->SetInput(difference->GetOutput());
+    writer2->SetInput( difference->GetOutput() );
 
     try
-    {
+      {
       writer2->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
+      }
+    catch( itk::ExceptionObject & excp )
+      {
       std::cerr << excp << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
     std::cout << "Number of pixels with differences = ";
     std::cout << difference->GetNumberOfPixelsWithDifferences() << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
-}
+
+  }

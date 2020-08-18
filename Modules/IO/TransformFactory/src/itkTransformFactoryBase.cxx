@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 #include "itkFixedCenterOfRotationAffineTransform.h"
 #include "itkIdentityTransform.h"
 #include "itkQuaternionRigidTransform.h"
+#include "itkv3Rigid3DTransform.h"
 #include "itkRigid3DPerspectiveTransform.h"
 #include "itkScaleLogarithmicTransform.h"
 #include "itkScaleVersor3DTransform.h"
@@ -37,7 +38,7 @@
 #include "itkBSplineTransform.h"
 #include "itkCompositeTransform.h"
 
-// Transforms from Filtering/DisplacementField/include
+//Transforms from Filtering/DisplacementField/include
 #include "itkBSplineExponentialDiffeomorphicTransform.h"
 #include "itkBSplineSmoothingOnUpdateDisplacementFieldTransform.h"
 #include "itkConstantVelocityFieldTransform.h"
@@ -49,25 +50,26 @@
 #include "itkTimeVaryingVelocityFieldTransform.h"
 #include "itkVelocityFieldTransform.h"
 
-#if !defined(ITK_LEGACY_REMOVE)
-#  include "itkBSplineDeformableTransform.h"
+#if !defined( ITK_FUTURE_LEGACY_REMOVE )
+#include "itkBSplineDeformableTransform.h"
 #endif
 
 namespace itk
 {
-TransformFactoryBase * TransformFactoryBase::m_Factory = nullptr;
+TransformFactoryBase *TransformFactoryBase:: m_Factory = ITK_NULLPTR;
 
 namespace TransformFactoryBasePrivate
 {
 bool DefaultTransformsRegistered = false;
 }
 
-TransformFactoryBase::TransformFactoryBase() = default;
+TransformFactoryBase::TransformFactoryBase()
+{}
 
-TransformFactoryBase::~TransformFactoryBase() = default;
+TransformFactoryBase::~TransformFactoryBase()
+{}
 
-void
-TransformFactoryBase::RegisterDefaultTransforms()
+void TransformFactoryBase::RegisterDefaultTransforms()
 {
   //
   // make sure that the the factory instance has
@@ -75,8 +77,8 @@ TransformFactoryBase::RegisterDefaultTransforms()
   // already do this but this makes certain sure it's done
   (void)TransformFactoryBase::GetFactory();
 
-  if (!TransformFactoryBasePrivate::DefaultTransformsRegistered)
-  {
+  if ( !TransformFactoryBasePrivate::DefaultTransformsRegistered )
+    {
     //
     // double Parameters, double FixedParameters instances (in alphabetical order)
     //
@@ -88,26 +90,26 @@ TransformFactoryBase::RegisterDefaultTransforms()
     // float Parameters, double FixedParamters instances (in alphabetical order)
     //
     RegisterTransformFactoryFloatParameters();
-  }
+
+    }
   TransformFactoryBasePrivate::DefaultTransformsRegistered = true;
 }
 
-TransformFactoryBase *
-TransformFactoryBase::GetFactory()
+TransformFactoryBase * TransformFactoryBase::GetFactory()
 {
-  if (m_Factory == nullptr)
-  {
+  if ( m_Factory == ITK_NULLPTR )
+    {
     // Make and register the factory
     Pointer p = New();
     m_Factory = p.GetPointer();
-    ObjectFactoryBase::RegisterFactory(p);
-    p->RegisterDefaultTransforms();
-  }
+    ObjectFactoryBase::RegisterFactory (p);
+    p->RegisterDefaultTransforms ();
+    }
   return m_Factory;
 }
 
 const char *
-TransformFactoryBase::GetITKSourceVersion() const
+TransformFactoryBase::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,20 +51,20 @@ namespace itk
  * \ingroup GeometricTransform
  * \ingroup ITKDisplacementField
  */
-template <typename TOutputImage, typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT TransformToDisplacementFieldFilter : public ImageSource<TOutputImage>
+template< typename TOutputImage,
+          typename TParametersValueType = double>
+class ITK_TEMPLATE_EXPORT TransformToDisplacementFieldFilter:
+  public ImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformToDisplacementFieldFilter);
+  /** Standard class typedefs. */
+  typedef TransformToDisplacementFieldFilter Self;
+  typedef ImageSource< TOutputImage >        Superclass;
+  typedef SmartPointer<Self>                 Pointer;
+  typedef SmartPointer<const Self>           ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = TransformToDisplacementFieldFilter;
-  using Superclass = ImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using OutputImageType = TOutputImage;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef TOutputImage                           OutputImageType;
+  typedef typename OutputImageType::RegionType   OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,35 +73,33 @@ public:
   itkTypeMacro(TransformToDisplacementFieldFilter, ImageSource);
 
   /** Number of dimensions. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Typedefs for transform. */
-  using TransformType = Transform<TParametersValueType, ImageDimension, ImageDimension>;
-  using TransformInputType = DataObjectDecorator<TransformType>;
+  typedef Transform<TParametersValueType, ImageDimension, ImageDimension> TransformType;
+  typedef DataObjectDecorator< TransformType >                            TransformInputType;
 
   /** Typedefs for output image. */
-  using PixelType = typename OutputImageType::PixelType;
-  using PixelValueType = typename PixelType::ValueType;
-  using RegionType = typename OutputImageType::RegionType;
-  using SizeType = typename RegionType::SizeType;
-  using IndexType = typename OutputImageType::IndexType;
-  using PointType = typename OutputImageType::PointType;
-  using SpacingType = typename OutputImageType::SpacingType;
-  using OriginType = typename OutputImageType::PointType;
-  using DirectionType = typename OutputImageType::DirectionType;
+  typedef typename OutputImageType::PixelType     PixelType;
+  typedef typename PixelType::ValueType           PixelValueType;
+  typedef typename OutputImageType::RegionType    RegionType;
+  typedef typename RegionType::SizeType           SizeType;
+  typedef typename OutputImageType::IndexType     IndexType;
+  typedef typename OutputImageType::PointType     PointType;
+  typedef typename OutputImageType::SpacingType   SpacingType;
+  typedef typename OutputImageType::PointType     OriginType;
+  typedef typename OutputImageType::DirectionType DirectionType;
 
   /** Typedef the reference image ImageBase. */
-  using ReferenceImageBaseType = ImageBase<ImageDimension>;
+  typedef ImageBase< ImageDimension > ReferenceImageBaseType;
 
   /** Get/Set the coordinate transformation.
    * Set the coordinate transform to use for resampling.  Note that this must
    * be in physical coordinates and it is the output-to-input transform, NOT
    * the input-to-output transform that you might naively expect. */
   using Superclass::SetInput;
-  virtual void
-  SetInput(const TransformInputType * transform);
-  const TransformInputType *
-  GetInput() const;
+  virtual void SetInput( const TransformInputType * transform );
+  const TransformInputType * GetInput() const;
   itkSetGetDecoratedObjectInputMacro(Transform, TransformType);
 
   /** Set/Get the start index of the output largest possible region.
@@ -115,16 +113,14 @@ public:
 
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
-  virtual void
-  SetOutputSpacing(const SpacePrecisionType * values);
+  virtual void SetOutputSpacing(const SpacePrecisionType *values);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
 
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, OriginType);
-  virtual void
-  SetOutputOrigin(const SpacePrecisionType * values);
+  virtual void SetOutputOrigin(const SpacePrecisionType *values);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, OriginType);
@@ -133,12 +129,12 @@ public:
   itkSetMacro(OutputDirection, DirectionType);
   itkGetConstReferenceMacro(OutputDirection, DirectionType);
 
-  /** Set a reference image to use to define the output information.
-   *  By default, output information is specified through the
-   *  SetOutputSpacing, Origin, and Direction methods.  Alternatively,
-   *  this method can be used to specify an image from which to
-   *  copy the information. UseReferenceImageOn must be set to utilize the
-   *  reference image. */
+   /** Set a reference image to use to define the output information.
+    *  By default, output information is specificed through the
+    *  SetOutputSpacing, Origin, and Direction methods.  Alternatively,
+    *  this method can be used to specify an image from which to
+    *  copy the information. UseReferenceImageOn must be set to utilize the
+    *  reference image. */
   itkSetInputMacro(ReferenceImage, ReferenceImageBaseType);
 
   /** Get the reference image that is defining the output information. */
@@ -152,52 +148,53 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  static constexpr unsigned int PixelDimension = PixelType::Dimension;
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, PixelDimension>));
+  itkStaticConstMacro(PixelDimension, unsigned int,
+                      PixelType::Dimension);
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, PixelDimension > ) );
   // End concept checking
 #endif
 
 protected:
   TransformToDisplacementFieldFilter();
-  ~TransformToDisplacementFieldFilter() override = default;
+  virtual ~TransformToDisplacementFieldFilter() ITK_OVERRIDE {}
 
   /** Produces a Vector Image. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
-  /** TransformToDisplacementFieldFilter is implemented as a multithreaded filter. */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  /** TransformToDisplacementFieldFilter can be implemented as a multithreaded
+   * filter.
+   */
+  virtual void ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** Default implementation for resampling that works for any
    * transformation type.
    */
-  void
-  NonlinearThreadedGenerateData(const OutputImageRegionType & outputRegionForThread);
+  void NonlinearThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId );
 
   /** Faster implementation for resampling that works for with linear
    *  transformation types.
    */
-  void
-  LinearThreadedGenerateData(const OutputImageRegionType & outputRegionForThread);
+  void LinearThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId );
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TransformToDisplacementFieldFilter);
+
   /** Member variables. */
-  SizeType      m_Size;             // size of the output region
-  IndexType     m_OutputStartIndex; // start index of the output region
-  SpacingType   m_OutputSpacing;    // output image spacing
-  OriginType    m_OutputOrigin;     // output image origin
-  DirectionType m_OutputDirection;  // output image direction cosines
-  bool          m_UseReferenceImage{ false };
+  SizeType             m_Size;            // size of the output region
+  IndexType            m_OutputStartIndex; // start index of the output region
+  SpacingType          m_OutputSpacing;   // output image spacing
+  OriginType           m_OutputOrigin;    // output image origin
+  DirectionType        m_OutputDirection; // output image direction cosines
+  bool                 m_UseReferenceImage;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkTransformToDisplacementFieldFilter.hxx"
+#include "itkTransformToDisplacementFieldFilter.hxx"
 #endif
 
 #endif

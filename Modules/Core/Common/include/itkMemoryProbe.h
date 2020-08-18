@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,25 +36,26 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT MemoryProbe : public ResourceProbe<OffsetValueType, double>
+class ITKCommon_EXPORT MemoryProbe:
+  public ResourceProbe< SizeValueType, double >
 {
 public:
+
   MemoryProbe();
-  ~MemoryProbe() override;
+  ~MemoryProbe() ITK_OVERRIDE;
 
   /** Type for measuring memory. */
-  using MemoryLoadType = OffsetValueType;
+  typedef SizeValueType MemoryLoadType;
 
   /** Type for measuring the average memory. */
-  using MeanMemoryLoadType = double;
+  typedef double MeanMemoryLoadType;
 
 protected:
-  MemoryLoadType
-  GetInstantValue() const override;
+  virtual MemoryLoadType GetInstantValue(void) const ITK_OVERRIDE;
 
 private:
   mutable MemoryUsageObserver m_MemoryObserver;
 };
 } // end namespace itk
 
-#endif // itkMemoryProbe_h
+#endif //itkMemoryProbe_h

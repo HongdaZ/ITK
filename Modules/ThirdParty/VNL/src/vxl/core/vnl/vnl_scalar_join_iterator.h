@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_scalar_join_iterator.h
 #ifndef vnl_scalar_join_iterator_h_
 #define vnl_scalar_join_iterator_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief  Database join on matrix columns
@@ -36,10 +39,8 @@
 //-----------------------------------------------------------------------------
 
 #include <list>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_matrix.h"
+#include <vcl_compiler.h>
+#include <vnl/vnl_matrix.h>
 #include "vnl/vnl_export.h"
 
 template <class T>
@@ -67,10 +68,10 @@ class vnl_scalar_join_iterator_indexed_pair;
 //  and it doesn't.  Contact awf if you need this to work.
 
 template <class T>
-class VNL_EXPORT vnl_scalar_join_iterator
+class VNL_TEMPLATE_EXPORT vnl_scalar_join_iterator
 {
  private:
-
+  VCL_SAFE_BOOL_DEFINE;
  protected:
   unsigned n1;
   unsigned n2;
@@ -94,8 +95,8 @@ class VNL_EXPORT vnl_scalar_join_iterator
 
 
   //: Return true if all pairs have been seen.
-  explicit operator bool () const
-    { return (!done())? true : false; }
+  operator safe_bool () const
+    { return (!done())? VCL_SAFE_BOOL_TRUE : 0; }
 
   //: Return false if all pairs have been seen.
   bool operator!() const
@@ -120,13 +121,13 @@ class VNL_EXPORT vnl_scalar_join_iterator
 
 //: Helper class to hold the sorted arrays of indices.
 template <class T>
-class VNL_EXPORT vnl_scalar_join_iterator_indexed_pair
+class VNL_TEMPLATE_EXPORT vnl_scalar_join_iterator_indexed_pair
 {
  public:
   const T* object;
   int original_index;
 
-  vnl_scalar_join_iterator_indexed_pair() = default;
+  vnl_scalar_join_iterator_indexed_pair() {}
   vnl_scalar_join_iterator_indexed_pair(const T* object_, int original_index_):object(object_), original_index(original_index_) {}
 
   bool operator == (const vnl_scalar_join_iterator_indexed_pair<T>& that) const;

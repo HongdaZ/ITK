@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,17 +43,15 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
+template<typename TParametersValueType=double>
 class ITK_TEMPLATE_EXPORT VersorTransform : public Rigid3DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VersorTransform);
-
   /** Standard Self Typedef */
-  using Self = VersorTransform;
-  using Superclass = Rigid3DTransform<TParametersValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef VersorTransform                        Self;
+  typedef Rigid3DTransform<TParametersValueType> Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** Run-time type information (and related methods).  */
   itkTypeMacro(VersorTransform, Rigid3DTransform);
@@ -62,40 +60,38 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of parameters */
-  static constexpr unsigned int SpaceDimension = 3;
-  static constexpr unsigned int InputSpaceDimension = 3;
-  static constexpr unsigned int OutputSpaceDimension = 3;
-  static constexpr unsigned int ParametersDimension = 3;
+  itkStaticConstMacro(SpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 3);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 3);
 
   /** Parameters Type   */
-  using ScalarType = typename Superclass::ScalarType;
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using MatrixType = typename Superclass::MatrixType;
-  using InverseMatrixType = typename Superclass::InverseMatrixType;
-  using CenterType = typename Superclass::CenterType;
-  using OffsetType = typename Superclass::OffsetType;
+  typedef typename Superclass::ScalarType                ScalarType;
+  typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::InputPointType            InputPointType;
+  typedef typename Superclass::OutputPointType           OutputPointType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputVnlVectorType        InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType       OutputVnlVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
+  typedef typename Superclass::MatrixType                MatrixType;
+  typedef typename Superclass::InverseMatrixType         InverseMatrixType;
+  typedef typename Superclass::CenterType                CenterType;
+  typedef typename Superclass::OffsetType                OffsetType;
 
   /** VnlQuaternion Type */
-  using VnlQuaternionType = vnl_quaternion<TParametersValueType>;
+  typedef vnl_quaternion<TParametersValueType> VnlQuaternionType;
 
   /** Versor Type */
-  using VersorType = Versor<TParametersValueType>;
-  using AxisType = typename VersorType::VectorType;
-  using AngleType = typename VersorType::ValueType;
-  using AxisValueType = typename AxisType::ValueType;
-  using ParametersValueType = typename ParametersType::ValueType;
+  typedef Versor<TParametersValueType>       VersorType;
+  typedef typename VersorType::VectorType    AxisType;
+  typedef typename VersorType::ValueType     AngleType;
+  typedef typename AxisType::ValueType       AxisValueType;
+  typedef typename ParametersType::ValueType ParametersValueType;
 
   /**
    * Set the transformation from a container of parameters
@@ -105,69 +101,72 @@ public:
    * of the right part of the versor. This can be seen
    * as the components of the vector parallel to the rotation
    * axis and multiplied by std::sin( angle / 2 ). */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
   /** Get the Transformation Parameters. */
-  const ParametersType &
-  GetParameters() const override;
+  const ParametersType & GetParameters(void) const ITK_OVERRIDE;
 
   /** Set the rotational part of the transform */
-  void
-  SetRotation(const VersorType & versor);
+  void SetRotation(const VersorType & versor);
 
-  void
-  SetRotation(const AxisType & axis, AngleType angle);
+  void SetRotation(const AxisType & axis, AngleType angle);
 
   itkGetConstReferenceMacro(Versor, VersorType);
 
   /** Set the parameters to the IdentityTransform */
-  void
-  SetIdentity() override;
+  virtual void SetIdentity(void) ITK_OVERRIDE;
 
   /** Compute the Jacobian of the transformation
    *  This method computes the Jacobian matrix of the transformation.
    *  given point or vector, returning the transformed point or
    *  vector. The rank of the Jacobian will also indicate if the
    *  transform is invertible at this point. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
 protected:
+
   /** Construct an VersorTransform object */
   VersorTransform(const MatrixType & matrix, const OutputVectorType & offset);
   VersorTransform(unsigned int paramDims);
   VersorTransform();
 
   /** Destroy an VersorTransform object */
-  ~VersorTransform() override = default;
+  ~VersorTransform() ITK_OVERRIDE {}
 
-  void
-  SetVarVersor(const VersorType & newVersor)
+#ifdef ITKV3_COMPATIBILITY
+  /** \deprecated This method must be made protected here because it is not a safe way of
+   * initializing the Versor */
+  itkLegacyMacro( virtual void SetRotationMatrix(const MatrixType & matrix) ITK_OVERRIDE);
+#endif
+
+  void SetVarVersor(const VersorType & newVersor)
   {
     m_Versor = newVersor;
   }
 
   /** Print contents of a VersorTransform */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Compute Matrix
    *  Compute the components of the rotation matrix in the superclass */
-  void
-  ComputeMatrix() override;
+  void ComputeMatrix(void) ITK_OVERRIDE;
 
-  void
-  ComputeMatrixParameters() override;
+  void ComputeMatrixParameters(void) ITK_OVERRIDE;
 
 private:
+  /** Copy a VersorTransform object */
+  VersorTransform(const Self & other); // Not implemented
+
+  /** Assignment operator */
+  const Self & operator=(const Self &);   // Not implemented
+
   /** Versor containing the rotation */
   VersorType m_Versor;
 }; // class VersorTransform
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVersorTransform.hxx"
+#include "itkVersorTransform.hxx"
 #endif
 
 #endif /* itkVersorTransform_h */

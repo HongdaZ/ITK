@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,34 +28,10 @@
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkSize.h"
-#include "ITKMarkovRandomFieldsClassifiersExport.h"
 
 namespace itk
 {
-/**\class MRFImageFilterEnums
- * \brief Contains all enum classes in MRFImageFilter class;
- * \ingroup ITKMarkovRandomFieldsClassifiers
- */
-class MRFImageFilterEnums
-{
-public:
-  /**
-   * \class MRFStop
-   *  \ingroup ITKMarkovRandomFieldsClassifiers
-   * Enum to get the stopping condition of the MRF filter
-   */
-  enum class MRFStop : uint8_t
-  {
-    MaximumNumberOfIterations = 1,
-    ErrorTolerance
-  };
-};
-
-// Define how to print enumeration
-extern ITKMarkovRandomFieldsClassifiers_EXPORT std::ostream &
-                                               operator<<(std::ostream & out, const MRFImageFilterEnums::MRFStop value);
-/**
- *\class MRFImageFilter
+/** \class MRFImageFilter
  * \brief Implementation of a labeller object that uses Markov Random Fields
  * to classify pixels in an image data set.
  *
@@ -73,7 +49,7 @@ extern ITKMarkovRandomFieldsClassifiers_EXPORT std::ostream &
  *
  * The classified initial labeled image is needed. It is important
  * that the number of expected classes be set before calling the
- * classifier. In our case we have used the ImageClassifier using a Gaussian
+ * classifier. In our case we have used the ImageClassifer using a Gaussian
  * model to generate the initial labels. This classifier requires the user to
  * ensure that an appropriate membership function is provided. See the
  * documentation of the image classifier class for more information.
@@ -145,18 +121,17 @@ extern ITKMarkovRandomFieldsClassifiers_EXPORT std::ostream &
  * \sa Classifier
  * \ingroup ITKMarkovRandomFieldsClassifiers
  */
-template <typename TInputImage, typename TClassifiedImage>
-class ITK_TEMPLATE_EXPORT MRFImageFilter : public ImageToImageFilter<TInputImage, TClassifiedImage>
+template< typename TInputImage, typename TClassifiedImage >
+class ITK_TEMPLATE_EXPORT MRFImageFilter:
+  public ImageToImageFilter< TInputImage, TClassifiedImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRFImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = MRFImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TClassifiedImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  /** Standard class typedefs. */
+  typedef MRFImageFilter                                      Self;
+  typedef ImageToImageFilter< TInputImage, TClassifiedImage > Superclass;
+  typedef SmartPointer< Self >                                Pointer;
+  typedef SmartPointer< const Self >                          ConstPointer;
+  typedef typename Superclass::OutputImagePointer             OutputImagePointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -165,88 +140,100 @@ public:
   itkTypeMacro(MRFImageFilter, Object);
 
   /** Type definition for the input image. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename TInputImage::Pointer;
-  using InputImageConstPointer = typename TInputImage::ConstPointer;
+  typedef TInputImage                        InputImageType;
+  typedef typename TInputImage::Pointer      InputImagePointer;
+  typedef typename TInputImage::ConstPointer InputImageConstPointer;
 
   /** Type definition for the input image pixel type. */
-  using InputImagePixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType InputImagePixelType;
 
   /** Type definition for the input image region type. */
-  using InputImageRegionType = typename TInputImage::RegionType;
+  typedef typename TInputImage::RegionType InputImageRegionType;
 
   /** Type definition for the input image region iterator */
-  using InputImageRegionIterator = ImageRegionIterator<TInputImage>;
-  using InputImageRegionConstIterator = ImageRegionConstIterator<TInputImage>;
+  typedef ImageRegionIterator< TInputImage >      InputImageRegionIterator;
+  typedef ImageRegionConstIterator< TInputImage > InputImageRegionConstIterator;
 
   /** Image dimension */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Type definitions for the training image. */
-  using TrainingImagePointer = typename TClassifiedImage::Pointer;
+  typedef typename TClassifiedImage::Pointer TrainingImagePointer;
 
   /** Type definitions for the training image pixel type. */
-  using TrainingImagePixelType = typename TClassifiedImage::PixelType;
+  typedef typename TClassifiedImage::PixelType TrainingImagePixelType;
 
   /** Type definitions for the labelled image.
    * It is derived from the training image. */
-  using LabelledImagePointer = typename TClassifiedImage::Pointer;
+  typedef typename TClassifiedImage::Pointer LabelledImagePointer;
 
   /** Type definitions for the classified image pixel type.
    * It has to be the same type as the training image. */
-  using LabelledImagePixelType = typename TClassifiedImage::PixelType;
+  typedef typename TClassifiedImage::PixelType LabelledImagePixelType;
 
   /** Type definitions for the classified image pixel type.
    * It has to be the same type as the training image. */
-  using LabelledImageRegionType = typename TClassifiedImage::RegionType;
+  typedef typename TClassifiedImage::RegionType LabelledImageRegionType;
 
   /** Type definition for the classified image index type. */
-  using LabelledImageIndexType = typename TClassifiedImage::IndexType;
-  using IndexValueType = typename LabelledImageIndexType::IndexValueType;
+  typedef typename TClassifiedImage::IndexType            LabelledImageIndexType;
+  typedef typename LabelledImageIndexType::IndexValueType IndexValueType;
 
   /** Type definition for the classified image offset type. */
-  using LabelledImageOffsetType = typename TClassifiedImage::OffsetType;
+  typedef typename TClassifiedImage::OffsetType LabelledImageOffsetType;
 
   /** Type definition for the input image region iterator */
-  using LabelledImageRegionIterator = ImageRegionIterator<TClassifiedImage>;
+  typedef ImageRegionIterator< TClassifiedImage >
+  LabelledImageRegionIterator;
 
   /** Labelled Image dimension */
-  static constexpr unsigned int ClassifiedImageDimension = TClassifiedImage::ImageDimension;
+  itkStaticConstMacro(ClassifiedImageDimension, unsigned int,
+                      TClassifiedImage::ImageDimension);
 
   /** Type definitions for classifier to be used for the MRF lavbelling. */
-  using ClassifierType = ImageClassifierBase<TInputImage, TClassifiedImage>;
+  typedef ImageClassifierBase< TInputImage, TClassifiedImage > ClassifierType;
 
-  /** Size and value type alias support */
-  using SizeType = typename TInputImage::SizeType;
+  /** Size and value typedef support. */
+  typedef typename TInputImage::SizeType SizeType;
 
-  /** Radius type alias support */
-  using NeighborhoodRadiusType = typename TInputImage::SizeType;
+  /** Radius typedef support. */
+  typedef typename TInputImage::SizeType NeighborhoodRadiusType;
 
-  /** Input image neighborhood iterator and kernel size type alias */
-  using InputImageNeighborhoodIterator = ConstNeighborhoodIterator<TInputImage>;
+  /** Input image neighborhood iterator and kernel size typedef */
+  typedef ConstNeighborhoodIterator< TInputImage >
+  InputImageNeighborhoodIterator;
 
-  using InputImageNeighborhoodRadiusType = typename InputImageNeighborhoodIterator::RadiusType;
+  typedef typename InputImageNeighborhoodIterator::RadiusType
+  InputImageNeighborhoodRadiusType;
 
-  using InputImageFacesCalculator = NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<TInputImage>;
+  typedef NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< TInputImage >
+  InputImageFacesCalculator;
 
-  using InputImageFaceListType = typename InputImageFacesCalculator::FaceListType;
+  typedef typename InputImageFacesCalculator::FaceListType
+  InputImageFaceListType;
 
-  using InputImageFaceListIterator = typename InputImageFaceListType::iterator;
+  typedef typename InputImageFaceListType::iterator
+  InputImageFaceListIterator;
 
-  /** Labelled image neighborhood interator type alias */
-  using LabelledImageNeighborhoodIterator = NeighborhoodIterator<TClassifiedImage>;
+  /** Labelled image neighborhood interator typedef */
+  typedef NeighborhoodIterator< TClassifiedImage >
+  LabelledImageNeighborhoodIterator;
 
-  using LabelledImageNeighborhoodRadiusType = typename LabelledImageNeighborhoodIterator::RadiusType;
+  typedef typename LabelledImageNeighborhoodIterator::RadiusType
+  LabelledImageNeighborhoodRadiusType;
 
-  using LabelledImageFacesCalculator = NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<TClassifiedImage>;
+  typedef NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< TClassifiedImage >
+  LabelledImageFacesCalculator;
 
-  using LabelledImageFaceListType = typename LabelledImageFacesCalculator::FaceListType;
+  typedef typename LabelledImageFacesCalculator::FaceListType
+  LabelledImageFaceListType;
 
-  using LabelledImageFaceListIterator = typename LabelledImageFaceListType::iterator;
+  typedef typename LabelledImageFaceListType::iterator
+  LabelledImageFaceListIterator;
 
   /** Set the pointer to the classifer being used. */
-  void
-  SetClassifier(typename ClassifierType::Pointer ptrToClassifier);
+  void SetClassifier(typename ClassifierType::Pointer ptrToClassifier);
 
   /** Set/Get the number of classes. */
   itkSetMacro(NumberOfClasses, unsigned int);
@@ -257,7 +244,7 @@ public:
   itkSetMacro(MaximumNumberOfIterations, unsigned int);
   itkGetConstMacro(MaximumNumberOfIterations, unsigned int);
 
-  /** Set/Get the error tolerance level which is used as a threshold
+  /** Set/Get the error tollerance level which is used as a threshold
    * to quit the iterations */
   itkSetMacro(ErrorTolerance, double);
   itkGetConstMacro(ErrorTolerance, double);
@@ -268,28 +255,24 @@ public:
   itkGetConstMacro(SmoothingFactor, double);
 
   /** Set the neighborhood radius */
-  void
-  SetNeighborhoodRadius(const NeighborhoodRadiusType &);
+  void SetNeighborhoodRadius(const NeighborhoodRadiusType &);
 
   /** Sets the radius for the neighborhood, calculates size from the
    * radius, and allocates storage. */
 
-  void
-  SetNeighborhoodRadius(const SizeValueType);
+  void SetNeighborhoodRadius(const SizeValueType);
 
-  void
-  SetNeighborhoodRadius(const SizeValueType * radiusArray);
+  void SetNeighborhoodRadius(const SizeValueType *radiusArray);
 
   /** Get the neighborhood radius */
-  const NeighborhoodRadiusType
-  GetNeighborhoodRadius() const
+  const NeighborhoodRadiusType GetNeighborhoodRadius() const
   {
     NeighborhoodRadiusType radius;
 
-    for (int i = 0; i < InputImageDimension; ++i)
-    {
+    for ( int i = 0; i < InputImageDimension; ++i )
+      {
       radius[i] = m_InputImageNeighborhoodRadius[i];
-    }
+      }
     return radius;
   }
 
@@ -298,126 +281,122 @@ public:
    * a 1D array of weights. The default implementation supports  a
    * 3 x 3 x 3 kernel. The labeler needs to be extended for a different
    * kernel size. */
-  virtual void
-  SetMRFNeighborhoodWeight(std::vector<double> BetaMatrix);
+  virtual void SetMRFNeighborhoodWeight(std::vector< double > BetaMatrix);
 
-  virtual std::vector<double>
-  GetMRFNeighborhoodWeight()
+  virtual std::vector< double > GetMRFNeighborhoodWeight()
   {
     return m_MRFNeighborhoodWeight;
   }
 
-  using MRFStopEnum = MRFImageFilterEnums::MRFStop;
-#if !defined(ITK_LEGACY_REMOVE)
-  /** Backwards compatibility for enumerations */
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr MRFStopEnum MaximumNumberOfIterations = MRFStopEnum::MaximumNumberOfIterations;
-  static constexpr MRFStopEnum ErrorTolerance = MRFStopEnum::ErrorTolerance;
-#endif
+//Enum to get the stopping condition of the MRF filter
+  typedef enum {
+    MaximumNumberOfIterations = 1,
+    ErrorTolerance
+    } StopConditionType;
 
   /** Get condition that stops the MRF filter (Number of Iterations
    * / Error tolerance ) */
-  itkGetConstReferenceMacro(StopCondition, MRFStopEnum);
+  itkGetConstReferenceMacro(StopCondition, StopConditionType);
 
   /* Get macro for number of iterations */
   itkGetConstReferenceMacro(NumberOfIterations, unsigned int);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(UnsignedIntConvertibleToClassifiedCheck,
-                  (Concept::Convertible<unsigned int, LabelledImagePixelType>));
-  itkConceptMacro(ClassifiedConvertibleToUnsignedIntCheck,
-                  (Concept::Convertible<LabelledImagePixelType, unsigned int>));
-  itkConceptMacro(ClassifiedConvertibleToIntCheck, (Concept::Convertible<LabelledImagePixelType, int>));
-  itkConceptMacro(IntConvertibleToClassifiedCheck, (Concept::Convertible<int, LabelledImagePixelType>));
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, ClassifiedImageDimension>));
+  itkConceptMacro( UnsignedIntConvertibleToClassifiedCheck,
+                   ( Concept::Convertible< unsigned int, LabelledImagePixelType > ) );
+  itkConceptMacro( ClassifiedConvertibleToUnsignedIntCheck,
+                   ( Concept::Convertible< LabelledImagePixelType, unsigned int > ) );
+  itkConceptMacro( ClassifiedConvertibleToIntCheck,
+                   ( Concept::Convertible< LabelledImagePixelType, int > ) );
+  itkConceptMacro( IntConvertibleToClassifiedCheck,
+                   ( Concept::Convertible< int, LabelledImagePixelType > ) );
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, ClassifiedImageDimension > ) );
   // End concept checking
 #endif
 
 protected:
   MRFImageFilter();
-  ~MRFImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~MRFImageFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Allocate memory for labelled images. */
-  void
-  Allocate();
+  void Allocate();
 
   /** Apply MRF Classifier. In this example the images are labelled using
    * Iterated Conditional Mode algorithm by J. Besag, "On statistical
    * analysis of dirty pictures," J. Royal Stat. Soc. B, vol. 48,
    * pp. 259-302, 1986. */
-  virtual void
-  ApplyMRFImageFilter();
+  virtual void ApplyMRFImageFilter();
 
   /** Minimization algorithm to be used. */
-  virtual void
-  MinimizeFunctional();
+  virtual void MinimizeFunctional();
 
-  using LabelStatusImageType = Image<int, Self::InputImageDimension>;
-  using LabelStatusIndexType = typename LabelStatusImageType::IndexType;
-  using LabelStatusRegionType = typename LabelStatusImageType::RegionType;
-  using LabelStatusImagePointer = typename LabelStatusImageType::Pointer;
-  using LabelStatusImageIterator = ImageRegionIterator<LabelStatusImageType>;
+  typedef Image< int, itkGetStaticConstMacro(InputImageDimension) > LabelStatusImageType;
+  typedef typename LabelStatusImageType::IndexType                  LabelStatusIndexType;
+  typedef typename LabelStatusImageType::RegionType                 LabelStatusRegionType;
+  typedef typename LabelStatusImageType::Pointer                    LabelStatusImagePointer;
+  typedef ImageRegionIterator< LabelStatusImageType >               LabelStatusImageIterator;
 
-  /** Labelled status image neighborhood iterator type alias */
-  using LabelStatusImageNeighborhoodIterator = NeighborhoodIterator<LabelStatusImageType>;
-  // Function implementing the neighborhood operation
+  /** Labelled status image neighborhood interator typedef */
+  typedef NeighborhoodIterator< LabelStatusImageType >
+  LabelStatusImageNeighborhoodIterator;
+  //Function implementing the neighborhood operation
 
-  virtual void
-  DoNeighborhoodOperation(const InputImageNeighborhoodIterator & imageIter,
-                          LabelledImageNeighborhoodIterator &    labelledIter,
-                          LabelStatusImageNeighborhoodIterator & labelStatusIter);
+  virtual void DoNeighborhoodOperation(const InputImageNeighborhoodIterator & imageIter,
+                                       LabelledImageNeighborhoodIterator & labelledIter,
+                                       LabelStatusImageNeighborhoodIterator & labelStatusIter);
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject *) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *) ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
-  using InputImageSizeType = typename TInputImage::SizeType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MRFImageFilter);
 
-  using LabelStatusImageNeighborhoodRadiusType = typename LabelStatusImageNeighborhoodIterator::RadiusType;
+  typedef typename TInputImage::SizeType InputImageSizeType;
 
-  using LabelStatusImageFacesCalculator = NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<LabelStatusImageType>;
+  typedef typename LabelStatusImageNeighborhoodIterator::RadiusType
+  LabelStatusImageNeighborhoodRadiusType;
 
-  using LabelStatusImageFaceListType = typename LabelStatusImageFacesCalculator::FaceListType;
+  typedef NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< LabelStatusImageType >
+  LabelStatusImageFacesCalculator;
 
-  using LabelStatusImageFaceListIterator = typename LabelStatusImageFaceListType::iterator;
+  typedef typename LabelStatusImageFacesCalculator::FaceListType
+  LabelStatusImageFaceListType;
+
+  typedef typename LabelStatusImageFaceListType::iterator
+  LabelStatusImageFaceListIterator;
 
   InputImageNeighborhoodRadiusType       m_InputImageNeighborhoodRadius;
   LabelledImageNeighborhoodRadiusType    m_LabelledImageNeighborhoodRadius;
   LabelStatusImageNeighborhoodRadiusType m_LabelStatusImageNeighborhoodRadius;
 
-  unsigned int m_NumberOfClasses{ 0 };
-  unsigned int m_MaximumNumberOfIterations{ 50 };
+  unsigned int m_NumberOfClasses;
+  unsigned int m_MaximumNumberOfIterations;
   unsigned int m_KernelSize;
 
-  int          m_ErrorCounter{ 0 };
-  int          m_NeighborhoodSize{ 27 };
-  int          m_TotalNumberOfValidPixelsInOutputImage{ 1 };
-  int          m_TotalNumberOfPixelsInInputImage{ 1 };
-  double       m_ErrorTolerance{ 0.2 };
-  double       m_SmoothingFactor{ 1 };
-  double *     m_ClassProbability{ nullptr }; // Class liklihood
-  unsigned int m_NumberOfIterations{ 0 };
-  MRFStopEnum  m_StopCondition{ MRFStopEnum::MaximumNumberOfIterations };
+  int               m_ErrorCounter;
+  int               m_NeighborhoodSize;
+  int               m_TotalNumberOfValidPixelsInOutputImage;
+  int               m_TotalNumberOfPixelsInInputImage;
+  double            m_ErrorTolerance;
+  double            m_SmoothingFactor;
+  double *          m_ClassProbability;         //Class liklihood
+  unsigned int      m_NumberOfIterations;
+  StopConditionType m_StopCondition;
 
   LabelStatusImagePointer m_LabelStatusImage;
 
-  std::vector<double> m_MRFNeighborhoodWeight;
-  std::vector<double> m_NeighborInfluence;
-  std::vector<double> m_MahalanobisDistance;
-  std::vector<double> m_DummyVector;
+  std::vector< double > m_MRFNeighborhoodWeight;
+  std::vector< double > m_NeighborInfluence;
+  std::vector< double > m_MahalanobisDistance;
+  std::vector< double > m_DummyVector;
 
   /** Pointer to the classifier to be used for the MRF labelling. */
   typename ClassifierType::Pointer m_ClassifierPtr;
@@ -425,17 +404,15 @@ private:
   /** Set/Get the weighting parameters (Beta Matrix). A default 3 x 3 x 3
    * matrix is provided. However, the user is allowed to override it
    * with their choice of weights for a 3 x 3 x 3 matrix. */
-  virtual void
-  SetDefaultMRFNeighborhoodWeight();
+  virtual void SetDefaultMRFNeighborhoodWeight();
 
-  // Function implementing the ICM algorithm to label the images
-  void
-  ApplyICMLabeller();
+  //Function implementing the ICM algorithm to label the images
+  void ApplyICMLabeller();
 }; // class MRFImageFilter
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMRFImageFilter.hxx"
+#include "itkMRFImageFilter.hxx"
 #endif
 
 #endif

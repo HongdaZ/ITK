@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,17 +31,16 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT ConjugateGradientOptimizer : public SingleValuedNonLinearVnlOptimizer
+class ITKOptimizers_EXPORT ConjugateGradientOptimizer:
+  public SingleValuedNonLinearVnlOptimizer
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = ConjugateGradientOptimizer;
-  using Superclass = SingleValuedNonLinearVnlOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ConjugateGradientOptimizer        Self;
+  typedef SingleValuedNonLinearVnlOptimizer Superclass;
+  typedef SmartPointer< Self >              Pointer;
+  typedef SmartPointer< const Self >        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -49,45 +48,41 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ConjugateGradientOptimizer, SingleValuedNonLinearOptimizer);
 
-  /** InternalParameters type alias. */
-  using InternalParametersType = vnl_vector<double>;
+  /** InternalParameters typedef. */
+  typedef   vnl_vector< double > InternalParametersType;
 
   /** Internal Optimizer Type */
-  using InternalOptimizerType = vnl_conjugate_gradient;
+  typedef   vnl_conjugate_gradient InternalOptimizerType;
 
   /** Method for getting access to the internal optimizer */
-  vnl_conjugate_gradient *
-  GetOptimizer();
+  vnl_conjugate_gradient * GetOptimizer();
 
   /** Start optimization with an initial value. */
-  void
-  StartOptimization() override;
+  virtual void StartOptimization(void) ITK_OVERRIDE;
 
   /** Plug in a Cost Function into the optimizer  */
-  void
-  SetCostFunction(SingleValuedCostFunction * costFunction) override;
+  virtual void SetCostFunction(SingleValuedCostFunction *costFunction) ITK_OVERRIDE;
 
   /** Return the number of iterations performed so far */
-  SizeValueType
-  GetNumberOfIterations() const;
+  SizeValueType GetNumberOfIterations() const;
 
-  SizeValueType
-  GetCurrentIteration() const;
+  SizeValueType GetCurrentIteration() const;
 
   /** Return Current Value */
-  MeasureType
-  GetValue() const;
+  MeasureType GetValue() const;
 
 protected:
   ConjugateGradientOptimizer();
-  ~ConjugateGradientOptimizer() override;
+  virtual ~ConjugateGradientOptimizer() ITK_OVERRIDE;
 
-  using CostFunctionAdaptorType = Superclass::CostFunctionAdaptorType;
+  typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientOptimizer);
+
   /**  The vnl optimization method for conjugate gradient. */
-  bool                    m_OptimizerInitialized;
-  InternalOptimizerType * m_VnlOptimizer;
+  bool                   m_OptimizerInitialized;
+  InternalOptimizerType *m_VnlOptimizer;
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 #ifdef _MSC_VER
-#  pragma warning(disable : 4786)
+#pragma warning ( disable : 4786 )
 #endif
 
 #include "itkVideoIOFactory.h"
@@ -24,76 +24,67 @@
 
 namespace itk
 {
-VideoIOBase::Pointer
-VideoIOFactory::CreateVideoIO(IOModeEnum mode, const char * arg)
+VideoIOBase::Pointer VideoIOFactory::CreateVideoIO( IOModeType mode, const char* arg )
 {
-  std::list<VideoIOBase::Pointer> possibleVideoIO;
-  for (auto & allobject : ObjectFactoryBase::CreateAllInstance("itkVideoIOBase"))
-  {
 
-    auto * io = dynamic_cast<VideoIOBase *>(allobject.GetPointer());
+  std::list< VideoIOBase::Pointer > possibleVideoIO;
+  std::list< LightObject::Pointer > allobjects =
+    ObjectFactoryBase::CreateAllInstance("itkVideoIOBase");
+
+  for ( std::list< LightObject::Pointer >::iterator i = allobjects.begin();
+        i != allobjects.end(); ++i )
+    {
+
+    VideoIOBase* io = dynamic_cast< VideoIOBase* >( i->GetPointer() );
     if (io)
-    {
-      possibleVideoIO.emplace_back(io);
-    }
+      {
+      possibleVideoIO.push_back(io);
+      }
     else
-    {
-      itkGenericExceptionMacro("VideoIO factory did not return a VideoIOBase");
+      {
+      itkSpecializedMessageExceptionMacro( ExceptionObject,
+                                           "VideoIO factory did not return "
+                                           "a VideoIOBase");
+      }
     }
-  }
 
-  for (auto & j : possibleVideoIO)
-  {
+  for ( std::list< VideoIOBase::Pointer >::iterator j = possibleVideoIO.begin();
+        j != possibleVideoIO.end(); ++j )
+    {
 
     // Check file readability if reading from file
-    if (mode == IOModeEnum::ReadFileMode)
-    {
-      if (j->CanReadFile(arg))
+    if (mode == ReadFileMode)
       {
-        return j;
+      if ((*j)->CanReadFile(arg))
+        {
+        return *j;
+        }
       }
-    }
 
     // Check camera readability if reading from camera
-    else if (mode == IOModeEnum::ReadCameraMode)
-    {
-      int cameraIndex = std::stoi(arg);
-      if (j->CanReadCamera(cameraIndex))
+    else if (mode == ReadCameraMode)
       {
-        return j;
+      int cameraIndex = atoi(arg);
+      if ((*j)->CanReadCamera(cameraIndex))
+        {
+        return *j;
+        }
       }
-    }
 
     // Check file writability if writing
-    else if (mode == IOModeEnum::WriteMode)
-    {
-      if (j->CanWriteFile(arg))
+    else if (mode == WriteMode)
       {
-        return j;
+      if ((*j)->CanWriteFile(arg))
+        {
+        return *j;
+        }
       }
+
     }
-  }
 
   // Didn't find a usable VideoIO
-  return nullptr;
+  return ITK_NULLPTR;
+
 }
 
-/** Print enum values */
-std::ostream &
-operator<<(std::ostream & out, const VideoIOFactoryEnums::IOMode value)
-{
-  return out << [value] {
-    switch (value)
-    {
-      case VideoIOFactoryEnums::IOMode::ReadFileMode:
-        return "itk::VideoIOFactoryEnums::IOMode::ReadFileMode";
-      case VideoIOFactoryEnums::IOMode::ReadCameraMode:
-        return "itk::VideoIOFactoryEnums::IOMode::ReadCameraMode";
-      case VideoIOFactoryEnums::IOMode::WriteMode:
-        return "itk::VideoIOFactoryEnums::IOMode::WriteMode";
-      default:
-        return "INVALID VALUE FOR itk::VideoIOFactoryEnums::IOMode";
-    }
-  }();
-}
 } // end namespace itk

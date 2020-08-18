@@ -56,7 +56,7 @@ const char * FileMetaInformation::GetGDCMSourceApplicationEntityTitle()
 
 // Keep cstor and dstor here to keep API minimal (see dllexport issue with gdcmstrict::)
 FileMetaInformation::FileMetaInformation():DataSetTS(TransferSyntax::TS_END),MetaInformationTS(TransferSyntax::Unknown),DataSetMS(MediaStorage::MS_END) {}
-FileMetaInformation::~FileMetaInformation() = default;
+FileMetaInformation::~FileMetaInformation() {}
 
 void FileMetaInformation::SetImplementationClassUID(const char * imp)
 {
@@ -413,7 +413,7 @@ bool ReadExplicitDataElement(std::istream &is, ExplicitDataElement &de)
     }
   //gdcmDebugMacro( "VL : " << vl );
   // Read the Value
-  ByteValue *bv = nullptr;
+  ByteValue *bv = NULL;
   if( vr == VR::SQ )
     {
     assert(0 && "Should not happen");
@@ -480,7 +480,7 @@ bool ReadImplicitDataElement(std::istream &is, ImplicitDataElement &de)
     assert(0 && "Should not happen");
     return false;
     }
-  ByteValue *bv = nullptr;
+  ByteValue *bv = 0;
   if( vl.IsUndefined() )
     {
     assert(0 && "Should not happen");

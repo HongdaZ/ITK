@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,158 +19,197 @@
 #define itkArrowSpatialObject_hxx
 
 #include "itkArrowSpatialObject.h"
+#include "itkEuler3DTransform.h"
 
 namespace itk
 {
 /** Constructor */
-template <unsigned int TDimension>
-ArrowSpatialObject<TDimension>::ArrowSpatialObject()
+template< unsigned int TDimension >
+ArrowSpatialObject< TDimension >
+::ArrowSpatialObject()
 {
-  this->SetTypeName("ArrowSpatialObject");
+  this->SetDimension(TDimension);
+  this->SetTypeName ("ArrowSpatialObject");
+  this->GetProperty()->SetRed(1);
+  this->GetProperty()->SetGreen(0);
+  this->GetProperty()->SetBlue(0);
+  this->GetProperty()->SetAlpha(1);
 
-  this->Clear();
+  m_Direction.Fill(0);
+  m_Direction[0] = 1; // along the x direction by default
+  m_Position.Fill(0);
+  m_Length = 1;
 
-  this->Update();
+  this->ComputeBoundingBox();
 }
 
-template <unsigned int TDimension>
+/** Destructor */
+template< unsigned int TDimension >
+ArrowSpatialObject< TDimension >
+::~ArrowSpatialObject()
+{}
+
+/** Set the length of the arrow */
+template< unsigned int TDimension >
 void
-ArrowSpatialObject<TDimension>::Clear()
+ArrowSpatialObject< TDimension >
+::SetLength(double length)
 {
-  Superclass::Clear();
+  m_Length = length;
+  double spacing[TDimension];
+  spacing[0] = m_Length;
 
-  this->GetProperty().SetRed(1);
-  this->GetProperty().SetGreen(0);
-  this->GetProperty().SetBlue(0);
-  this->GetProperty().SetAlpha(1);
-
-  m_DirectionInObjectSpace.Fill(0);
-  m_DirectionInObjectSpace[0] = 1; // along the x direction by default
-  m_PositionInObjectSpace.Fill(0);
-  m_LengthInObjectSpace = 1;
-
+  for ( unsigned int i = 1; i < TDimension; i++ )
+    {
+    spacing[i] = 1;
+    }
+  this->SetSpacing(spacing);
   this->Modified();
 }
 
 /** Compute the bounding box */
-template <unsigned int TDimension>
-void
-ArrowSpatialObject<TDimension>::ComputeMyBoundingBox()
+template< unsigned int TDimension >
+bool
+ArrowSpatialObject< TDimension >
+::ComputeLocalBoundingBox() const
 {
   itkDebugMacro("Computing Rectangle bounding box");
 
-  PointType pnt = this->GetPositionInObjectSpace();
+  if ( this->GetBoundingBoxChildrenName().empty()
+       || strstr( typeid( Self ).name(), this->GetBoundingBoxChildrenName().c_str() ) )
+    {
+    PointType pnt = this->GetPosition();
+    PointType pnt2;
+    for ( unsigned int i = 0; i < TDimension; i++ )
+      {
+      pnt2[i] = pnt[i] + m_Length * m_Direction[i];
+      }
 
-  this->GetModifiableMyBoundingBoxInObjectSpace()->SetMinimum(pnt);
-  this->GetModifiableMyBoundingBoxInObjectSpace()->SetMaximum(pnt);
+    pnt = this->GetIndexToWorldTransform()->TransformPoint(pnt);
+    pnt2 = this->GetIndexToWorldTransform()->TransformPoint(pnt2);
+
+    const_cast< typename Superclass::BoundingBoxType * >(
+      this->GetBounds() )->SetMinimum(pnt);
+    const_cast< typename Superclass::BoundingBoxType * >(
+      this->GetBounds() )->SetMaximum(pnt2);
+    }
+  return true;
 }
 
 /** Check if a given point is on the arrow */
-template <unsigned int TDimension>
+template< unsigned int TDimension >
 bool
-ArrowSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point) const
+ArrowSpatialObject< TDimension >
+::IsInside(const PointType & point, unsigned int depth, char *name) const
 {
   itkDebugMacro("Checking the point [" << point << "] is on the Line");
 
-  PointType pnt = this->GetPositionInObjectSpace();
-
-  bool isInside = true;
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    if (Math::NotExactlyEquals(point[i], pnt[i]))
+  if ( name == ITK_NULLPTR )
     {
-      isInside = false;
-      break;
+    if ( IsInside(point) )
+      {
+      return true;
+      }
     }
-  }
-  if (isInside)
-  {
-    return true;
-  }
+  else if ( strstr(typeid( Self ).name(), name) )
+    {
+    if ( IsInside(point) )
+      {
+      return true;
+      }
+    }
+
+  return Superclass::IsInside(point, depth, name);
+}
+
+/** Test whether a point is inside or outside the object
+ *  For computational speed purposes, it is faster if the method does not
+ *  check the name of the class and the current depth */
+template< unsigned int TDimension >
+bool
+ArrowSpatialObject< TDimension >
+::IsInside(const PointType & point) const
+{
+  if ( !this->SetInternalInverseTransformToWorldToIndexTransform() )
+    {
+    return false;
+    }
+
+  PointType transformedPoint =
+    this->GetInternalInverseTransform()->TransformPoint(point);
+
+  this->ComputeLocalBoundingBox();
+
+  if ( this->GetBounds()->IsInside(transformedPoint) )
+    {
+    // If the transformedPoint lies on the line between the two points
+    PointType pnt = this->GetPosition();
+    PointType pnt2;
+    for ( unsigned int i = 0; i < TDimension; i++ )
+      {
+      pnt2[i] = pnt[i] + m_Length * m_Direction[i];
+      }
+
+    VectorType v = pnt2 - pnt;
+    VectorType v2 = transformedPoint - pnt;
+
+    v.Normalize();
+    v2.Normalize();
+
+    if ( Math::AlmostEquals( dot_product( v.GetVnlVector(), v2.GetVnlVector() ), NumericTraits< typename VectorType::ValueType >::OneValue() ) )
+      {
+      return true;
+      }
+    }
 
   return false;
 }
 
-template <unsigned int TDimension>
-typename ArrowSpatialObject<TDimension>::PointType
-ArrowSpatialObject<TDimension>::GetPositionInWorldSpace() const
-{
-  PointType pnt = this->GetPositionInObjectSpace();
-
-  pnt = this->GetObjectToWorldTransform()->TransformPoint(pnt);
-
-  return pnt;
-}
-
-template <unsigned int TDimension>
-typename ArrowSpatialObject<TDimension>::VectorType
-ArrowSpatialObject<TDimension>::GetDirectionInWorldSpace() const
-{
-  PointType pnt = this->GetPositionInObjectSpace();
-  PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    pnt2[i] = pnt[i] + m_LengthInObjectSpace * m_DirectionInObjectSpace[i];
-  }
-
-  pnt = this->GetObjectToWorldTransform()->TransformPoint(pnt);
-  pnt2 = this->GetObjectToWorldTransform()->TransformPoint(pnt2);
-
-  VectorType dir = pnt2 - pnt;
-  dir.Normalize();
-
-  return dir;
-}
-
-template <unsigned int TDimension>
-double
-ArrowSpatialObject<TDimension>::GetLengthInWorldSpace() const
-{
-  PointType pnt = this->GetPositionInObjectSpace();
-  PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    pnt2[i] = pnt[i] + m_LengthInObjectSpace * m_DirectionInObjectSpace[i];
-  }
-
-  pnt = this->GetObjectToWorldTransform()->TransformPoint(pnt);
-  pnt2 = this->GetObjectToWorldTransform()->TransformPoint(pnt2);
-
-  double len = pnt.EuclideanDistanceTo(pnt2);
-
-  return len;
-}
-
-/** InternalClone */
-template <unsigned int TDimension>
-typename LightObject::Pointer
-ArrowSpatialObject<TDimension>::InternalClone() const
-{
-  // Default implementation just copies the parameters from
-  // this to new transform.
-  typename LightObject::Pointer loPtr = Superclass::InternalClone();
-
-  typename Self::Pointer rval = dynamic_cast<Self *>(loPtr.GetPointer());
-  if (rval.IsNull())
-  {
-    itkExceptionMacro(<< "downcast to type " << this->GetNameOfClass() << " failed.");
-  }
-  rval->SetDirectionInObjectSpace(this->GetDirectionInObjectSpace());
-  rval->SetPositionInObjectSpace(this->GetPositionInObjectSpace());
-  rval->SetLengthInObjectSpace(this->GetLengthInObjectSpace());
-
-  return loPtr;
-}
-
-template <unsigned int TDimension>
+/** Update the local transform from the position and the direction */
+template< unsigned int TDimension >
 void
-ArrowSpatialObject<TDimension>::PrintSelf(std::ostream & os, Indent indent) const
+ArrowSpatialObject< TDimension >
+::UpdateTransform()
+{
+  //TODO: What should happen if TDimension is not equal to 3
+  VectorType offset;
+  for ( unsigned int i = 0; i < TDimension; i++ )
+    {
+    offset[i] = m_Position[i];
+    }
+  this->GetObjectToParentTransform()->SetOffset(offset);
+
+  // If the given direction is not normalized we set the length of the vector
+  // as the length of the arrow
+  m_Length = m_Direction.GetSquaredNorm();
+  if ( m_Length != 0.0 )
+    {
+    m_Length = std::sqrt(m_Length);
+    }
+  else
+    {
+    this->Modified();
+    return;
+    }
+
+  m_Direction.Normalize();
+  this->Modified();
+}
+
+template< > void ArrowSpatialObject< 3 > ::UpdateTransform();
+
+
+/** Print the object */
+template< unsigned int TDimension >
+void
+ArrowSpatialObject< TDimension >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   os << indent << "ArrowSpatialObject(" << this << ")" << std::endl;
   Superclass::PrintSelf(os, indent);
-  os << indent << "Object Position = " << m_PositionInObjectSpace << std::endl;
-  os << indent << "Object Direction = " << m_DirectionInObjectSpace << std::endl;
-  os << indent << "Object Length = " << m_LengthInObjectSpace << std::endl;
+  os << indent << "Position = " << m_Position << std::endl;
+  os << indent << "Direction = " << m_Direction << std::endl;
+  os << indent << "Length = " << m_Length << std::endl;
 }
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,18 +53,17 @@
 #include "itkRescaleIntensityImageFilter.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImageFile outputDistanceMapImageFile ";
     std::cerr << " outputVoronoiMapImageFile ";
     std::cerr << " outputVectorMapImageFile ";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -78,12 +77,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned short;
-  using VoronoiPixelType = unsigned char;
-  using InputImageType = itk::Image<InputPixelType, 2>;
-  using OutputImageType = itk::Image<OutputPixelType, 2>;
-  using VoronoiImageType = itk::Image<VoronoiPixelType, 2>;
+  typedef  unsigned char                    InputPixelType;
+  typedef  unsigned short                   OutputPixelType;
+  typedef  unsigned char                    VoronoiPixelType;
+  typedef itk::Image< InputPixelType,  2 >  InputImageType;
+  typedef itk::Image< OutputPixelType, 2 >  OutputImageType;
+  typedef itk::Image< VoronoiPixelType, 2 > VoronoiImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -99,38 +98,38 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  using LabelerType =
-    itk::ConnectedComponentImageFilter<InputImageType, InputImageType>;
+  typedef itk::ConnectedComponentImageFilter<
+               InputImageType, InputImageType > LabelerType;
   LabelerType::Pointer labeler = LabelerType::New();
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::
-    DanielssonDistanceMapImageFilter<InputImageType, OutputImageType, VoronoiImageType>;
+  typedef itk::DanielssonDistanceMapImageFilter<
+               InputImageType, OutputImageType, VoronoiImageType >  FilterType;
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
-  using RescalerType =
-    itk::RescaleIntensityImageFilter<OutputImageType, OutputImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+                   OutputImageType, OutputImageType > RescalerType;
   RescalerType::Pointer scaler = RescalerType::New();
 
-  using VoronoiRescalerType =
-    itk::RescaleIntensityImageFilter<VoronoiImageType, VoronoiImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+                   VoronoiImageType, VoronoiImageType > VoronoiRescalerType;
   VoronoiRescalerType::Pointer voronoiScaler = VoronoiRescalerType::New();
 
   //
   // Reader and Writer types are instantiated.
   //
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  using VoronoiWriterType = itk::ImageFileWriter<VoronoiImageType>;
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
+  typedef itk::ImageFileWriter< VoronoiImageType > VoronoiWriterType;
 
-  ReaderType::Pointer        reader = ReaderType::New();
-  WriterType::Pointer        writer = WriterType::New();
+  ReaderType::Pointer reader = ReaderType::New();
+  WriterType::Pointer writer = WriterType::New();
   VoronoiWriterType::Pointer voronoiWriter = VoronoiWriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
-  voronoiWriter->SetFileName(argv[3]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
+  voronoiWriter->SetFileName( argv[3] );
 
 
   //  Software Guide : BeginLatex
@@ -147,10 +146,10 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  labeler->SetInput(reader->GetOutput());
-  filter->SetInput(labeler->GetOutput());
-  scaler->SetInput(filter->GetOutput());
-  writer->SetInput(scaler->GetOutput());
+  labeler->SetInput(reader->GetOutput() );
+  filter->SetInput( labeler->GetOutput() );
+  scaler->SetInput( filter->GetOutput() );
+  writer->SetInput( scaler->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -163,15 +162,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  voronoiScaler->SetInput(filter->GetVoronoiMap());
-  voronoiWriter->SetInput(voronoiScaler->GetOutput());
+  voronoiScaler->SetInput( filter->GetVoronoiMap() );
+  voronoiWriter->SetInput( voronoiScaler->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
-  scaler->SetOutputMaximum(65535L);
-  scaler->SetOutputMinimum(0L);
-  voronoiScaler->SetOutputMaximum(255);
-  voronoiScaler->SetOutputMinimum(0);
+  scaler->SetOutputMaximum( 65535L );
+  scaler->SetOutputMinimum(     0L );
+  voronoiScaler->SetOutputMaximum( 255 );
+  voronoiScaler->SetOutputMinimum( 0 );
 
   //  Software Guide : BeginLatex
   //
@@ -211,7 +210,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using OffsetImageType = FilterType::VectorImageType;
+  typedef FilterType::VectorImageType   OffsetImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -223,7 +222,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterOffsetType = itk::ImageFileWriter<OffsetImageType>;
+  typedef itk::ImageFileWriter< OffsetImageType >  WriterOffsetType;
   WriterOffsetType::Pointer offsetWriter = WriterOffsetType::New();
   // Software Guide : EndCodeSnippet
 
@@ -236,11 +235,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  offsetWriter->SetInput(filter->GetVectorDistanceMap());
+  offsetWriter->SetInput(  filter->GetVectorDistanceMap()  );
   // Software Guide : EndCodeSnippet
 
 
-  offsetWriter->SetFileName(argv[4]);
+  offsetWriter->SetFileName( argv[4]  );
 
 
   //  Software Guide : BeginLatex
@@ -253,14 +252,14 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     offsetWriter->Update();
-  }
-  catch (const itk::ExceptionObject & exp)
-  {
+    }
+  catch( itk::ExceptionObject & exp )
+    {
     std::cerr << "Exception caught !" << std::endl;
-    std::cerr << exp << std::endl;
-  }
+    std::cerr <<     exp    << std::endl;
+    }
   // Software Guide : EndCodeSnippet
 
 

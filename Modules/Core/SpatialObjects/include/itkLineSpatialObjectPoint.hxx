@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,60 +23,69 @@
 namespace itk
 {
 /** Constructor */
-template <unsigned int TPointDimension>
-LineSpatialObjectPoint<TPointDimension>::LineSpatialObjectPoint()
+template< unsigned int TPointDimension >
+LineSpatialObjectPoint< TPointDimension >
+::LineSpatialObjectPoint(void)
 {
-  unsigned int        ii = 0;
-  CovariantVectorType normal;
+  this->m_ID = 0;
+  unsigned int ii = 0;
+  VectorType normal;
   normal.Fill(0);
-  while (ii < TPointDimension - 1)
-  {
-    this->m_NormalArrayInObjectSpace[ii] = normal;
+  while( ii < TPointDimension - 1 )
+    {
+    this->m_NormalArray[ii] = normal;
     ++ii;
-  }
+    }
 }
 
+/** Destructor */
+template< unsigned int TPointDimension >
+LineSpatialObjectPoint< TPointDimension >
+::~LineSpatialObjectPoint(void)
+{}
+
 /** Get the specified normal */
-template <unsigned int TPointDimension>
-const typename LineSpatialObjectPoint<TPointDimension>::CovariantVectorType &
-LineSpatialObjectPoint<TPointDimension>::GetNormalInObjectSpace(unsigned int index) const
+template< unsigned int TPointDimension >
+const typename LineSpatialObjectPoint< TPointDimension >::VectorType &
+LineSpatialObjectPoint< TPointDimension >
+::GetNormal(unsigned int index) const
 {
-  return m_NormalArrayInObjectSpace[index];
+  return m_NormalArray[index];
 }
 
 /** Print the object */
-template <unsigned int TPointDimension>
+template< unsigned int TPointDimension >
 void
-LineSpatialObjectPoint<TPointDimension>::PrintSelf(std::ostream & os, Indent indent) const
+LineSpatialObjectPoint< TPointDimension >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "LineSpatialObjectPoint(" << this << ")" << std::endl;
   unsigned int ii = 0;
-  while (ii < TPointDimension - 1)
-  {
-    os << indent << this->m_NormalArrayInObjectSpace[ii] << std::endl;
+  while( ii < TPointDimension - 1 )
+    {
+    os << indent << this->m_NormalArray[ii] << std::endl;
     ++ii;
-  }
+    }
 }
 
 /** Set the specified normal */
-template <unsigned int TPointDimension>
+template< unsigned int TPointDimension >
 void
-LineSpatialObjectPoint<TPointDimension>::SetNormalInObjectSpace(CovariantVectorType & normal, unsigned int index)
+LineSpatialObjectPoint< TPointDimension >
+::SetNormal(VectorType & normal, unsigned int index)
 {
-  m_NormalArrayInObjectSpace[index] = normal;
+  m_NormalArray[index] = normal;
 }
 
 /** Copy a point to another */
-template <unsigned int TPointDimension>
-typename LineSpatialObjectPoint<TPointDimension>::Self &
-LineSpatialObjectPoint<TPointDimension>::operator=(const LineSpatialObjectPoint & rhs)
+template< unsigned int TPointDimension >
+typename LineSpatialObjectPoint< TPointDimension >::Self &
+LineSpatialObjectPoint< TPointDimension >
+::operator=(const LineSpatialObjectPoint & rhs)
 {
-  this->m_Id = rhs.m_Id;
-  this->m_Color = rhs.m_Color;
-  this->m_SpatialObject = rhs.m_SpatialObject;
-  this->m_PositionInObjectSpace = rhs.m_PositionInObjectSpace;
-  this->m_NormalArrayInObjectSpace = rhs.m_NormalArrayInObjectSpace;
+  this->m_ID = rhs.m_ID;
+  this->m_X = rhs.m_X;
   return *this;
 }
 } // end namespace itk

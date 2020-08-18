@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,17 +30,18 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double, unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT CenteredAffineTransform : public AffineTransform<TParametersValueType, NDimensions>
+template<typename TParametersValueType=double,
+         unsigned int NDimensions = 3>
+class ITK_TEMPLATE_EXPORT CenteredAffineTransform : public AffineTransform<TParametersValueType,
+                                             NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredAffineTransform);
-
-  /** Standard type alias   */
-  using Self = CenteredAffineTransform;
-  using Superclass = AffineTransform<TParametersValueType, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs   */
+  typedef CenteredAffineTransform                Self;
+  typedef AffineTransform<TParametersValueType,
+                           NDimensions >         Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(CenteredAffineTransform, AffineTransform);
@@ -49,37 +50,36 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = NDimensions;
-  static constexpr unsigned int ParametersDimension = NDimensions * (NDimensions + 2);
+  itkStaticConstMacro(SpaceDimension, unsigned int, NDimensions);
+  itkStaticConstMacro( ParametersDimension, unsigned int,
+                       NDimensions * ( NDimensions + 2 ) );
 
   /** Types taken from the Superclass */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using ScalarType = typename Superclass::ScalarType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::ParametersType            ParametersType;
+  typedef typename Superclass::ParametersValueType       ParametersValueType;
+  typedef typename Superclass::FixedParametersType       FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType  FixedParametersValueType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::ScalarType                ScalarType;
+  typedef typename Superclass::InputVectorType           InputVectorType;
+  typedef typename Superclass::OutputVectorType          OutputVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
 
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputPointType = typename Superclass::InputPointType;
-  using InputPointValueType = typename Superclass::InputPointValueType;
-  using OutputVectorValueType = typename Superclass::OutputVectorValueType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using MatrixType = typename Superclass::MatrixType;
-  using MatrixValueType = typename Superclass::MatrixValueType;
-  using OffsetType = typename Superclass::OffsetType;
+  typedef typename Superclass::InputVnlVectorType    InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType   OutputVnlVectorType;
+  typedef typename Superclass::InputPointType        InputPointType;
+  typedef typename Superclass::InputPointValueType   InputPointValueType;
+  typedef typename Superclass::OutputVectorValueType OutputVectorValueType;
+  typedef typename Superclass::OutputPointType       OutputPointType;
+  typedef typename Superclass::MatrixType            MatrixType;
+  typedef typename Superclass::MatrixValueType       MatrixValueType;
+  typedef typename Superclass::OffsetType            OffsetType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
-  using InverseTransformBaseType = typename Superclass::InverseTransformBaseType;
-  using InverseTransformBasePointer = typename InverseTransformBaseType::Pointer;
+  typedef typename Superclass::InverseTransformBaseType InverseTransformBaseType;
+  typedef typename InverseTransformBaseType::Pointer    InverseTransformBasePointer;
 
   /** Set/Get the transformation from a container of parameters.
    * The first (NDimension x NDimension) parameters define the
@@ -89,11 +89,9 @@ public:
    * Note that the Offset of the superclass is no longer in the
    * parameters array since it is fully dependent on the rotation
    * center and the translation parameters. */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
-  const ParametersType &
-  GetParameters() const override;
+  const ParametersType & GetParameters(void) const ITK_OVERRIDE;
 
   /** Compute the Jacobian of the transformation
    *
@@ -101,28 +99,30 @@ public:
    * given point or vector, returning the transformed point or
    * vector. The rank of the Jacobian will also indicate if the transform
    * is invertible at this point. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
   /** Get an inverse of this transform. */
-  bool
-  GetInverse(Self * inverse) const;
+  bool GetInverse(Self *inverse) const;
 
   /** Return an inverse of this transform. */
-  InverseTransformBasePointer
-  GetInverseTransform() const override;
+  virtual InverseTransformBasePointer GetInverseTransform() const ITK_OVERRIDE;
 
 protected:
   /** Construct an CenteredAffineTransform object */
   CenteredAffineTransform();
 
   /** Destroy an CenteredAffineTransform object */
-  ~CenteredAffineTransform() override = default;
+  virtual ~CenteredAffineTransform() ITK_OVERRIDE;
+
+private:
+  CenteredAffineTransform(const Self & other);
+  const Self & operator=(const Self &);
+
 }; // class CenteredAffineTransform
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCenteredAffineTransform.hxx"
+#include "itkCenteredAffineTransform.hxx"
 #endif
 
 #endif /* itkCenteredAffineTransform_h */

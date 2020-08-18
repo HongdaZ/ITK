@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class RegionOfInterestImageFilter
+/** \class RegionOfInterestImageFilter
  * \brief Extract a region of interest from the input image.
  *
  *  This filter produces an output image of the same dimension as the input
@@ -46,22 +45,21 @@ namespace itk
  * \ingroup GeometricTransform
  * \ingroup ITKImageGrid
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageGrid/ExtractRegionOfInterestInOneImage,Extract Region Of Interest In One Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/RegionOfInterestImageFilter,Extract a portion of an image (region of interest)}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT RegionOfInterestImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT RegionOfInterestImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionOfInterestImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = RegionOfInterestImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
+  /** Standard class typedefs. */
+  typedef RegionOfInterestImageFilter                     Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
+  typedef typename Superclass::InputImageRegionType       InputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -70,40 +68,41 @@ public:
   itkTypeMacro(RegionOfInterestImageFilter, ImageToImageFilter);
 
   /** Typedef to describe the input image region types. */
-  using RegionType = typename TInputImage::RegionType;
-  using IndexType = typename TInputImage::IndexType;
-  using SizeType = typename TInputImage::SizeType;
+  typedef typename TInputImage::RegionType RegionType;
+  typedef typename TInputImage::IndexType  IndexType;
+  typedef typename TInputImage::SizeType   SizeType;
 
   /** Typedef to describe the type of pixel. */
-  using OutputImagePixelType = typename TOutputImage::PixelType;
-  using InputImagePixelType = typename TInputImage::PixelType;
+  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef typename TInputImage::PixelType  InputImagePixelType;
 
   /** Set/Get the output image region. */
   itkSetMacro(RegionOfInterest, RegionType);
   itkGetConstMacro(RegionOfInterest, RegionType);
 
   /** ImageDimension enumeration */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, OutputImageDimension>));
-  itkConceptMacro(InputConvertibleToOutputCheck, (Concept::Convertible<InputImagePixelType, OutputImagePixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< InputImagePixelType, OutputImagePixelType > ) );
   // End concept checking
 #endif
 
 protected:
   RegionOfInterestImageFilter();
-  ~RegionOfInterestImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~RegionOfInterestImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject * output) override;
+  virtual void EnlargeOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
   /** RegionOfInterestImageFilter can produce an image which is a different
    * size than its input image. As such, RegionOfInterestImageFilter
@@ -112,28 +111,29 @@ protected:
    * execution model.
    *
    * \sa ProcessObject::GenerateOutputInformaton()  */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** RegionOfInterestImageFilter can be implemented as a multithreaded filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData()
+   * Therefore, this implementation provides a ThreadedGenerateData()
    * routine which is called for each processing thread. The output
    * image data is allocated automatically by the superclass prior to
-   * calling DynamicThreadedGenerateData(). DynamicThreadedGenerateData can only
+   * calling ThreadedGenerateData(). ThreadedGenerateData can only
    * write to the portion of the output image specified by the
    * parameter "outputRegionForThread".
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData()  */
-  void
-  DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const RegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegionOfInterestImageFilter);
+
   RegionType m_RegionOfInterest;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRegionOfInterestImageFilter.hxx"
+#include "itkRegionOfInterestImageFilter.hxx"
 #endif
 
 #endif

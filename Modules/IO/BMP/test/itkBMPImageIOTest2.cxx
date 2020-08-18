@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,58 +21,60 @@
 #include <fstream>
 
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkBMPImageIOTest2(int argc, char * argv[])
+int itkBMPImageIOTest2( int argc, char* argv[] )
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << argv[0] << " input output" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
-  using ComponentType = unsigned char;
+  const unsigned int    Dimension = 2;
+  typedef unsigned char ComponentType;
 
-  using PixelType = itk::RGBAPixel<ComponentType>;
-  using ImageType = itk::Image<PixelType, Dimension>;
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::RGBAPixel< ComponentType >     PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
+  typedef itk::ImageFileReader< ImageType >   ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
   reader->UpdateOutputInformation();
 
-  std::cout << "PixelType: " << reader->GetImageIO()->GetPixelTypeAsString(reader->GetImageIO()->GetPixelType())
-            << std::endl;
+  std::cout << "PixelType: "
+    << reader->GetImageIO()->GetPixelTypeAsString( reader->GetImageIO()->GetPixelType() )
+    << std::endl;
   std::cout << "ComponentType: "
-            << reader->GetImageIO()->GetComponentTypeAsString(reader->GetImageIO()->GetComponentType()) << std::endl;
-  std::cout << "NumberOfComponents: " << reader->GetImageIO()->GetNumberOfComponents() << std::endl;
+    << reader->GetImageIO()->GetComponentTypeAsString(reader->GetImageIO()->GetComponentType() )
+    << std::endl;
+  std::cout << "NumberOfComponents: "
+    << reader->GetImageIO()->GetNumberOfComponents() << std::endl;
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
   ImageType::Pointer image = reader->GetOutput();
 
 
-  image->Print(std::cout);
+  image->Print( std::cout );
 
   ImageType::RegionType region = image->GetLargestPossibleRegion();
   std::cout << "LargestPossibleRegion " << region;
 
   // Print the IO
-  reader->GetImageIO()->Print(std::cout);
+  reader->GetImageIO()->Print( std::cout );
 
   // Generate test image
-  itk::ImageFileWriter<ImageType>::Pointer writer;
-  writer = itk::ImageFileWriter<ImageType>::New();
-  writer->SetInput(reader->GetOutput());
-  writer->SetFileName(argv[2]);
+  itk::ImageFileWriter< ImageType >::Pointer writer;
+  writer = itk::ImageFileWriter< ImageType >::New();
+  writer->SetInput( reader->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   // Print the IO
-  writer->GetImageIO()->Print(std::cout);
+  writer->GetImageIO()->Print( std::cout );
 
   std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;

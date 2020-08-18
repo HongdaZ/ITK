@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,14 +52,13 @@
 class RedChannelPixelAccessor
 {
 public:
-  using InternalType = itk::RGBPixel<float>;
-  using ExternalType = float;
+  typedef itk::RGBPixel<float>   InternalType;
+  typedef               float    ExternalType;
 
-  static ExternalType
-  Get(const InternalType & input)
-  {
-    return static_cast<ExternalType>(input.GetRed());
-  }
+  static ExternalType Get( const InternalType & input )
+    {
+    return static_cast<ExternalType>( input.GetRed() );
+    }
 };
 // Software Guide : EndCodeSnippet
 
@@ -78,16 +77,14 @@ public:
 //
 //-------------------------
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << "ImageAdaptor2   inputRGBFileName outputRedChannelFileName"
-              << std::endl;
+    std::cerr << "ImageAdaptor2   inputRGBFileName outputRedChannelFileName" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -103,11 +100,12 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = RedChannelPixelAccessor::InternalType;
-  constexpr unsigned int Dimension = 2;
-  using ImageType = itk::Image<InputPixelType, Dimension>;
+  typedef RedChannelPixelAccessor::InternalType  InputPixelType;
+  const   unsigned int   Dimension = 2;
+  typedef itk::Image< InputPixelType, Dimension >   ImageType;
 
-  using ImageAdaptorType = itk::ImageAdaptor<ImageType, RedChannelPixelAccessor>;
+  typedef itk::ImageAdaptor<  ImageType,
+                              RedChannelPixelAccessor > ImageAdaptorType;
 
   ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
   // Software Guide : EndCodeSnippet
@@ -122,15 +120,15 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType >   ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   // Software Guide : EndCodeSnippet
 
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
   reader->Update();
 
   // Software Guide : BeginCodeSnippet
-  adaptor->SetImage(reader->GetOutput());
+  adaptor->SetImage( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -146,17 +144,18 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using OutputImageType = itk::Image<unsigned char, Dimension>;
-  using RescalerType =
-    itk::RescaleIntensityImageFilter<ImageAdaptorType, OutputImageType>;
+  typedef itk::Image< unsigned char, Dimension >   OutputImageType;
+  typedef itk::RescaleIntensityImageFilter< ImageAdaptorType,
+                                            OutputImageType
+                                               >   RescalerType;
 
   RescalerType::Pointer rescaler = RescalerType::New();
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType >   WriterType;
   WriterType::Pointer writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
 
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
 
 
   //  Software Guide : BeginLatex
@@ -167,11 +166,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(  0  );
+  rescaler->SetOutputMaximum( 255 );
 
-  rescaler->SetInput(adaptor);
-  writer->SetInput(rescaler->GetOutput());
+  rescaler->SetInput( adaptor );
+  writer->SetInput( rescaler->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -185,14 +184,14 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception caught " << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -214,15 +213,14 @@ main(int argc, char * argv[])
   class GreenChannelPixelAccessor
   {
   public:
-    using InternalType = itk::RGBPixel<float>;
-    using ExternalType = float;
+    typedef itk::RGBPixel<float>   InternalType;
+    typedef               float    ExternalType;
 
-    static ExternalType
-    Get(const InternalType & input)
-    {
-      return static_cast<ExternalType>(input.GetGreen());
-    }
-  };
+    static ExternalType Get( const InternalType & input )
+      {
+      return static_cast<ExternalType>( input.GetGreen() );
+      }
+    };
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -237,17 +235,16 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   class BlueChannelPixelAccessor
-  {
-  public:
-    using InternalType = itk::RGBPixel<float>;
-    using ExternalType = float;
-
-    static ExternalType
-    Get(const InternalType & input)
     {
-      return static_cast<ExternalType>(input.GetBlue());
-    }
-  };
+  public:
+    typedef itk::RGBPixel<float>   InternalType;
+    typedef               float    ExternalType;
+
+    static ExternalType Get( const InternalType & input )
+      {
+      return static_cast<ExternalType>( input.GetBlue() );
+      }
+    };
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex

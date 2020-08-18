@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,74 +26,68 @@
 namespace itk
 {
 
-/**
- *\class LevelSetEvolutionUpdateLevelSetsThreader
+/** \class LevelSetEvolutionUpdateLevelSetsThreader
  * \brief Threade the UpdateLevelSets method.
  *
  * Thread the \c UpdateLevelSets method of the LevelSetEvolution class.
  *
  * \ingroup ITKLevelSetsv4
  */
-template <typename TLevelSet, typename TDomainPartitioner, typename TLevelSetEvolution>
+template< typename TLevelSet, typename TDomainPartitioner, typename TLevelSetEvolution >
 class ITK_TEMPLATE_EXPORT LevelSetEvolutionUpdateLevelSetsThreader
 {};
 
 // For dense image level set.
-template <typename TImage, typename TLevelSetEvolution>
-class ITK_TEMPLATE_EXPORT
-  LevelSetEvolutionUpdateLevelSetsThreader<LevelSetDenseImage<TImage>,
-                                           ThreadedImageRegionPartitioner<TImage::ImageDimension>,
-                                           TLevelSetEvolution>
-  : public DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>
+template< typename TImage, typename TLevelSetEvolution >
+class ITK_TEMPLATE_EXPORT LevelSetEvolutionUpdateLevelSetsThreader< LevelSetDenseImage< TImage >, ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution >
+  : public DomainThreader< ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionUpdateLevelSetsThreader);
-
-  /** Standard class type aliases. */
-  using Self = LevelSetEvolutionUpdateLevelSetsThreader;
-  using Superclass = DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LevelSetEvolutionUpdateLevelSetsThreader                                                       Self;
+  typedef DomainThreader< ThreadedImageRegionPartitioner< TImage::ImageDimension >, TLevelSetEvolution > Superclass;
+  typedef SmartPointer< Self >                                                                           Pointer;
+  typedef SmartPointer< const Self >                                                                     ConstPointer;
 
   /** Run time type information. */
-  itkTypeMacro(LevelSetEvolutionUpdateLevelSetsThreader, DomainThreader);
+  itkTypeMacro( LevelSetEvolutionUpdateLevelSetsThreader, DomainThreader );
 
   /** Standard New macro. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  typedef typename Superclass::DomainType    DomainType;
+  typedef typename Superclass::AssociateType AssociateType;
 
   /** Types of the associate class. */
-  using LevelSetEvolutionType = TLevelSetEvolution;
-  using LevelSetContainerType = typename LevelSetEvolutionType::LevelSetContainerType;
-  using LevelSetType = typename LevelSetEvolutionType::LevelSetType;
-  using LevelSetImageType = typename LevelSetEvolutionType::LevelSetImageType;
-  using LevelSetOutputRealType = typename LevelSetEvolutionType::LevelSetOutputRealType;
+  typedef TLevelSetEvolution                                     LevelSetEvolutionType;
+  typedef typename LevelSetEvolutionType::LevelSetContainerType  LevelSetContainerType;
+  typedef typename LevelSetEvolutionType::LevelSetType           LevelSetType;
+  typedef typename LevelSetEvolutionType::LevelSetImageType      LevelSetImageType;
+  typedef typename LevelSetEvolutionType::LevelSetOutputRealType LevelSetOutputRealType;
 
 protected:
-  LevelSetEvolutionUpdateLevelSetsThreader() = default;
+  LevelSetEvolutionUpdateLevelSetsThreader();
 
-  void
-  BeforeThreadedExecution() override;
+  virtual void BeforeThreadedExecution() ITK_OVERRIDE;
 
-  void
-  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
+  virtual void ThreadedExecution( const DomainType & imageSubRegion, const ThreadIdType threadId ) ITK_OVERRIDE;
 
-  void
-  AfterThreadedExecution() override;
+  virtual void AfterThreadedExecution() ITK_OVERRIDE;
 
-  using RMSChangeAccumulatorType = CompensatedSummation<LevelSetOutputRealType>;
-  using RMSChangeAccumulatorPerThreadType = std::vector<RMSChangeAccumulatorType>;
+  typedef CompensatedSummation< LevelSetOutputRealType > RMSChangeAccumulatorType;
+  typedef std::vector< RMSChangeAccumulatorType > RMSChangeAccumulatorPerThreadType;
 
   RMSChangeAccumulatorPerThreadType m_RMSChangeAccumulatorPerThread;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionUpdateLevelSetsThreader);
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetEvolutionUpdateLevelSetsThreader.hxx"
+#include "itkLevelSetEvolutionUpdateLevelSetsThreader.hxx"
 #endif
 
 #endif

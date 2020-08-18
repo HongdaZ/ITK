@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,10 @@
 
 namespace itk
 {
-template <typename TImage, typename TFunction>
+template< typename TImage, typename TFunction >
 bool
-FloodFilledImageFunctionConditionalConstIterator<TImage, TFunction>::IsPixelIncluded(const IndexType & index) const
+FloodFilledImageFunctionConditionalConstIterator< TImage, TFunction >
+::IsPixelIncluded(const IndexType & index) const
 {
   return this->m_Function->EvaluateAtIndex(index);
 }

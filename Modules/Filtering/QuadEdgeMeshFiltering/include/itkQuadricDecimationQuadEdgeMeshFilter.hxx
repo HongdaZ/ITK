@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,10 +22,21 @@
 
 namespace itk
 {
+template< typename TInput, typename TOutput, typename TCriterion >
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::QuadricDecimationQuadEdgeMeshFilter()
+{}
 
-template <typename TInput, typename TOutput, typename TCriterion>
+template< typename TInput, typename TOutput, typename TCriterion >
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::~QuadricDecimationQuadEdgeMeshFilter()
+{}
+
+
+template< typename TInput, typename TOutput, typename TCriterion >
 void
-QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Initialize()
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::Initialize()
 {
   OutputMeshPointer             output = this->GetOutput();
   OutputPointsContainerPointer  points = output->GetPoints();
@@ -34,41 +45,45 @@ QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Initialize()
   OutputQEType *                qe;
   OutputQEType *                qe_it;
 
-  OutputMeshType * outputMesh = this->GetOutput();
-  while (it != points->End())
-  {
+  OutputMeshType *outputMesh = this->GetOutput();
+  while ( it != points->End() )
+    {
     p_id = it->Index();
 
     qe = output->FindEdge(p_id);
-    if (qe != nullptr)
-    {
+    if ( qe != ITK_NULLPTR )
+      {
       qe_it = qe;
       do
-      {
+        {
         QuadricAtOrigin(qe_it, m_Quadric[p_id], outputMesh);
         qe_it = qe_it->GetOnext();
-      } while (qe_it != qe);
-    }
+        }
+      while ( qe_it != qe );
+      }
     ++it;
-  }
+    }
 }
 
-template <typename TInput, typename TOutput, typename TCriterion>
+template< typename TInput, typename TOutput, typename TCriterion >
 void
-QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::DeletePoint(
-  const OutputPointIdentifier & iIdToBeDeleted,
-  const OutputPointIdentifier & iRemaining)
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::DeletePoint( const OutputPointIdentifier & iIdToBeDeleted,
+               const OutputPointIdentifier & iRemaining)
 {
   Superclass::DeletePoint(iIdToBeDeleted, iRemaining);
 
-  auto it = m_Quadric.find(iIdToBeDeleted);
+  QuadricElementMapIterator it = m_Quadric.find(iIdToBeDeleted);
   m_Quadric[iRemaining] += it->second;
   m_Quadric.erase(it);
 }
 
-template <typename TInput, typename TOutput, typename TCriterion>
-typename QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::OutputPointType
-QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relocate(OutputQEType * iEdge)
+template< typename TInput, typename TOutput, typename TCriterion >
+typename
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::OutputPointType
+QuadricDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
+::Relocate(OutputQEType *iEdge)
 {
   OutputPointIdentifier id_org = iEdge->GetOrigin();
   OutputPointIdentifier id_dest = iEdge->GetDestination();
@@ -85,5 +100,5 @@ QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relocate(Outpu
 
   return Q.ComputeOptimalLocation(mid);
 }
-} // namespace itk
+}
 #endif

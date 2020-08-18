@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,25 +34,26 @@ namespace itk
  * \sa ImageFunction
  * \ingroup ITKImageFunction
  *
- * \sphinx
- * \sphinxexample{Core/ImageFunction/GaussianBlueImageFunction,GaussianBlurImageFunction}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Functions/GaussianBlurImageFunction,GaussianBlurImageFunction}
+ * \wikiexample{Functions/GaussianBlurImageFunctionFilter,GaussianBlurImageFunctionFilter}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutput = double>
-class ITK_TEMPLATE_EXPORT GaussianBlurImageFunction : public ImageFunction<TInputImage, TOutput>
+template< typename TInputImage, typename TOutput = double >
+class ITK_TEMPLATE_EXPORT GaussianBlurImageFunction:
+  public ImageFunction< TInputImage, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianBlurImageFunction);
 
-  /**Standard "Self" type alias */
-  using Self = GaussianBlurImageFunction;
+  /**Standard "Self" typedef */
+  typedef GaussianBlurImageFunction Self;
 
-  /** Standard "Superclass" type alias */
-  using Superclass = ImageFunction<TInputImage, TOutput>;
+  /** Standard "Superclass" typedef */
+  typedef ImageFunction< TInputImage, TOutput > Superclass;
 
-  /** Smart pointer type alias support */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support. */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -60,49 +61,49 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(GaussianBlurImageFunction, ImageFunction);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using IndexType = typename Superclass::IndexType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** InputImageType typedef support. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::PixelType       InputPixelType;
+  typedef typename Superclass::IndexType           IndexType;
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, InputImageType::ImageDimension);
 
-  using GaussianOperatorType = GaussianOperator<TOutput, Self::ImageDimension>;
-  using NeighborhoodType = Neighborhood<TOutput, Self::ImageDimension>;
-  using OperatorArrayType = FixedArray<NeighborhoodType, Self::ImageDimension>;
+  typedef GaussianOperator<
+    TOutput, itkGetStaticConstMacro(ImageDimension) >                            GaussianOperatorType;
+  typedef Neighborhood< TOutput, itkGetStaticConstMacro(ImageDimension) >        NeighborhoodType;
+  typedef FixedArray< NeighborhoodType, itkGetStaticConstMacro(ImageDimension) > OperatorArrayType;
 
-  using GaussianFunctionType = GaussianSpatialFunction<TOutput, 1>;
-  using GaussianFunctionPointer = typename GaussianFunctionType::Pointer;
-  using InputPixelRealType = typename NumericTraits<InputPixelType>::RealType;
-  using InternalImageType = itk::Image<InputPixelRealType, Self::ImageDimension>;
-  using InternalImagePointer = typename InternalImageType::Pointer;
+  typedef GaussianSpatialFunction< TOutput, 1 >                        GaussianFunctionType;
+  typedef typename GaussianFunctionType::Pointer                       GaussianFunctionPointer;
+  typedef typename NumericTraits< InputPixelType >::RealType           InputPixelRealType;
+  typedef itk::Image<
+    InputPixelRealType, itkGetStaticConstMacro(ImageDimension) >       InternalImageType;
+  typedef typename InternalImageType::Pointer                          InternalImagePointer;
 
-  using OperatorImageFunctionType = NeighborhoodOperatorImageFunction<InputImageType, TOutput>;
-  using OperatorImageFunctionPointer = typename OperatorImageFunctionType::Pointer;
+  typedef NeighborhoodOperatorImageFunction< InputImageType, TOutput >    OperatorImageFunctionType;
+  typedef typename OperatorImageFunctionType::Pointer                     OperatorImageFunctionPointer;
 
-  using OperatorInternalImageFunctionType = NeighborhoodOperatorImageFunction<InternalImageType, TOutput>;
-  using OperatorInternalImageFunctionPointer = typename OperatorInternalImageFunctionType::Pointer;
+  typedef NeighborhoodOperatorImageFunction< InternalImageType, TOutput > OperatorInternalImageFunctionType;
+  typedef typename OperatorInternalImageFunctionType::Pointer             OperatorInternalImageFunctionPointer;
 
-  using ErrorArrayType = itk::FixedArray<double, Self::ImageDimension>;
-  using ExtentArrayType = itk::FixedArray<double, Self::ImageDimension>;
-  using SigmaArrayType = itk::FixedArray<double, Self::ImageDimension>;
+  typedef itk::FixedArray< double, itkGetStaticConstMacro(ImageDimension) > ErrorArrayType;
+  typedef itk::FixedArray< double, itkGetStaticConstMacro(ImageDimension) > ExtentArrayType;
+  typedef itk::FixedArray< double, itkGetStaticConstMacro(ImageDimension) > SigmaArrayType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
   /** Evalutate the  in the given dimension at specified point */
-  TOutput
-  Evaluate(const PointType & point) const override;
+  virtual TOutput Evaluate(const PointType & point) const ITK_OVERRIDE;
 
   /** Evaluate the function at specified Index position */
-  TOutput
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual TOutput EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at specified ContinuousIndex position. */
-  TOutput
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
+  virtual TOutput EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE;
 
   /** The standard deviation for the discrete Gaussian kernel.  Sets the
    * standard deviation independently for each dimension.
@@ -110,14 +111,11 @@ public:
    * If UseImageSpacing is true (default), the units are the physical units
    * of your image.  If UseImageSpacing is false then the units are pixels.
    */
-  void
-  SetSigma(const double * sigma);
+  void SetSigma(const double *sigma);
 
-  void
-  SetSigma(const float * sigma);
+  void SetSigma(const float *sigma);
 
-  void
-  SetSigma(const double sigma);
+  void SetSigma(const double sigma);
 
   itkSetMacro(Sigma, SigmaArrayType);
   itkGetConstReferenceMacro(Sigma, SigmaArrayType);
@@ -126,19 +124,16 @@ public:
    * \warning this method caches BufferedRegion information.
    * If the BufferedRegion has changed, user must call
    * SetInputImage again to update cached values. */
-  void
-  SetInputImage(const InputImageType * ptr) override;
+  virtual void SetInputImage(const InputImageType *ptr) ITK_OVERRIDE;
 
   /** Set/Get the Extent of the array holding the coefficients
    *  of the Gaussian kernel computed by the GaussianOperator.
    */
   itkSetMacro(Extent, ExtentArrayType);
   itkGetConstReferenceMacro(Extent, ExtentArrayType);
-  void
-  SetExtent(const double * extent);
+  void SetExtent(const double *extent);
 
-  void
-  SetExtent(const double extent);
+  void SetExtent(const double extent);
 
   /** Set/Get the maximum error acceptable for the approximation
    *  of the Gaussian kernel with the GaussianOperator.
@@ -164,27 +159,29 @@ public:
 
 protected:
   GaussianBlurImageFunction();
-  ~GaussianBlurImageFunction() override = default;
+  GaussianBlurImageFunction(const Self &);
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~GaussianBlurImageFunction() ITK_OVERRIDE {}
 
-  void
-  RecomputeGaussianKernel();
+  void operator=(const Self &);
 
-  void
-  RecomputeContinuousGaussianKernel(const double * offset) const;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+  void RecomputeGaussianKernel();
+
+  void RecomputeContinuousGaussianKernel(const double *offset) const;
 
 private:
-  virtual TOutput
-  EvaluateAtIndex(const IndexType & index, const OperatorArrayType & operatorArray) const;
 
-  SigmaArrayType                       m_Sigma;
-  OperatorImageFunctionPointer         m_OperatorImageFunction;
-  OperatorInternalImageFunctionPointer m_OperatorInternalImageFunction;
-  mutable OperatorArrayType            m_OperatorArray;
-  mutable OperatorArrayType            m_ContinuousOperatorArray;
-  InternalImagePointer                 m_InternalImage;
+  virtual TOutput EvaluateAtIndex(
+    const IndexType & index, const OperatorArrayType & operatorArray) const;
+
+  SigmaArrayType                        m_Sigma;
+  OperatorImageFunctionPointer          m_OperatorImageFunction;
+  OperatorInternalImageFunctionPointer  m_OperatorInternalImageFunction;
+  mutable OperatorArrayType             m_OperatorArray;
+  mutable OperatorArrayType             m_ContinuousOperatorArray;
+  InternalImagePointer                  m_InternalImage;
 
   /** The maximum error of the gaussian blurring kernel in each dimensional
    * direction. For definition of maximum error, see GaussianOperator.
@@ -208,7 +205,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGaussianBlurImageFunction.hxx"
+#include "itkGaussianBlurImageFunction.hxx"
 #endif
 
 #endif

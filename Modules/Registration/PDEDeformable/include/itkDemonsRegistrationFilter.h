@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,54 +59,59 @@ namespace itk
  * \ingroup DeformableImageRegistration MultiThreaded
  * \ingroup ITKPDEDeformableRegistration
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
-class ITK_TEMPLATE_EXPORT DemonsRegistrationFilter
-  : public PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
+class ITK_TEMPLATE_EXPORT DemonsRegistrationFilter:
+  public PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
+                                          TDisplacementField >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DemonsRegistrationFilter);
-
-  /** Standard class type aliases. */
-  using Self = DemonsRegistrationFilter;
-  using Superclass = PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DemonsRegistrationFilter                                                        Self;
+  typedef PDEDeformableRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField > Superclass;
+  typedef SmartPointer< Self >                                                            Pointer;
+  typedef SmartPointer< const Self >                                                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DemonsRegistrationFilter, PDEDeformableRegistrationFilter);
+  itkTypeMacro(DemonsRegistrationFilter,
+               PDEDeformableRegistrationFilter);
 
   /** Inherit types from superclass. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  typedef typename Superclass::TimeStepType TimeStepType;
 
   /** FixedImage image type. */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
+  typedef typename Superclass::FixedImageType    FixedImageType;
+  typedef typename Superclass::FixedImagePointer FixedImagePointer;
 
   /** MovingImage image type. */
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  typedef typename Superclass::MovingImageType    MovingImageType;
+  typedef typename Superclass::MovingImagePointer MovingImagePointer;
 
   /** displacement field type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename Superclass::DisplacementFieldPointer;
+  typedef typename Superclass::DisplacementFieldType    DisplacementFieldType;
+  typedef typename Superclass::DisplacementFieldPointer DisplacementFieldPointer;
+
+#ifdef ITKV3_COMPATIBILITY
+  typedef typename Superclass::DeformationFieldType    DeformationFieldType;
+  typedef typename Superclass::DeformationFieldPointer DeformationFieldPointer;
+#endif
 
   /** FiniteDifferenceFunction type. */
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  typedef typename Superclass::FiniteDifferenceFunctionType
+  FiniteDifferenceFunctionType;
 
   /** DemonsRegistrationFilterFunction type. */
-  using DemonsRegistrationFunctionType =
-    DemonsRegistrationFunction<FixedImageType, MovingImageType, DisplacementFieldType>;
+  typedef DemonsRegistrationFunction< FixedImageType, MovingImageType,
+                                      DisplacementFieldType >  DemonsRegistrationFunctionType;
 
   /** Get the metric value. The metric value is the mean square difference
    * in intensity between the fixed image and transforming moving image
    * computed over the the overlapping region between the two images.
    * This is value is only available for the previous iteration and
    * NOT the current iteration. */
-  virtual double
-  GetMetric() const;
+  virtual double GetMetric() const;
 
   /** Switch between using the fixed image and moving image gradient
    * for computing the displacement field updates. */
@@ -118,42 +123,37 @@ public:
    * intensity yields a match. When the intensities match between a
    * moving and fixed image pixel, the update vector (for that
    * iteration) will be the zero vector. Default is 0.001. */
-  virtual void
-  SetIntensityDifferenceThreshold(double);
+  virtual void SetIntensityDifferenceThreshold(double);
 
-  virtual double
-  GetIntensityDifferenceThreshold() const;
+  virtual double GetIntensityDifferenceThreshold() const;
 
 protected:
   DemonsRegistrationFilter();
-  ~DemonsRegistrationFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  // ~DemonsRegistrationFilter() {} default implementation ok
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Initialize the state of filter and equation before each iteration. */
-  void
-  InitializeIteration() override;
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
   /** Apply update. */
-  void
-  ApplyUpdate(const TimeStepType & dt) override;
+  virtual void ApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
-  /** Override VerifyInputInformation() since this filter's inputs do
-   * not need to occupy the same physical space.
+  /** Override VeriyInputInformation() since this filter's inputs do
+   * not need to occoupy the same physical space.
    *
    * \sa ProcessObject::VerifyInputInformation
    */
-  void
-  VerifyInputInformation() ITKv5_CONST override
-  {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DemonsRegistrationFilter);
+
   bool m_UseMovingImageGradient;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDemonsRegistrationFilter.hxx"
+#include "itkDemonsRegistrationFilter.hxx"
 #endif
 
 #endif

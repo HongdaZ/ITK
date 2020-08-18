@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@
 namespace itk
 {
 
-/**
- *\class KittlerIllingworthThresholdCalculator
+/** \class KittlerIllingworthThresholdCalculator
  * \brief Computes the KittlerIllingworth's threshold for an image.
  *
  * Kittler and J. Illingworth, "Minimum error thresholding," Pattern Recognition, vol. 19, pp. 41-47, 1986.
- * C. A. Glasbey, "An analysis of histogram-based thresholding algorithms," CVGIP: Graphical Models and Image
- * Processing, vol. 55, pp. 532-537, 1993. Original Matlab code Copyright (C) 2004 Antti Niemisto See
- * http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide presentation and the original Matlab code.
+ * C. A. Glasbey, "An analysis of histogram-based thresholding algorithms," CVGIP: Graphical Models and Image Processing, vol. 55, pp. 532-537, 1993.
+ * Original Matlab code Copyright (C) 2004 Antti Niemisto
+ * See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide presentation
+ * and the original Matlab code.
  *
  * This class is templated over the input histogram type.
  * \warning This calculator assumes that the input histogram has only one dimension.
@@ -47,18 +47,15 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKThresholding
  */
-template <typename THistogram, typename TOutput = double>
-class ITK_TEMPLATE_EXPORT KittlerIllingworthThresholdCalculator
-  : public HistogramThresholdCalculator<THistogram, TOutput>
+template <typename THistogram, typename TOutput=double>
+class ITK_TEMPLATE_EXPORT KittlerIllingworthThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KittlerIllingworthThresholdCalculator);
-
-  /** Standard class type aliases. */
-  using Self = KittlerIllingworthThresholdCalculator;
-  using Superclass = HistogramThresholdCalculator<THistogram, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef KittlerIllingworthThresholdCalculator             Self;
+  typedef HistogramThresholdCalculator<THistogram, TOutput> Superclass;
+  typedef SmartPointer<Self>                                Pointer;
+  typedef SmartPointer<const Self>                          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,37 +64,35 @@ public:
   itkTypeMacro(KittlerIllingworthThresholdCalculator, HistogramThresholdCalculator);
 
   /** Type definition for the input image. */
-  using HistogramType = THistogram;
-  using OutputType = TOutput;
+  typedef THistogram  HistogramType;
+  typedef TOutput     OutputType;
 
 protected:
-  KittlerIllingworthThresholdCalculator() = default;
-  ~KittlerIllingworthThresholdCalculator() override = default;
+  KittlerIllingworthThresholdCalculator() {}
+  virtual ~KittlerIllingworthThresholdCalculator() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
+  void GenerateData(void) ITK_OVERRIDE;
 
-  using TotalAbsoluteFrequencyType = typename HistogramType::TotalAbsoluteFrequencyType;
-  using AbsoluteFrequencyType = typename HistogramType::AbsoluteFrequencyType;
-  using InstanceIdentifier = typename HistogramType::InstanceIdentifier;
-  using SizeValueType = typename HistogramType::SizeValueType;
+  typedef typename HistogramType::TotalAbsoluteFrequencyType  TotalAbsoluteFrequencyType;
+  typedef typename HistogramType::AbsoluteFrequencyType       AbsoluteFrequencyType;
+  typedef typename HistogramType::InstanceIdentifier          InstanceIdentifier;
+  typedef typename HistogramType::SizeValueType               SizeValueType;
 
 private:
-  IndexValueType
-  Mean();
-  double
-  A(InstanceIdentifier j);
-  double
-  B(InstanceIdentifier j);
-  double
-  C(InstanceIdentifier j);
+  ITK_DISALLOW_COPY_AND_ASSIGN(KittlerIllingworthThresholdCalculator);
+
+  IndexValueType Mean();
+  double A( InstanceIdentifier j);
+  double B( InstanceIdentifier j);
+  double C( InstanceIdentifier j);
+
 };
 
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkKittlerIllingworthThresholdCalculator.hxx"
+#include "itkKittlerIllingworthThresholdCalculator.hxx"
 #endif
 
 #endif

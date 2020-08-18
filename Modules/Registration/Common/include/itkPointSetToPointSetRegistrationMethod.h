@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ namespace itk
  * that the PointSet is being mapped by the transform.
  *
  * This class uses the coordinate system of the Fixed PointSet as a reference
- * and searches for a Transform that will map points from the space of the Fixed
+ * and searchs for a Transform that will map points from the space of the Fixed
  * PointSet to the space of the Moving PointSet.
  *
  * For doing so, a Metric will be continuously applied to compare the Fixed
@@ -62,17 +62,15 @@ namespace itk
  * \ingroup RegistrationFilters
  * \ingroup ITKRegistrationCommon
  */
-template <typename TFixedPointSet, typename TMovingPointSet>
+template< typename TFixedPointSet, typename TMovingPointSet >
 class ITK_TEMPLATE_EXPORT PointSetToPointSetRegistrationMethod : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToPointSetRegistrationMethod);
-
-  /** Standard class type aliases. */
-  using Self = PointSetToPointSetRegistrationMethod;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PointSetToPointSetRegistrationMethod Self;
+  typedef ProcessObject                        Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -81,36 +79,36 @@ public:
   itkTypeMacro(PointSetToPointSetRegistrationMethod, ProcessObject);
 
   /**  Type of the Fixed PointSet. */
-  using FixedPointSetType = TFixedPointSet;
-  using FixedPointSetConstPointer = typename FixedPointSetType::ConstPointer;
+  typedef          TFixedPointSet                  FixedPointSetType;
+  typedef typename FixedPointSetType::ConstPointer FixedPointSetConstPointer;
 
   /**  Type of the Moving PointSet. */
-  using MovingPointSetType = TMovingPointSet;
-  using MovingPointSetConstPointer = typename MovingPointSetType::ConstPointer;
+  typedef          TMovingPointSet                  MovingPointSetType;
+  typedef typename MovingPointSetType::ConstPointer MovingPointSetConstPointer;
 
   /**  Type of the Metric. */
-  using MetricType = PointSetToPointSetMetric<FixedPointSetType, MovingPointSetType>;
-  using MetricPointer = typename MetricType::Pointer;
+  typedef PointSetToPointSetMetric< FixedPointSetType, MovingPointSetType > MetricType;
+  typedef typename MetricType::Pointer                                      MetricPointer;
 
   /**  Type of the Transform . */
-  using TransformType = typename MetricType::TransformType;
-  using TransformPointer = typename TransformType::Pointer;
+  typedef  typename MetricType::TransformType TransformType;
+  typedef  typename TransformType::Pointer    TransformPointer;
 
   /** Type for the output: Using Decorator pattern for enabling
    *  the Transform to be passed in the data pipeline. */
-  using TransformOutputType = DataObjectDecorator<TransformType>;
-  using TransformOutputPointer = typename TransformOutputType::Pointer;
-  using TransformOutputConstPointer = typename TransformOutputType::ConstPointer;
+  typedef  DataObjectDecorator< TransformType >      TransformOutputType;
+  typedef typename TransformOutputType::Pointer      TransformOutputPointer;
+  typedef typename TransformOutputType::ConstPointer TransformOutputConstPointer;
 
   /**  Type of the Optimizer. */
-  using OptimizerType = MultipleValuedNonLinearOptimizer;
+  typedef   MultipleValuedNonLinearOptimizer OptimizerType;
 
   /** Type of the Transformation parameters. This is the same type used to
    *  represent the search space of the optimization algorithm. */
-  using ParametersType = typename MetricType::TransformParametersType;
+  typedef  typename MetricType::TransformParametersType ParametersType;
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = typename DataObject::Pointer;
+  typedef typename DataObject::Pointer DataObjectPointer;
 
   /** Set/Get the Fixed PointSet. */
   itkSetConstObjectMacro(FixedPointSet, FixedPointSetType);
@@ -121,7 +119,7 @@ public:
   itkGetConstObjectMacro(MovingPointSet, MovingPointSetType);
 
   /** Set/Get the Optimizer. */
-  itkSetObjectMacro(Optimizer, OptimizerType);
+  itkSetObjectMacro(Optimizer,  OptimizerType);
   itkGetModifiableObjectMacro(Optimizer, OptimizerType);
 
   /** Set/Get the Metric. */
@@ -133,8 +131,7 @@ public:
   itkGetModifiableObjectMacro(Transform, TransformType);
 
   /** Set/Get the initial transformation parameters. */
-  virtual void
-  SetInitialTransformParameters(const ParametersType & param);
+  virtual void SetInitialTransformParameters(const ParametersType & param);
 
   itkGetConstReferenceMacro(InitialTransformParameters, ParametersType);
 
@@ -143,33 +140,48 @@ public:
   itkGetConstReferenceMacro(LastTransformParameters, ParametersType);
 
   /** Initialize by setting the interconnects between the components. */
-  void
-  Initialize();
+  void Initialize();
 
   /** Returns the transform resulting from the registration process  */
-  const TransformOutputType *
-  GetOutput() const;
+  const TransformOutputType * GetOutput() const;
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
-  ModifiedTimeType
-  GetMTime() const override;
+  virtual ModifiedTimeType GetMTime() const ITK_OVERRIDE;
+
+#ifdef ITKV3_COMPATIBILITY
+  /** Method that initiates the registration. This will Initialize and ensure
+   * that all inputs the registration needs are in place, via a call to
+   * Initialize() will then start the optimization process via a call to
+   * StartOptimization()
+   * StartRegistration is an old API from before
+   * ImageRegistrationMethod was a subclass of ProcessObject.
+   * Historically, one could call StartRegistration() instead of
+   * calling Update().  However, when called directly by the user, the
+   * inputs to ImageRegistrationMethod may not be up to date.  This
+   * may cause an unexpected behavior.
+   *
+   * Since we cannot eliminate StartRegistration for backward
+   * compatibility reasons, we check whether StartRegistration was
+   * called directly or whether Update() (which in turn called
+   * StartRegistration()). */
+  void StartRegistration(void) { this->Update(); }
+#endif
 
 protected:
   PointSetToPointSetRegistrationMethod();
-  ~PointSetToPointSetRegistrationMethod() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~PointSetToPointSetRegistrationMethod() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToPointSetRegistrationMethod);
+
   MetricPointer          m_Metric;
   OptimizerType::Pointer m_Optimizer;
 
@@ -184,7 +196,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPointSetToPointSetRegistrationMethod.hxx"
+#include "itkPointSetToPointSetRegistrationMethod.hxx"
 #endif
 
 #endif

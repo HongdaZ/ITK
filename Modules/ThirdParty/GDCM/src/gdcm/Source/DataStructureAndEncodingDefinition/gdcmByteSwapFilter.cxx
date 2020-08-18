@@ -28,7 +28,8 @@ namespace gdcm
 //}
 //-----------------------------------------------------------------------------
 ByteSwapFilter::~ByteSwapFilter()
-= default;
+{
+}
 
 bool ByteSwapFilter::ByteSwap()
 {
@@ -39,7 +40,7 @@ bool ByteSwapFilter::ByteSwap()
     const DataElement &de = *it;
     VR const & vr = de.GetVR();
     //assert( vr & VR::VRASCII || vr & VR::VRBINARY );
-    ByteValue *bv = const_cast<ByteValue*>(de.GetByteValue());
+    const ByteValue *bv = de.GetByteValue();
     gdcm::SmartPointer<gdcm::SequenceOfItems> si = de.GetValueAsSQ();
     if( de.IsEmpty() )
       {
@@ -59,7 +60,7 @@ bool ByteSwapFilter::ByteSwap()
         case VR::FL:
           // FIXME: Technically FL should not be byte-swapped...
           //std::cerr << "ByteSwap FL:" << de.GetTag() << std::endl;
-          SwapperDoOp::SwapArray((uint32_t*)bv->GetVoidPointer(), bv->GetLength() / sizeof(uint32_t) );
+          SwapperDoOp::SwapArray((uint32_t*)bv->GetPointer(), bv->GetLength() / sizeof(uint32_t) );
           break;
         case VR::FD:
           assert( 0 && "Should not happen" );
@@ -74,22 +75,22 @@ bool ByteSwapFilter::ByteSwap()
           assert( 0 && "Should not happen" );
           break;
         case VR::SL:
-          SwapperDoOp::SwapArray((uint32_t*)bv->GetVoidPointer(), bv->GetLength() / sizeof(uint32_t) );
+          SwapperDoOp::SwapArray((uint32_t*)bv->GetPointer(), bv->GetLength() / sizeof(uint32_t) );
           break;
         case VR::SQ:
           assert( 0 && "Should not happen" );
           break;
         case VR::SS:
-          SwapperDoOp::SwapArray((uint16_t*)bv->GetVoidPointer(), bv->GetLength() / sizeof(uint16_t) );
+          SwapperDoOp::SwapArray((uint16_t*)bv->GetPointer(), bv->GetLength() / sizeof(uint16_t) );
           break;
         case VR::UL:
-          SwapperDoOp::SwapArray((uint32_t*)bv->GetVoidPointer(), bv->GetLength() / sizeof(uint32_t) );
+          SwapperDoOp::SwapArray((uint32_t*)bv->GetPointer(), bv->GetLength() / sizeof(uint32_t) );
           break;
         case VR::UN:
           assert( 0 && "Should not happen" );
           break;
         case VR::US:
-          SwapperDoOp::SwapArray((uint16_t*)bv->GetVoidPointer(), bv->GetLength() / sizeof(uint16_t) );
+          SwapperDoOp::SwapArray((uint16_t*)bv->GetPointer(), bv->GetLength() / sizeof(uint16_t) );
           break;
         case VR::UT:
           assert( 0 && "Should not happen" );

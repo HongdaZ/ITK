@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,18 +37,16 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile  inputDisplacementField  outputImageFile"
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile  inputDisplacementField  outputImageFile" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const     unsigned int   Dimension = 2;
 
   // Software Guide : BeginLatex
   //
@@ -63,17 +61,17 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using VectorComponentType = float;
-  using VectorPixelType = itk::Vector<VectorComponentType, Dimension>;
-  using DisplacementFieldType = itk::Image<VectorPixelType, Dimension>;
+  typedef float                                         VectorComponentType;
+  typedef itk::Vector< VectorComponentType, Dimension > VectorPixelType;
+  typedef itk::Image< VectorPixelType,  Dimension >     DisplacementFieldType;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                         PixelType;
+  typedef itk::Image< PixelType,  Dimension >   ImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef   itk::ImageFileReader< ImageType >  ReaderType;
+  typedef   itk::ImageFileWriter< ImageType >  WriterType;
 
   // Software Guide : BeginLatex
   //
@@ -83,21 +81,22 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FieldReaderType = itk::ImageFileReader<DisplacementFieldType>;
+  typedef   itk::ImageFileReader< DisplacementFieldType >  FieldReaderType;
   // Software Guide : EndCodeSnippet
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[3]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[3] );
 
   // Software Guide : BeginCodeSnippet
   FieldReaderType::Pointer fieldReader = FieldReaderType::New();
-  fieldReader->SetFileName(argv[2]);
+  fieldReader->SetFileName( argv[2] );
   fieldReader->Update();
 
-  DisplacementFieldType::ConstPointer deformationField = fieldReader->GetOutput();
+  DisplacementFieldType::ConstPointer deformationField =
+                                                      fieldReader->GetOutput();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -108,7 +107,9 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::WarpImageFilter<ImageType, ImageType, DisplacementFieldType>;
+  typedef itk::WarpImageFilter< ImageType,
+                                ImageType,
+                                DisplacementFieldType  >  FilterType;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -124,11 +125,12 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
+  typedef itk::LinearInterpolateImageFunction<
+                       ImageType, double >  InterpolatorType;
 
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
-  filter->SetInterpolator(interpolator);
+  filter->SetInterpolator( interpolator );
   // Software Guide : EndCodeSnippet
 
   // SoftwareGuide : BeginLatex
@@ -139,25 +141,26 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetOutputSpacing(deformationField->GetSpacing());
-  filter->SetOutputOrigin(deformationField->GetOrigin());
-  filter->SetOutputDirection(deformationField->GetDirection());
+  filter->SetOutputSpacing( deformationField->GetSpacing() );
+  filter->SetOutputOrigin(  deformationField->GetOrigin() );
+  filter->SetOutputDirection(  deformationField->GetDirection() );
 
-  filter->SetDisplacementField(deformationField);
+  filter->SetDisplacementField( deformationField );
   // Software Guide : EndCodeSnippet
 
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << std::endl;
     std::cerr << excp << std::endl;
-  }
+    }
 
   return EXIT_SUCCESS;
+
 }

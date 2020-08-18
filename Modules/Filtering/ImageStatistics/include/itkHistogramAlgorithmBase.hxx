@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,19 +22,22 @@
 
 namespace itk
 {
-template <typename TInputHistogram>
-HistogramAlgorithmBase<TInputHistogram>::HistogramAlgorithmBase()
+template< typename TInputHistogram >
+HistogramAlgorithmBase< TInputHistogram >
+::HistogramAlgorithmBase()
 {
-  m_InputHistogram = nullptr;
+  m_InputHistogram = ITK_NULLPTR;
 }
 
-template <typename TInputHistogram>
+template< typename TInputHistogram >
 void
-HistogramAlgorithmBase<TInputHistogram>::PrintSelf(std::ostream & os, Indent indent) const
+HistogramAlgorithmBase< TInputHistogram >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   itkPrintSelfObjectMacro(InputHistogram);
+
 }
 } // end of namespace itk
 

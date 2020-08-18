@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,48 +21,49 @@
 #include "itkLevelSetEvolutionNumberOfIterationsStoppingCriterion.h"
 #include "itkMath.h"
 
-int
-itkLevelSetEvolutionNumberOfIterationsStoppingCriterionTest(int, char *[])
+int itkLevelSetEvolutionNumberOfIterationsStoppingCriterionTest( int , char* [] )
 {
-  constexpr unsigned int Dimension = 2;
-  using ValueType = float;
+  const unsigned int Dimension = 2;
+  typedef float ValueType;
 
-  using LevelSetType = itk::WhitakerSparseLevelSetImage<ValueType, Dimension>;
+  typedef itk::WhitakerSparseLevelSetImage< ValueType, Dimension > LevelSetType;
 
-  using LevelSetContainerType = itk::LevelSetContainerBase<itk::IdentifierType, LevelSetType>;
+  typedef itk::LevelSetContainerBase< itk::IdentifierType, LevelSetType >
+                                                            LevelSetContainerType;
 
-  using StoppingCriterionType = itk::LevelSetEvolutionNumberOfIterationsStoppingCriterion<LevelSetContainerType>;
+  typedef itk::LevelSetEvolutionNumberOfIterationsStoppingCriterion< LevelSetContainerType >
+      StoppingCriterionType;
   StoppingCriterionType::Pointer criterion = StoppingCriterionType::New();
-  criterion->SetNumberOfIterations(5);
+  criterion->SetNumberOfIterations( 5 );
 
-  if (criterion->GetNumberOfIterations() != 5)
-  {
-    return EXIT_FAILURE;
-  }
-
-  criterion->SetRMSChangeAccumulator(0.1);
-
-  if (itk::Math::NotExactlyEquals(criterion->GetRMSChangeAccumulator(), 0.1))
-  {
-    return EXIT_FAILURE;
-  }
-
-  for (StoppingCriterionType::IterationIdType iter = 0; iter < 10; iter++)
-  {
-    criterion->SetCurrentIteration(iter);
-
-    if (criterion->GetCurrentIteration() != iter)
+  if( criterion->GetNumberOfIterations() != 5 )
     {
-      return EXIT_FAILURE;
+    return EXIT_FAILURE;
     }
 
-    if (criterion->IsSatisfied() != (iter >= 5))
-    {
-      return EXIT_FAILURE;
-    }
-  }
+  criterion->SetRMSChangeAccumulator( 0.1 );
 
-  std::cout << "Description :" << criterion->GetDescription() << std::endl;
+  if( itk::Math::NotExactlyEquals(criterion->GetRMSChangeAccumulator(), 0.1) )
+    {
+    return EXIT_FAILURE;
+    }
+
+  for( StoppingCriterionType::IterationIdType iter = 0; iter < 10; iter++ )
+    {
+    criterion->SetCurrentIteration( iter );
+
+    if( criterion->GetCurrentIteration() != iter )
+      {
+      return EXIT_FAILURE;
+      }
+
+    if( criterion->IsSatisfied() != ( iter >= 5 ) )
+      {
+      return EXIT_FAILURE;
+      }
+    }
+
+  std::cout << "Description :" << criterion->GetDescription() <<std::endl;
 
   return EXIT_SUCCESS;
 }

@@ -1,12 +1,13 @@
 // This is core/vnl/vnl_na.h
 #ifndef vnl_na_h_
 #define vnl_na_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 
 
 #include <iosfwd>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 #include "vnl/vnl_export.h"
 
 //:
@@ -89,24 +90,21 @@ VNL_EXPORT void vnl_na_insert(std::ostream &is, float x);
 
 
 //: Wrapper around a double or float that handles streaming NA.
-template <class T>
-struct vnl_na_stream_t
+template <class T> struct VNL_TEMPLATE_EXPORT vnl_na_stream_t
 {
   T& x_;
   vnl_na_stream_t(T& x): x_(x) {}
 };
 
 //: Wrapper around a double or float that handles streaming NA.
-template <class T>
-struct vnl_na_stream_const_t
+template <class T> struct VNL_TEMPLATE_EXPORT vnl_na_stream_const_t
 {
   const T& x_;
   vnl_na_stream_const_t(const T& x): x_(x) {}
 };
 
 //: Wrap a double or float to handle streaming NA.
-template <class T>
-inline vnl_na_stream_t<T> vnl_na_stream(T& x)
+template <class T> inline vnl_na_stream_t<T> vnl_na_stream(T& x)
 {
   return vnl_na_stream_t<T>(x);
 }

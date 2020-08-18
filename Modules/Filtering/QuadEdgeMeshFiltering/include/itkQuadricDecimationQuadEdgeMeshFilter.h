@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,17 +28,16 @@ namespace itk
  * \brief Quadric decimation
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template <typename TInput, typename TOutput, typename TCriterion>
-class ITK_TEMPLATE_EXPORT QuadricDecimationQuadEdgeMeshFilter
-  : public EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>
+template< typename TInput, typename TOutput, typename TCriterion >
+class ITK_TEMPLATE_EXPORT QuadricDecimationQuadEdgeMeshFilter:
+  public EdgeDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadricDecimationQuadEdgeMeshFilter);
-
-  using Self = QuadricDecimationQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>;
+  typedef QuadricDecimationQuadEdgeMeshFilter Self;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
+  typedef EdgeDecimationQuadEdgeMeshFilter<
+    TInput, TOutput, TCriterion >             Superclass;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(QuadricDecimationQuadEdgeMeshFilter, EdgeDecimationQuadEdgeMeshFilter);
@@ -46,56 +45,57 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using InputMeshType = TInput;
-  using InputMeshPointer = typename InputMeshType::Pointer;
+  typedef TInput                          InputMeshType;
+  typedef typename InputMeshType::Pointer InputMeshPointer;
 
-  using OutputMeshType = TOutput;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputCoordType = typename OutputPointType::CoordRepType;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputEdgeCellType = typename OutputMeshType::EdgeCellType;
-  using OutputCellsContainerIterator = typename OutputMeshType::CellsContainerIterator;
-  using OutputPointsContainerPointer = typename OutputMeshType::PointsContainerPointer;
-  using OutputPointsContainerIterator = typename OutputMeshType::PointsContainerIterator;
+  typedef TOutput                                          OutputMeshType;
+  typedef typename OutputMeshType::Pointer                 OutputMeshPointer;
+  typedef typename OutputMeshType::PointIdentifier         OutputPointIdentifier;
+  typedef typename OutputMeshType::PointType               OutputPointType;
+  typedef typename OutputPointType::CoordRepType           OutputCoordType;
+  typedef typename OutputMeshType::QEType                  OutputQEType;
+  typedef typename OutputMeshType::EdgeCellType            OutputEdgeCellType;
+  typedef typename OutputMeshType::CellsContainerIterator  OutputCellsContainerIterator;
+  typedef typename OutputMeshType::PointsContainerPointer  OutputPointsContainerPointer;
+  typedef typename OutputMeshType::PointsContainerIterator OutputPointsContainerIterator;
 
-  static constexpr unsigned int OutputPointDimension = OutputMeshType::PointDimension;
+  itkStaticConstMacro(OutputPointDimension, unsigned int, OutputMeshType::PointDimension);
 
-  using CriterionType = TCriterion;
-  using MeasureType = typename CriterionType::MeasureType;
+  typedef TCriterion                          CriterionType;
+  typedef typename CriterionType::MeasureType MeasureType;
 
-  using PriorityType = typename Superclass::PriorityType;
-  using PriorityQueueItemType = typename Superclass::PriorityQueueItemType;
-  using PriorityQueueType = typename Superclass::PriorityQueueType;
-  using PriorityQueuePointer = typename Superclass::PriorityQueuePointer;
+  typedef typename Superclass::PriorityType          PriorityType;
+  typedef typename Superclass::PriorityQueueItemType PriorityQueueItemType;
+  typedef typename Superclass::PriorityQueueType     PriorityQueueType;
+  typedef typename Superclass::PriorityQueuePointer  PriorityQueuePointer;
 
-  using QueueMapType = typename Superclass::QueueMapType;
-  using QueueMapIterator = typename Superclass::QueueMapIterator;
+  typedef typename Superclass::QueueMapType     QueueMapType;
+  typedef typename Superclass::QueueMapIterator QueueMapIterator;
 
-  using OperatorType = typename Superclass::OperatorType;
-  using OperatorPointer = typename Superclass::OperatorPointer;
+  typedef typename Superclass::OperatorType    OperatorType;
+  typedef typename Superclass::OperatorPointer OperatorPointer;
 
-  using QuadricElementType = QuadEdgeMeshDecimationQuadricElementHelper<OutputPointType>;
+  typedef QuadEdgeMeshDecimationQuadricElementHelper< OutputPointType >
+  QuadricElementType;
 
-  using QuadricElementMapType = std::map<OutputPointIdentifier, QuadricElementType>;
+  typedef std::map< OutputPointIdentifier, QuadricElementType >
+  QuadricElementMapType;
 
-  using QuadricElementMapIterator = typename QuadricElementMapType::iterator;
+  typedef typename QuadricElementMapType::iterator QuadricElementMapIterator;
 
 protected:
   /** \brief Constructor */
-  QuadricDecimationQuadEdgeMeshFilter() = default;
+  QuadricDecimationQuadEdgeMeshFilter();
 
   /** \brief Destructor */
-  ~QuadricDecimationQuadEdgeMeshFilter() override = default;
+  virtual ~QuadricDecimationQuadEdgeMeshFilter() ITK_OVERRIDE;
 
   /** \brief Compute the quadric error at the origin of the edge
    *  \param[in] iEdge input edge
    *  \param[in,out] oQ quadric element to be modified
    *  \param[in] outputMesh mesh to be processed
    */
-  inline void
-  QuadricAtOrigin(OutputQEType * iEdge, QuadricElementType & oQ, OutputMeshType * outputMesh)
+  inline void QuadricAtOrigin(OutputQEType *iEdge, QuadricElementType & oQ, OutputMeshType *outputMesh)
   {
     OutputPointIdentifier id[3];
 
@@ -105,10 +105,10 @@ protected:
 
     OutputPointType p[3];
 
-    for (int i = 0; i < 3; i++)
-    {
+    for ( int i = 0; i < 3; i++ )
+      {
       p[i] = outputMesh->GetPoint(id[i]);
-    }
+      }
 
     oQ.AddTriangle(p[0], p[1], p[2]);
   }
@@ -117,8 +117,7 @@ protected:
    * \param[in] iEdge input edge
    * \return measure value, here the corresponding quadric error
    */
-  MeasureType
-  MeasureEdge(OutputQEType * iEdge) override
+  MeasureType MeasureEdge(OutputQEType *iEdge) ITK_OVERRIDE
   {
     OutputPointIdentifier id_org = iEdge->GetOrigin();
     OutputPointIdentifier id_dest = iEdge->GetDestination();
@@ -132,32 +131,32 @@ protected:
     mid.SetToMidPoint(org, dest);
     OutputPointType p = Q.ComputeOptimalLocation(mid);
 
-    return static_cast<MeasureType>(Q.ComputeError(p));
+    return static_cast< MeasureType >( Q.ComputeError(p) );
   }
 
   /** \brief Delete point
    * \param[in] iIdToBeDeleted id of the point to be deleted
    * \param[in] iRemaining  id of the point to be kept
    */
-  void
-  DeletePoint(const OutputPointIdentifier & iIdToBeDeleted, const OutputPointIdentifier & iRemaining) override;
+  virtual void DeletePoint(const OutputPointIdentifier & iIdToBeDeleted,
+                           const OutputPointIdentifier & iRemaining) ITK_OVERRIDE;
 
   /** \brief Compute the optimal position for a given edge iEdge
-   * \param[in] iEdge
-   * \return the optimal point location
-   */
-  OutputPointType
-  Relocate(OutputQEType * iEdge) override;
+  * \param[in] iEdge
+  * \return the optimal point location
+  */
+  OutputPointType Relocate(OutputQEType *iEdge) ITK_OVERRIDE;
 
   /** \brief Compute Quadric error for all edges */
-  void
-  Initialize() override;
+  virtual void Initialize() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadricDecimationQuadEdgeMeshFilter);
+
   QuadricElementMapType m_Quadric;
 };
-} // namespace itk
+}
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkQuadricDecimationQuadEdgeMeshFilter.hxx"
+#include "itkQuadricDecimationQuadEdgeMeshFilter.hxx"
 #endif
 #endif

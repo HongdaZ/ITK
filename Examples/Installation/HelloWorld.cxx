@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,10 +27,9 @@
 #include "itkImage.h"
 #include <iostream>
 
-int
-main()
+int main()
 {
-  using ImageType = itk::Image<unsigned short, 3>;
+  typedef itk::Image< unsigned short, 3 > ImageType;
 
   ImageType::Pointer image = ImageType::New();
 

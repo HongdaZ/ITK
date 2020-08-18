@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,69 +23,65 @@
 namespace itk
 {
 
-/**
- *\class RegistrationParameterScalesFromPhysicalShift
+/** \class RegistrationParameterScalesFromPhysicalShift
  *  \brief Registration helper class for estimating scales of
  * transform parameters a step sizes, from the maximum voxel shift
  * in physical space caused by a parameter change.
  *
  * \ingroup ITKOptimizersv4
  */
-template <typename TMetric>
-class ITK_TEMPLATE_EXPORT RegistrationParameterScalesFromPhysicalShift
-  : public RegistrationParameterScalesFromShiftBase<TMetric>
+template < typename TMetric >
+class ITK_TEMPLATE_EXPORT RegistrationParameterScalesFromPhysicalShift :
+  public RegistrationParameterScalesFromShiftBase< TMetric >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesFromPhysicalShift);
-
-  /** Standard class type aliases. */
-  using Self = RegistrationParameterScalesFromPhysicalShift;
-  using Superclass = RegistrationParameterScalesFromShiftBase<TMetric>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef RegistrationParameterScalesFromPhysicalShift        Self;
+  typedef RegistrationParameterScalesFromShiftBase< TMetric > Superclass;
+  typedef SmartPointer<Self>                                  Pointer;
+  typedef SmartPointer<const Self>                            ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RegistrationParameterScalesFromPhysicalShift, RegistrationParameterScalesFromShiftBase);
+  itkTypeMacro( RegistrationParameterScalesFromPhysicalShift, RegistrationParameterScalesFromShiftBase );
 
   /** Type of scales */
-  using ScalesType = typename Superclass::ScalesType;
+  typedef typename Superclass::ScalesType                ScalesType;
   /** Type of parameters of the optimizer */
-  using ParametersType = typename Superclass::ParametersType;
+  typedef typename Superclass::ParametersType            ParametersType;
   /** Type of float */
-  using FloatType = typename Superclass::FloatType;
+  typedef typename Superclass::FloatType                 FloatType;
 
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using JacobianType = typename Superclass::JacobianType;
-  using VirtualImageConstPointer = typename Superclass::VirtualImageConstPointer;
+  typedef typename Superclass::VirtualPointType          VirtualPointType;
+  typedef typename Superclass::VirtualIndexType          VirtualIndexType;
+  typedef typename Superclass::MovingTransformType       MovingTransformType;
+  typedef typename Superclass::FixedTransformType        FixedTransformType;
+  typedef typename Superclass::JacobianType              JacobianType;
+  typedef typename Superclass::VirtualImageConstPointer  VirtualImageConstPointer;
 
 protected:
-  RegistrationParameterScalesFromPhysicalShift() = default;
-  ~RegistrationParameterScalesFromPhysicalShift() override = default;
+  RegistrationParameterScalesFromPhysicalShift();
+  ~RegistrationParameterScalesFromPhysicalShift() ITK_OVERRIDE {};
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  ComputeSampleShifts(const ParametersType & deltaParameters, ScalesType & localShifts) override;
+  virtual void ComputeSampleShifts(const ParametersType &deltaParameters, ScalesType &localShifts) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesFromPhysicalShift);
+
   template <typename TTransform>
-  void
-  ComputeSampleShiftsInternal(const ParametersType & deltaParameters, ScalesType & localShifts);
+  void ComputeSampleShiftsInternal(const ParametersType &deltaParameters, ScalesType &localShifts);
 
-}; // class RegistrationParameterScalesFromPhysicalShift
+}; //class RegistrationParameterScalesFromPhysicalShift
 
-} // namespace itk
+}  // namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRegistrationParameterScalesFromPhysicalShift.hxx"
+#include "itkRegistrationParameterScalesFromPhysicalShift.hxx"
 #endif
 
 #endif /* itkRegistrationParameterScalesFromPhysicalShift_h */

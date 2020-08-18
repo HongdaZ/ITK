@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,28 +18,29 @@
 
 #include "itkFastMarchingThresholdStoppingCriterion.h"
 
-int
-itkFastMarchingThresholdStoppingCriterionTest(int, char *[])
+int itkFastMarchingThresholdStoppingCriterionTest( int , char * [] )
 {
-  using ImageType = itk::Image<float, 2>;
+  typedef itk::Image< float, 2> ImageType;
 
-  using ImageStoppingCriterionType = itk::FastMarchingThresholdStoppingCriterion<ImageType, ImageType>;
+  typedef itk::FastMarchingThresholdStoppingCriterion<
+      ImageType, ImageType > ImageStoppingCriterionType;
 
   ImageStoppingCriterionType::Pointer image_criterion = ImageStoppingCriterionType::New();
-  if (image_criterion.IsNull())
-  {
+  if( image_criterion.IsNull() )
+    {
     return EXIT_FAILURE;
-  }
+    }
 
-  using MeshType = itk::QuadEdgeMesh<float, 3>;
+  typedef itk::QuadEdgeMesh< float, 3 > MeshType;
 
-  using MeshStoppingCriterionType = itk::FastMarchingThresholdStoppingCriterion<MeshType, MeshType>;
+  typedef itk::FastMarchingThresholdStoppingCriterion< MeshType, MeshType >
+      MeshStoppingCriterionType;
 
   MeshStoppingCriterionType::Pointer mesh_criterion = MeshStoppingCriterionType::New();
-  if (mesh_criterion.IsNull())
-  {
+  if( mesh_criterion.IsNull() )
+    {
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

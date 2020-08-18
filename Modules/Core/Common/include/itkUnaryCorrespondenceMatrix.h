@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,17 +32,16 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TItemType>
-class ITK_TEMPLATE_EXPORT UnaryCorrespondenceMatrix
-  : public DataObject
-  , public vnl_matrix<TItemType>
+template< typename TItemType >
+class ITK_TEMPLATE_EXPORT UnaryCorrespondenceMatrix:public DataObject, public vnl_matrix< TItemType >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = UnaryCorrespondenceMatrix;
-  using Superclass = DataObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+
+  /** Standard class typedefs. */
+  typedef UnaryCorrespondenceMatrix  Self;
+  typedef DataObject                 Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,12 +50,17 @@ public:
   itkTypeMacro(UnaryCorrespondenceMatrix, DataObject);
 
 protected:
+
   /** Default Constructor. */
-  UnaryCorrespondenceMatrix() = default;
+  UnaryCorrespondenceMatrix();
 
   /** Default Destructor. */
-  ~UnaryCorrespondenceMatrix() override = default;
+  ~UnaryCorrespondenceMatrix() {}
 };
 } // end namespace itk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkUnaryCorrespondenceMatrix.hxx"
+#endif
 
 #endif

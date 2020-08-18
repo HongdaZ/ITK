@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,20 +24,13 @@
 namespace itk
 {
 
-/**
- *\class SaltAndPepperNoiseImageFilter
+/** \class SaltAndPepperNoiseImageFilter
  *
  * \brief Alter an image with fixed value impulse noise, often called salt and pepper noise.
  *
- * Salt (sensor saturation) and pepper (dead pixels) noise is a
- * special kind of impulse noise where the value of the noise is
- * either the maximum possible value in the image or its
- * minimum. This is not necessarily the maximal/minimal possible intensity
- * value based on the pixel type. For example, the native pixel type
- * for CT is a signed 16 bit integer, but only 12 bits used, so we
- * would like to set the salt and pepper values to match this smaller intensity range
- * and not the range the pixel type represents.
- * It can be modeled as:
+ * Salt and pepper noise is a special kind of impulse noise where the value
+ * of the noise is either the maximum possible value in the image or its
+ * minimum. It can be modeled as:
  *
  * \par
  * \f$ I =
@@ -63,17 +56,16 @@ namespace itk
  *
  * \ingroup ITKImageNoise
  */
-template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT SaltAndPepperNoiseImageFilter : public NoiseBaseImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage=TInputImage>
+class ITK_TEMPLATE_EXPORT SaltAndPepperNoiseImageFilter :
+  public NoiseBaseImageFilter<TInputImage,TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SaltAndPepperNoiseImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = SaltAndPepperNoiseImageFilter;
-  using Superclass = NoiseBaseImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SaltAndPepperNoiseImageFilter                    Self;
+  typedef NoiseBaseImageFilter< TInputImage,TOutputImage > Superclass;
+  typedef SmartPointer<Self>                               Pointer;
+  typedef SmartPointer<const Self>                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -81,62 +73,51 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SaltAndPepperNoiseImageFilter, NoiseBaseImageFilter);
 
-  /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageType       OutputImageType;
+  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
 
   /** Set/Get the probability of the salt and pepper noise event.
    * Defaults to 0.01. */
   itkGetConstMacro(Probability, double);
   itkSetMacro(Probability, double);
 
-  /** Set/Get the salt/high pixel value.
-   * Defaults to NumericTraits<OutputImagePixelType>::max(). */
-  itkSetMacro(SaltValue, OutputImagePixelType);
-  itkGetConstMacro(SaltValue, OutputImagePixelType);
-
-
-  /** Set/Get the pepper/low pixel value.
-   * Defaults to NumericTraits<OutputImagePixelType>::NonpositiveMin(). */
-  itkSetMacro(PepperValue, OutputImagePixelType);
-  itkGetConstMacro(PepperValue, OutputImagePixelType);
-
-
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputConvertibleToOutputCheck,
-                  (Concept::Convertible<typename TInputImage::PixelType, typename TOutputImage::PixelType>));
+                  (Concept::Convertible<typename TInputImage::PixelType,
+                                        typename TOutputImage::PixelType>) );
   /** End concept checking */
 #endif
 
 protected:
   SaltAndPepperNoiseImageFilter();
-  ~SaltAndPepperNoiseImageFilter() override = default;
+  virtual ~SaltAndPepperNoiseImageFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                            ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
-  double               m_Probability{ 0.01 };
-  OutputImagePixelType m_SaltValue;
-  OutputImagePixelType m_PepperValue;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SaltAndPepperNoiseImageFilter);
+
+  double m_Probability;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSaltAndPepperNoiseImageFilter.hxx"
+#include "itkSaltAndPepperNoiseImageFilter.hxx"
 #endif
 
 #endif

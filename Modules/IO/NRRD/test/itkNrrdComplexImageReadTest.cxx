@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,38 +20,37 @@
 #include "itkImageFileReader.h"
 #include "itkNrrdImageIO.h"
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
-int
-itkNrrdComplexImageReadTest(int ac, char * av[])
+int itkNrrdComplexImageReadTest( int ac, char* av[] )
 {
-  if (ac < 1)
-  {
+  if(ac < 1)
+    {
     std::cerr << "Usage: " << av[0] << " Input\n";
     return EXIT_FAILURE;
-  }
+    }
 
-  using PixelType = std::complex<float>;
-  using myImage = itk::Image<PixelType, 2>;
+  typedef std::complex<float>      PixelType;
+  typedef itk::Image<PixelType, 2> myImage;
 
-  using ReaderType = itk::ImageFileReader<myImage>;
+  typedef itk::ImageFileReader<myImage>  ReaderType;
 
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetImageIO(itk::NrrdImageIO::New());
+  reader->SetImageIO( itk::NrrdImageIO::New() );
 
   reader->SetFileName(av[1]);
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   myImage::Pointer image = reader->GetOutput();
 
@@ -61,9 +60,9 @@ itkNrrdComplexImageReadTest(int ac, char * av[])
   // volume is being read.  I/O errors will generate more than tiny
   // differences near representational precision.
 
-  float              err = 0;
+  float err = 0;
   myImage::IndexType coord;
-  PixelType          sample;
+  PixelType sample;
   coord[0] = 0;
   coord[1] = 0;
   sample = image->GetPixel(coord);
@@ -108,12 +107,14 @@ itkNrrdComplexImageReadTest(int ac, char * av[])
 
   double thresh = 0.00000038;
   if (err > thresh)
-  {
-    std::cout << "failure because err == " << err << "> " << thresh << std::endl;
+    {
+    std::cout << "failure because err == " << err
+              << "> " << thresh << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   else
-  {
+    {
     return EXIT_SUCCESS;
-  }
+    }
+
 }

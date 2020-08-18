@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,118 +24,123 @@
 #include "itkTestingMacros.h"
 
 
-int
-itkMorphologicalWatershedFromMarkersImageFilterTest(int argc, char * argv[])
+int itkMorphologicalWatershedFromMarkersImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 6)
-  {
+  if( argc < 6 )
+    {
     std::cerr << "Missing parameters" << std::endl;
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputImageFile"
-              << " markerImageFile"
-              << " outputImageFile"
-              << " markWatershedLine"
-              << " fullyConnected"
-              << " [ovelayOutput [alpha]]";
+    std::cerr << "Usage: " << argv[0]
+      << " inputImageFile"
+      << " markerImageFile"
+      << " outputImageFile"
+      << " markWatershedLine"
+      << " fullyConnected"
+      << " [ovelayOutput [alpha]]";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension > ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   ReaderType::Pointer reader2 = ReaderType::New();
-  reader2->SetFileName(argv[2]);
+  reader2->SetFileName( argv[2] );
 
-  using FilterType = itk::MorphologicalWatershedFromMarkersImageFilter<ImageType, ImageType>;
+  typedef itk::MorphologicalWatershedFromMarkersImageFilter< ImageType, ImageType >
+    FilterType;
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, MorphologicalWatershedFromMarkersImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter,
+    MorphologicalWatershedFromMarkersImageFilter,
+    ImageToImageFilter );
 
 
-  bool markWatershedLine = std::stoi(argv[4]);
-  ITK_TEST_SET_GET_BOOLEAN(filter, MarkWatershedLine, markWatershedLine);
+  bool markWatershedLine = atoi( argv[4] );
+  TEST_SET_GET_BOOLEAN( filter, MarkWatershedLine, markWatershedLine );
 
-  bool fullyConnected = std::stoi(argv[5]);
-  ITK_TEST_SET_GET_BOOLEAN(filter, FullyConnected, fullyConnected);
+  bool fullyConnected = atoi( argv[5] );
+  TEST_SET_GET_BOOLEAN( filter, FullyConnected, fullyConnected );
 
 
-  filter->SetInput(reader->GetOutput());
+  filter->SetInput( reader->GetOutput() );
 
   // Test the marker and input image size disagreement exception
   //
   // Create a marker image larger than the input image
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
-  ImageType::RegionType           region = reader->GetOutput()->GetLargestPossibleRegion();
+  ImageType::RegionType region = reader->GetOutput()->GetLargestPossibleRegion();
   ImageType::RegionType::SizeType size = region.GetSize();
-  for (unsigned int i = 0; i < size.GetSizeDimension(); ++i)
-  {
-    size[i] = size[i] * 2;
-  }
+  for( unsigned int i = 0; i < size.GetSizeDimension(); ++i )
+    {
+    size[i] = size[i]*2;
+    }
 
   ImageType::RegionType::IndexType index;
-  index.Fill(0);
+  index.Fill( 0 );
 
-  region.SetSize(size);
-  region.SetIndex(index);
+  region.SetSize( size );
+  region.SetIndex( index );
 
   FilterType::LabelImageType::Pointer largerMarkerImage = FilterType::LabelImageType::New();
-  largerMarkerImage->SetBufferedRegion(region);
-  largerMarkerImage->SetLargestPossibleRegion(region);
+  largerMarkerImage->SetBufferedRegion( region );
+  largerMarkerImage->SetLargestPossibleRegion( region );
   largerMarkerImage->Allocate();
 
-  filter->SetInput2(largerMarkerImage);
+  filter->SetInput2( largerMarkerImage );
 
-  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+  TRY_EXPECT_EXCEPTION( filter->Update() );
 
 
   FilterType::LabelImageType::Pointer markerImage = reader2->GetOutput();
-  filter->SetInput2(markerImage);
-  ITK_TEST_SET_GET_VALUE(markerImage, filter->GetMarkerImage());
+  filter->SetInput2( markerImage );
+  TEST_SET_GET_VALUE( markerImage, filter->GetMarkerImage() );
 
-  itk::SimpleFilterWatcher watcher(filter, "MorphologicalWatershedFromMarkersImageFilter");
+  itk::SimpleFilterWatcher watcher( filter,
+    "MorphologicalWatershedFromMarkersImageFilter" );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+  TRY_EXPECT_NO_EXCEPTION( filter->Update() );
 
 
   // Write output image
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(argv[3]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[3] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
-  if (argc > 6)
-  {
-    using RGBPixelType = itk::RGBPixel<PixelType>;
-    using RGBImageType = itk::Image<RGBPixelType, Dimension>;
-
-    using OverlayType = itk::LabelOverlayImageFilter<ImageType, ImageType, RGBImageType>;
-    OverlayType::Pointer overlay = OverlayType::New();
-    overlay->SetInput(reader->GetOutput());
-    overlay->SetLabelImage(filter->GetOutput());
-
-    using RGBWriterType = itk::ImageFileWriter<RGBImageType>;
-    RGBWriterType::Pointer rgbwriter = RGBWriterType::New();
-    rgbwriter->SetInput(overlay->GetOutput());
-    rgbwriter->SetFileName(argv[6]);
-
-    if (argc > 7)
+  if( argc > 6 )
     {
-      overlay->SetOpacity(std::stod(argv[7]));
-    }
+    typedef itk::RGBPixel< PixelType >            RGBPixelType;
+    typedef itk::Image< RGBPixelType, Dimension > RGBImageType;
 
-    ITK_TRY_EXPECT_NO_EXCEPTION(rgbwriter->Update());
-  }
+    typedef itk::LabelOverlayImageFilter< ImageType, ImageType, RGBImageType>
+      OverlayType;
+    OverlayType::Pointer overlay = OverlayType::New();
+    overlay->SetInput( reader->GetOutput() );
+    overlay->SetLabelImage( filter->GetOutput() );
+
+    typedef itk::ImageFileWriter< RGBImageType > RGBWriterType;
+    RGBWriterType::Pointer rgbwriter = RGBWriterType::New();
+    rgbwriter->SetInput( overlay->GetOutput() );
+    rgbwriter->SetFileName( argv[6] );
+
+    if( argc > 7 )
+      {
+      overlay->SetOpacity( atof( argv[7] ) );
+      }
+
+    TRY_EXPECT_NO_EXCEPTION( rgbwriter->Update() );
+    }
 
   std::cerr << "Test finished" << std::endl;
   return EXIT_SUCCESS;

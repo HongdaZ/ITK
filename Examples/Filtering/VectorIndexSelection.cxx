@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,39 +28,38 @@
 #include "itkImage.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
   // Verify the number of parameters in the command line
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile  outputImageFile component" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = itk::RGBPixel<unsigned char>;
-  using OutputPixelType = unsigned char;
-  constexpr unsigned int Dimension = 2;
+  typedef itk::RGBPixel<unsigned char>  InputPixelType;
+  typedef unsigned char                 OutputPixelType;
+  const   unsigned int                  Dimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >    InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >    OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using FilterType =
-    itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType  >     ReaderType;
+  typedef itk::VectorIndexSelectionCastImageFilter<
+                  InputImageType, OutputImageType  >  FilterType;
+  typedef itk::ImageFileWriter< OutputImageType >     WriterType;
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginCodeSnippet
   FilterType::Pointer filter = FilterType::New();
-  filter->SetIndex(std::stoi(argv[3]));
+  filter->SetIndex(atoi(argv[3]));
   // Software Guide : EndCodeSnippet
 
 
@@ -79,21 +78,21 @@ main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
   //
   // Here we recover the file names from the command line arguments
   //
-  const char * inputFilename = argv[1];
+  const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileName(inputFilename);
-  writer->SetFileName(outputFilename);
+  reader->SetFileName( inputFilename  );
+  writer->SetFileName( outputFilename );
   // Software Guide : EndCodeSnippet
 
 
@@ -108,15 +107,15 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 

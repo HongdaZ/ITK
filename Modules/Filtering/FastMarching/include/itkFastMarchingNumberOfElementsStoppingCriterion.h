@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,66 +37,64 @@ namespace itk
  *
  * \ingroup ITKFastMarching
  */
-template <typename TInput, typename TOutput>
-class FastMarchingNumberOfElementsStoppingCriterion : public FastMarchingStoppingCriterionBase<TInput, TOutput>
+template< typename TInput, typename TOutput >
+class FastMarchingNumberOfElementsStoppingCriterion :
+public FastMarchingStoppingCriterionBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingNumberOfElementsStoppingCriterion);
-
-  using Self = FastMarchingNumberOfElementsStoppingCriterion;
-  using Superclass = FastMarchingStoppingCriterionBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef FastMarchingNumberOfElementsStoppingCriterion         Self;
+  typedef FastMarchingStoppingCriterionBase< TInput, TOutput >  Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FastMarchingNumberOfElementsStoppingCriterion, FastMarchingStoppingCriterionBase);
+  itkTypeMacro(FastMarchingNumberOfElementsStoppingCriterion,
+                FastMarchingStoppingCriterionBase );
 
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using NodeType = typename Superclass::NodeType;
+  typedef typename Superclass::OutputPixelType  OutputPixelType;
+  typedef typename Superclass::NodeType         NodeType;
 
   /** Get/set the threshold used by the stopping criteria. */
-  itkSetMacro(TargetNumberOfElements, IdentifierType);
-  itkGetMacro(TargetNumberOfElements, IdentifierType);
+  itkSetMacro( TargetNumberOfElements, IdentifierType );
+  itkGetMacro( TargetNumberOfElements, IdentifierType );
 
-  bool
-  IsSatisfied() const override
+  bool IsSatisfied() const ITK_OVERRIDE
   {
-    return (this->m_CurrentNumberOfElements >= this->m_TargetNumberOfElements);
+    return ( this->m_CurrentNumberOfElements >= this->m_TargetNumberOfElements );
   }
 
-  std::string
-  GetDescription() const override
+  std::string GetDescription() const ITK_OVERRIDE
   {
     return "Current Number of Elements >= Target Number of Elements";
   }
 
 protected:
-  FastMarchingNumberOfElementsStoppingCriterion()
-    : Superclass()
-    , m_CurrentNumberOfElements(NumericTraits<IdentifierType>::ZeroValue())
-    , m_TargetNumberOfElements(NumericTraits<IdentifierType>::ZeroValue())
+  FastMarchingNumberOfElementsStoppingCriterion() : Superclass(),
+    m_CurrentNumberOfElements( NumericTraits< IdentifierType >::ZeroValue() ),
+    m_TargetNumberOfElements( NumericTraits< IdentifierType >::ZeroValue() )
   {}
 
-  ~FastMarchingNumberOfElementsStoppingCriterion() override = default;
+  ~FastMarchingNumberOfElementsStoppingCriterion() ITK_OVERRIDE {}
 
-  IdentifierType m_CurrentNumberOfElements;
-  IdentifierType m_TargetNumberOfElements;
+  IdentifierType  m_CurrentNumberOfElements;
+  IdentifierType  m_TargetNumberOfElements;
 
-  void
-  SetCurrentNode(const NodeType &) override
+  void SetCurrentNode( const NodeType& ) ITK_OVERRIDE
   {
     ++this->m_CurrentNumberOfElements;
   }
 
-  void
-  Reset() override
+  void Reset() ITK_OVERRIDE
   {
-    this->m_CurrentNumberOfElements = NumericTraits<IdentifierType>::ZeroValue();
+    this->m_CurrentNumberOfElements = NumericTraits< IdentifierType >::ZeroValue();
   }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingNumberOfElementsStoppingCriterion);
 };
 
-} // namespace itk
+}
 #endif // itkFastMarchingNumberOfElementsStoppingCriterion_h

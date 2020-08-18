@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,52 +49,45 @@ namespace itk
  * \ingroup IOFilters
  * \ingroup ITKIOImageBase
  */
-class ITKIOImageBase_EXPORT StreamingImageIOBase : public ImageIOBase
+class ITKIOImageBase_EXPORT StreamingImageIOBase:public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StreamingImageIOBase);
-
-  /** Standard class type aliases. */
-  using Self = StreamingImageIOBase;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef StreamingImageIOBase Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(StreamingImageIOBase, ImageIOBase);
 
   // see super class for documentation
   //
-  // overridden to return true
-  bool
-  CanStreamWrite() override;
+  // overidden to return true
+  virtual bool CanStreamWrite(void) ITK_OVERRIDE;
 
   // see super class for documentation
   //
-  // overridden to return true
-  bool
-  CanStreamRead() override;
+  // overidden to return true
+  virtual bool CanStreamRead(void) ITK_OVERRIDE;
 
   // see super class for documentation
   //
   // If UseStreamedReading is true, then returned region is the
   // requested region parameter.
-  ImageIORegion
-  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const override;
+  virtual ImageIORegion GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const ITK_OVERRIDE;
 
   // see super class for documentation
   //
   // Verifies the set file name meets the pasting requirements, then calls
   // GetActualNumberOfSplitsForWritingCanStreamWrite
-  unsigned int
-  GetActualNumberOfSplitsForWriting(unsigned int          numberOfRequestedSplits,
-                                    const ImageIORegion & pasteRegion,
-                                    const ImageIORegion & largestPossibleRegion) override;
+  virtual unsigned int GetActualNumberOfSplitsForWriting(unsigned int numberOfRequestedSplits,
+                                                         const ImageIORegion & pasteRegion,
+                                                         const ImageIORegion & largestPossibleRegion) ITK_OVERRIDE;
 
 protected:
   StreamingImageIOBase();
   // virtual ~StreamingImageIOBase(); not needed
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** \brief Returns true if GetIORegion is not the same size as the
    * largest region give by GetNumberOfDimensions.
@@ -103,24 +96,21 @@ protected:
    * file. With out regaurd to the dimensions of either, if the
    * images represent the same region then false is returned.
    */
-  virtual bool
-  RequestedToStream() const;
+  virtual bool RequestedToStream() const;
 
   /** \brief Reimplemented from super class to get around 2GB
    * read/write limitation
    *
    * \todo Move this method to itk::ImageIOBase
    */
-  virtual bool
-  ReadBufferAsBinary(std::istream & is, void * buffer, SizeType num);
+  virtual bool ReadBufferAsBinary(std::istream & is, void *buffer, SizeType num);
 
   /** \brief Reimplemented from super class to get around 2GB
    * read/write limitation.
    *
    * \todo Move this methods to itk::ImageIOBase
    */
-  virtual bool
-  WriteBufferAsBinary(std::ostream & is, const void * buffer, SizeType num);
+  virtual bool WriteBufferAsBinary(std::ostream & is, const void *buffer, SizeType num);
 
   /** \brief Reads the set IORegion from os into buffer
    *
@@ -138,8 +128,7 @@ protected:
    * m_IORegion. This means that the image file could be broken into
    * slices, but not blocks for this methods to be used.
    */
-  virtual bool
-  StreamReadBufferAsBinary(std::istream & os, void * buffer);
+  virtual bool StreamReadBufferAsBinary(std::istream & os, void *buffer);
 
   /** \brief Writes the set IORegion from buffer into os
    *
@@ -152,22 +141,19 @@ protected:
    * is located in the file. It usesy m_IORegion determin the requested
    * region to written.
    */
-  virtual bool
-  StreamWriteBufferAsBinary(std::ostream & os, const void * buffer);
+  virtual bool StreamWriteBufferAsBinary(std::ostream & os, const void *buffer);
 
   /** \brief Returns the size of the header in the file */
-  virtual SizeType
-  GetHeaderSize() const = 0;
+  virtual SizeType GetHeaderSize(void) const = 0;
 
   /** \brief Returns the byte offset into the file where the data is located
    *
    * The default implementation is to return the header size.
    */
-  virtual SizeType
-  GetDataPosition() const
-  {
-    return this->GetHeaderSize();
-  }
+  virtual SizeType GetDataPosition(void) const { return this->GetHeaderSize(); }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(StreamingImageIOBase);
 };
 } // namespace itk
 

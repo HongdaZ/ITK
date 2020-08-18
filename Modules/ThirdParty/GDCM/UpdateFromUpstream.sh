@@ -8,7 +8,7 @@ readonly name="GDCM"
 readonly ownership="GDCM Upstream <gdcm-developers@lists.sourceforge.net>"
 readonly subtree="Modules/ThirdParty/GDCM/src/gdcm"
 readonly repo="http://git.code.sf.net/p/gdcm/gdcm.git"
-readonly tag="release"
+readonly tag="release-2-8"
 readonly shortlog=false
 readonly paths="
   CMake/UseCopyright.cmake
@@ -17,6 +17,7 @@ readonly paths="
   CMakeLists.txt
   Copyright.txt
   Source
+  Utilities/C99
   Utilities/CMakeLists.txt
   Utilities/gdcmcharls
   Utilities/gdcm_charls.h
@@ -39,9 +40,6 @@ readonly paths="
 
 extract_source () {
     git_archive
-    pushd "${extractdir}/${name}-reduced"
-    echo "* -whitespace" > .gitattributes
-    popd
 }
 
 . "${BASH_SOURCE%/*}/../../../Utilities/Maintenance/update-third-party.bash"

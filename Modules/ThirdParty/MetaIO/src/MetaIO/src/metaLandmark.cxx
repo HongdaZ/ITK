@@ -16,8 +16,8 @@
 
 #include "metaLandmark.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -54,7 +54,7 @@ MetaLandmark::
 MetaLandmark()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaLandmark()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   Clear();
 }
@@ -64,7 +64,7 @@ MetaLandmark::
 MetaLandmark(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaLandmark()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaLandmark()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   Clear();
   Read(_headerName);
@@ -75,7 +75,7 @@ MetaLandmark::
 MetaLandmark(const MetaLandmark *_tube)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaLandmark()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaLandmark()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   Clear();
   CopyInfo(_tube);
@@ -88,7 +88,7 @@ MetaLandmark::
 MetaLandmark(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaLandmark()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   Clear();
 }
@@ -106,11 +106,11 @@ void MetaLandmark::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "PointDim = " << m_PointDim << std::endl;
-  std::cout << "NPoints = " << m_NPoints << std::endl;
+  METAIO_STREAM::cout << "PointDim = " << m_PointDim << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NPoints = " << m_NPoints << METAIO_STREAM::endl;
   char str[255];
   MET_TypeToString(m_ElementType, str);
-  std::cout << "ElementType = " << str << std::endl;
+  METAIO_STREAM::cout << "ElementType = " << str << METAIO_STREAM::endl;
 }
 
 void MetaLandmark::
@@ -128,7 +128,7 @@ PointDim(const char* pointDim)
 }
 
 const char* MetaLandmark::
-PointDim() const
+PointDim(void) const
 {
   return m_PointDim;
 }
@@ -140,7 +140,7 @@ NPoints(int npnt)
 }
 
 int MetaLandmark::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
@@ -148,23 +148,19 @@ NPoints() const
 
 /** Clear tube information */
 void MetaLandmark::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaLandmark: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Landmark");
-
-  if(META_DEBUG) std::cout << "MetaLandmark: Clear: m_NPoints" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: Clear: m_NPoints" << METAIO_STREAM::endl;
   // Delete the list of pointers to tubes.
   PointListType::iterator it = m_PointList.begin();
   while(it != m_PointList.end())
-{
+  {
     LandmarkPnt* pnt = *it;
     ++it;
     delete pnt;
-}
+  }
   m_PointList.clear();
   m_NPoints = 0;
   strcpy(m_PointDim, "x y z red green blue alpha");
@@ -173,16 +169,16 @@ Clear()
 
 /** Destroy tube information */
 void MetaLandmark::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaLandmark::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaLandmark: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -209,7 +205,7 @@ M_SetupReadFields()
 }
 
 MET_ValueEnumType MetaLandmark::
-ElementType() const
+ElementType(void) const
 {
   return m_ElementType;
 }
@@ -222,8 +218,9 @@ ElementType(MET_ValueEnumType _elementType)
 
 
 void MetaLandmark::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Landmark");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -235,12 +232,12 @@ M_SetupWriteFields()
   m_Fields.push_back(mF);
 
   if(strlen(m_PointDim)>0)
-{
+  {
     mF = new MET_FieldRecordType;
     MET_InitWriteField(mF, "PointDim", MET_STRING,
                            strlen(m_PointDim),m_PointDim);
     m_Fields.push_back(mF);
-}
+  }
 
   m_NPoints = (int)m_PointList.size();
   mF = new MET_FieldRecordType;
@@ -256,54 +253,54 @@ M_SetupWriteFields()
 
 
 bool MetaLandmark::
-M_Read()
+M_Read(void)
 {
-  if(META_DEBUG) std::cout << "MetaLandmark: M_Read: Loading Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: M_Read: Loading Header" << METAIO_STREAM::endl;
 
   if(!MetaObject::M_Read())
-{
-    std::cout << "MetaLandmark: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaLandmark: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
-  if(META_DEBUG) std::cout << "MetaLandmark: M_Read: Parsing Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaLandmark: M_Read: Parsing Header" << METAIO_STREAM::endl;
 
   MET_FieldRecordType * mF;
 
   mF = MET_GetFieldRecord("NPoints", &m_Fields);
   if(mF->defined)
-{
+  {
     m_NPoints= (int)mF->value[0];
-}
+  }
 
   mF = MET_GetFieldRecord("ElementType", &m_Fields);
   if(mF->defined)
-{
+  {
     MET_StringToType((char *)(mF->value), &m_ElementType);
-}
+  }
 
 
   mF = MET_GetFieldRecord("PointDim", &m_Fields);
   if(mF->defined)
-{
+  {
     strcpy(m_PointDim,(char *)(mF->value));
-}
+  }
 
   int* posDim= new int[m_NDims];
   int i;
   for(i= 0; i < m_NDims; i++)
-{
+  {
     posDim[i] = -1;
-}
+  }
 
   int pntDim;
-  char** pntVal = nullptr;
+  char** pntVal = NULL;
   MET_StringToWordArray(m_PointDim, &pntDim, &pntVal);
 
 
   int j;
   for(j = 0; j < pntDim; j++)
-{
+  {
     if(!strcmp(pntVal[j], "x") || !strcmp(pntVal[j], "X"))
     {
       posDim[0] = j;
@@ -317,7 +314,7 @@ M_Read()
       posDim[2] = j;
     }
 
-}
+  }
 
   for(i=0;i<pntDim;i++)
     {
@@ -328,20 +325,20 @@ M_Read()
   float v[16];
 
   if(m_BinaryData)
-{
+  {
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
-    std::streamsize readSize = m_NPoints*(m_NDims+4)*elementSize;
+    METAIO_STL::streamsize readSize = m_NPoints*(m_NDims+4)*elementSize;
 
     char* _data = new char[static_cast<size_t>(readSize)];
     m_ReadStream->read((char *)_data, readSize);
 
-    std::streamsize gc = m_ReadStream->gcount();
+    METAIO_STL::streamsize gc = m_ReadStream->gcount();
     if(gc != readSize)
     {
-      std::cout << "MetaLandmark: m_Read: data not read completely"
-                << std::endl;
-      std::cout << "   ideal = " << readSize << " : actual = " << gc << std::endl;
+      METAIO_STREAM::cout << "MetaLandmark: m_Read: data not read completely"
+                << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc << METAIO_STREAM::endl;
       delete [] _data;
       delete [] posDim;
       return false;
@@ -383,9 +380,9 @@ M_Read()
       m_PointList.push_back(pnt);
     }
     delete [] _data;
-}
+  }
   else
-{
+  {
     for(j=0; j<(int)m_NPoints; j++)
     {
       LandmarkPnt* pnt = new LandmarkPnt(m_NDims);
@@ -416,7 +413,7 @@ M_Read()
     {
       c = static_cast<char>(m_ReadStream->get());// to avoid unrecognize charactere
     }
-}
+  }
 
   delete [] posDim;
   return true;
@@ -424,18 +421,18 @@ M_Read()
 
 
 bool MetaLandmark::
-M_Write()
+M_Write(void)
 {
 
   if(!MetaObject::M_Write())
-{
-    std::cout << "MetaLandmark: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaLandmark: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
   /** Then copy all points */
   if(m_BinaryData)
-{
+  {
     PointListType::const_iterator it = m_PointList.begin();
     PointListType::const_iterator itEnd = m_PointList.end();
     int elementSize;
@@ -464,9 +461,9 @@ M_Write()
     m_WriteStream->write((char *)data,(m_NDims+4)*m_NPoints*elementSize);
     m_WriteStream->write("\n",1);
     delete [] data;
-}
+  }
   else
-{
+  {
     PointListType::const_iterator it = m_PointList.begin();
     PointListType::const_iterator itEnd = m_PointList.end();
 
@@ -483,10 +480,10 @@ M_Write()
         *m_WriteStream << (*it)->m_Color[d] << " ";
       }
 
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
     }
-}
+  }
 
   return true;
 

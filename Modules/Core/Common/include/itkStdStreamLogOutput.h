@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 
-#include <mutex>
+#include "itkSimpleFastMutexLock.h"
 #include "itkLogOutput.h"
 
 namespace itk
@@ -39,17 +39,18 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT StdStreamLogOutput : public LogOutput
+class ITKCommon_EXPORT StdStreamLogOutput:public LogOutput
 {
 public:
-  using Self = StdStreamLogOutput;
-  using Superclass = LogOutput;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
 
-  using StreamType = std::ostream;
+  typedef StdStreamLogOutput         Self;
+  typedef LogOutput                  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using StreamPointerType = std::ostream *;
+  typedef std::ostream StreamType;
+
+  typedef std::ostream *StreamPointerType;
 
   itkTypeMacro(StdStreamLogOutput, LogOutput);
 
@@ -58,40 +59,35 @@ public:
   itkGetConstMacro(Stream, StreamPointerType);
 
   /** Set a standard stream pointer */
-  void
-  SetStream(StreamType & Stream);
+  void SetStream(StreamType & Stream);
 
   /** flush a buffer */
-  void
-  Flush() override;
+  virtual void Flush() ITK_OVERRIDE;
 
   /** Write to multiple outputs */
-  void
-  Write(double timestamp) override;
+  virtual void Write(double timestamp) ITK_OVERRIDE;
 
   /** Write to a buffer */
-  void
-  Write(std::string const & content) override;
+  virtual void Write(std::string const & content) ITK_OVERRIDE;
 
   /** Write to a buffer */
-  void
-  Write(std::string const & content, double timestamp) override;
+  virtual void Write(std::string const & content, double timestamp) ITK_OVERRIDE;
 
 protected:
   /** Constructor */
   StdStreamLogOutput();
 
   /** Destructor */
-  ~StdStreamLogOutput() override;
+  virtual ~StdStreamLogOutput() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   StreamPointerType m_Stream;
 
-  std::mutex m_Mutex;
+  SimpleFastMutexLock m_Mutex;
 };
-} // namespace itk
+}
 
-#endif // itkStdStreamLogOutput_h
+#endif //itkStdStreamLogOutput_h

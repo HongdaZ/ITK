@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,52 +25,52 @@
 
 namespace itk
 {
-/**
- *\class LevelSetDomainPartitionBase
+/** \class LevelSetDomainPartitionBase
  *
  * \brief Helper class used to partition domain and efficiently compute overlap.
  * \ingroup ITKLevelSetsv4
  */
-template <typename TDomain>
+template< typename TDomain >
 class ITK_TEMPLATE_EXPORT LevelSetDomainPartitionBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionBase);
 
-  using Self = LevelSetDomainPartitionBase;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef LevelSetDomainPartitionBase           Self;
+  typedef Object                                Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
 
   itkTypeMacro(LevelSetDomainPartitionBase, LightObject);
 
   /** Get/Set the number of level set functions */
-  itkSetMacro(NumberOfLevelSetFunctions, IdentifierType);
-  itkGetMacro(NumberOfLevelSetFunctions, IdentifierType);
+  itkSetMacro( NumberOfLevelSetFunctions, IdentifierType );
+  itkGetMacro( NumberOfLevelSetFunctions, IdentifierType );
 
-  virtual void
-  PopulateListDomain() = 0;
+  virtual void PopulateListDomain() = 0;
 
 protected:
+
   /** \brief Constructor */
   LevelSetDomainPartitionBase();
 
   /** \brief Destructor */
-  ~LevelSetDomainPartitionBase() override = default;
+  virtual ~LevelSetDomainPartitionBase() ITK_OVERRIDE;
 
-  virtual void
-  AllocateListDomain() = 0;
+  virtual void AllocateListDomain() = 0;
 
-  using IdentifierListType = std::list<IdentifierType>;
-  using IdentifierListIterator = typename IdentifierListType::iterator;
-  using IdentifierListConstIterator = typename IdentifierListType::const_iterator;
+  typedef std::list< IdentifierType >                 IdentifierListType;
+  typedef typename IdentifierListType::iterator       IdentifierListIterator;
+  typedef typename IdentifierListType::const_iterator IdentifierListConstIterator;
 
   IdentifierType m_NumberOfLevelSetFunctions;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionBase);
 };
-} // end namespace itk
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLevelSetDomainPartitionBase.hxx"
+#include "itkLevelSetDomainPartitionBase.hxx"
 #endif
 
 #endif

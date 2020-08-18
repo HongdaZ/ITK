@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,27 +25,6 @@
 
 namespace itk
 {
-/** \class ObjectStoreEnums
- *
- * \brief enums for ObjectStore
- *
- * \ingroup ITKCommon
- */
-class ObjectStoreEnums
-{
-public:
-  /**\class GrowthStrategy
-   * \ingroup ITKCommon
-   * Type of memory allocation strategy */
-  enum class GrowthStrategy : uint8_t
-  {
-    LINEAR_GROWTH = 0,
-    EXPONENTIAL_GROWTH = 1
-  };
-};
-extern ITKCommon_EXPORT std::ostream &
-                        operator<<(std::ostream & out, const ObjectStoreEnums::GrowthStrategy value);
-
 /** \class ObjectStore
  * \brief A specialized memory management object for allocating and destroying
  * contiguous blocks of objects.
@@ -80,17 +59,15 @@ extern ITKCommon_EXPORT std::ostream &
  * serious problems.
  * \ingroup ITKCommon
  */
-template <typename TObjectType>
-class ITK_TEMPLATE_EXPORT ObjectStore : public Object
+template< typename TObjectType >
+class ITK_TEMPLATE_EXPORT ObjectStore:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectStore);
-
-  /** Standard type alias. */
-  using Self = ObjectStore;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs. */
+  typedef ObjectStore                Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -99,27 +76,21 @@ public:
   itkTypeMacro(ObjectStore, Object);
 
   /** Type of the objects in storage. */
-  using ObjectType = TObjectType;
+  typedef TObjectType ObjectType;
 
   /** Type of list for storing pointers to free memory. */
-  using FreeListType = std::vector<ObjectType *>;
+  typedef std::vector< ObjectType * > FreeListType;
 
-  using GrowthStrategyEnum = ObjectStoreEnums::GrowthStrategy;
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr GrowthStrategyEnum LINEAR_GROWTH = GrowthStrategyEnum::LINEAR_GROWTH;
-  static constexpr GrowthStrategyEnum EXPONENTIAL_GROWTH = GrowthStrategyEnum::EXPONENTIAL_GROWTH;
-#endif
+  /** Type of memory allocation strategy */
+  typedef enum { LINEAR_GROWTH = 0, EXPONENTIAL_GROWTH = 1 } GrowthStrategyType;
+
   /** Borrow a pointer to an object from the memory store. */
-  ObjectType *
-  Borrow();
+  ObjectType * Borrow();
 
   /** Return a pointer to the memory store for reuse. WARNING: The ObjectStore
    *  assumes a pointer is returned exactly once after each time it has been
    *  borrowed. */
-  void
-  Return(ObjectType * p);
+  void Return(ObjectType *p);
 
   /** Returns the size of the container.  This is not the number of objects
    *  available, but the total number of objects allocated. */
@@ -128,76 +99,60 @@ public:
   /** Ensures that there are at least n elements allocated in the storage
    *  container.  Will not shrink the container, but may enlarge the
    *   container. */
-  void
-  Reserve(SizeValueType n);
+  void Reserve(SizeValueType n);
 
   /** Attempts to free memory that is not in use and shrink the size of the
    *  container.  Not guaranteed to do anything. */
-  void
-  Squeeze();
+  void Squeeze();
 
   /** Frees all memory in the container */
-  void
-  Clear();
+  void Clear();
 
   /** Set/Get the linear growth size */
   itkSetMacro(LinearGrowthSize, SizeValueType);
   itkGetConstMacro(LinearGrowthSize, SizeValueType);
 
   /** Set/Get the growth strategy. */
-  itkSetEnumMacro(GrowthStrategy, GrowthStrategyEnum);
-  itkGetConstMacro(GrowthStrategy, GrowthStrategyEnum);
+  itkSetMacro(GrowthStrategy, GrowthStrategyType);
+  itkGetConstMacro(GrowthStrategy, GrowthStrategyType);
 
   /** Set growth strategy to exponential */
-  void
-  SetGrowthStrategyToExponential()
-  {
-    this->SetGrowthStrategy(GrowthStrategyEnum::EXPONENTIAL_GROWTH);
-  }
+  void SetGrowthStrategyToExponential()
+  { this->SetGrowthStrategy(EXPONENTIAL_GROWTH); }
 
   /** Set growth strategy to linear */
-  void
-  SetGrowthStrategyToLinear()
-  {
-    this->SetGrowthStrategy(GrowthStrategyEnum::LINEAR_GROWTH);
-  }
+  void SetGrowthStrategyToLinear()
+  { this->SetGrowthStrategy(LINEAR_GROWTH); }
 
 protected:
   ObjectStore();
-  ~ObjectStore() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ObjectStore() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Returns a new size to grow. */
-  SizeValueType
-  GetGrowthSize();
+  SizeValueType GetGrowthSize();
 
-  struct MemoryBlock
-  {
-    MemoryBlock()
-      : Begin(0)
-    {}
+  struct MemoryBlock {
+    MemoryBlock():Size(0), Begin(0) {}
 
-    MemoryBlock(SizeValueType n)
-      : Size(n)
-    {
-      Begin = new ObjectType[n];
-    }
+    MemoryBlock(SizeValueType n):Size(n)
+    { Begin = new ObjectType[n];  }
 
-    ~MemoryBlock() = default; // Purposely does *not* free memory
+    ~MemoryBlock()  {}   // Purposely does *not* free memory
 
-    void
-    Delete()
+    void Delete()
     {
       delete[] Begin;
     }
 
-    ObjectType *  Begin;
-    SizeValueType Size{ 0 };
+    ObjectType *Begin;
+    SizeValueType Size;
   };
 
 private:
-  GrowthStrategyEnum m_GrowthStrategy;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectStore);
+
+  GrowthStrategyType m_GrowthStrategy;
 
   SizeValueType m_Size;
   SizeValueType m_LinearGrowthSize;
@@ -206,13 +161,12 @@ private:
   FreeListType m_FreeList;
 
   /** A list of MemoryBlocks that have been allocated. */
-  std::vector<MemoryBlock> m_Store;
+  std::vector< MemoryBlock > m_Store;
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkObjectStore.hxx"
+#include "itkObjectStore.hxx"
 #endif
 
 #endif

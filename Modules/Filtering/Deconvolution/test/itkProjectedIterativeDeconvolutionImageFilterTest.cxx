@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,21 +21,23 @@
 #include "itkProjectedIterativeDeconvolutionImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
 
-int
-itkProjectedIterativeDeconvolutionImageFilterTest(int, char *[])
+int itkProjectedIterativeDeconvolutionImageFilterTest(int, char* [])
 {
   // Declare the image type
-  using ImageType = itk::Image<float, 2>;
+  typedef itk::Image<float, 2> ImageType;
 
   // Declare the base deconvolution filter choice
-  using BaseDeconvolutionFilterType = itk::LandweberDeconvolutionImageFilter<ImageType>;
+  typedef itk::LandweberDeconvolutionImageFilter< ImageType >
+    BaseDeconvolutionFilterType;
 
   // Declare a projected version of the base deconvolution image filter
-  using ProjectedDeconvolutionFilterType = itk::ProjectedIterativeDeconvolutionImageFilter<BaseDeconvolutionFilterType>;
+  typedef itk::ProjectedIterativeDeconvolutionImageFilter< BaseDeconvolutionFilterType >
+    ProjectedDeconvolutionFilterType;
 
   // Just instantiate the filter and print it
-  ProjectedDeconvolutionFilterType::Pointer deconvolutionFilter = ProjectedDeconvolutionFilterType::New();
-  deconvolutionFilter->Print(std::cout);
+  ProjectedDeconvolutionFilterType::Pointer deconvolutionFilter =
+    ProjectedDeconvolutionFilterType::New();
+  deconvolutionFilter->Print( std::cout );
 
   itk::SimpleFilterWatcher watcher(deconvolutionFilter);
 

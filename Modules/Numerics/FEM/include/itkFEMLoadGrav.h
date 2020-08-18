@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,20 +40,20 @@ namespace fem
 class ITKFEM_EXPORT LoadGrav : public LoadElement
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LoadGrav;
-  using Superclass = LoadElement;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LoadGrav                 Self;
+  typedef LoadElement              Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LoadGrav, LoadElement);
 
-  virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float>) = 0;
+  virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float> ) = 0;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+
 };
 
 /**
@@ -67,11 +67,11 @@ protected:
 class ITKFEM_EXPORT LoadGravConst : public LoadGrav
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LoadGravConst;
-  using Superclass = LoadGrav;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LoadGravConst            Self;
+  typedef LoadGrav                 Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
@@ -81,36 +81,31 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
-  vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float>) override;
+  virtual vnl_vector<Float> GetGravitationalForceAtPoint(vnl_vector<Float> ) ITK_OVERRIDE;
 
   /**
    * Set the gravity force that exists at every point
    */
-  void
-  SetForce(const vnl_vector<itk::fem::Element::Float> force);
+  void SetForce(const vnl_vector<itk::fem::Element::Float> force);
 
   /**
    * Get the gravity force that exists at every point
    */
-  vnl_vector<itk::fem::Element::Float> &
-  GetForce();
-  const vnl_vector<itk::fem::Element::Float> &
-  GetForce() const;
+  vnl_vector<itk::fem::Element::Float> & GetForce();
+  const vnl_vector<itk::fem::Element::Float> & GetForce() const;
 
   /** Apply the load to the specified element */
-  void
-  ApplyLoad(Element::ConstPointer element, Element::VectorType & Fe) override;
+  virtual void ApplyLoad(Element::ConstPointer element, Element::VectorType & Fe) ITK_OVERRIDE;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   vnl_vector<Float> m_GravityForce;
 };
-} // end namespace fem
-} // end namespace itk
 
-#endif // itkFEMLoadGrav_h
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMLoadGrav_h

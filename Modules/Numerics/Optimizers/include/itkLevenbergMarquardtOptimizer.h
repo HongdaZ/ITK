@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,21 +29,16 @@ namespace itk
  *
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
- *
- * \sphinx
- * \sphinxexample{Numerics/Optimizers/LevenbergMarquardtOptimization, Levenberg-Marquardt Optimiztion}
- * \endsphinx
  */
-class ITKOptimizers_EXPORT LevenbergMarquardtOptimizer : public MultipleValuedNonLinearVnlOptimizer
+class ITKOptimizers_EXPORT LevenbergMarquardtOptimizer:
+  public MultipleValuedNonLinearVnlOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevenbergMarquardtOptimizer);
-
-  /** Standard "Self" type alias. */
-  using Self = LevenbergMarquardtOptimizer;
-  using Superclass = MultipleValuedNonLinearVnlOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef LevenbergMarquardtOptimizer         Self;
+  typedef MultipleValuedNonLinearVnlOptimizer Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,56 +46,49 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(LevenbergMarquardtOptimizer, MultipleValuedNonLinearVnlOptimizer);
 
-  /** InternalParameters type alias. */
-  using InternalParametersType = vnl_vector<double>;
+  /** InternalParameters typedef. */
+  typedef   vnl_vector< double > InternalParametersType;
 
   /** Internal optimizer type. */
-  using InternalOptimizerType = vnl_levenberg_marquardt;
+  typedef   vnl_levenberg_marquardt InternalOptimizerType;
 
   /** Method for getting access to the internal optimizer. */
-  vnl_levenberg_marquardt *
-  GetOptimizer() const;
+  vnl_levenberg_marquardt * GetOptimizer() const;
 
   /** Start optimization with an initial value. */
-  void
-  StartOptimization() override;
+  virtual void StartOptimization(void) ITK_OVERRIDE;
 
   /** Plug in a Cost Function into the optimizer  */
-  void
-  SetCostFunction(MultipleValuedCostFunction * costFunction) override;
+  virtual void SetCostFunction(MultipleValuedCostFunction *costFunction) ITK_OVERRIDE;
 
-  void
-  SetNumberOfIterations(unsigned int iterations);
+  void SetNumberOfIterations(unsigned int iterations);
 
-  void
-  SetValueTolerance(double tol);
+  void SetValueTolerance(double tol);
 
-  void
-  SetGradientTolerance(double tol);
+  void SetGradientTolerance(double tol);
 
-  void
-  SetEpsilonFunction(double epsilon);
+  void SetEpsilonFunction(double epsilon);
 
   /** Get the current value */
-  MeasureType
-  GetValue() const;
+  MeasureType GetValue() const;
 
-  const std::string
-  GetStopConditionDescription() const override;
+  virtual const std::string GetStopConditionDescription() const ITK_OVERRIDE;
 
 protected:
   LevenbergMarquardtOptimizer();
-  ~LevenbergMarquardtOptimizer() override;
+  virtual ~LevenbergMarquardtOptimizer() ITK_OVERRIDE;
 
-  using CostFunctionAdaptorType = Superclass::CostFunctionAdaptorType;
+  typedef Superclass::CostFunctionAdaptorType CostFunctionAdaptorType;
 
 private:
-  bool                    m_OptimizerInitialized;
-  InternalOptimizerType * m_VnlOptimizer;
-  unsigned int            m_NumberOfIterations;
-  double                  m_ValueTolerance;
-  double                  m_GradientTolerance;
-  double                  m_EpsilonFunction;
+  ITK_DISALLOW_COPY_AND_ASSIGN(LevenbergMarquardtOptimizer);
+
+  bool                   m_OptimizerInitialized;
+  InternalOptimizerType *m_VnlOptimizer;
+  unsigned int           m_NumberOfIterations;
+  double                 m_ValueTolerance;
+  double                 m_GradientTolerance;
+  double                 m_EpsilonFunction;
 };
 } // end namespace itk
 

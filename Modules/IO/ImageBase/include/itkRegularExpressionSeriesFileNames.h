@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -68,15 +68,13 @@ namespace itk
  *
  * \ingroup ITKIOImageBase
  */
-class ITKIOImageBase_EXPORT RegularExpressionSeriesFileNames : public Object
+class ITKIOImageBase_EXPORT RegularExpressionSeriesFileNames:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegularExpressionSeriesFileNames);
-
-  /** Standard class type aliases. */
-  using Self = RegularExpressionSeriesFileNames;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef RegularExpressionSeriesFileNames Self;
+  typedef Object                           Superclass;
+  typedef SmartPointer< Self >             Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -106,27 +104,29 @@ public:
   itkBooleanMacro(NumericSort);
 
   /** Returns a vector containing the series' file names. The file
-   * names are sorted by the sub expression selected by the SubMatch id. */
-  const std::vector<std::string> &
-  GetFileNames();
+    * names are sorted by the sub expression selected by the SubMatch id. */
+  const std::vector< std::string > & GetFileNames();
 
 protected:
-  RegularExpressionSeriesFileNames()
-    : m_Directory(".")
-    , m_RegularExpression(".*\\.([0-9]+)")
+  RegularExpressionSeriesFileNames():
+    m_Directory("."),
+    m_SubMatch(1),
+    m_NumericSort(false),
+    m_RegularExpression(".*\\.([0-9]+)")
   {}
-  ~RegularExpressionSeriesFileNames() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~RegularExpressionSeriesFileNames() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegularExpressionSeriesFileNames);
+
   std::string  m_Directory;
-  unsigned int m_SubMatch{ 1 };
-  bool         m_NumericSort{ false };
+  unsigned int m_SubMatch;
+  bool         m_NumericSort;
   std::string  m_RegularExpression;
 
-  std::vector<std::string> m_FileNames;
+  std::vector< std::string > m_FileNames;
 };
-} // namespace itk
+} //namespace ITK
 
 #endif // itkRegularExpressionSeriesFileNames_h

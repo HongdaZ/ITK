@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,16 +29,16 @@ namespace itk
  *
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template <typename TInputMesh, typename TOutputMesh = TInputMesh>
-class DiscreteCurvatureTensorQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh=TInputMesh >
+class DiscreteCurvatureTensorQuadEdgeMeshFilter:
+  public QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteCurvatureTensorQuadEdgeMeshFilter);
-
-  using Self = DiscreteCurvatureTensorQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
+  typedef DiscreteCurvatureTensorQuadEdgeMeshFilter     Self;
+  typedef SmartPointer< Self >                          Pointer;
+  typedef SmartPointer< const Self >                    ConstPointer;
+  typedef QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
+                                                        Superclass;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(DiscreteCurvatureTensorQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
@@ -50,18 +50,20 @@ public:
   // Begin concept checking
 //  itkConceptMacro( OutputIsFloatingPointCheck,
 //                   ( Concept::IsFloatingPoint< OutputCurvatureType > ) );
-// End concept checking
+  // End concept checking
 #endif
 
 protected:
-  DiscreteCurvatureTensorQuadEdgeMeshFilter() = default;
-  ~DiscreteCurvatureTensorQuadEdgeMeshFilter() = default;
+  DiscreteCurvatureTensorQuadEdgeMeshFilter() {}
+  ~DiscreteCurvatureTensorQuadEdgeMeshFilter() {}
 
-  /// TODO to be implemented
-  virtual void
-  GenerateData()
+  ///TODO to be implemented
+  virtual void GenerateData()
   {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteCurvatureTensorQuadEdgeMeshFilter);
 };
-} // namespace itk
+}
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,32 +18,32 @@
 
 #include "itkImageRegionSplitterSlowDimension.h"
 #include "itkImageSourceCommon.h"
-#include <mutex>
+#include "itkSimpleFastMutexLock.h"
+#include "itkMutexLockHolder.h"
 
 namespace itk
 {
 
 namespace
 {
-std::mutex                       globalDefaultSplitterLock;
+SimpleFastMutexLock globalDefaultSplitterLock;
 ImageRegionSplitterBase::Pointer globalDefaultSplitter;
-} // namespace
+}
 
-const ImageRegionSplitterBase *
-ImageSourceCommon::GetGlobalDefaultSplitter()
+const ImageRegionSplitterBase*  ImageSourceCommon::GetGlobalDefaultSplitter(void)
 {
-  if (globalDefaultSplitter.IsNull())
-  {
+  if ( globalDefaultSplitter.IsNull() )
+    {
     // thread safe lazy initialization, prevent race condition on
     // setting, with an atomic set if null.
-    std::lock_guard<std::mutex> lock(globalDefaultSplitterLock);
-    if (globalDefaultSplitter.IsNull())
-    {
+    MutexLockHolder< SimpleFastMutexLock > lock(globalDefaultSplitterLock);
+    if ( globalDefaultSplitter.IsNull() )
+      {
       globalDefaultSplitter = ImageRegionSplitterSlowDimension::New().GetPointer();
+      }
     }
-  }
   return globalDefaultSplitter;
 }
 
 
-} // namespace itk
+}

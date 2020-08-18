@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,78 +38,114 @@ namespace itk
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TFixedImageType, typename TMovingImageType, typename TVirtualImageType, typename TCoordRep = double>
+template<
+  typename    TFixedImageType,
+  typename    TMovingImageType,
+  typename    TVirtualImageType,
+  typename TCoordRep = double
+  >
 class DefaultImageToImageMetricTraitsv4
 {
 public:
-  /** Standard class type aliases. */
-  using Self = DefaultImageToImageMetricTraitsv4;
+  /** Standard class typedefs. */
+  typedef DefaultImageToImageMetricTraitsv4 Self;
 
-  using FixedImageType = TFixedImageType;
-  using MovingImageType = TMovingImageType;
-  using VirtualImageType = TVirtualImageType;
+  typedef TFixedImageType   FixedImageType;
+  typedef TMovingImageType  MovingImageType;
+  typedef TVirtualImageType VirtualImageType;
 
-  using FixedImagePixelType = typename FixedImageType::PixelType;
-  using MovingImagePixelType = typename MovingImageType::PixelType;
+  typedef typename FixedImageType::PixelType  FixedImagePixelType;
+  typedef typename MovingImageType::PixelType MovingImagePixelType;
 
-  using CoordinateRepresentationType = TCoordRep;
+  typedef TCoordRep            CoordinateRepresentationType;
 
   /* Image dimension accessors */
-  using ImageDimensionType = unsigned int;
-  static constexpr ImageDimensionType FixedImageDimension = FixedImageType::ImageDimension;
-  static constexpr ImageDimensionType MovingImageDimension = MovingImageType::ImageDimension;
-  static constexpr ImageDimensionType VirtualImageDimension = VirtualImageType::ImageDimension;
+  typedef unsigned int   ImageDimensionType;
+  itkStaticConstMacro(FixedImageDimension, ImageDimensionType,
+      FixedImageType::ImageDimension);
+  itkStaticConstMacro(MovingImageDimension, ImageDimensionType,
+      MovingImageType::ImageDimension);
+  itkStaticConstMacro(VirtualImageDimension, ImageDimensionType,
+      VirtualImageType::ImageDimension);
 
-  using FixedImageGradientType = CovariantVector<CoordinateRepresentationType, Self::FixedImageDimension>;
-  using MovingImageGradientType = CovariantVector<CoordinateRepresentationType, Self::MovingImageDimension>;
+  typedef   CovariantVector< CoordinateRepresentationType,
+                             itkGetStaticConstMacro(FixedImageDimension) >
+                                                      FixedImageGradientType;
+  typedef   CovariantVector< CoordinateRepresentationType,
+                             itkGetStaticConstMacro(MovingImageDimension) >
+                                                      MovingImageGradientType;
 
-  using VirtualImageGradientType = CovariantVector<CoordinateRepresentationType, Self::VirtualImageDimension>;
+  typedef   CovariantVector< CoordinateRepresentationType,
+                             itkGetStaticConstMacro(VirtualImageDimension) >
+                                                      VirtualImageGradientType;
 
-  using FixedImageComponentGradientType = FixedImageGradientType;
-  using MovingImageComponentGradientType = MovingImageGradientType;
-  using VirtualImageComponentGradientType = VirtualImageGradientType;
+  typedef FixedImageGradientType   FixedImageComponentGradientType;
+  typedef MovingImageGradientType  MovingImageComponentGradientType;
+  typedef VirtualImageGradientType VirtualImageComponentGradientType;
 
-  using FixedImageGradientConvertType = DefaultConvertPixelTraits<FixedImageGradientType>;
-  using MovingImageGradientConvertType = DefaultConvertPixelTraits<MovingImageGradientType>;
+  typedef DefaultConvertPixelTraits< FixedImageGradientType >  FixedImageGradientConvertType;
+  typedef DefaultConvertPixelTraits< MovingImageGradientType > MovingImageGradientConvertType;
 
   /** Type of the filter used to calculate the gradients. */
-  using FixedRealType = typename NumericTraits<FixedImagePixelType>::RealType;
-  using FixedGradientPixelType = CovariantVector<FixedRealType, Self::FixedImageDimension>;
-  using FixedImageGradientImageType = Image<FixedGradientPixelType, Self::FixedImageDimension>;
+  typedef typename NumericTraits< FixedImagePixelType >::RealType
+                                                    FixedRealType;
+  typedef CovariantVector< FixedRealType,
+                           itkGetStaticConstMacro(FixedImageDimension) >
+                                                    FixedGradientPixelType;
+  typedef Image< FixedGradientPixelType,
+                 itkGetStaticConstMacro(FixedImageDimension) >
+                                                FixedImageGradientImageType;
 
-  using FixedImageGradientFilterType = ImageToImageFilter<FixedImageType, FixedImageGradientImageType>;
+  typedef ImageToImageFilter< FixedImageType, FixedImageGradientImageType >
+                                                 FixedImageGradientFilterType;
 
-  using MovingRealType = typename NumericTraits<MovingImagePixelType>::RealType;
-  using MovingGradientPixelType = CovariantVector<MovingRealType, Self::MovingImageDimension>;
-  using MovingImageGradientImageType = Image<MovingGradientPixelType, Self::MovingImageDimension>;
+  typedef typename NumericTraits< MovingImagePixelType >::RealType
+                                                 MovingRealType;
+  typedef CovariantVector< MovingRealType,
+                           itkGetStaticConstMacro(MovingImageDimension) >
+                                                 MovingGradientPixelType;
+  typedef Image< MovingGradientPixelType,
+                 itkGetStaticConstMacro(MovingImageDimension) >
+                                                    MovingImageGradientImageType;
 
-  using MovingImageGradientFilterType = ImageToImageFilter<MovingImageType, MovingImageGradientImageType>;
+  typedef ImageToImageFilter< MovingImageType, MovingImageGradientImageType >
+                                                 MovingImageGradientFilterType;
 
   /** Default image gradient filter types */
-  using DefaultFixedImageGradientFilter =
-    GradientRecursiveGaussianImageFilter<FixedImageType, FixedImageGradientImageType>;
-  using DefaultMovingImageGradientFilter =
-    GradientRecursiveGaussianImageFilter<MovingImageType, MovingImageGradientImageType>;
+  typedef GradientRecursiveGaussianImageFilter< FixedImageType,
+                                                FixedImageGradientImageType >
+                                                  DefaultFixedImageGradientFilter;
+  typedef GradientRecursiveGaussianImageFilter< MovingImageType,
+                                                MovingImageGradientImageType >
+                                                  DefaultMovingImageGradientFilter;
 
   /** Image gradient calculator types. The TOutput template parameter
    * is chosen to match that of CentralDiffererenceImageFunction. */
-  using FixedImageGradientCalculatorType =
-    ImageFunction<FixedImageType, CovariantVector<double, Self::FixedImageDimension>, CoordinateRepresentationType>;
-  using MovingImageGradientCalculatorType =
-    ImageFunction<MovingImageType, CovariantVector<double, Self::MovingImageDimension>, CoordinateRepresentationType>;
+  typedef ImageFunction<FixedImageType,
+                        CovariantVector<double,
+                                  itkGetStaticConstMacro( FixedImageDimension )>,
+                        CoordinateRepresentationType>
+                                            FixedImageGradientCalculatorType;
+  typedef ImageFunction<MovingImageType,
+                        CovariantVector<double,
+                                  itkGetStaticConstMacro( MovingImageDimension )>,
+                        CoordinateRepresentationType>
+                                            MovingImageGradientCalculatorType;
 
-  using DefaultFixedImageGradientCalculator =
-    CentralDifferenceImageFunction<FixedImageType, CoordinateRepresentationType>;
-  using DefaultMovingImageGradientCalculator =
-    CentralDifferenceImageFunction<MovingImageType, CoordinateRepresentationType>;
+  typedef CentralDifferenceImageFunction<FixedImageType,
+                                         CoordinateRepresentationType>
+                                          DefaultFixedImageGradientCalculator;
+  typedef CentralDifferenceImageFunction<MovingImageType,
+                                         CoordinateRepresentationType>
+                                          DefaultMovingImageGradientCalculator;
 
-/** Only floating-point images are currently supported. To support integer images,
- * several small changes must be made to use an internal floating-point type for
- * computations rather than the image pixel type itself. */
-#ifdef ITK_USE_CONCEPT_CHECKING
-  itkConceptMacro(OnlyDefinedForFloatingPointTypes0, (itk::Concept::IsFloatingPoint<FixedRealType>));
-  itkConceptMacro(OnlyDefinedForFloatingPointTypes1, (itk::Concept::IsFloatingPoint<MovingRealType>));
-#endif // ITK_USE_CONCEPT_CHECKING
+  /** Only floating-point images are currently supported. To support integer images,
+   * several small changes must be made to use an internal floating-point type for
+   * computations rather than the image pixel type itself. */
+  #ifdef ITK_USE_CONCEPT_CHECKING
+  itkConceptMacro( OnlyDefinedForFloatingPointTypes0, ( itk::Concept::IsFloatingPoint<FixedRealType> ) );
+  itkConceptMacro( OnlyDefinedForFloatingPointTypes1, ( itk::Concept::IsFloatingPoint<MovingRealType> ) );
+  #endif // ITK_USE_CONCEPT_CHECKING
 };
 } // end namespace itk
 

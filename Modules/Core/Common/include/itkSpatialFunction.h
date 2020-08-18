@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,45 +41,46 @@ namespace itk
  * \ingroup SpatialFunctions
  * \ingroup ITKCommon
  */
-template <typename TOutput, unsigned int VImageDimension = 3, typename TInput = Point<double, VImageDimension>>
-class ITK_TEMPLATE_EXPORT SpatialFunction : public FunctionBase<TInput, TOutput>
+template< typename TOutput,
+          unsigned int VImageDimension = 3,
+          typename TInput = Point< double, VImageDimension > >
+class ITK_TEMPLATE_EXPORT SpatialFunction:public FunctionBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialFunction);
-
-  /** Standard class type aliases. */
-  using Self = SpatialFunction;
-  using Superclass = FunctionBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SpatialFunction                 Self;
+  typedef FunctionBase< TInput, TOutput > Superclass;
+  typedef SmartPointer< Self >            Pointer;
+  typedef SmartPointer< const Self >      ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SpatialFunction, FunctionBase);
 
   /** Input type for the function. */
-  using InputType = typename Superclass::InputType;
+  typedef typename Superclass::InputType InputType;
 
   /** Output type for the function. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Spatial dimension. */
-  static constexpr unsigned int ImageDimension = VImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
 
   /** Evaluate the function at a given position. Remember, position is
-   * represented by an n-d itk::Point object with data type double. */
-  OutputType
-  Evaluate(const InputType & input) const override = 0;
+  * represented by an n-d itk::Point object with data type double. */
+  virtual OutputType Evaluate(const InputType & input) const ITK_OVERRIDE = 0;
 
 protected:
-  SpatialFunction() = default;
-  ~SpatialFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  SpatialFunction();
+  virtual ~SpatialFunction() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialFunction);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSpatialFunction.hxx"
+#include "itkSpatialFunction.hxx"
 #endif
 
 #endif

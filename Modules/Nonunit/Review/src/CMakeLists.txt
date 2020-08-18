@@ -1,4 +1,6 @@
 set(ITKReview_SRC
+itkJPEG2000ImageIO.cxx
+itkJPEG2000ImageIOFactory.cxx
 itkVoxBoCUBImageIO.cxx
 itkVoxBoCUBImageIOFactory.cxx
 )

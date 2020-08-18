@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@
 #include <iostream>
 
 
-int
-itkFileOutputWindowTest(int, char *[])
+int itkFileOutputWindowTest(int, char* [] )
 {
 
   // Declare the type for the morphology Filter
-  using myFileOutputWindow = itk::FileOutputWindow;
+  typedef itk::FileOutputWindow myFileOutputWindow;
 
   // Create the filter
   myFileOutputWindow::Pointer window = myFileOutputWindow::New();

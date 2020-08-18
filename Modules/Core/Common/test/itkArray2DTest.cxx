@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,102 +21,101 @@
 #include "itkArray2D.h"
 
 
-int
-itkArray2DTest(int, char *[])
+int itkArray2DTest(int, char* [] )
 {
-  using ArrayType = itk::Array2D<double>;
+  typedef itk::Array2D< double > ArrayType;
 
-  using VnlMatrixType = vnl_matrix<double>;
+  typedef vnl_matrix<double> VnlMatrixType;
 
-  constexpr unsigned int rows = 3;
-  constexpr unsigned int cols = 4;
+  const unsigned int rows = 3;
+  const unsigned int cols = 4;
 
-  ArrayType     a(rows, cols);
-  VnlMatrixType vm(rows, cols);
+  ArrayType a( rows, cols);
+  VnlMatrixType vm( rows, cols );
 
-  for (unsigned int r = 0; r < rows; r++)
-  {
-    for (unsigned int c = 0; c < cols; c++)
+  for( unsigned int r=0; r<rows; r++)
     {
-      const auto value = static_cast<double>(r + c);
-      a.SetElement(r, c, value);
-      vm(r, c) = value;
+    for( unsigned int c=0; c<cols; c++)
+      {
+      const double value = static_cast<double>( r + c );
+      a.SetElement(r,c,value);
+      vm(r,c) = value;
+      }
     }
-  }
 
   const double tolerance = 1e-6;
 
   // test copy constructor
-  ArrayType b(a);
+  ArrayType b( a );
 
-  for (unsigned int r = 0; r < rows; r++)
-  {
-    for (unsigned int c = 0; c < cols; c++)
+  for( unsigned int r=0; r<rows; r++)
     {
-      double diff = a.GetElement(r, c) - b(r, c);
-      diff = (diff > 0.0) ? diff : -diff; // take abs value
-      if (diff > tolerance)
+    for( unsigned int c=0; c<cols; c++)
       {
+      double diff = a.GetElement(r,c) - b(r,c);
+      diff = (diff > 0.0 ) ? diff : -diff; // take abs value
+      if( diff > tolerance )
+        {
         std::cerr << "Error in copy constructor " << std::endl;
         return EXIT_FAILURE;
+        }
       }
     }
-  }
 
   // test construction from vnl_matrix
-  ArrayType d(vm);
+  ArrayType d( vm );
 
-  for (unsigned int r = 0; r < rows; r++)
-  {
-    for (unsigned int c = 0; c < cols; c++)
+  for( unsigned int r=0; r<rows; r++)
     {
-      double diff = d(r, c) - vm(r, c);
-      diff = (diff > 0.0) ? diff : -diff; // take abs value
-      if (diff > tolerance)
+    for( unsigned int c=0; c<cols; c++)
       {
+      double diff = d(r,c) - vm(r,c);
+      diff = (diff > 0.0 ) ? diff : -diff; // take abs value
+      if(  diff  > tolerance )
+        {
         std::cerr << "Error in construction from vnl_matrix" << std::endl;
         return EXIT_FAILURE;
+        }
       }
     }
-  }
 
   // test for assignment from Array2D
   ArrayType e;
 
   e = a;
 
-  for (unsigned int r = 0; r < rows; r++)
-  {
-    for (unsigned int c = 0; c < cols; c++)
+  for( unsigned int r=0; r<rows; r++)
     {
-      double diff = a(r, c) - e(r, c);
-      diff = (diff > 0.0) ? diff : -diff; // take abs value
-      if (diff > tolerance)
+    for( unsigned int c=0; c<cols; c++)
       {
+      double diff = a(r,c) - e(r,c);
+      diff = (diff > 0.0 ) ? diff : -diff; // take abs value
+      if( diff  > tolerance )
+        {
         std::cerr << "Error in assignment from Array2D constructor " << std::endl;
         return EXIT_FAILURE;
+        }
       }
     }
-  }
 
   // test for assignment from vnl_matrix
   ArrayType f;
 
   f = vm;
 
-  for (unsigned int r = 0; r < rows; r++)
-  {
-    for (unsigned int c = 0; c < cols; c++)
+  for( unsigned int r=0; r<rows; r++)
     {
-      double diff = f(r, c) - vm(r, c);
-      diff = (diff > 0.0) ? diff : -diff; // take abs value
-      if (diff > tolerance)
+    for( unsigned int c=0; c<cols; c++)
       {
+      double diff = f(r,c) - vm(r,c);
+      diff = (diff > 0.0 ) ? diff : -diff; // take abs value
+      if( diff > tolerance )
+        {
         std::cerr << "Error in assignment from  vn_matrix" << std::endl;
         return EXIT_FAILURE;
+        }
       }
     }
-  }
 
   std::cout << "Test Passed ! " << std::endl;
   return EXIT_SUCCESS;

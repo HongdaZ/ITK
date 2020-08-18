@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@
 
 namespace itk
 {
-static constexpr char blanks[ITK_NUMBER_OF_BLANKS + 1] = "                                        ";
+static ITK_CONSTEXPR_VAR char blanks[ITK_NUMBER_OF_BLANKS + 1] =
+  "                                        ";
 
 /**
  * Instance creation.
@@ -48,14 +49,15 @@ Indent::New()
  * max of forty.
  */
 Indent
-Indent ::GetNextIndent() const
+Indent
+::GetNextIndent()
 {
   int indent = m_Indent + ITK_STD_INDENT;
 
-  if (indent > ITK_NUMBER_OF_BLANKS)
-  {
+  if ( indent > ITK_NUMBER_OF_BLANKS )
+    {
     indent = ITK_NUMBER_OF_BLANKS;
-  }
+    }
   return indent;
 }
 
@@ -65,7 +67,7 @@ Indent ::GetNextIndent() const
 std::ostream &
 operator<<(std::ostream & os, const Indent & ind)
 {
-  os << blanks + (ITK_NUMBER_OF_BLANKS - ind.m_Indent);
+  os << blanks + ( ITK_NUMBER_OF_BLANKS - ind.m_Indent );
   return os;
 }
 } // end namespace itk

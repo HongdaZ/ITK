@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ namespace itk
 
 template <unsigned VDimension>
 typename MetaConverterBase<VDimension>::SpatialObjectPointer
-MetaConverterBase<VDimension>::ReadMeta(const char * name)
+MetaConverterBase<VDimension>
+::ReadMeta(const char *name)
 {
   SpatialObjectPointer rval;
-  MetaObjectType *     mo = this->CreateMetaObject();
+  MetaObjectType *mo = this->CreateMetaObject();
 
   mo->Read(name);
   rval = this->MetaObjectToSpatialObject(mo);
@@ -39,14 +40,31 @@ MetaConverterBase<VDimension>::ReadMeta(const char * name)
 
 template <unsigned VDimension>
 bool
-MetaConverterBase<VDimension>::WriteMeta(const SpatialObjectType * spatialObject, const char * name)
+MetaConverterBase<VDimension>
+::WriteMeta(const SpatialObjectType *spatialObject, const char *name)
 {
-  MetaObject * mo = this->SpatialObjectToMetaObject(spatialObject);
+  MetaObject *mo = this->SpatialObjectToMetaObject(spatialObject);
   mo->Write(name);
   delete mo;
   return true;
 }
 
-} // namespace itk
+template <unsigned VDimension>
+bool
+MetaConverterBase<VDimension>
+::GetWriteImagesInSeparateFile()
+{
+  return this->m_WriteImagesInSeparateFile;
+}
+
+template <unsigned VDimension>
+void
+MetaConverterBase<VDimension>
+::SetWriteImagesInSeparateFile(bool writeImagesInSeparateFile)
+{
+  this->m_WriteImagesInSeparateFile = writeImagesInSeparateFile;
+}
+
+}
 
 #endif // itkMetaConverterBase_hxx

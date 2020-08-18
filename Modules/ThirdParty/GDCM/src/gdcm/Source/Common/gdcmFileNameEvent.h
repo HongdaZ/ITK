@@ -32,21 +32,18 @@ public:
   typedef FileNameEvent Self;
   typedef AnyEvent Superclass;
   FileNameEvent(const char *s = ""):m_FileName(s) {}
-  ~FileNameEvent() override = default;
-
-  FileNameEvent(const Self&s) : AnyEvent(s){};
-  void operator=(const Self&) = delete;
-  
-
-  const char * GetEventName() const override { return "FileNameEvent"; }
-  bool CheckEvent(const ::gdcm::Event* e) const override
+  virtual ~FileNameEvent() {}
+  virtual const char * GetEventName() const { return "FileNameEvent"; }
+  virtual bool CheckEvent(const ::gdcm::Event* e) const
     { return dynamic_cast<const Self*>(e) ? true : false; }
-  ::gdcm::Event* MakeObject() const override
+  virtual ::gdcm::Event* MakeObject() const
     { return new Self; }
+  FileNameEvent(const Self&s) : AnyEvent(s){};
 
   void SetFileName(const char *f) { m_FileName = f; }
   const char *GetFileName() const { return m_FileName.c_str(); }
 private:
+  void operator=(const Self&);
   std::string m_FileName;
 };
 

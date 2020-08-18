@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,23 +34,23 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT MultipleValuedNonLinearVnlOptimizer : public MultipleValuedNonLinearOptimizer
+class ITKOptimizers_EXPORT MultipleValuedNonLinearVnlOptimizer:
+  public MultipleValuedNonLinearOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedNonLinearVnlOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = MultipleValuedNonLinearVnlOptimizer;
-  using Superclass = MultipleValuedNonLinearOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultipleValuedNonLinearVnlOptimizer Self;
+  typedef MultipleValuedNonLinearOptimizer    Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MultipleValuedNonLinearVnlOptimizer, MultipleValueNonLinearOptimizer);
+  itkTypeMacro(MultipleValuedNonLinearVnlOptimizer,
+               MultipleValueNonLinearOptimizer);
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
   /** Set the cost Function. This method has to be overloaded
    *  by derived classes because the CostFunctionAdaptor requires
@@ -58,29 +58,24 @@ public:
    *  number of parameters is obtained at run-time from the itkCostFunction.
    *  As a consequence each derived optimizer should construct its own
    *  CostFunctionAdaptor when overloading this method  */
-  void
-  SetCostFunction(MultipleValuedCostFunction * costFunction) override = 0;
+  virtual void SetCostFunction(MultipleValuedCostFunction *costFunction) ITK_OVERRIDE = 0;
 
   /**  Define if the Cost function should provide a customized
        Gradient computation or the gradient can be computed internally
        using a default approach  */
-  void
-  SetUseCostFunctionGradient(bool);
+  void SetUseCostFunctionGradient(bool);
 
-  void
-  UseCostFunctionGradientOn()
+  void UseCostFunctionGradientOn()
   {
     this->SetUseCostFunctionGradient(true);
   }
 
-  void
-  UseCostFunctionGradientOff()
+  void UseCostFunctionGradientOff()
   {
     this->SetUseCostFunctionGradient(false);
   }
 
-  bool
-  GetUseCostFunctionGradient() const;
+  bool GetUseCostFunctionGradient() const;
 
   /** Return Cached Values. These method have the advantage of not triggering a
    * recomputation of the metric value, but it has the disadvantage of
@@ -94,40 +89,36 @@ public:
 
 protected:
   MultipleValuedNonLinearVnlOptimizer();
-  ~MultipleValuedNonLinearVnlOptimizer() override;
+  virtual ~MultipleValuedNonLinearVnlOptimizer() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  using CostFunctionAdaptorType = MultipleValuedVnlCostFunctionAdaptor;
+  typedef MultipleValuedVnlCostFunctionAdaptor CostFunctionAdaptorType;
 
-  void
-  SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor);
+  void SetCostFunctionAdaptor(CostFunctionAdaptorType *adaptor);
 
-  const CostFunctionAdaptorType *
-  GetCostFunctionAdaptor() const;
+  const CostFunctionAdaptorType * GetCostFunctionAdaptor() const;
 
-  CostFunctionAdaptorType *
-  GetCostFunctionAdaptor();
+  CostFunctionAdaptorType * GetCostFunctionAdaptor();
 
   /** The purpose of this method is to get around the lack of const
    *  correctness in vnl cost_functions and optimizers */
-  CostFunctionAdaptorType *
-  GetNonConstCostFunctionAdaptor() const;
+  CostFunctionAdaptorType * GetNonConstCostFunctionAdaptor() const;
 
   /** Command observer that will interact with the ITKVNL cost-function
    * adaptor in order to generate iteration events. This will allow to overcome
    * the limitation of VNL optimizers not offering callbacks for every
    * iteration */
-  using CommandType = ReceptorMemberCommand<Self>;
+  typedef ReceptorMemberCommand< Self > CommandType;
 
 private:
-  /** Callback function for the Command Observer */
-  void
-  IterationReport(const EventObject & event);
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedNonLinearVnlOptimizer);
 
-  CostFunctionAdaptorType * m_CostFunctionAdaptor;
-  bool                      m_UseGradient;
+  /** Callback function for the Command Observer */
+  void IterationReport(const EventObject & event);
+
+  CostFunctionAdaptorType *m_CostFunctionAdaptor;
+  bool                     m_UseGradient;
 
   CommandType::Pointer m_Command;
 

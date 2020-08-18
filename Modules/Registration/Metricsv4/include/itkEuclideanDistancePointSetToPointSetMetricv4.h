@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,68 +38,59 @@ namespace itk
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TFixedPointSet,
-          typename TMovingPointSet = TFixedPointSet,
-          class TInternalComputationValueType = double>
-class ITK_TEMPLATE_EXPORT EuclideanDistancePointSetToPointSetMetricv4
-  : public PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>
+template<typename TFixedPointSet, typename TMovingPointSet = TFixedPointSet,
+  class TInternalComputationValueType = double>
+class ITK_TEMPLATE_EXPORT EuclideanDistancePointSetToPointSetMetricv4:
+  public PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EuclideanDistancePointSetToPointSetMetricv4);
 
-  /** Standard class type aliases. */
-  using Self = EuclideanDistancePointSetToPointSetMetricv4;
-  using Superclass = PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef EuclideanDistancePointSetToPointSetMetricv4                  Self;
+  typedef PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet,
+    TInternalComputationValueType>                                     Superclass;
+  typedef SmartPointer<Self>                                           Pointer;
+  typedef SmartPointer<const Self>                                     ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(EuclideanDistancePointSetToPointSetMetricv4, PointSetToPointSetMetricv4);
+  itkTypeMacro( EuclideanDistancePointSetToPointSetMetricv4, PointSetToPointSetMetricv4 );
 
   /** Types transferred from the base class */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using LocalDerivativeType = typename Superclass::LocalDerivativeType;
-  using PointType = typename Superclass::PointType;
-  using PixelType = typename Superclass::PixelType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
+  typedef typename Superclass::MeasureType          MeasureType;
+  typedef typename Superclass::DerivativeType       DerivativeType;
+  typedef typename Superclass::LocalDerivativeType  LocalDerivativeType;
+  typedef typename Superclass::PointType            PointType;
+  typedef typename Superclass::PixelType            PixelType;
+  typedef typename Superclass::PointIdentifier      PointIdentifier;
 
   /**
    * Calculates the local metric value for a single point.
    */
-  MeasureType
-  GetLocalNeighborhoodValue(const PointType &, const PixelType & pixel = 0) const override;
+  virtual MeasureType GetLocalNeighborhoodValue( const PointType &, const PixelType & pixel = 0 ) const ITK_OVERRIDE;
 
   /**
    * Calculates the local value and derivative for a single point.
    */
-  void
-  GetLocalNeighborhoodValueAndDerivative(const PointType &,
-                                         MeasureType &,
-                                         LocalDerivativeType &,
-                                         const PixelType & pixel = 0) const override;
+  virtual void GetLocalNeighborhoodValueAndDerivative( const PointType &,
+    MeasureType &, LocalDerivativeType &, const PixelType & pixel = 0 ) const ITK_OVERRIDE;
 
 protected:
-  EuclideanDistancePointSetToPointSetMetricv4() = default;
-  ~EuclideanDistancePointSetToPointSetMetricv4() override = default;
-
-  bool
-  RequiresFixedPointsLocator() const override
-  {
-    return false;
-  }
+  EuclideanDistancePointSetToPointSetMetricv4();
+  virtual ~EuclideanDistancePointSetToPointSetMetricv4() ITK_OVERRIDE;
 
   /** PrintSelf function */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EuclideanDistancePointSetToPointSetMetricv4);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEuclideanDistancePointSetToPointSetMetricv4.hxx"
+#include "itkEuclideanDistancePointSetToPointSetMetricv4.hxx"
 #endif
 
 #endif

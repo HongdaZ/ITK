@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  *
  *=========================================================================*/
 #include "lsmrBase.h"
-#include "vcl_compiler_detection.h"
 
 #include <algorithm>
 #include <cmath>
@@ -41,7 +40,7 @@ lsmrBase::lsmrBase()
   this->btol = 1e-6;
   this->conlim = 1.0 / ( 10 * sqrt( this->eps ) );
   this->itnlim = 10;
-  this->nout = nullptr;
+  this->nout = NULL;
   this->istop = 0;
   this->itn = 0;
   this->normA = 0.0;
@@ -58,7 +57,9 @@ lsmrBase::lsmrBase()
 }
 
 
-lsmrBase::~lsmrBase() = default;
+lsmrBase::~lsmrBase()
+{
+}
 
 
 unsigned int

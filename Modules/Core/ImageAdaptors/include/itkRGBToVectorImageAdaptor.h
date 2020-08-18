@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,29 +23,35 @@
 
 namespace itk
 {
-/**
- *\class RGBToVectorImageAdaptor
+/** \class RGBToVectorImageAdaptor
  * \brief Presents an image of pixel type RGBPixel as being and image of
  * Vectors.
  *
  * \ingroup ImageAdaptors
  *
  * \ingroup ITKImageAdaptors
+ *
+ * \wiki
+ * \wikiexample{Conversions/RGBToVectorImageAdaptor,Present an image of RGBPixel pixels as an image of vectors}
+ * \endwiki
  */
-template <typename TImage>
-class RGBToVectorImageAdaptor
-  : public ImageAdaptor<TImage, Accessor::RGBToVectorPixelAccessor<typename TImage::PixelType::ComponentType>>
+template< typename TImage >
+class RGBToVectorImageAdaptor:public
+  ImageAdaptor< TImage,
+                Accessor::RGBToVectorPixelAccessor<
+                  typename TImage::PixelType::ComponentType
+                  > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToVectorImageAdaptor);
+  /** Standard class typedefs. */
+  typedef RGBToVectorImageAdaptor Self;
+  typedef ImageAdaptor< TImage,
+                        Accessor::RGBToVectorPixelAccessor<
+                          typename TImage::PixelType::ComponentType
+                          >  > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = RGBToVectorImageAdaptor;
-  using Superclass =
-    ImageAdaptor<TImage, Accessor::RGBToVectorPixelAccessor<typename TImage::PixelType::ComponentType>>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,15 +59,18 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(RGBToVectorImageAdaptor, ImageAdaptor);
 
-  /** PixelContainer type alias support Used to construct a container for
+  /** PixelContainer typedef support. Used to construct a container for
    * the pixel data. */
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using PixelContainerConstPointer = typename Superclass::PixelContainerConstPointer;
+  typedef typename Superclass::PixelContainer             PixelContainer;
+  typedef typename Superclass::PixelContainerPointer      PixelContainerPointer;
+  typedef typename Superclass::PixelContainerConstPointer PixelContainerConstPointer;
 
 protected:
-  RGBToVectorImageAdaptor() = default;
-  ~RGBToVectorImageAdaptor() override = default;
+  RGBToVectorImageAdaptor() {}
+  virtual ~RGBToVectorImageAdaptor() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RGBToVectorImageAdaptor);
 };
 } // end namespace itk
 

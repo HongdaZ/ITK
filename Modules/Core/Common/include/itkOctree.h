@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,16 +20,25 @@
 
 #include "itkOctreeNode.h"
 #include "itkImage.h"
-#include "itkCommonEnums.h"
-
+/**
+ * Octree data structure
+ */
 namespace itk
 {
-enum
-{
+enum {
   B2_MASKFILE_BLACK = 0,
   B2_MASKFILE_WHITE = 1,
   B2_MASKFILE_GRAY = 2
-};
+  };
+/**
+ * The enumeration to define the planar orientation of the octree
+ */
+enum OctreePlaneType {
+  UNKNOWN_PLANE,   /** < The plane is Unknown */
+  SAGITAL_PLANE,   /** < The plane is Sagital */
+  CORONAL_PLANE,   /** < The plane is Coronal */
+  TRANSVERSE_PLANE /** < The plane is Transverse */
+  };
 
 /**
  * \class OctreeBase
@@ -37,64 +46,45 @@ enum
  *
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT OctreeBase : public Object
+class ITKCommon_EXPORT OctreeBase:public Object
 {
 public:
-  /** Standard class type aliases. */
-  using Self = OctreeBase;
-  using Pointer = SmartPointer<Self>;
-
-  using OctreeEnum = OctreeEnums::Octree;
-
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr OctreeEnum UNKNOWN_PLANE = OctreeEnum::UNKNOWN_PLANE;
-  static constexpr OctreeEnum SAGITAL_PLANE = OctreeEnum::SAGITAL_PLANE;
-  static constexpr OctreeEnum CORONAL_PLANE = OctreeEnum::CORONAL_PLANE;
-  static constexpr OctreeEnum TRANSVERSE_PLANE = OctreeEnum::TRANSVERSE_PLANE;
-#endif
+  /** Standard class typedefs. */
+  typedef OctreeBase           Self;
+  typedef SmartPointer< Self > Pointer;
 
   /** Get the actual tree base
    *
    * Returns the tree, or 0 if the Octree isn't built yet
    */
-  virtual OctreeNode *
-  GetTree() = 0;
+  virtual OctreeNode * GetTree() = 0;
 
   /** Get tree depth.
    *
    * Depth represents x, for the smallest 2^x >= largest image dimension
    */
-  virtual unsigned int
-  GetDepth() = 0;
+  virtual unsigned int GetDepth() = 0;
 
   /** Get tree width.
    *
    * Width == smallest 2^x >= largest image dimension
    * i.e. 2^Depth == Width
    */
-  virtual unsigned int
-  GetWidth() = 0;
+  virtual unsigned int GetWidth() = 0;
 
   /** Set the depth, e.g. when reading tree from a file. */
-  virtual void
-  SetDepth(unsigned int depth) = 0;
+  virtual void SetDepth(unsigned int depth) = 0;
 
   /** Set width, e.g. when reading from a file. */
-  virtual void
-  SetWidth(unsigned int width) = 0;
+  virtual void SetWidth(unsigned int width) = 0;
 
   /** Build an Octree from an Image's pixel buffer.
    *
    * Method needed for ImageIO class, which has no handle on image, just
    * the pixel buffer.
    */
-  virtual void
-  BuildFromBuffer(const void *       buffer,
-                  const unsigned int xsize,
-                  const unsigned int ysize,
-                  const unsigned int zsize) = 0;
+  virtual void BuildFromBuffer(const void *buffer,
+                               const unsigned int xsize, const unsigned int ysize, const unsigned int zsize) = 0;
 
   /** Get the ColorTable Pointer
    *
@@ -106,12 +96,10 @@ public:
    * data; it simply provides a range of unique addresses that are distinct
    * from the address of any valid subtree.
    */
-  virtual const OctreeNodeBranch *
-  GetColorTable() const = 0;
+  virtual const OctreeNodeBranch * GetColorTable() const = 0;
 
   /** Get the size of the Color Table  */
-  virtual int
-  GetColorTableSize() const = 0;
+  virtual int GetColorTableSize() const = 0;
 };
 
 /**
@@ -122,111 +110,74 @@ public:
  * table, and a Mapping function, derived from itk::FunctionBase
  * \ingroup ITKCommon
  */
-template <typename TPixel, unsigned int ColorTableSize, typename MappingFunctionType>
-class ITK_TEMPLATE_EXPORT Octree : public OctreeBase
+template< typename TPixel, unsigned int ColorTableSize, typename MappingFunctionType >
+class ITK_TEMPLATE_EXPORT Octree:public OctreeBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Octree);
-
-  /** Standard class type aliases. */
-  using Self = Octree;
-  using Superclass = OctreeBase;
-  using Pointer = SmartPointer<Self>;
-  using ImageType = Image<TPixel, 3>;
-  using ImageTypePointer = typename ImageType::Pointer;
+  /** Standard class typedefs. */
+  typedef Octree                      Self;
+  typedef OctreeBase                  Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef Image< TPixel, 3 >          ImageType;
+  typedef typename ImageType::Pointer ImageTypePointer;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Octree, Superclass);
 
-  ImageTypePointer
-  GetImage();
+  ImageTypePointer GetImage();
 
-  void
-  BuildFromBuffer(const void *       buffer,
-                  const unsigned int xsize,
-                  const unsigned int ysize,
-                  const unsigned int zsize) override;
+  virtual void BuildFromBuffer(const void *buffer, const unsigned int xsize, const unsigned int ysize, const unsigned int zsize) ITK_OVERRIDE;
 
-  void BuildFromImage(Image<TPixel, 3> * fromImage);
+  void BuildFromImage(Image< TPixel, 3 > *fromImage);
 
   Octree();
-  ~Octree() override;
-  void
-  SetColor(unsigned int color)
-  {
-    m_Tree.SetColor(color);
-  }
-  void
-  SetTree(OctreeNodeBranch * branch)
-  {
-    m_Tree.SetBranch(branch);
-  }
-  void
-  SetTrueDims(const unsigned int Dim0, const unsigned int Dim1, const unsigned int Dim2);
+  ~Octree() ITK_OVERRIDE;
+  void SetColor(unsigned int color) { m_Tree.SetColor(color); }
+  void SetTree(OctreeNodeBranch *branch) { m_Tree.SetBranch(branch); }
+  void SetTrueDims(const unsigned int Dim0, const unsigned int Dim1,
+                   const unsigned int Dim2);
 
-  int
-  GetValue(const unsigned int Dim0, const unsigned int Dim1, const unsigned int Dim2);
+  int GetValue(const unsigned int Dim0, const unsigned int Dim1,
+                        const unsigned int Dim2);
 
-  void
-  SetWidth(unsigned int width) override;
+  virtual void SetWidth(unsigned int width) ITK_OVERRIDE;
 
-  void
-  SetDepth(unsigned int depth) override;
+  virtual void SetDepth(unsigned int depth) ITK_OVERRIDE;
 
-  unsigned int
-  GetWidth() override;
+  virtual unsigned int GetWidth() ITK_OVERRIDE;
 
-  unsigned int
-  GetDepth() override;
+  virtual unsigned int GetDepth() ITK_OVERRIDE;
 
-  /***
-   * Exposes enum values for backwards compatibility
-   * */
-#if !defined(ITK_LEGACY_REMOVE)
-  static constexpr OctreeEnum UNKNOWN_PLANE = OctreeEnum::UNKNOWN_PLANE;
-  static constexpr OctreeEnum SAGITAL_PLANE = OctreeEnum::SAGITAL_PLANE;
-  static constexpr OctreeEnum CORONAL_PLANE = OctreeEnum::CORONAL_PLANE;
-  static constexpr OctreeEnum TRANSVERSE_PLANE = OctreeEnum::TRANSVERSE_PLANE;
-#endif
+  virtual OctreeNode * GetTree() ITK_OVERRIDE;
 
-  OctreeNode *
-  GetTree() override;
+  virtual const OctreeNodeBranch * GetColorTable() const ITK_OVERRIDE;
 
-  const OctreeNodeBranch *
-  GetColorTable() const override;
-
-  int
-  GetColorTableSize() const override;
+  virtual int GetColorTableSize() const ITK_OVERRIDE;
 
 private:
-  OctreeNodeBranch *
-  maskToOctree(const TPixel * Mask,
-               unsigned       width,
-               unsigned       x,
-               unsigned       y,
-               unsigned       z,
-               unsigned       xsize,
-               unsigned       ysize,
-               unsigned       zsize);
+  ITK_DISALLOW_COPY_AND_ASSIGN(Octree);
 
-  OctreeEnum m_Plane{ OctreeEnum::UNKNOWN_PLANE }; // The orientation of the plane for this octree
+  OctreeNodeBranch * maskToOctree(const TPixel *Mask, unsigned width, unsigned x,
+                                  unsigned y, unsigned z, unsigned xsize,
+                                  unsigned ysize, unsigned zsize);
 
-  // The width of the Octree. This is always a power of 2,
-  // and large enough to contain MAX(DIMS[1,2,3])
-  unsigned int m_Width{ 0 };
-
-  unsigned int        m_Depth{ 0 };  // The depth of the Octree
-  unsigned int        m_TrueDims[3]; // The true dimensions of the image
-  OctreeNodeBranch    m_ColorTable[ColorTableSize];
-  OctreeNode          m_Tree;
+  enum OctreePlaneType m_Plane; // The orientation of the plane for this octree
+  unsigned int         m_Width; // The width of the Octree
+                                // ( This is always a power of 2, and large
+                                // enough to contain MAX(DIMS[1,2,3]))
+  unsigned int          m_Depth;         // < The depth of the Octree
+  unsigned int          m_TrueDims[3];   // The true dimensions of the image
+  OctreeNodeBranch      m_ColorTable[ColorTableSize];
+  OctreeNode   m_Tree;
+  // OctreeColorMapFunction m_ColorMapFunction;
   MappingFunctionType m_MappingFunction;
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkOctree.hxx"
+#include "itkOctree.hxx"
 #endif
 
-#endif // itkOctree_h
+#endif                          /* itkOctree_h */

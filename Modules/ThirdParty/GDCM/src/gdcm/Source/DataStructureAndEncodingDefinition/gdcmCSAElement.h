@@ -65,7 +65,7 @@ public:
     DataField = vl;
   }
   /// Check if CSA Element is empty
-  bool IsEmpty() const { return DataField == nullptr; }
+  bool IsEmpty() const { return DataField == 0; }
 
   /// Set
   void SetByteValue(const char *array, VL length)
@@ -94,7 +94,16 @@ public:
     return GetKey() < de.GetKey();
     }
   CSAElement &operator=(const CSAElement &de)
-    = default;
+    {
+    KeyField = de.KeyField;
+    NameField = de.NameField;
+    ValueMultiplicityField = de.ValueMultiplicityField;
+    VRField = de.VRField;
+    SyngoDTField = de.SyngoDTField;
+    NoOfItemsField = de.NoOfItemsField;
+    DataField = de.DataField; // Pointer copy
+    return *this;
+    }
 
   bool operator==(const CSAElement &de) const
     {

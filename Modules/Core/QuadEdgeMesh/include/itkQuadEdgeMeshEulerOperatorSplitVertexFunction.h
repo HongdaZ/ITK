@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,52 +35,55 @@ namespace itk
  * \ingroup QuadEdgeMeshModifierFunctions
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh, typename TQEType>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorSplitVertexFunction
-  : public QuadEdgeMeshFunctionBase<TMesh, TQEType *>
+template< typename TMesh, typename TQEType >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorSplitVertexFunction:
+  public QuadEdgeMeshFunctionBase< TMesh, TQEType * >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorSplitVertexFunction);
-
-  /** Standard class type aliases. */
-  using Self = QuadEdgeMeshEulerOperatorSplitVertexFunction;
-  using Superclass = QuadEdgeMeshFunctionBase<TMesh, TQEType *>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef QuadEdgeMeshEulerOperatorSplitVertexFunction Self;
+  typedef QuadEdgeMeshFunctionBase< TMesh, TQEType * > Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
   itkNewMacro(Self);
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadEdgeMeshEulerOperatorSplitVertexFunction, QuadEdgeMeshFunctionBase);
 
   /** Type of QuadEdge with which to apply slicing. */
-  using QEType = TQEType;
+  typedef TQEType QEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
-  using VertexRefType = typename MeshType::VertexRefType;
-  using EdgeCellType = typename MeshType::EdgeCellType;
-  using PointIdentifier = typename MeshType::PointIdentifier;
+  typedef typename Superclass::MeshType      MeshType;
+  typedef typename Superclass::OutputType    OutputType;
+  typedef typename MeshType::VertexRefType   VertexRefType;
+  typedef typename MeshType::EdgeCellType    EdgeCellType;
+  typedef typename MeshType::PointIdentifier PointIdentifier;
 
   /** Evaluate at the specified input position */
-  virtual OutputType
-  Evaluate(QEType * e, QEType * f);
+  virtual OutputType Evaluate(QEType *e, QEType *f);
 
-  PointIdentifier
-  GetNewPointID()
+  PointIdentifier GetNewPointID()
   {
-    return (this->m_NewPoint);
+    return ( this->m_NewPoint );
   }
 
 protected:
-  QuadEdgeMeshEulerOperatorSplitVertexFunction() { m_NewPoint = (PointIdentifier)0; }
+  QuadEdgeMeshEulerOperatorSplitVertexFunction()
+  {
+    m_NewPoint = (PointIdentifier)0;
+  }
 
-  ~QuadEdgeMeshEulerOperatorSplitVertexFunction() override = default;
+  ~QuadEdgeMeshEulerOperatorSplitVertexFunction() ITK_OVERRIDE {}
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorSplitVertexFunction);
+
   PointIdentifier m_NewPoint; // stock newly created point ID for user.
 };
-} // end namespace itk
+} // namespace itk
 
 #include "itkQuadEdgeMeshEulerOperatorSplitVertexFunction.hxx"
 
 #endif
+
+// eof - itkQuadEdgeMeshEulerOperatorSplitVertexFunction.h

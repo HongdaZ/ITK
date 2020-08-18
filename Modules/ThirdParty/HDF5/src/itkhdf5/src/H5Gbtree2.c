@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*-------------------------------------------------------------------------
@@ -26,7 +28,7 @@
 /* Module Setup */
 /****************/
 
-#include "H5Gmodule.h"          /* This source code file is part of the H5G module */
+#define H5G_PACKAGE		/*suppress error about including H5Gpkg  */
 
 
 /***********/
@@ -53,6 +55,7 @@
 typedef struct H5G_fh_ud_cmp_t {
     /* downward */
     H5F_t       *f;                     /* Pointer to file that fractal heap is in */
+    hid_t       dxpl_id;                /* DXPL for operation                */
     const char  *name;                  /* Name of link to compare           */
     H5B2_found_t found_op;              /* Callback when correct link is found */
     void        *found_op_data;         /* Callback data when correct link is found */
@@ -80,18 +83,18 @@ static herr_t H5G_dense_btree2_corder_encode(uint8_t *raw, const void *native,
     void *ctx);
 static herr_t H5G_dense_btree2_corder_decode(const uint8_t *raw, void *native,
     void *ctx);
-static herr_t H5G_dense_btree2_corder_debug(FILE *stream, int indent, int fwidth,
-    const void *record, const void *_udata);
+static herr_t H5G_dense_btree2_corder_debug(FILE *stream, const H5F_t *f, hid_t dxpl_id,
+    int indent, int fwidth, const void *record, const void *_udata);
 
 /* v2 B-tree driver callbacks for 'name' index */
 static herr_t H5G_dense_btree2_name_store(void *native, const void *udata);
-static herr_t H5G__dense_btree2_name_compare(const void *rec1, const void *rec2, int *result);
+static herr_t H5G_dense_btree2_name_compare(const void *rec1, const void *rec2, int *result);
 static herr_t H5G_dense_btree2_name_encode(uint8_t *raw, const void *native,
     void *ctx);
 static herr_t H5G_dense_btree2_name_decode(const uint8_t *raw, void *native,
     void *ctx);
-static herr_t H5G_dense_btree2_name_debug(FILE *stream, int indent, int fwidth,
-    const void *record, const void *_udata);
+static herr_t H5G_dense_btree2_name_debug(FILE *stream, const H5F_t *f, hid_t dxpl_id,
+    int indent, int fwidth, const void *record, const void *_udata);
 
 /* Fractal heap function callbacks */
 static herr_t H5G_dense_fh_name_cmp(const void *obj, size_t obj_len, void *op_data);
@@ -108,10 +111,12 @@ const H5B2_class_t H5G_BT2_NAME[1]={{   /* B-tree class information */
     NULL,                               /* Create client callback context */
     NULL,                               /* Destroy client callback context */
     H5G_dense_btree2_name_store,        /* Record storage callback */
-    H5G__dense_btree2_name_compare,      /* Record comparison callback */
+    H5G_dense_btree2_name_compare,      /* Record comparison callback */
     H5G_dense_btree2_name_encode,       /* Record encoding callback */
     H5G_dense_btree2_name_decode,       /* Record decoding callback */
-    H5G_dense_btree2_name_debug         /* Record debugging callback */
+    H5G_dense_btree2_name_debug,        /* Record debugging callback */
+    NULL,                               /* Create debugging context */
+    NULL                                /* Destroy debugging context */
 }};
 
 /* v2 B-tree class for indexing 'creation order' field of links */
@@ -125,7 +130,9 @@ const H5B2_class_t H5G_BT2_CORDER[1]={{ /* B-tree class information */
     H5G_dense_btree2_corder_compare,    /* Record comparison callback */
     H5G_dense_btree2_corder_encode,     /* Record encoding callback */
     H5G_dense_btree2_corder_decode,     /* Record decoding callback */
-    H5G_dense_btree2_corder_debug       /* Record debugging callback */
+    H5G_dense_btree2_corder_debug,      /* Record debugging callback */
+    NULL,                               /* Create debugging context */
+    NULL                                /* Destroy debugging context */
 }};
 
 /*****************************/
@@ -154,7 +161,7 @@ const H5B2_class_t H5G_BT2_CORDER[1]={{ /* B-tree class information */
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5G_dense_fh_name_cmp(const void *obj, size_t obj_len, void *_udata)
+H5G_dense_fh_name_cmp(const void *obj, size_t H5_ATTR_UNUSED obj_len, void *_udata)
 {
     H5G_fh_ud_cmp_t *udata = (H5G_fh_ud_cmp_t *)_udata;         /* User data for 'op' callback */
     H5O_link_t *lnk;    /* Pointer to link created from heap object */
@@ -163,7 +170,7 @@ H5G_dense_fh_name_cmp(const void *obj, size_t obj_len, void *_udata)
     FUNC_ENTER_NOAPI_NOINIT
 
     /* Decode link information */
-    if(NULL == (lnk = (H5O_link_t *)H5O_msg_decode(udata->f, NULL, H5O_LINK_ID, obj_len, (const unsigned char *)obj)))
+    if(NULL == (lnk = (H5O_link_t *)H5O_msg_decode(udata->f, udata->dxpl_id, NULL, H5O_LINK_ID, (const unsigned char *)obj)))
         HGOTO_ERROR(H5E_SYM, H5E_CANTDECODE, FAIL, "can't decode link")
 
     /* Compare the string values */
@@ -213,7 +220,7 @@ H5G_dense_btree2_name_store(void *_nrecord, const void *_udata)
 
 
 /*-------------------------------------------------------------------------
- * Function:	H5G__dense_btree2_name_compare
+ * Function:	H5G_dense_btree2_name_compare
  *
  * Purpose:	Compare two native information records, according to some key
  *
@@ -227,28 +234,18 @@ H5G_dense_btree2_name_store(void *_nrecord, const void *_udata)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5G__dense_btree2_name_compare(const void *_bt2_udata, const void *_bt2_rec, int *result)
+H5G_dense_btree2_name_compare(const void *_bt2_udata, const void *_bt2_rec, int *result)
 {
     const H5G_bt2_ud_common_t *bt2_udata = (const H5G_bt2_ud_common_t *)_bt2_udata;
     const H5G_dense_bt2_name_rec_t *bt2_rec = (const H5G_dense_bt2_name_rec_t *)_bt2_rec;
     herr_t ret_value = SUCCEED;    /* Return value */
 
-    FUNC_ENTER_STATIC
+    FUNC_ENTER_NOAPI_NOINIT
 
     /* Sanity check */
     HDassert(bt2_udata);
     HDassert(bt2_rec);
 
-#ifdef QAK
-{
-unsigned u;
-
-HDfprintf(stderr, "%s: bt2_udata = {'%s', %x}\n", "H5G__dense_btree2_name_compare", bt2_udata->name, (unsigned)bt2_udata->name_hash);
-HDfprintf(stderr, "%s: bt2_rec = {%x, ", "H5G__dense_btree2_name_compare", (unsigned)bt2_rec->hash);
-for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
-    HDfprintf(stderr, "%02x%s", bt2_rec->id[u], (u < (H5G_DENSE_FHEAP_ID_LEN - 1) ? " " : "}\n"));
-}
-#endif /* QAK */
     /* Check hash value */
     if(bt2_udata->name_hash < bt2_rec->hash)
         *result = (-1);
@@ -263,6 +260,7 @@ for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
         /* Prepare user data for callback */
         /* down */
         fh_udata.f = bt2_udata->f;
+        fh_udata.dxpl_id = bt2_udata->dxpl_id;
         fh_udata.name = bt2_udata->name;
         fh_udata.found_op = bt2_udata->found_op;
         fh_udata.found_op_data = bt2_udata->found_op_data;
@@ -271,7 +269,8 @@ for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
         fh_udata.cmp = 0;
 
         /* Check if the user's link and the B-tree's link have the same name */
-        if(H5HF_op(bt2_udata->fheap, bt2_rec->id, H5G_dense_fh_name_cmp, &fh_udata) < 0)
+        if(H5HF_op(bt2_udata->fheap, bt2_udata->dxpl_id, bt2_rec->id,
+                   H5G_dense_fh_name_cmp, &fh_udata) < 0)
             HGOTO_ERROR(H5E_HEAP, H5E_CANTCOMPARE, FAIL, "can't compare btree2 records")
 
         /* Callback will set comparison value */
@@ -280,7 +279,7 @@ for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* H5G__dense_btree2_name_compare() */
+} /* H5G_dense_btree2_name_compare() */
 
 
 /*-------------------------------------------------------------------------
@@ -353,16 +352,17 @@ H5G_dense_btree2_name_decode(const uint8_t *raw, void *_nrecord, void H5_ATTR_UN
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5G_dense_btree2_name_debug(FILE *stream, int indent, int fwidth,
-    const void *_nrecord, const void H5_ATTR_UNUSED *_udata)
+H5G_dense_btree2_name_debug(FILE *stream, const H5F_t H5_ATTR_UNUSED *f, hid_t H5_ATTR_UNUSED dxpl_id,
+    int indent, int fwidth, const void *_nrecord,
+    const void H5_ATTR_UNUSED *_udata)
 {
     const H5G_dense_bt2_name_rec_t *nrecord = (const H5G_dense_bt2_name_rec_t *)_nrecord;
     unsigned u;                 /* Local index variable */
 
     FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDfprintf(stream, "%*s%-*s {%x, ", indent, "", fwidth, "Record:",
-        (unsigned)nrecord->hash);
+    HDfprintf(stream, "%*s%-*s {%lx, ", indent, "", fwidth, "Record:",
+        nrecord->hash);
     for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
         HDfprintf(stderr, "%02x%s", nrecord->id[u], (u < (H5G_DENSE_FHEAP_ID_LEN - 1) ? " " : "}\n"));
 
@@ -517,16 +517,17 @@ H5G_dense_btree2_corder_decode(const uint8_t *raw, void *_nrecord, void H5_ATTR_
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5G_dense_btree2_corder_debug(FILE *stream, int indent, int fwidth,
-    const void *_nrecord, const void H5_ATTR_UNUSED *_udata)
+H5G_dense_btree2_corder_debug(FILE *stream, const H5F_t H5_ATTR_UNUSED *f, hid_t H5_ATTR_UNUSED dxpl_id,
+    int indent, int fwidth, const void *_nrecord,
+    const void H5_ATTR_UNUSED *_udata)
 {
     const H5G_dense_bt2_corder_rec_t *nrecord = (const H5G_dense_bt2_corder_rec_t *)_nrecord;
     unsigned u;                 /* Local index variable */
 
     FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDfprintf(stream, "%*s%-*s {%llu, ", indent, "", fwidth, "Record:",
-        (unsigned long long)nrecord->corder);
+    HDfprintf(stream, "%*s%-*s {%Hu, ", indent, "", fwidth, "Record:",
+        nrecord->corder);
     for(u = 0; u < H5G_DENSE_FHEAP_ID_LEN; u++)
         HDfprintf(stderr, "%02x%s", nrecord->id[u], (u < (H5G_DENSE_FHEAP_ID_LEN - 1) ? " " : "}\n"));
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,29 +22,29 @@
 
 namespace itk
 {
-template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorJoinFacetFunction<TMesh, TQEType>::OutputType
-QuadEdgeMeshEulerOperatorJoinFacetFunction<TMesh, TQEType>::Evaluate(QEType * e)
+template< typename TMesh, typename TQEType >
+typename QuadEdgeMeshEulerOperatorJoinFacetFunction< TMesh, TQEType >::OutputType
+QuadEdgeMeshEulerOperatorJoinFacetFunction< TMesh, TQEType >::Evaluate(QEType *e)
 {
 #ifndef NDEBUG
-  if (!e)
-  {
+  if ( !e )
+    {
     itkDebugMacro("Input is not an edge.");
-    return ((QEType *)nullptr);
-  }
+    return ( (QEType *)0 );
+    }
 
-  if (!this->m_Mesh)
-  {
+  if ( !this->m_Mesh )
+    {
     itkDebugMacro("No mesh present.");
-    return ((QEType *)nullptr);
-  }
+    return ( (QEType *)0 );
+    }
 #endif
 
-  if (!e->IsInternal())
-  {
+  if ( !e->IsInternal() )
+    {
     itkDebugMacro("The edge is either border or wire.");
-    return ((QEType *)nullptr);
-  }
+    return ( (QEType *)ITK_NULLPTR );
+    }
 
   //     Initial state                           Final state        //
   //
@@ -68,7 +68,7 @@ QuadEdgeMeshEulerOperatorJoinFacetFunction<TMesh, TQEType>::Evaluate(QEType * e)
   //          \|/                                  \  /             //
   //          Org                                  Org              //
   //
-  QEType * return_e = e->GetOnext()->GetSym();
+  QEType *return_e = e->GetOnext()->GetSym();
 
   // delete the edge and the two associated faces
   this->m_Mesh->LightWeightDeleteEdge(e);
@@ -76,9 +76,10 @@ QuadEdgeMeshEulerOperatorJoinFacetFunction<TMesh, TQEType>::Evaluate(QEType * e)
   // Build a new face in replacement of the one we deleted:
   this->m_Mesh->AddFace(return_e);
   this->m_Mesh->Modified();
-  return (return_e);
+  return ( return_e );
+}
 }
 
-} // end namespace itk
-
 #endif
+
+// eof - itkQuadEdgeMeshEulerOperatorJoinFacetFunction.hxx

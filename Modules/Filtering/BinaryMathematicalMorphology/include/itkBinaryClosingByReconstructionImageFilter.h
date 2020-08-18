@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@
 
 #include "itkKernelImageFilter.h"
 
-namespace itk
-{
+namespace itk {
 
 /**
  * \class BinaryClosingByReconstructionImageFilter
@@ -46,36 +45,36 @@ namespace itk
  * \ingroup ITKBinaryMathematicalMorphology
  */
 
-template <typename TInputImage, typename TKernel>
-class ITK_TEMPLATE_EXPORT BinaryClosingByReconstructionImageFilter
-  : public KernelImageFilter<TInputImage, TInputImage, TKernel>
+template<typename TInputImage, typename TKernel>
+class ITK_TEMPLATE_EXPORT BinaryClosingByReconstructionImageFilter :
+    public KernelImageFilter<TInputImage, TInputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryClosingByReconstructionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BinaryClosingByReconstructionImageFilter;
-  using Superclass = KernelImageFilter<TInputImage, TInputImage, TKernel>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BinaryClosingByReconstructionImageFilter     Self;
+  typedef KernelImageFilter<TInputImage, TInputImage, TKernel>
+                                                       Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(BinaryClosingByReconstructionImageFilter, KernelImageFilter);
+  itkTypeMacro(BinaryClosingByReconstructionImageFilter,
+               KernelImageFilter);
 
-  using InputImageType = TInputImage;
-  using OutputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef TInputImage                              InputImageType;
+  typedef TInputImage                              OutputImageType;
+  typedef typename InputImageType::Pointer         InputImagePointer;
+  typedef typename OutputImageType::RegionType     OutputImageRegionType;
 
   /** Declaration of pixel type. */
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType          InputPixelType;
+  typedef typename TInputImage::PixelType          OutputPixelType;
 
-  /** Kernel type alias. */
-  using KernelType = TKernel;
+  /** Kernel typedef. */
+  typedef TKernel KernelType;
 
   /** Set the value in the image to consider as "foreground". Defaults to
    * maximum value of InputPixelType. */
@@ -97,34 +96,33 @@ public:
 
 protected:
   BinaryClosingByReconstructionImageFilter();
-  ~BinaryClosingByReconstructionImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~BinaryClosingByReconstructionImageFilter() ITK_OVERRIDE {};
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /** BinaryClosingByReconstructionImageFilter need to make sure they request enough of an
    * input image to account for the structuring element size.  The input
    * requested region is expanded by the radius of the structuring element.
    * If the request extends past the LargestPossibleRegion for the input,
    * the request is cropped by the LargestPossibleRegion. */
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to GrayscaleDilateImageFilter GrayscaleErodeImageFilter. */
-  void
-  GenerateData() override;
+  void  GenerateData () ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryClosingByReconstructionImageFilter);
+
   InputPixelType m_ForegroundValue;
 
-  bool m_FullyConnected;
+  bool                m_FullyConnected;
 
 }; // end of class
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBinaryClosingByReconstructionImageFilter.hxx"
+#include "itkBinaryClosingByReconstructionImageFilter.hxx"
 #endif
 
 #endif

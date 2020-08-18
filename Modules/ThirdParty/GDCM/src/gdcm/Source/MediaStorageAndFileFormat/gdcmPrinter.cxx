@@ -75,7 +75,7 @@ static const char * GDCM_TERMINAL_VT100_BACKGROUND_WHITE     = "";
 namespace gdcm
 {
 //-----------------------------------------------------------------------------
-Printer::Printer():PrintStyle(Printer::VERBOSE_STYLE),F(nullptr)
+Printer::Printer():PrintStyle(Printer::VERBOSE_STYLE),F(0)
 {
   MaxPrintLength = 0x100; // Need to be %2
 
@@ -83,7 +83,8 @@ Printer::Printer():PrintStyle(Printer::VERBOSE_STYLE),F(nullptr)
 
 //-----------------------------------------------------------------------------
 Printer::~Printer()
-= default;
+{
+}
 
 void Printer::SetColor(bool c)
 {
@@ -268,7 +269,7 @@ void PrintValue(VR::VRType const &vr, VM const &vm, const Value &v)
   try
     {
     const ByteValue &bv = dynamic_cast<const ByteValue&>(v);
-    const void *array = bv.GetVoidPointer();
+    const char *array = bv.GetPointer();
     const VL &length = bv.GetLength();
     //unsigned short val = *(unsigned short*)(array);
     std::ostream &os = std::cout;
@@ -457,11 +458,11 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
   const DataElement &de, std::ostream &out, std::string const & indent )
 {
   const ByteValue *bv = de.GetByteValue();
-  const SequenceOfItems *sqi = nullptr; //de.GetSequenceOfItems();
+  const SequenceOfItems *sqi = 0; //de.GetSequenceOfItems();
   const SequenceOfFragments *sqf = de.GetSequenceOfFragments();
 
   std::string strowner;
-  const char *owner = nullptr;
+  const char *owner = 0;
   const Tag& t = de.GetTag();
   if( t.IsPrivate() && !t.IsPrivateCreator() )
     {
@@ -496,7 +497,7 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
     {
     refvr = vr_read;
     }
-  if( vr.IsDual() ) // Always check
+  if( refvr.IsDual() ) // This mean vr was read from a dict entry:
     {
     refvr = DataSetHelper::ComputeVR(*F,ds, t);
     }
@@ -532,7 +533,7 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
 //    {
 //    sqi = de.GetValueAsSQ();
 //    }
-  if( vr != VR::INVALID && (!vr.Compatible( vr_read ) || vr_read == VR::INVALID || vr_read == VR::UN || vr_read != refvr ) )
+  if( vr != VR::INVALID && (!vr.Compatible( vr_read ) || vr_read == VR::INVALID || vr_read == VR::UN ) )
     {
     assert( vr != VR::INVALID );
     // FIXME : if terminal supports it: print in red/green !
@@ -609,15 +610,10 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
       //StringFilterCase(UN);
       StringFilterCase(US);
       //StringFilterCase(UT);
-      StringFilterCase(SV);
-      StringFilterCase(UV);
     case VR::OB:
     case VR::OW:
-    case VR::OL:
-    case VR::OV:
     case VR::OB_OW:
     case VR::UN:
-    case VR::US_OW: // TODO: check with ModalityLUT.dcm
     case VR::US_SS_OW: // TODO: check with ModalityLUT.dcm
       /*
       VR::US_SS_OW:
@@ -710,33 +706,7 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
           }
         }
       break;
-    /* ASCII are treated elsewhere but we do not want to use default: here to get warnings */
-    /* hopefully compiler is smart and remove dead switch/case */
-    case VR::AE:
-    case VR::AS:
-    case VR::CS:
-    case VR::DA:
-    case VR::DS:
-    case VR::DT:
-    case VR::IS:
-    case VR::LO:
-    case VR::LT:
-    case VR::PN:
-    case VR::SH:
-    case VR::ST:
-    case VR::TM:
-    case VR::UC:
-    case VR::UI:
-    case VR::UR:
-    case VR::UT:
-    /* others */
-    case VR::VL16:
-    case VR::VL32:
-    case VR::VRASCII:
-    case VR::VRBINARY:
-    case VR::VR_VM1:
-    case VR::VRALL:
-    case VR::VR_END:
+    default:
       assert(0);
       break;
       }
@@ -788,7 +758,7 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
     if( bv )
       {
       size_t count = VM::GetNumberOfElementsFromArray(bv->GetPointer(), bv->GetLength());
-      guessvm = VM::GetVMTypeFromLength(count, 1); // hackish...
+      guessvm = VM::GetVMTypeFromLength((unsigned int)count, 1); // hackish...
       }
     }
   else if( refvr & VR::VRBINARY )
@@ -834,7 +804,7 @@ VR Printer::PrintDataElement(std::ostringstream &os, const Dicts &dicts, const D
   if( name && *name )
     {
     // No owner case !
-    if( t.IsPrivate() && (owner == nullptr || *owner == 0 ) && !t.IsPrivateCreator() )
+    if( t.IsPrivate() && (owner == 0 || *owner == 0 ) && !t.IsPrivateCreator() )
       {
       os << GDCM_TERMINAL_VT100_FOREGROUND_RED;
       os << " " << name;

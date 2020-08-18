@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,9 +24,10 @@ namespace itk
 {
 namespace Function
 {
-template <typename TScalar, typename TRGBPixel>
-typename GreenColormapFunction<TScalar, TRGBPixel>::RGBPixelType
-GreenColormapFunction<TScalar, TRGBPixel>::operator()(const TScalar & v) const
+template< typename TScalar, typename TRGBPixel >
+typename GreenColormapFunction< TScalar, TRGBPixel >::RGBPixelType
+GreenColormapFunction< TScalar, TRGBPixel >
+::operator()(const TScalar & v) const
 {
   // Map the input scalar between [0, 1].
   RealType value = this->RescaleInputValue(v);

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ namespace itk
 {
 /**
  * Advance one Step following the gradient direction
- * This method will be overridden in non-vector spaces
+ * This method will be overrided in non-vector spaces
  */
 void
-VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType & transformedGradient)
+VersorTransformOptimizer
+::StepAlongGradient(double factor,
+                    const DerivativeType & transformedGradient)
 {
   const ParametersType & currentPosition = this->GetCurrentPosition();
   unsigned int           NumberOfParameters = m_CostFunction->GetNumberOfParameters();
@@ -36,10 +38,10 @@ VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType
   //
   VectorType rightPart;
 
-  for (unsigned int i = 0; i < 3; i++)
-  {
+  for ( unsigned int i = 0; i < 3; i++ )
+    {
     rightPart[i] = currentPosition[i];
-  }
+    }
 
   VersorType currentRotation;
   currentRotation.Set(rightPart);
@@ -60,7 +62,7 @@ VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType
   // direction.
 
   VersorType gradientRotation;
-  gradientRotation.Set(axis, factor * axis.GetNorm());
+  gradientRotation.Set( axis, factor * axis.GetNorm() );
 
   //
   // Composing the currentRotation with the gradientRotation
@@ -76,10 +78,10 @@ VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType
 
   // Optimize the non-versor parameters as the
   // RegularStepGradientDescentOptimizer
-  for (unsigned int j = 3; j < NumberOfParameters; j++)
-  {
+  for ( unsigned int j = 3; j < NumberOfParameters; j++ )
+    {
     newParameters[j] = currentPosition[j] + transformedGradient[j] * factor;
-  }
+    }
 
   this->SetCurrentPosition(newParameters);
 }

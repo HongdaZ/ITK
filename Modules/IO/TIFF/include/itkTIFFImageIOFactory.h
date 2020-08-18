@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,42 +25,32 @@
 
 namespace itk
 {
-/**
- *\class TIFFImageIOFactory
+/** \class TIFFImageIOFactory
  * \brief Create instances of TIFFImageIO objects using an object factory.
  * \ingroup ITKIOTIFF
  */
-class ITKIOTIFF_EXPORT TIFFImageIOFactory : public ObjectFactoryBase
+class ITKIOTIFF_EXPORT TIFFImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TIFFImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = TIFFImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef TIFFImageIOFactory         Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion(void) const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription(void) const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
-  static TIFFImageIOFactory *
-  FactoryNew()
-  {
-    return new TIFFImageIOFactory;
-  }
+  static TIFFImageIOFactory * FactoryNew() { return new TIFFImageIOFactory; }
   /** Run-time type information (and related methods). */
   itkTypeMacro(TIFFImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     TIFFImageIOFactory::Pointer TIFFFactory = TIFFImageIOFactory::New();
 
@@ -69,7 +59,10 @@ public:
 
 protected:
   TIFFImageIOFactory();
-  ~TIFFImageIOFactory() override;
+  ~TIFFImageIOFactory() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TIFFImageIOFactory);
 };
 } // end namespace itk
 

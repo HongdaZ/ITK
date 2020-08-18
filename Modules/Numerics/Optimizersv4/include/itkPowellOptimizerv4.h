@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class PowellOptimizerv4
+/** \class PowellOptimizerv4
  * \brief Implements Powell optimization using Brent line search.
  *
  * The code in this class was adapted from the Wikipedia and the
@@ -56,15 +55,16 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-template <typename TInternalComputationValueType>
-class ITK_TEMPLATE_EXPORT PowellOptimizerv4 : public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
+template<typename TInternalComputationValueType>
+class ITK_TEMPLATE_EXPORT PowellOptimizerv4:
+  public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
 {
 public:
-  /** Standard "Self" type alias. */
-  using Self = PowellOptimizerv4;
-  using Superclass = ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef PowellOptimizerv4                                                   Self;
+  typedef ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>  Superclass;
+  typedef SmartPointer< Self >                                                Pointer;
+  typedef SmartPointer< const Self >                                          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -72,9 +72,9 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(PowellOptimizerv4, Superclass);
 
-  using ParametersType = typename Superclass::ParametersType;
-  using MeasureType = typename Superclass::MeasureType;
-  using ScalesType = typename Superclass::ScalesType;
+  typedef typename Superclass::ParametersType     ParametersType;
+  typedef typename Superclass::MeasureType        MeasureType;
+  typedef typename Superclass::ScalesType         ScalesType;
 
   /** Set/Get maximum iteration limit. */
   itkSetMacro(MaximumIteration, unsigned int);
@@ -102,27 +102,19 @@ public:
 
   /** Return Current Value */
   itkGetConstReferenceMacro(CurrentCost, MeasureType);
-  const MeasureType &
-  GetValue() const override
-  {
-    return this->GetCurrentCost();
-  }
+  virtual const MeasureType & GetValue() const ITK_OVERRIDE { return this->GetCurrentCost(); }
 
   /** Get the current line search iteration */
   itkGetConstReferenceMacro(CurrentLineIteration, unsigned int);
 
   /** Start optimization. */
-  void
-  StartOptimization(bool doOnlyInitialization = false) override;
+  virtual void StartOptimization(bool doOnlyInitialization = false) ITK_OVERRIDE;
 
   /** When users call StartOptimization, this value will be set false.
    * By calling StopOptimization, this flag will be set true, and
    * optimization will stop at the next iteration. */
-  void
-  StopOptimization()
-  {
-    m_Stop = true;
-  }
+  void StopOptimization()
+  { m_Stop = true; }
 
   itkGetConstReferenceMacro(CatchGetValueException, bool);
   itkSetMacro(CatchGetValueException, bool);
@@ -130,46 +122,39 @@ public:
   itkGetConstReferenceMacro(MetricWorstPossibleValue, double);
   itkSetMacro(MetricWorstPossibleValue, double);
 
-  const std::string
-  GetStopConditionDescription() const override;
+  virtual const std::string GetStopConditionDescription() const ITK_OVERRIDE;
 
 protected:
   PowellOptimizerv4();
   PowellOptimizerv4(const PowellOptimizerv4 &);
-  ~PowellOptimizerv4() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~PowellOptimizerv4() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   itkSetMacro(CurrentCost, double);
 
   /** Used to specify the line direction through the n-dimensional parameter
    * space the is currently being bracketed and optimized. */
-  void
-  SetLine(const ParametersType & origin, const vnl_vector<double> & direction);
+  void SetLine(const ParametersType & origin,
+               const vnl_vector< double > & direction);
 
   /** Get the value of the n-dimensional cost function at this scalar step
    * distance along the current line direction from the current line origin.
    * Line origin and distances are set via SetLine */
-  double
-  GetLineValue(double x) const;
+  double GetLineValue(double x) const;
 
-  double
-  GetLineValue(double x, ParametersType & tempCoord) const;
+  double GetLineValue(double x, ParametersType & tempCoord) const;
 
   /** Set the given scalar step distance (x) and function value (fx) as the
    * "best-so-far" optimizer values. */
-  void
-  SetCurrentLinePoint(double x, double fx);
+  void   SetCurrentLinePoint(double x, double fx);
 
   /** Used in bracketing the extreme along the current line.
    * Adapted from NRC */
-  void
-  Swap(double * a, double * b) const;
+  void   Swap(double *a, double *b) const;
 
   /** Used in bracketing the extreme along the current line.
    * Adapted from NRC */
-  void
-  Shift(double * a, double * b, double * c, double d) const;
+  void   Shift(double *a, double *b, double *c, double d) const;
 
   /** The LineBracket routine from NRC. Later reimplemented from the description
    * of the method available in the Wikipedia.
@@ -180,41 +165,29 @@ protected:
    *
    * IMPORTANT: The value of ax and the value of the function at ax (i.e., fa),
    * must both be provided to this function. */
-  virtual void
-  LineBracket(double * ax, double * bx, double * cx, double * fa, double * fb, double * fc);
+  virtual void   LineBracket(double *ax, double *bx, double *cx,
+                             double *fa, double *fb, double *fc);
 
-  virtual void
-  LineBracket(double * ax, double * bx, double * cx, double * fa, double * fb, double * fc, ParametersType & tempCoord);
+  virtual void   LineBracket(double *ax, double *bx, double *cx,
+                             double *fa, double *fb, double *fc,
+                             ParametersType & tempCoord);
 
   /** Given a bracketing triple of points and their function values, returns
    * a bounded extreme.  These values are in parameter space, along the
    * current line and wrt the current origin set via SetLine.   Optimization
    * terminates based on MaximumIteration, StepTolerance, or ValueTolerance.
-   * Implemented as Brent line optimizers from NRC.  */
-  virtual void
-  BracketedLineOptimize(double   ax,
-                        double   bx,
-                        double   cx,
-                        double   fa,
-                        double   fb,
-                        double   fc,
-                        double * extX,
-                        double * extVal);
+   * Implemented as Brent line optimers from NRC.  */
+  virtual void   BracketedLineOptimize(double ax, double bx, double cx,
+                                       double fa, double fb, double fc,
+                                       double *extX, double *extVal);
 
-  virtual void
-  BracketedLineOptimize(double           ax,
-                        double           bx,
-                        double           cx,
-                        double           fa,
-                        double           fb,
-                        double           fc,
-                        double *         extX,
-                        double *         extVal,
-                        ParametersType & tempCoord);
+  virtual void   BracketedLineOptimize(double ax, double bx, double cx,
+                                       double fa, double fb, double fc,
+                                       double *extX, double *extVal,
+                                       ParametersType & tempCoord);
 
   itkGetMacro(SpaceDimension, unsigned int);
-  void
-  SetSpaceDimension(unsigned int dim)
+  void SetSpaceDimension(unsigned int dim)
   {
     this->m_SpaceDimension = dim;
     this->m_LineDirection.set_size(dim);
@@ -229,26 +202,26 @@ protected:
   itkSetMacro(Stop, bool);
 
 private:
-  unsigned int m_SpaceDimension{ 0 };
+  unsigned int m_SpaceDimension;
 
   /** Current iteration */
-  unsigned int m_CurrentLineIteration{ 0 };
+  unsigned int m_CurrentLineIteration;
 
   /** Maximum iteration limit. */
-  unsigned int m_MaximumIteration{ 100 };
-  unsigned int m_MaximumLineIteration{ 100 };
+  unsigned int m_MaximumIteration;
+  unsigned int m_MaximumLineIteration;
 
-  bool   m_CatchGetValueException{ false };
-  double m_MetricWorstPossibleValue{ 0 };
+  bool   m_CatchGetValueException;
+  double m_MetricWorstPossibleValue;
 
   /** The minimal size of search */
-  double m_StepLength{ 0 };
-  double m_StepTolerance{ 0 };
+  double m_StepLength;
+  double m_StepTolerance;
 
-  ParametersType     m_LineOrigin;
-  vnl_vector<double> m_LineDirection;
+  ParametersType       m_LineOrigin;
+  vnl_vector< double > m_LineDirection;
 
-  double m_ValueTolerance{ 0 };
+  double m_ValueTolerance;
 
   /** Internal storage for the value type / used as a cache  */
   MeasureType m_CurrentCost;
@@ -257,7 +230,7 @@ private:
    * when users call StartOptimization, this value will be set false.
    * By calling StopOptimization, this flag will be set true, and
    * optimization will stop at the next iteration. */
-  bool m_Stop{ false };
+  bool m_Stop;
 
   ParametersType m_CurrentPosition;
 
@@ -266,7 +239,7 @@ private:
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPowellOptimizerv4.hxx"
+#include "itkPowellOptimizerv4.hxx"
 #endif
 
 #endif

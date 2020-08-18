@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class HilbertPath
+/** \class HilbertPath
  * \brief  Represent an n-dimensional Hilbert path for a given order
  *
  * This class is used to construct a Hilbert spacing-filling curve
@@ -50,164 +49,143 @@ namespace itk
  *
  * \ingroup ITKPath
  */
-template <typename TIndexValue = unsigned int, unsigned int VDimension = 3>
-class ITK_TEMPLATE_EXPORT HilbertPath : public Path<TIndexValue, Index<VDimension>, VDimension>
+template<typename TIndexValue = unsigned int, unsigned int VDimension = 3>
+class ITK_TEMPLATE_EXPORT HilbertPath
+: public Path<TIndexValue, Index<VDimension>, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HilbertPath);
 
-  /** Standard class type aliases. */
-  using Self = HilbertPath<TIndexValue, VDimension>;
-  using Superclass = Path<unsigned int, Index<VDimension>, VDimension>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef HilbertPath<TIndexValue, VDimension>               Self;
+  typedef Path<unsigned int, Index<VDimension>, VDimension>  Superclass;
+  typedef SmartPointer<Self>                                 Pointer;
+  typedef SmartPointer<const Self>                           ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HilbertPath, Path);
+  itkTypeMacro( HilbertPath, Path );
 
   /** New() method for dynamic construction */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Dimension underlying input image. */
-  static constexpr unsigned int Dimension = VDimension;
+  itkStaticConstMacro( Dimension, unsigned int, VDimension );
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
-  using InputType = typename Superclass::InputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
+  typedef typename Superclass::InputType  InputType;
 
-  /** The input/output type alias*/
-  using PathIndexType = InputType;
-  using IndexType = OutputType;
-  using HilbertOrderType = unsigned int;
-  using HilbertPathType = std::vector<IndexType>;
-  using HilbertPathSizeType = typename HilbertPathType::size_type;
-  using OffsetType = typename Superclass::OffsetType;
+  /** The input/output typedefs*/
+  typedef InputType                             PathIndexType;
+  typedef OutputType                            IndexType;
+  typedef unsigned int                          HilbertOrderType;
+  typedef std::vector<IndexType>                HilbertPathType;
+  typedef typename HilbertPathType::size_type   HilbertPathSizeType;
+  typedef typename Superclass::OffsetType       OffsetType;
 
   // Functions inherited from Path
 
   /** Evaluate the hilbert path for the index at the specified path-position. */
-  OutputType
-  Evaluate(const PathIndexType & input) const override
-  {
+  virtual OutputType Evaluate( const PathIndexType & input ) const ITK_OVERRIDE
+    {
     return this->m_HilbertPath[input];
-  }
+    }
 
-  OutputType
-  EvaluateToIndex(const PathIndexType & input) const override
-  {
+  virtual OutputType EvaluateToIndex( const PathIndexType & input ) const ITK_OVERRIDE
+    {
     return this->m_HilbertPath[input];
-  }
+    }
 
   /** Evaluate the hilbert path for the path-position at the specified index. */
-  virtual InputType
-  EvaluateInverse(const IndexType & input)
-  {
-    return this->TransformMultiDimensionalIndexToPathIndex(input);
-  }
+  virtual InputType EvaluateInverse( const IndexType & input )
+    {
+    return this->TransformMultiDimensionalIndexToPathIndex( input );
+    }
 
   /** Where does the path end (what is the last valid input value)? */
-  InputType
-  EndOfInput() const override
-  {
-    return static_cast<InputType>(this->NumberOfSteps()); // 0 is before the first step, 1 is after it
-  }
+  virtual InputType EndOfInput() const ITK_OVERRIDE
+    {
+    return static_cast<InputType>( this->NumberOfSteps() );  // 0 is before the first step, 1 is after it
+    }
 
   /** Increment the input variable passed by reference and then return the
    * index stored at the new path-position.
    */
-  OffsetType
-  IncrementInput(InputType & itkNotUsed(input)) const override
-  {
-    itkExceptionMacro("Not implemented.");
-  }
+  virtual OffsetType IncrementInput( InputType & itkNotUsed( input ) ) const ITK_OVERRIDE
+    {
+    itkExceptionMacro( "Not implemented." );
+    }
 
   /** Remove all steps from the path*/
-  virtual inline void
-  Clear()
-  {
+  virtual inline void Clear()
+    {
     this->m_HilbertPath.clear();
     this->Modified();
-  }
+    }
 
   /** How many steps in the path? */
-  virtual inline HilbertPathSizeType
-  NumberOfSteps() const
-  {
+  virtual inline HilbertPathSizeType NumberOfSteps() const
+    {
     return m_HilbertPath.size();
-  }
+    }
 
   /** Needed for Pipelining */
-  void
-  Initialize() override
-  {
+  virtual void Initialize( void ) ITK_OVERRIDE
+    {
     this->Clear();
     this->ConstructHilbertPath();
-  }
+    }
 
   /**
    * Set/get Hilbert order.  The multi-dimensional space is of size 2^(HilbertOrder).
    */
-  itkSetClampMacro(HilbertOrder, HilbertOrderType, 1, NumericTraits<HilbertOrderType>::max());
-  itkGetConstMacro(HilbertOrder, HilbertOrderType);
+  itkSetClampMacro( HilbertOrder, HilbertOrderType, 1, NumericTraits<HilbertOrderType>::max() );
+  itkGetConstMacro( HilbertOrder, HilbertOrderType );
 
   /** Convert the path index to the multidimensional index location */
-  IndexType
-  TransformPathIndexToMultiDimensionalIndex(const PathIndexType id);
+  IndexType TransformPathIndexToMultiDimensionalIndex( const PathIndexType id );
 
   /** Convert the multidimensional index to the path index */
-  PathIndexType
-  TransformMultiDimensionalIndexToPathIndex(const IndexType & index);
+  PathIndexType TransformMultiDimensionalIndexToPathIndex( const IndexType & index );
 
 protected:
   HilbertPath();
-  ~HilbertPath() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~HilbertPath() ITK_OVERRIDE {}
+  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
 private:
-  void
-  ConstructHilbertPath();
+  ITK_DISALLOW_COPY_AND_ASSIGN(HilbertPath);
 
-  PathIndexType
-  GetTransform(const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType);
+  void ConstructHilbertPath();
 
-  PathIndexType
-  GetInverseTransform(const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType);
+  PathIndexType GetTransform( const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetGrayCode(const PathIndexType);
+  PathIndexType GetInverseTransform( const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetInverseGrayCode(const PathIndexType);
+  PathIndexType GetGrayCode( const PathIndexType );
 
-  PathIndexType
-  SetBit(const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType);
+  PathIndexType GetInverseGrayCode( const PathIndexType );
 
-  PathIndexType
-  GetRightBitRotation(PathIndexType, PathIndexType, const PathIndexType);
+  PathIndexType SetBit( const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetLeftBitRotation(PathIndexType, PathIndexType, const PathIndexType);
+  PathIndexType GetRightBitRotation( PathIndexType, PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetTrailingSetBits(const PathIndexType, const PathIndexType);
+  PathIndexType GetLeftBitRotation( PathIndexType, PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetDirection(const PathIndexType, const PathIndexType);
+  PathIndexType GetTrailingSetBits( const PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetEntry(const PathIndexType);
+  PathIndexType GetDirection( const PathIndexType, const PathIndexType );
 
-  PathIndexType
-  GetBitRange(const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType);
+  PathIndexType GetEntry( const PathIndexType );
 
-  HilbertOrderType m_HilbertOrder{ 1 };
-  HilbertPathType  m_HilbertPath;
+  PathIndexType GetBitRange( const PathIndexType, const PathIndexType, const PathIndexType, const PathIndexType );
+
+  HilbertOrderType             m_HilbertOrder;
+  HilbertPathType              m_HilbertPath;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkHilbertPath.hxx"
+#include "itkHilbertPath.hxx"
 #endif
 
 #endif

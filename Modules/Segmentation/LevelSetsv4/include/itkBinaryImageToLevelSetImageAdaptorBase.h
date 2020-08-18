@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,59 +24,64 @@
 
 namespace itk
 {
-/**
- *\class BinaryImageToLevelSetImageAdaptorBase
+/** \class BinaryImageToLevelSetImageAdaptorBase
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TInputImage, typename TLevelSet>
+template< typename TInputImage, typename TLevelSet >
 class BinaryImageToLevelSetImageAdaptorBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptorBase);
-
-  using Self = BinaryImageToLevelSetImageAdaptorBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = Object;
+  typedef BinaryImageToLevelSetImageAdaptorBase Self;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
+  typedef Object                                Superclass;
 
   /** Run-time type information */
-  itkTypeMacro(BinaryImageToLevelSetImageAdaptorBase, Object);
+  itkTypeMacro( BinaryImageToLevelSetImageAdaptorBase, Object );
 
-  using InputImageType = TInputImage;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using InputImageIndexType = typename InputImageType::IndexType;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputPixelRealType = typename NumericTraits<InputImagePixelType>::RealType;
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
+  typedef typename InputImageType::IndexType    InputImageIndexType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename NumericTraits< InputImagePixelType >::RealType
+                                                InputPixelRealType;
 
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro ( ImageDimension, unsigned int,
+                       InputImageType::ImageDimension );
 
-  using LevelSetType = TLevelSet;
-  using LevelSetPointer = typename LevelSetType::Pointer;
+  typedef TLevelSet                       LevelSetType;
+  typedef typename LevelSetType::Pointer  LevelSetPointer;
 
   /**
    * Input is a binary image m_InputImage
    * Output is a WhitakerSparseLevelSetImagePointer  */
-  virtual void
-  Initialize() = 0;
+  virtual void Initialize() = 0;
 
   /** Get the sparse levet set function */
-  itkGetModifiableObjectMacro(LevelSet, LevelSetType);
+  itkGetModifiableObjectMacro(LevelSet, LevelSetType );
 
   /** Set/Get the input image*/
-  itkSetObjectMacro(InputImage, InputImageType);
-  itkGetModifiableObjectMacro(InputImage, InputImageType);
+  itkSetObjectMacro( InputImage, InputImageType );
+  itkGetModifiableObjectMacro(InputImage, InputImageType );
 
 protected:
   /** Constructor */
-  BinaryImageToLevelSetImageAdaptorBase() { this->m_LevelSet = LevelSetType::New(); }
+  BinaryImageToLevelSetImageAdaptorBase()
+    {
+    this->m_LevelSet = LevelSetType::New();
+    }
 
   /** Destructor */
-  ~BinaryImageToLevelSetImageAdaptorBase() override = default;
+  virtual ~BinaryImageToLevelSetImageAdaptorBase() ITK_OVERRIDE {}
 
-  InputImagePointer m_InputImage;
-  LevelSetPointer   m_LevelSet;
+  InputImagePointer       m_InputImage;
+  LevelSetPointer         m_LevelSet;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryImageToLevelSetImageAdaptorBase);
+
 };
-} // namespace itk
+}
 
 #endif // itkBinaryImageToLevelSetImageAdaptorBase_h

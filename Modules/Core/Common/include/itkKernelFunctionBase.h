@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@
 namespace itk
 {
 /** \class KernelFunctionBase
- * \brief Kernel used for density estimation and nonparametric regression.
+ * \brief Kernel used for density estimation and nonparameteric regression.
  *
  * This class encapsulates the smoothing kernel used for statistical density
- * estimation and nonparametric regression. The basic idea of the kernel
+ * estimation and nonparameteric regression. The basic idea of the kernel
  * approach is to weight observations by a smooth function (the kernel)
  * to created a smoothed approximation.
  *
@@ -39,39 +39,36 @@ namespace itk
  * \ingroup Functions
  * \ingroup ITKCommon
  */
-template <typename TRealValueType = double>
-class KernelFunctionBase : public FunctionBase<TRealValueType, TRealValueType>
+template< typename TRealValueType = double >
+class KernelFunctionBase:public FunctionBase< TRealValueType, TRealValueType >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = KernelFunctionBase;
-  using Superclass = FunctionBase<TRealValueType, TRealValueType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef KernelFunctionBase                             Self;
+  typedef FunctionBase< TRealValueType, TRealValueType > Superclass;
+  typedef SmartPointer< Self >                           Pointer;
+  typedef SmartPointer< const Self >                     ConstPointer;
 
-  using RealType = TRealValueType;
+  typedef TRealValueType                             RealType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(KernelFunctionBase, FunctionBase);
 
   /** Evaluate the function. Subclasses must implement this. */
-  TRealValueType
-  Evaluate(const TRealValueType & u) const override = 0;
+  virtual TRealValueType Evaluate(const TRealValueType & u) const ITK_OVERRIDE = 0;
 
-#ifdef ITK_USE_CONCEPT_CHECKING
-  // Begin concept checking
-  itkConceptMacro(TRealValueTypeIsFloatingPointCheck, (Concept::IsFloatingPoint<TRealValueType>));
-  // End concept checking
+#ifdef ITK_USE_STRICT_CONCEPT_CHECKING
+    // Begin concept checking
+    itkConceptMacro( TRealValueTypeIsFloatingPointCheck,
+                         ( Concept::IsFloatingPoint< TRealValueType > ) );
+      // End concept checking
 #endif
 
 protected:
-  KernelFunctionBase() = default;
-  ~KernelFunctionBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    Superclass::PrintSelf(os, indent);
-  }
+  KernelFunctionBase() {};
+  virtual ~KernelFunctionBase() ITK_OVERRIDE {};
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
+  { Superclass::PrintSelf(os, indent); }
 };
 } // end namespace itk
 

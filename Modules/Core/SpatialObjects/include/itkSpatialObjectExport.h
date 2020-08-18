@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@
 #define itkSpatialObjectExport_h
 
 #if defined(ITKDLL) && defined(ITK_WINDOWS_EXPORT_ALL_SYMBOLS)
-#  ifdef ITKSpatialObjects_EXPORTS
-#    define ITKSpatialObjectExport
-#  else
-#    if defined(_WIN32) || defined(WIN32)
-#      define ITKSpatialObjectExport __declspec(dllimport)
-#    endif
+# ifdef ITKSpatialObjects_EXPORTS
+#  define ITKSpatialObjectExport
+# else
+#  if defined(_WIN32) || defined(WIN32)
+#   define ITKSpatialObjectExport __declspec(dllimport)
 #  endif
+# endif
 #endif
 
 #ifndef ITKSpatialObjectExport

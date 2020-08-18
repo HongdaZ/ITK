@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -65,32 +65,32 @@ namespace itk
  * \sa ImageConstIteratorWithIndex
  * \ingroup ITKCommon
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT ImageRegionReverseIterator : public ImageRegionReverseConstIterator<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT ImageRegionReverseIterator:public ImageRegionReverseConstIterator< TImage >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ImageRegionReverseIterator;
-  using Superclass = ImageRegionReverseConstIterator<TImage>;
+  /** Standard class typedefs. */
+  typedef ImageRegionReverseIterator                Self;
+  typedef ImageRegionReverseConstIterator< TImage > Superclass;
 
   /** Types inherited from the Superclass */
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
-  using RegionType = typename Superclass::RegionType;
-  using ImageType = typename Superclass::ImageType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using PixelType = typename Superclass::PixelType;
-  using AccessorType = typename Superclass::AccessorType;
+  typedef typename Superclass::IndexType             IndexType;
+  typedef typename Superclass::SizeType              SizeType;
+  typedef typename Superclass::OffsetType            OffsetType;
+  typedef typename Superclass::RegionType            RegionType;
+  typedef typename Superclass::ImageType             ImageType;
+  typedef typename Superclass::PixelContainer        PixelContainer;
+  typedef typename Superclass::PixelContainerPointer PixelContainerPointer;
+  typedef typename Superclass::InternalPixelType     InternalPixelType;
+  typedef typename Superclass::PixelType             PixelType;
+  typedef typename Superclass::AccessorType          AccessorType;
 
   /** Default constructor. Needed since we provide a cast constructor. */
-  ImageRegionReverseIterator() = default;
+  ImageRegionReverseIterator();
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. */
-  ImageRegionReverseIterator(ImageType * ptr, const RegionType & region);
+  ImageRegionReverseIterator(ImageType *ptr, const RegionType & region);
 
   /** Constructor that can be used to cast from an ImageConstIterator to an
    * ImageRegionReverseIterator. Many routines return an ImageConstIterator but for a
@@ -98,35 +98,38 @@ public:
    * provide overloaded APIs that return different types of Iterators, itk
    * returns ImageConstIterators and uses constructors to cast from an
    * ImageConstIterator to a ImageRegionReverseIterator. */
-  ImageRegionReverseIterator(const ImageConstIterator<TImage> & it);
+  ImageRegionReverseIterator(const ImageConstIterator< TImage > & it);
 
   /** Set the pixel value */
-  void
-  Set(const PixelType & value) const
-  {
-    this->m_PixelAccessor.Set(*const_cast<InternalPixelType *>((this->m_Buffer + this->m_Offset)), value);
-  }
+  void Set(const PixelType & value) const
+  { this->m_PixelAccessor.Set(*const_cast< InternalPixelType  * >( ( this->m_Buffer + this->m_Offset ) ), value); }
 
   /** Return a reference to the pixel
    * This method will provide the fastest access to pixel
    * data, but it will NOT support ImageAdaptors. */
-  PixelType &
-  Value()
-  {
-    return *const_cast<InternalPixelType *>((this->m_Buffer + this->m_Offset));
-  }
+  PixelType & Value(void)
+  { return *const_cast< InternalPixelType  * >( ( this->m_Buffer + this->m_Offset ) ); }
+
+  /** Return an iterator for the beginning of the region. "Begin"
+   * is defined as the first pixel in the region.
+   * \deprecated Use GoToBegin() instead */
+  itkLegacyMacro(Self Begin(void) const);
+
+  /** Return an iterator for the end of the region. "End" is defined
+   * as one pixel past the last pixel of the region.
+   * \deprecated Use GoToEnd() instead */
+  itkLegacyMacro(Self End(void) const);
 
 protected:
   /** the construction from a const iterator is declared protected
       in order to enforce const correctness. */
-  ImageRegionReverseIterator(const ImageRegionReverseConstIterator<TImage> & it);
-  Self &
-  operator=(const ImageRegionReverseConstIterator<TImage> & it);
+  ImageRegionReverseIterator(const ImageRegionReverseConstIterator< TImage > & it);
+  Self & operator=(const ImageRegionReverseConstIterator< TImage > & it);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageRegionReverseIterator.hxx"
+#include "itkImageRegionReverseIterator.hxx"
 #endif
 
 #endif

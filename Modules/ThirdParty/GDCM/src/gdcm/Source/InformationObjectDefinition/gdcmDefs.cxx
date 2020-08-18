@@ -24,10 +24,12 @@ namespace gdcm
 {
 
 Defs::Defs()
-= default;
+{
+}
 
 Defs::~Defs()
-= default;
+{
+}
 
 void Defs::LoadDefaults()
 {
@@ -229,12 +231,6 @@ const char *Defs::GetIODNameFromMediaStorage(MediaStorage const &ms)
     case MediaStorage::XRayRadiationDoseSR:
       iodname = "X Ray Radiation Dose SR IOD Modules";
       break;
-    case MediaStorage::FujiPrivateCRImageStorage:
-      iodname = "Fuji Private CR Image IOD Modules";
-      break;
-    case MediaStorage::FujiPrivateMammoCRImageStorage:
-      iodname = "Fuji Private Mammo CR Image IOD Modules";
-      break;
     case MediaStorage::CSANonImageStorage:
       iodname = "Siemens Non-image IOD Modules";
       break;
@@ -242,7 +238,7 @@ const char *Defs::GetIODNameFromMediaStorage(MediaStorage const &ms)
       iodname = "VL Microscopic Image IOD Modules";
       break;
     default:
-      iodname = nullptr;
+      iodname = 0;
     }
   return iodname;
 }

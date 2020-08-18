@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,14 +36,11 @@ namespace Details
  * \ingroup ITKCommon
  */
 struct SfinaeTypes
-{
-  using TOne = char;
-  using TTwo = struct
   {
-    char arr__[2];
+  typedef char                       TOne;
+  typedef struct  { char arr__[2]; } TTwo;
   };
-};
-} // namespace Details
+} // Details namespace
 
 /** Traits that emulates \c std::is_convertible<>.
  * \tparam TFrom type to convert from
@@ -57,20 +54,18 @@ struct SfinaeTypes
  * \ingroup ITKCommon
  */
 template <typename TFrom, typename TTo>
-struct IsConvertible : private Details::SfinaeTypes
+struct IsConvertible
+: private Details::SfinaeTypes
 {
 private:
   static TOne Test(TTo);
-  static TTwo
-  Test(...);
-  static TFrom
-  MakeT();
-
+  static TTwo Test(...);
+  static TFrom MakeT();
 public:
-  static constexpr bool Value = sizeof(Test(MakeT())) == sizeof(TOne);
+  static ITK_CONSTEXPR_VAR bool Value = sizeof(Test(MakeT())) == sizeof(TOne);
 };
 
-} // end namespace mpl
+} // itk::mpl namespace
 
 // itk::IsConvertible has moved to itk::mpl.
 // Expect itk::IsConvertible to be deprecated.
@@ -78,5 +73,5 @@ using mpl::IsConvertible;
 
 /** \endcond */
 
-} // end namespace itk
+} // itk namespace
 #endif // itkIsConvertible_h

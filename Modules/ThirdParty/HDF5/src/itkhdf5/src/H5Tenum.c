@@ -5,10 +5,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
- * distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.  *
- * If you do not have access to either file, you may request a copy from     *
- * help@hdfgroup.org.                                                        *
+ * the files COPYING and Copyright.html.  COPYING can be found at the root   *
+ * of the source code distribution tree; Copyright.html can be found at the  *
+ * root level of an installed copy of the electronic HDF5 document set and   *
+ * is linked from the top-level documents page.  It can also be found at     *
+ * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
+ * access to either file, you may request a copy from help@hdfgroup.org.     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
@@ -16,7 +18,10 @@
  *      in the H5T interface.
  */
 
-#include "H5Tmodule.h"          /* This source code file is part of the H5T module */
+#define H5T_PACKAGE		/*suppress error about including H5Tpkg	  */
+
+/* Interface initialization */
+#define H5_INTERFACE_INIT_FUNC	H5T_init_enum_interface
 
 
 #include "H5private.h"		/*generic functions			  */
@@ -31,6 +36,27 @@ static char *H5T_enum_nameof(const H5T_t *dt, const void *value, char *name/*out
 static herr_t H5T_enum_valueof(const H5T_t *dt, const char *name,
 				void *value/*out*/);
 
+
+/*--------------------------------------------------------------------------
+NAME
+   H5T_init_enum_interface -- Initialize interface-specific information
+USAGE
+    herr_t H5T_init_enum_interface()
+
+RETURNS
+    Non-negative on success/Negative on failure
+DESCRIPTION
+    Initializes any interface-specific data or routines.  (Just calls
+    H5T_init_iterface currently).
+
+--------------------------------------------------------------------------*/
+static herr_t
+H5T_init_enum_interface(void)
+{
+    FUNC_ENTER_NOAPI_NOINIT_NOERR
+
+    FUNC_LEAVE_NOAPI(H5T_init())
+} /* H5T_init_enum_interface() */
 
 
 /*-------------------------------------------------------------------------
@@ -57,24 +83,23 @@ H5Tenum_create(hid_t parent_id)
     H5T_t	*dt = NULL;		/*new enumeration data type	*/
     hid_t	ret_value;	        /*return value			*/
 
-    FUNC_ENTER_API(H5I_INVALID_HID)
+    FUNC_ENTER_API(FAIL)
     H5TRACE1("i", "i", parent_id);
 
     /* Check args */
     if(NULL == (parent = (H5T_t *)H5I_object_verify(parent_id, H5I_DATATYPE)) || H5T_INTEGER != parent->shared->type)
-	HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "not an integer data type")
+	HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not an integer data type")
 
     /* Build new type */
     if(NULL == (dt = H5T__enum_create(parent)))
-	HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, H5I_INVALID_HID, "cannot create enum type")
-
+	HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, FAIL, "cannot create enum type")
     /* Atomize the type */
     if ((ret_value=H5I_register(H5I_DATATYPE, dt, TRUE))<0)
-	HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register data type atom")
+	HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, FAIL, "unable to register data type atom")
 
 done:
     FUNC_LEAVE_API(ret_value)
-} /* end H5Tenum_create() */
+}
 
 
 /*-------------------------------------------------------------------------
@@ -98,7 +123,7 @@ done:
 H5T_t *
 H5T__enum_create(const H5T_t *parent)
 {
-    H5T_t	*ret_value = NULL;	/* New enumeration data type	*/
+    H5T_t	*ret_value;		/*new enumeration data type	*/
 
     FUNC_ENTER_PACKAGE
 
@@ -391,7 +416,7 @@ H5T_enum_nameof(const H5T_t *dt, const void *value, char *name/*out*/, size_t si
     unsigned	lt, md = 0, rt;		/* Indices for binary search	*/
     int	        cmp = (-1);		/* Comparison result		*/
     hbool_t     alloc_name = FALSE;     /* Whether name has been allocated */
-    char        *ret_value = NULL;      /* Return value */
+    char        *ret_value;             /* Return value */
 
     FUNC_ENTER_NOAPI_NOINIT
 
@@ -447,7 +472,7 @@ H5T_enum_nameof(const H5T_t *dt, const void *value, char *name/*out*/, size_t si
 
 done:
     if(copied_dt)
-        if(H5T_close_real(copied_dt) < 0)
+        if(H5T_close(copied_dt) < 0)
             HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close data type");
     if(!ret_value && alloc_name)
         H5MM_free(name);
@@ -575,7 +600,7 @@ H5T_enum_valueof(const H5T_t *dt, const char *name, void *value/*out*/)
 
 done:
     if(copied_dt)
-        if(H5T_close_real(copied_dt) < 0)
+        if(H5T_close(copied_dt) < 0)
             HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close data type")
 
     FUNC_LEAVE_NOAPI(ret_value)

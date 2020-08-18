@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,17 +41,15 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKReview
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT WarpHarmonicEnergyCalculator : public Object
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT WarpHarmonicEnergyCalculator:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WarpHarmonicEnergyCalculator);
-
-  /** Standard class type aliases. */
-  using Self = WarpHarmonicEnergyCalculator;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef WarpHarmonicEnergyCalculator Self;
+  typedef Object                       Superclass;
+  typedef SmartPointer< Self >         Pointer;
+  typedef SmartPointer< const Self >   ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -60,33 +58,35 @@ public:
   itkTypeMacro(WarpHarmonicEnergyCalculator, Object);
 
   /** Type definition for the input image. */
-  using ImageType = TInputImage;
+  typedef TInputImage ImageType;
 
   /** Pointer type for the image. */
-  using ImagePointer = typename TInputImage::Pointer;
+  typedef typename TInputImage::Pointer ImagePointer;
 
   /** Const Pointer type for the image. */
-  using ImageConstPointer = typename TInputImage::ConstPointer;
+  typedef typename TInputImage::ConstPointer ImageConstPointer;
 
   /** Type definition for the input image pixel type. */
-  using PixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType PixelType;
 
   /** Type definition for the input image index type. */
-  using IndexType = typename TInputImage::IndexType;
+  typedef typename TInputImage::IndexType IndexType;
 
   /** Type definition for the input image region type. */
-  using RegionType = typename TInputImage::RegionType;
+  typedef typename TInputImage::RegionType RegionType;
 
   /** The dimensionality of the input image. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Length of the vector pixel type of the input image. */
-  static constexpr unsigned int VectorDimension = PixelType::Dimension;
+  itkStaticConstMacro(VectorDimension, unsigned int,
+                      PixelType::Dimension);
 
   /** Type of the iterator that will be used to move through the image.  Also
       the type which will be passed to the evaluate function */
-  using ConstNeighborhoodIteratorType = ConstNeighborhoodIterator<ImageType>;
-  using RadiusType = typename ConstNeighborhoodIteratorType::RadiusType;
+  typedef ConstNeighborhoodIterator< ImageType >             ConstNeighborhoodIteratorType;
+  typedef typename ConstNeighborhoodIteratorType::RadiusType RadiusType;
 
   /** Set/Get whether or not the filter will use the spacing of the input
    *  image in its calculations.
@@ -97,12 +97,24 @@ public:
    *  spacing. Use this option if you want to calculate the Jacobian
    *  determinant in the image space.
    *  Default value is "On". */
-  void
-  SetUseImageSpacing(bool);
+  void SetUseImageSpacing(bool);
   itkGetConstMacro(UseImageSpacing, bool);
   itkBooleanMacro(UseImageSpacing);
+#if !defined(ITK_LEGACY_REMOVE)
+  /** \deprecated Replaced by UseImageSpacingOn() as of ITK 4.12. */
+  itkLegacyMacro(void SetUseImageSpacingOn())
+  {
+    this->SetUseImageSpacing(true);
+  }
 
-  using WeightsType = FixedArray<double, ImageDimension>;
+  /** \deprecated Replaced by UseImageSpacingOff() as of ITK 4.12. */
+  itkLegacyMacro(void SetUseImageSpacingOff())
+  {
+    this->SetUseImageSpacing(false);
+  }
+#endif
+
+  typedef FixedArray< double, ImageDimension > WeightsType;
 
   /** Set/Get the array of weights used to scale partial derivatives in the
    *  gradient calculations.
@@ -114,37 +126,35 @@ public:
   itkSetConstObjectMacro(Image, ImageType);
 
   /** Compute the minimum and maximum values of intensity of the input image. */
-  void
-  Compute();
+  void Compute();
 
   /** Return the smoothness value. */
   itkGetConstMacro(HarmonicEnergy, double);
 
   /** Set the region over which the values will be computed */
-  void
-  SetRegion(const RegionType & region);
+  void SetRegion(const RegionType & region);
 
 protected:
   WarpHarmonicEnergyCalculator();
-  ~WarpHarmonicEnergyCalculator() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~WarpHarmonicEnergyCalculator() {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Get/Set the neighborhood radius used for gradient computation */
   itkGetConstReferenceMacro(NeighborhoodRadius, RadiusType);
   itkSetMacro(NeighborhoodRadius, RadiusType);
 
-  double
-  EvaluateAtNeighborhood(ConstNeighborhoodIteratorType & it) const;
+  double EvaluateAtNeighborhood(ConstNeighborhoodIteratorType & it) const;
 
 private:
-  double            m_HarmonicEnergy{ 0.0 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(WarpHarmonicEnergyCalculator);
+
+  double            m_HarmonicEnergy;
   ImageConstPointer m_Image;
 
   RegionType m_Region;
-  bool       m_RegionSetByUser{ false };
+  bool       m_RegionSetByUser;
 
-  bool m_UseImageSpacing{ true };
+  bool m_UseImageSpacing;
 
   WeightsType m_DerivativeWeights;
 
@@ -153,7 +163,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWarpHarmonicEnergyCalculator.hxx"
+#include "itkWarpHarmonicEnergyCalculator.hxx"
 #endif
 
 #endif /* itkWarpHarmonicEnergyCalculator_h */

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@
 #ifndef itkOrImageFilter_h
 #define itkOrImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 #include "itkBitwiseOpsFunctors.h"
 #include "itkNumericTraits.h"
 
 namespace itk
 {
-/**
- *\class OrImageFilter
+/** \class OrImageFilter
  * \brief Implements the OR bitwise operator pixel-wise between two images.
  *
  * This class is templated over the types of the two
@@ -38,9 +37,9 @@ namespace itk
  *
  * The total operation over one pixel will be
  *
-   \code
-    output_pixel = static_cast<OutputPixelType>( input1_pixel | input2_pixel )
-   \endcode
+ * \code
+ *  output_pixel = static_cast<OutputPixelType>( input1_pixel | input2_pixel )
+ * \endcode
  *
  * Where "|" is the boolean OR operator in C++.
  *
@@ -48,49 +47,54 @@ namespace itk
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageIntensity/BinaryORTwoImages,Binary OR Two Images}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/OrImageFilter,Binary OR two images}
+ * \endwiki
  */
-template <typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1>
-class OrImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
+class OrImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::OR<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
+
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OrImageFilter);
+  /** Standard class typedefs. */
+  typedef OrImageFilter Self;
+  typedef BinaryFunctorImageFilter<
+    TInputImage1, TInputImage2, TOutputImage,
+    Functor::OR< typename TInputImage1::PixelType,
+                 typename TInputImage2::PixelType,
+                 typename TOutputImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = OrImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType =
-    Functor::OR<typename TInputImage1::PixelType, typename TInputImage2::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(OrImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(OrImageFilter,
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(Input1Input2OutputBitwiseOperatorsCheck,
-                  (Concept::BitwiseOperators<typename TInputImage1::PixelType,
-                                             typename TInputImage2::PixelType,
-                                             typename TOutputImage::PixelType>));
+  itkConceptMacro( Input1Input2OutputBitwiseOperatorsCheck,
+                   ( Concept::BitwiseOperators< typename TInputImage1::PixelType,
+                                                typename TInputImage2::PixelType,
+                                                typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  OrImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  OrImageFilter() {}
+  virtual ~OrImageFilter() ITK_OVERRIDE {}
 
-  ~OrImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OrImageFilter);
 };
 } // end namespace itk
 

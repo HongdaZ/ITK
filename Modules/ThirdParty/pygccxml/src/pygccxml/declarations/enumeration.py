@@ -51,7 +51,8 @@ class enumeration_t(
             return False
         return self.values == other.values
 
-    __hash__ = declaration.declaration_t.__hash__
+    def __hash__(self):
+        return super(enumeration_t, self).__hash__()
 
     def _get__cmp__items(self):
         """implementation details"""
@@ -134,5 +135,4 @@ class enumeration_t(
         return x
 
     def i_depend_on_them(self, recursive=True):
-        self._warn_deprecated()
         return []

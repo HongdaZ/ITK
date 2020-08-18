@@ -1,6 +1,9 @@
 // This is core/vnl/algo/vnl_qr.h
 #ifndef vnl_qr_h_
 #define vnl_qr_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Calculate inverse of a matrix using QR
@@ -24,16 +27,14 @@
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/algo/vnl_algo_export.h>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: Extract the Q*R decomposition of matrix M.
 //  The decomposition is stored in a compact and time-efficient
 // packed form, which is most easily used via the "solve" and
 // "determinant" methods.
 
-template <class T>
+VCL_TEMPLATE_EXPORT template <class T>
 class vnl_qr
 {
  public:
@@ -86,7 +87,7 @@ inline T vnl_qr_determinant(vnl_matrix<T> const& m)
   return vnl_qr<T>(m).determinant();
 }
 
-template <class T>
+VCL_TEMPLATE_EXPORT template <class T>
 std::ostream& operator<<(std::ostream&, vnl_qr<T> const & qr);
 
 #endif // vnl_qr_h_

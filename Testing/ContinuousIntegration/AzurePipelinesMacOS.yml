@@ -6,13 +6,13 @@ trigger:
     - master
     - release*
 variables:
-  ExternalDataVersion: 5.0.1
+  ExternalDataVersion: 4.13.2
 jobs:
 - job: macOS
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
   pool:
-    vmImage: macOS-10.15
+    vmImage: 'macOS 10.13'
   steps:
     - checkout: self
       clean: true

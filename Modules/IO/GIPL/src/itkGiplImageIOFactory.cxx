@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,14 +23,18 @@ namespace itk
 {
 GiplImageIOFactory::GiplImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkGiplImageIO", "Gipl Image IO", true, CreateObjectFunction<GiplImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkGiplImageIO",
+                          "Gipl Image IO",
+                          1,
+                          CreateObjectFunction< GiplImageIO >::New() );
 }
 
-GiplImageIOFactory::~GiplImageIOFactory() = default;
+GiplImageIOFactory::~GiplImageIOFactory()
+{}
 
 const char *
-GiplImageIOFactory::GetITKSourceVersion() const
+GiplImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -46,14 +50,13 @@ GiplImageIOFactory::GetDescription() const
 
 static bool GiplImageIOFactoryHasBeenRegistered;
 
-void ITKIOGIPL_EXPORT
-     GiplImageIOFactoryRegister__Private()
+void ITKIOGIPL_EXPORT GiplImageIOFactoryRegister__Private(void)
 {
-  if (!GiplImageIOFactoryHasBeenRegistered)
-  {
+  if( ! GiplImageIOFactoryHasBeenRegistered )
+    {
     GiplImageIOFactoryHasBeenRegistered = true;
     GiplImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

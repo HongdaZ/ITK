@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@
  * Define a PointSet type that stores a PixelType of "int".  Use the defaults
  * for the other template parameters.
  */
-using PointSet = itk::PointSet<int>;
-using PointType = PointSet::PointType;
+typedef itk::PointSet<int>  PointSet;
+typedef PointSet::PointType PointType;
 
 /**
  * The point set that is created consists of a 100 random points.
  */
 
-int
-itkPointSetTest(int, char *[])
+int itkPointSetTest(int, char* [] )
 {
   /**
    * Define the 3d geometric positions for 8 points in a cube.
@@ -53,19 +52,22 @@ itkPointSetTest(int, char *[])
    */
 
   try
-  {
-    for (int i = 0; i < 100; ++i)
     {
-      testPointCoords[0] = (PointSet::CoordRepType)vnl_sample_uniform((double)-1.0, (double)1.0);
-      testPointCoords[1] = (PointSet::CoordRepType)vnl_sample_uniform((double)-1.0, (double)1.0);
-      testPointCoords[2] = (PointSet::CoordRepType)vnl_sample_uniform((double)-1.0, (double)1.0);
+    for(int i=0; i < 100; ++i)
+      {
+      testPointCoords[0] = (PointSet::CoordRepType)
+        vnl_sample_uniform((double)-1.0,(double)1.0);
+      testPointCoords[1] = (PointSet::CoordRepType)
+        vnl_sample_uniform((double)-1.0,(double)1.0);
+      testPointCoords[2] = (PointSet::CoordRepType)
+        vnl_sample_uniform((double)-1.0,(double)1.0);
       pset->SetPoint(i, PointType(testPointCoords));
+      }
     }
-  }
-  catch (...)
-  {
+  catch(...)
+    {
     std::cerr << "Error setting points." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   return EXIT_SUCCESS;
 }

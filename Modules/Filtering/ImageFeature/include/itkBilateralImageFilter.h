@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,22 +66,21 @@ namespace itk
  * \todo Support vector images
  * \ingroup ITKImageFeature
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/BilateralFilterAnImage,Bilateral Filter An Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Smoothing/BilateralImageFilter,Bilateral filter an image}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT BilateralImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT BilateralImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BilateralImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BilateralImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BilateralImageFilter                            Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -90,41 +89,44 @@ public:
   itkTypeMacro(BilateralImageFilter, ImageToImageFilter);
 
   /** Image type information. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-
-  /** Extract some information from the image types.  Dimensionality
-   * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using OutputPixelRealType = typename NumericTraits<OutputPixelType>::RealType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  typedef typename TOutputImage::PixelType                    OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType            OutputInternalPixelType;
+  typedef typename NumericTraits< OutputPixelType >::RealType OutputPixelRealType;
+  typedef typename TInputImage::PixelType                     InputPixelType;
+  typedef typename TInputImage::InternalPixelType             InputInternalPixelType;
+
+  /** Extract some information from the image types.  Dimensionality
+   * of the two images is assumed to be the same. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Typedef of double containers */
-  using ArrayType = FixedArray<double, Self::ImageDimension>;
+  typedef FixedArray< double, itkGetStaticConstMacro(ImageDimension) > ArrayType;
 
   /** Neighborhood iterator types. */
-  using NeighborhoodIteratorType = ConstNeighborhoodIterator<TInputImage>;
+  typedef ConstNeighborhoodIterator< TInputImage > NeighborhoodIteratorType;
 
-  /** Kernel type alias. */
-  using KernelType = Neighborhood<double, Self::ImageDimension>;
-  using SizeType = typename KernelType::SizeType;
-  using SizeValueType = typename KernelType::SizeValueType;
+  /** Kernel typedef. */
+  typedef
+  Neighborhood< double, itkGetStaticConstMacro(ImageDimension) > KernelType;
+  typedef typename KernelType::SizeType      SizeType;
+  typedef typename KernelType::SizeValueType SizeValueType;
 
   /** Kernel iterator. */
-  using KernelIteratorType = typename KernelType::Iterator;
-  using KernelConstIteratorType = typename KernelType::ConstIterator;
+  typedef typename KernelType::Iterator      KernelIteratorType;
+  typedef typename KernelType::ConstIterator KernelConstIteratorType;
 
   /** Gaussian image type */
-  using GaussianImageType = Image<double, Self::ImageDimension>;
+  typedef
+  Image< double, itkGetStaticConstMacro(ImageDimension) > GaussianImageType;
 
   /** Standard get/set macros for filter parameters.
    * DomainSigma is specified in the same units as the Image spacing.
@@ -140,8 +142,7 @@ public:
 
   /** Convenience get/set methods for setting all domain parameters to the
    * same values.  */
-  void
-  SetDomainSigma(const double v)
+  void SetDomainSigma(const double v)
   {
     m_DomainSigma.Fill(v);
   }
@@ -157,8 +158,7 @@ public:
 
   /** Set/Get the kernel radius, specified in pixels.  This parameter
    * is used only when AutomaticNeighborhoodSize is "off". */
-  void
-  SetRadius(const SizeValueType);
+  void SetRadius(const SizeValueType);
 
   itkSetMacro(Radius, SizeType);
   itkGetConstReferenceMacro(Radius, SizeType);
@@ -171,7 +171,8 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputPixelType>));
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< OutputPixelType > ) );
   // End concept checking
 #endif
 
@@ -180,20 +181,18 @@ protected:
   BilateralImageFilter();
 
   /** Destructor. */
-  ~BilateralImageFilter() override = default;
+  virtual ~BilateralImageFilter() ITK_OVERRIDE {}
 
   /** PrintSelf. */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Do some setup before the ThreadedGenerateData */
-  void
-  BeforeThreadedGenerateData() override;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Standard pipeline method. This filter is implemented as a multi-threaded
    * filter. */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
   /** BilateralImageFilter needs a larger input requested region than
    * the output requested region (larger by the size of the domain
@@ -201,10 +200,11 @@ protected:
    * an implementation for GenerateInputRequestedRegion() in order to
    * inform the pipeline execution model.
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BilateralImageFilter);
+
   /** The standard deviation of the gaussian blurring kernel in the image
       range. Units are intensity. */
   double m_RangeSigma;
@@ -227,15 +227,15 @@ private:
   bool       m_AutomaticKernelSize;
 
   /** Variables for the lookup table of range gaussian values */
-  unsigned long       m_NumberOfRangeGaussianSamples;
-  double              m_DynamicRange;
-  double              m_DynamicRangeUsed;
-  std::vector<double> m_RangeGaussianTable;
+  unsigned long         m_NumberOfRangeGaussianSamples;
+  double                m_DynamicRange;
+  double                m_DynamicRangeUsed;
+  std::vector< double > m_RangeGaussianTable;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBilateralImageFilter.hxx"
+#include "itkBilateralImageFilter.hxx"
 #endif
 
 #endif

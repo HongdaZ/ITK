@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,29 +22,36 @@
 
 namespace itk
 {
-template <typename TImage>
-ImageRegionExclusionIteratorWithIndex<TImage>::ImageRegionExclusionIteratorWithIndex(ImageType *        ptr,
-                                                                                     const RegionType & region)
-  : ImageRegionExclusionConstIteratorWithIndex<TImage>(ptr, region)
+template< typename TImage >
+ImageRegionExclusionIteratorWithIndex< TImage >
+::ImageRegionExclusionIteratorWithIndex():
+  ImageRegionExclusionConstIteratorWithIndex< TImage >()
 {}
 
-template <typename TImage>
-ImageRegionExclusionIteratorWithIndex<TImage>::ImageRegionExclusionIteratorWithIndex(
-  const ImageIteratorWithIndex<TImage> & it)
-  : ImageRegionExclusionConstIteratorWithIndex<TImage>(it)
+template< typename TImage >
+ImageRegionExclusionIteratorWithIndex< TImage >
+::ImageRegionExclusionIteratorWithIndex(ImageType *ptr, const RegionType & region):
+  ImageRegionExclusionConstIteratorWithIndex< TImage >(ptr, region)
 {}
 
-template <typename TImage>
-ImageRegionExclusionIteratorWithIndex<TImage>::ImageRegionExclusionIteratorWithIndex(
-  const ImageRegionExclusionConstIteratorWithIndex<TImage> & it)
-  : ImageRegionExclusionConstIteratorWithIndex<TImage>(it)
+template< typename TImage >
+ImageRegionExclusionIteratorWithIndex< TImage >
+::ImageRegionExclusionIteratorWithIndex(const ImageIteratorWithIndex< TImage > & it):
+  ImageRegionExclusionConstIteratorWithIndex< TImage >(it)
 {}
 
-template <typename TImage>
-ImageRegionExclusionIteratorWithIndex<TImage> &
-ImageRegionExclusionIteratorWithIndex<TImage>::operator=(const ImageRegionExclusionConstIteratorWithIndex<TImage> & it)
+template< typename TImage >
+ImageRegionExclusionIteratorWithIndex< TImage >
+::ImageRegionExclusionIteratorWithIndex(const ImageRegionExclusionConstIteratorWithIndex< TImage > & it):
+  ImageRegionExclusionConstIteratorWithIndex< TImage >(it)
+{}
+
+template< typename TImage >
+ImageRegionExclusionIteratorWithIndex< TImage > &
+ImageRegionExclusionIteratorWithIndex< TImage >
+::operator=(const ImageRegionExclusionConstIteratorWithIndex< TImage > & it)
 {
-  this->ImageRegionExclusionConstIteratorWithIndex<TImage>::operator=(it);
+  this->ImageRegionExclusionConstIteratorWithIndex< TImage >::operator=(it);
   return *this;
 }
 } // end namespace itk

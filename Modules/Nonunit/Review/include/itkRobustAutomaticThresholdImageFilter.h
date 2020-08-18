@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,17 +47,16 @@ namespace itk
  * \ingroup ITKReview
  */
 
-template <typename TInputImage, typename TGradientImage = TInputImage, typename TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT RobustAutomaticThresholdImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TGradientImage = TInputImage, typename TOutputImage = TInputImage >
+class ITK_TEMPLATE_EXPORT RobustAutomaticThresholdImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RobustAutomaticThresholdImageFilter);
-
-  /** Standard Self type alias */
-  using Self = RobustAutomaticThresholdImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard Self typedef */
+  typedef RobustAutomaticThresholdImageFilter             Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -66,31 +65,34 @@ public:
   itkTypeMacro(RobustAutomaticThresholdImageFilter, ImageToImageFilter);
 
   /** Standard image type within this class. */
-  using InputImageType = TInputImage;
-  using GradientImageType = TGradientImage;
+  typedef TInputImage    InputImageType;
+  typedef TGradientImage GradientImageType;
 
-  /** Image pixel value type alias. */
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using GradientPixelType = typename TGradientImage::PixelType;
+  /** Image pixel value typedef. */
+  typedef typename TInputImage::PixelType    InputPixelType;
+  typedef typename TOutputImage::PixelType   OutputPixelType;
+  typedef typename TGradientImage::PixelType GradientPixelType;
 
-  /** Image related type alias. */
-  using InputImagePointer = typename TInputImage::Pointer;
-  using OutputImagePointer = typename TOutputImage::Pointer;
-  using GradientImagePointer = typename TGradientImage::Pointer;
+  /** Image related typedefs. */
+  typedef typename TInputImage::Pointer    InputImagePointer;
+  typedef typename TOutputImage::Pointer   OutputImagePointer;
+  typedef typename TGradientImage::Pointer GradientImagePointer;
 
-  using InputSizeType = typename TInputImage::SizeType;
-  using InputIndexType = typename TInputImage::IndexType;
-  using InputImageRegionType = typename TInputImage::RegionType;
-  using OutputSizeType = typename TOutputImage::SizeType;
-  using OutputIndexType = typename TOutputImage::IndexType;
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TInputImage::SizeType    InputSizeType;
+  typedef typename TInputImage::IndexType   InputIndexType;
+  typedef typename TInputImage::RegionType  InputImageRegionType;
+  typedef typename TOutputImage::SizeType   OutputSizeType;
+  typedef typename TOutputImage::IndexType  OutputIndexType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
-  using CalculatorType = RobustAutomaticThresholdCalculator<TInputImage, TGradientImage>;
+  typedef RobustAutomaticThresholdCalculator< TInputImage, TGradientImage >
+  CalculatorType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Set the "outside" pixel value. The default value
    * NumericTraits<OutputPixelType>::ZeroValue(). */
@@ -114,54 +116,51 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputComparableCheck, (Concept::Comparable<OutputPixelType>));
-  itkConceptMacro(OutputOStreamWritableCheck, (Concept::OStreamWritable<OutputPixelType>));
+  itkConceptMacro( OutputComparableCheck,
+                   ( Concept::Comparable< OutputPixelType > ) );
+  itkConceptMacro( OutputOStreamWritableCheck,
+                   ( Concept::OStreamWritable< OutputPixelType > ) );
   // End concept checking
 #endif
 
   /** Set the gradient image */
-  void
-  SetGradientImage(GradientImageType * input)
+  void SetGradientImage(GradientImageType *input)
   {
     // Process object is not const-correct so the const casting is required.
-    this->SetNthInput(1, const_cast<GradientImageType *>(input));
+    this->SetNthInput( 1, const_cast< GradientImageType * >( input ) );
   }
 
   /** Get the gradient image */
-  GradientImageType *
-  GetGradientImage()
+  GradientImageType * GetGradientImage()
   {
-    return static_cast<GradientImageType *>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
+    return static_cast< GradientImageType * >( const_cast< DataObject * >( this->ProcessObject::GetInput(1) ) );
   }
 
   /** Set the input image */
-  void
-  SetInput1(TInputImage * input)
+  void SetInput1(TInputImage *input)
   {
     this->SetInput(input);
   }
 
   /** Set the gradient image */
-  void
-  SetInput2(GradientImageType * input)
+  void SetInput2(GradientImageType *input)
   {
     this->SetGradientImage(input);
   }
 
 protected:
   RobustAutomaticThresholdImageFilter();
-  ~RobustAutomaticThresholdImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~RobustAutomaticThresholdImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
-  double          m_Pow{ 1 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(RobustAutomaticThresholdImageFilter);
+
+  double          m_Pow;
   InputPixelType  m_Threshold;
   OutputPixelType m_InsideValue;
   OutputPixelType m_OutsideValue;
@@ -169,7 +168,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRobustAutomaticThresholdImageFilter.hxx"
+#include "itkRobustAutomaticThresholdImageFilter.hxx"
 #endif
 
 #endif

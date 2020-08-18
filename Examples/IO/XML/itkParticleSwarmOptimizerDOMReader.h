@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
  *=========================================================================*/
 
 /**
- * This is a fully working example of DOM-based reader for the ITK object
- * itk::ParticleSwarmOptimizer. To demonstrate the power and flexibility of the new
- * DOM-based object reading, we formulate our XML format for the PSO object in a special
- * way, e.g. using children and text nodes (instead of attributes) for some data fields.
- * This may not be the favouriate way for some users, but users can always define their
- * own XML format, and customize this implementation.
+ * This is a fully working example of DOM-based reader for the ITK object itk::ParticleSwarmOptimizer.
+ * To demonstrate the power and flexibility of the new DOM-based object reading, we formulate our XML
+ * format for the PSO object in a special way, e.g. using children and text nodes (instead of attributes)
+ * for some data fields. This may not be the favouriate way for some users, but users can always
+ * define their own XML format, and customize this implementation.
  *
- * Please see [ITK_HOME]/Testing/Data/InputXML/test.pso.xml for an example of our XML
- * format for the PSO object.
+ * Please see [ITK_HOME]/Testing/Data/InputXML/test.pso.xml for an example of our XML format for the PSO object.
  */
 
 #ifndef itkParticleSwarmOptimizerDOMReader_h
@@ -40,13 +38,11 @@ namespace itk
 class ParticleSwarmOptimizerDOMReader : public DOMReader<ParticleSwarmOptimizer>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParticleSwarmOptimizerDOMReader);
-
-  /** Standard class type aliases. */
-  using Self = ParticleSwarmOptimizerDOMReader;
-  using Superclass = DOMReader<ParticleSwarmOptimizer>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ParticleSwarmOptimizerDOMReader     Self;
+  typedef DOMReader<ParticleSwarmOptimizer>   Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,15 +51,16 @@ public:
   itkTypeMacro(ParticleSwarmOptimizerDOMReader, DOMReader);
 
 protected:
-  ParticleSwarmOptimizerDOMReader() = default;
+  ParticleSwarmOptimizerDOMReader() {}
 
   /**
    * This function is called automatically when update functions are performed.
-   * It should fill the contents of the output object by pulling information from the
-   * intermediate DOM object.
+   * It should fill the contents of the output object by pulling information from the intermediate DOM object.
    */
-  void
-  GenerateData(const DOMNodeType * inputdom, const void *) override;
+  virtual void GenerateData( const DOMNodeType* inputdom, const void* ) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ParticleSwarmOptimizerDOMReader);
 };
 
 } // namespace itk

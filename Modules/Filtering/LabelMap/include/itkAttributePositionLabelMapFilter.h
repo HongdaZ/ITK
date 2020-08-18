@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,10 +21,8 @@
 #include "itkInPlaceLabelMapFilter.h"
 #include "itkAttributeLabelObject.h"
 
-namespace itk
-{
-/**
- *\class AttributePositionLabelMapFilter
+namespace itk {
+/** \class AttributePositionLabelMapFilter
  * \brief Mark a single pixel in the label object which correspond to a position given by an attribute
  *
  *
@@ -41,67 +39,68 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage,
-          typename TAttributeAccessor =
-            typename Functor::AttributeLabelObjectAccessor<typename TImage::LabelObjectType>,
-          bool VPhysicalPosition = true>
-class ITK_TEMPLATE_EXPORT AttributePositionLabelMapFilter : public InPlaceLabelMapFilter<TImage>
+template<typename TImage, typename TAttributeAccessor=
+    typename Functor::AttributeLabelObjectAccessor< typename TImage::LabelObjectType >, bool VPhysicalPosition=true >
+class ITK_TEMPLATE_EXPORT AttributePositionLabelMapFilter :
+    public InPlaceLabelMapFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AttributePositionLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef AttributePositionLabelMapFilter Self;
+  typedef InPlaceLabelMapFilter<TImage>   Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = AttributePositionLabelMapFilter;
-  using Superclass = InPlaceLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TImage                              ImageType;
+  typedef typename ImageType::Pointer         ImagePointer;
+  typedef typename ImageType::ConstPointer    ImageConstPointer;
+  typedef typename ImageType::PixelType       PixelType;
+  typedef typename ImageType::IndexType       IndexType;
+  typedef typename ImageType::LabelObjectType LabelObjectType;
 
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
-
-  using AttributeAccessorType = TAttributeAccessor;
-  using AttributeValueType = typename AttributeAccessorType::AttributeValueType;
+  typedef TAttributeAccessor                                 AttributeAccessorType;
+  typedef typename AttributeAccessorType::AttributeValueType AttributeValueType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AttributePositionLabelMapFilter, InPlaceLabelMapFilter);
+  itkTypeMacro(AttributePositionLabelMapFilter,
+               InPlaceLabelMapFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  /*  itkConceptMacro(InputEqualityComparableCheck,
-      (Concept::EqualityComparable<InputImagePixelType>));
-    itkConceptMacro(IntConvertibleToInputCheck,
-      (Concept::Convertible<int, InputImagePixelType>));
-    itkConceptMacro(InputOStreamWritableCheck,
-      (Concept::OStreamWritable<InputImagePixelType>));*/
+/*  itkConceptMacro(InputEqualityComparableCheck,
+    (Concept::EqualityComparable<InputImagePixelType>));
+  itkConceptMacro(IntConvertibleToInputCheck,
+    (Concept::Convertible<int, InputImagePixelType>));
+  itkConceptMacro(InputOStreamWritableCheck,
+    (Concept::OStreamWritable<InputImagePixelType>));*/
   // End concept checking
 #endif
 
 protected:
-  AttributePositionLabelMapFilter() = default;
-  ~AttributePositionLabelMapFilter() override = default;
+  AttributePositionLabelMapFilter();
+  ~AttributePositionLabelMapFilter() ITK_OVERRIDE {};
 
-  void
-  ThreadedProcessLabelObject(LabelObjectType * labelObject) override;
+  virtual void ThreadedProcessLabelObject( LabelObjectType * labelObject ) ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AttributePositionLabelMapFilter);
+
 }; // end of class
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAttributePositionLabelMapFilter.hxx"
+#include "itkAttributePositionLabelMapFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,15 +22,12 @@
 
 #include <fstream>
 #include "itkImageIOBase.h"
-#include "itkSingletonMacro.h"
-#include "itkMetaDataObject.h"
 #include "metaObject.h"
 #include "metaImage.h"
 
 namespace itk
 {
-/**
- *\class MetaImageIO
+/** \class MetaImageIO
  *
  *  \brief Read MetaImage file format.
  *
@@ -40,15 +37,13 @@ namespace itk
  *  \ingroup IOFilters
  * \ingroup ITKIOMeta
  */
-class ITKIOMeta_EXPORT MetaImageIO : public ImageIOBase
+class ITKIOMeta_EXPORT MetaImageIO:public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaImageIO);
-
-  /** Standard class type aliases. */
-  using Self = MetaImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs. */
+  typedef MetaImageIO          Self;
+  typedef ImageIOBase          Superclass;
+  typedef SmartPointer< Self > Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,8 +56,7 @@ public:
    * while others can support 2D, 3D, or even n-D. This method returns
    * true/false as to whether the ImageIO can support the dimension
    * indicated. */
-  bool
-  SupportsDimension(unsigned long) override
+  virtual bool SupportsDimension(unsigned long) ITK_OVERRIDE
   {
     return true;
   }
@@ -71,46 +65,37 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool
-  CanReadFile(const char *) override;
+  virtual bool CanReadFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
-  MetaImage *
-  GetMetaImagePointer();
+  MetaImage * GetMetaImagePointer();
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
-  bool
-  CanWriteFile(const char *) override;
+  virtual bool CanWriteFile(const char *) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  WriteImageInformation() override;
+  virtual void WriteImageInformation() ITK_OVERRIDE;
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegions has been set properly. */
-  void
-  Write(const void * buffer) override;
+  virtual void Write(const void *buffer) ITK_OVERRIDE;
 
   /** Set the filename for the Data file. Setting this will make the
       Writer to use the non-Local mode and save header and data in
       independent files */
-  virtual void
-  SetDataFileName(const char * filename);
+  virtual void SetDataFileName(const char *filename);
 
   /** set the precision in the MetaImage member
    */
-  virtual void
-  SetDoublePrecision(unsigned int precision)
+  virtual void SetDoublePrecision(unsigned int precision)
   {
     m_MetaImage.SetDoublePrecision(precision);
   }
@@ -119,30 +104,29 @@ public:
    * could be the region that we can read from the file. This is called the
    * streamable region, which will be smaller than the LargestPossibleRegion and
    * greater or equal to the RequestedRegion */
-  ImageIORegion
-  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const override;
+  virtual ImageIORegion
+  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const ITK_OVERRIDE;
 
-  unsigned int
-  GetActualNumberOfSplitsForWriting(unsigned int          numberOfRequestedSplits,
+  virtual unsigned int
+  GetActualNumberOfSplitsForWriting(unsigned int numberOfRequestedSplits,
                                     const ImageIORegion & pasteRegion,
-                                    const ImageIORegion & largestPossibleRegion) override;
+                                    const ImageIORegion & largestPossibleRegion) ITK_OVERRIDE;
 
-  ImageIORegion
-  GetSplitRegionForWriting(unsigned int          ithPiece,
-                           unsigned int          numberOfActualSplits,
+  virtual ImageIORegion
+  GetSplitRegionForWriting(unsigned int ithPiece,
+                           unsigned int numberOfActualSplits,
                            const ImageIORegion & pasteRegion,
-                           const ImageIORegion & largestPossibleRegion) override;
+                           const ImageIORegion & largestPossibleRegion) ITK_OVERRIDE;
 
   /** Determine if the ImageIO can stream reading from this
    *  file. Only time cannot stream read/write is if compression is used.
    *  CanRead must be called prior to this function. */
-  bool
-  CanStreamRead() override
+  virtual bool CanStreamRead() ITK_OVERRIDE
   {
-    if (m_MetaImage.CompressedData())
-    {
+    if ( m_MetaImage.CompressedData() )
+      {
       return false;
-    }
+      }
     return true;
   }
 
@@ -151,13 +135,12 @@ public:
    *  Assumes file passes a CanRead call and its pixels are of the same
    *  type as the template of the writer. Can verify by first calling
    *  CanRead and then CanStreamRead prior to calling CanStreamWrite. */
-  bool
-  CanStreamWrite() override
+  virtual bool CanStreamWrite() ITK_OVERRIDE
   {
-    if (this->GetUseCompression())
-    {
+    if ( this->GetUseCompression() )
+      {
       return false;
-    }
+      }
     return true;
   }
 
@@ -177,56 +160,24 @@ public:
    * This function is not thread safe.
    * Default value after static initialization is 17.
    */
-  static void
-  SetDefaultDoublePrecision(unsigned int precision);
-  static unsigned int
-  GetDefaultDoublePrecision();
+  static void SetDefaultDoublePrecision(unsigned int precision);
+  static unsigned int GetDefaultDoublePrecision();
 
 protected:
   MetaImageIO();
-  ~MetaImageIO() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-  template <unsigned int VNRows, unsigned int VNColumns = VNRows>
-  bool
-  WriteMatrixInMetaData(std::ostringstream & strs, const MetaDataDictionary & metaDict, const std::string & metaString);
+  ~MetaImageIO() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  /** Only used to synchronize the global variable across static libraries.*/
-  itkGetGlobalDeclarationMacro(unsigned int, DefaultDoublePrecision);
 
   MetaImage m_MetaImage;
 
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaImageIO);
+
   unsigned int m_SubSamplingFactor;
 
-  static unsigned int * m_DefaultDoublePrecision;
+  static unsigned int m_DefaultDoublePrecision;
 };
-
-template <unsigned int VNRows, unsigned int VNColumns>
-bool
-MetaImageIO::WriteMatrixInMetaData(std::ostringstream &       strs,
-                                   const MetaDataDictionary & metaDict,
-                                   const std::string &        metaString)
-{
-  itk::Matrix<double, VNRows, VNColumns> mval;
-  if (ExposeMetaData<itk::Matrix<double, VNRows, VNColumns>>(metaDict, metaString, mval))
-  {
-    for (unsigned int i = 0; i < VNRows; ++i)
-    {
-      for (unsigned int j = 0; j < VNColumns; ++j)
-      {
-        strs << mval[i][j];
-        if (i != VNRows - 1 || j != VNColumns - 1)
-        {
-          strs << " ";
-        }
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 } // end namespace itk
 
 #endif // itkMetaImageIO_h

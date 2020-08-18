@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -93,23 +93,22 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile";
     std::cerr << "  [exampleAction={0,1,2,3}]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   int exampleAction = 0;
 
-  if (argc >= 4)
-  {
-    exampleAction = std::stoi(argv[3]);
-  }
+  if( argc >= 4 )
+    {
+    exampleAction = atoi( argv[3] );
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -119,22 +118,22 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  constexpr unsigned int Dimension = 2;
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  const unsigned int                               Dimension = 2;
+  typedef unsigned char                            InputPixelType;
+  typedef unsigned char                            OutputPixelType;
+  typedef itk::Image< InputPixelType,  Dimension > InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType >  WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
 
   //  Software Guide : BeginLatex
@@ -149,7 +148,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType = itk::ResampleImageFilter<InputImageType, OutputImageType>;
+  typedef itk::ResampleImageFilter<InputImageType,OutputImageType> FilterType;
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -165,7 +164,7 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using TransformType = itk::AffineTransform<double, Dimension>;
+  typedef itk::AffineTransform< double, Dimension >  TransformType;
   // Software Guide : EndCodeSnippet
 
 
@@ -182,7 +181,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   TransformType::Pointer transform = TransformType::New();
-  filter->SetTransform(transform);
+  filter->SetTransform( transform );
   // Software Guide : EndCodeSnippet
 
 
@@ -196,8 +195,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InterpolatorType =
-    itk::NearestNeighborInterpolateImageFunction<InputImageType, double>;
+  typedef itk::NearestNeighborInterpolateImageFunction<
+                       InputImageType, double >  InterpolatorType;
   // Software Guide : EndCodeSnippet
 
 
@@ -213,7 +212,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  filter->SetInterpolator(interpolator);
+  filter->SetInterpolator( interpolator );
   // Software Guide : EndCodeSnippet
 
 
@@ -229,7 +228,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetDefaultPixelValue(0);
+  filter->SetDefaultPixelValue( 0 );
   // Software Guide : EndCodeSnippet
 
 
@@ -245,19 +244,19 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   // pixel spacing in millimeters along X and Y
-  const double spacing[Dimension] = { 1.0, 1.0 };
-  filter->SetOutputSpacing(spacing);
+  const double spacing[ Dimension ] = { 1.0, 1.0 };
+  filter->SetOutputSpacing( spacing );
 
   // Physical space coordinate of origin for X and Y
-  const double origin[Dimension] = { 0.0, 0.0 };
-  filter->SetOutputOrigin(origin);
+  const double origin[ Dimension ] = { 0.0, 0.0 };
+  filter->SetOutputOrigin( origin );
   // Software Guide : EndCodeSnippet
 
 
   // Software Guide : BeginCodeSnippet
   InputImageType::DirectionType direction;
   direction.SetIdentity();
-  filter->SetOutputDirection(direction);
+  filter->SetOutputDirection( direction );
   // Software Guide : EndCodeSnippet
 
 
@@ -271,12 +270,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  InputImageType::SizeType size;
+  InputImageType::SizeType   size;
 
-  size[0] = 300; // number of pixels along X
-  size[1] = 300; // number of pixels along Y
+  size[0] = 300;  // number of pixels along X
+  size[1] = 300;  // number of pixels along Y
 
-  filter->SetSize(size);
+  filter->SetSize( size );
   // Software Guide : EndCodeSnippet
 
 
@@ -294,8 +293,8 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
   writer->Update();
   // Software Guide : EndCodeSnippet
 
@@ -352,16 +351,16 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   TransformType::OutputVectorType translation;
-  translation[0] = -30; // X translation in millimeters
-  translation[1] = -50; // Y translation in millimeters
-  transform->Translate(translation);
+  translation[0] = -30;  // X translation in millimeters
+  translation[1] = -50;  // Y translation in millimeters
+  transform->Translate( translation );
   // Software Guide : EndCodeSnippet
 
 
-  if (exampleAction == 1)
-  {
+  if( exampleAction == 1 )
+    {
     writer->Update();
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -419,7 +418,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetDefaultPixelValue(100);
+  filter->SetDefaultPixelValue( 100 );
   // Software Guide : EndCodeSnippet
 
 
@@ -442,10 +441,10 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  if (exampleAction == 2)
-  {
+  if( exampleAction == 2 )
+    {
     writer->Update();
-  }
+    }
 
 
   return EXIT_SUCCESS;

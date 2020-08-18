@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class FastMarchingUpwindGradientImageFilter
+/** \class FastMarchingUpwindGradientImageFilter
  *
  * \brief Generates the upwind gradient field of fast marching arrival times.
  *
@@ -33,7 +32,7 @@ namespace itk
  * with the fast marching method, the filter generates the upwind gradient
  * vectors of T(x), storing them in an image.
  *
- * Since the Eikonal equation generates the arrival times of a wave traveling
+ * Since the Eikonal equation generates the arrival times of a wave travelling
  * at a given speed, the generated gradient vectors can be interpreted as the
  * slowness (1/velocity) vectors of the front (the quantity inside the modulus
  * operator in the Eikonal equation).
@@ -57,17 +56,18 @@ namespace itk
  *
  * \ingroup ITKFastMarching
  */
-template <typename TLevelSet, typename TSpeedImage = Image<float, TLevelSet ::ImageDimension>>
-class ITK_TEMPLATE_EXPORT FastMarchingUpwindGradientImageFilter : public FastMarchingImageFilter<TLevelSet, TSpeedImage>
+template<
+  typename TLevelSet,
+  typename TSpeedImage = Image< float,  TLevelSet ::ImageDimension > >
+class ITK_TEMPLATE_EXPORT FastMarchingUpwindGradientImageFilter:
+  public FastMarchingImageFilter< TLevelSet, TSpeedImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingUpwindGradientImageFilter);
-
   /** Standard class typdedefs. */
-  using Self = FastMarchingUpwindGradientImageFilter;
-  using Superclass = FastMarchingImageFilter<TLevelSet, TSpeedImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef FastMarchingUpwindGradientImageFilter             Self;
+  typedef FastMarchingImageFilter< TLevelSet, TSpeedImage > Superclass;
+  typedef SmartPointer< Self >                              Pointer;
+  typedef SmartPointer< const Self >                        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -75,67 +75,59 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(FastMarchingUpwindGradientImageFilter, FastMarchingImageFilter);
 
-  /** Inherited type alias. */
-  using LevelSetType = typename Superclass::LevelSetType;
-  using SpeedImageType = typename Superclass::SpeedImageType;
-  using LevelSetImageType = typename Superclass::LevelSetImageType;
-  using LevelSetPointer = typename Superclass::LevelSetPointer;
-  using SpeedImageConstPointer = typename Superclass::SpeedImageConstPointer;
-  using LabelImageType = typename Superclass::LabelImageType;
-  using PixelType = typename Superclass::PixelType;
-  using AxisNodeType = typename Superclass::AxisNodeType;
-  using NodeType = typename Superclass::NodeType;
-  using NodeContainer = typename Superclass::NodeContainer;
-  using NodeContainerPointer = typename Superclass::NodeContainerPointer;
+  /** Inherited typedefs. */
+  typedef typename Superclass::LevelSetType           LevelSetType;
+  typedef typename Superclass::SpeedImageType         SpeedImageType;
+  typedef typename Superclass::LevelSetImageType      LevelSetImageType;
+  typedef typename Superclass::LevelSetPointer        LevelSetPointer;
+  typedef typename Superclass::SpeedImageConstPointer SpeedImageConstPointer;
+  typedef typename Superclass::LabelImageType         LabelImageType;
+  typedef typename Superclass::PixelType              PixelType;
+  typedef typename Superclass::AxisNodeType           AxisNodeType;
+  typedef typename Superclass::NodeType               NodeType;
+  typedef typename Superclass::NodeContainer          NodeContainer;
+  typedef typename Superclass::NodeContainerPointer   NodeContainerPointer;
 
-  using IndexType = typename Superclass::IndexType;
-  using OutputSpacingType = typename Superclass::OutputSpacingType;
-  using LevelSetIndexType = typename Superclass::LevelSetIndexType;
+  typedef typename Superclass::IndexType         IndexType;
+  typedef typename Superclass::OutputSpacingType OutputSpacingType;
+  typedef typename Superclass::LevelSetIndexType LevelSetIndexType;
 
-  using PointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::OutputPointType PointType;
 
   /** The dimension of the level set. */
-  static constexpr unsigned int SetDimension = Superclass::SetDimension;
+  itkStaticConstMacro(SetDimension, unsigned int, Superclass::SetDimension);
 
   /** Set the container of Target Points.
    * If a target point is reached, the propagation stops.
    * Trial points are represented as a VectorContainer of LevelSetNodes. */
-  void
-  SetTargetPoints(NodeContainer * points)
+  void SetTargetPoints(NodeContainer *points)
   {
     m_TargetPoints = points;
     this->Modified();
   }
 
   /** Get the container of Target Points. */
-  NodeContainerPointer
-  GetTargetPoints()
-  {
-    return m_TargetPoints;
-  }
+  NodeContainerPointer GetTargetPoints()
+  { return m_TargetPoints; }
 
   /** Get the container of Reached Target Points. */
-  NodeContainerPointer
-  GetReachedTargetPoints()
-  {
-    return m_ReachedTargetPoints;
-  }
+  NodeContainerPointer GetReachedTargetPoints()
+  { return m_ReachedTargetPoints; }
 
-  /** GradientPixel type alias support */
-  using GradientPixelType = CovariantVector<PixelType, Self::SetDimension>;
+  /** GradientPixel typedef support. */
+  typedef CovariantVector< PixelType,
+                           itkGetStaticConstMacro(SetDimension) > GradientPixelType;
 
-  /** GradientImage type alias support */
-  using GradientImageType = Image<GradientPixelType, Self::SetDimension>;
+  /** GradientImage typedef support. */
+  typedef Image< GradientPixelType,
+                 itkGetStaticConstMacro(SetDimension) > GradientImageType;
 
-  /** GradientImagePointer type alias support */
-  using GradientImagePointer = typename GradientImageType::Pointer;
+  /** GradientImagePointer typedef support. */
+  typedef typename GradientImageType::Pointer GradientImagePointer;
 
   /** Get the gradient image. */
-  GradientImagePointer
-  GetGradientImage() const
-  {
-    return m_GradientImage;
-  }
+  GradientImagePointer GetGradientImage() const
+  { return m_GradientImage; }
 
   /** Set the GenerateGradientImage flag. Instrument the algorithm to generate
    * the gradient of the Eikonal equation solution while fast marching. */
@@ -157,28 +149,18 @@ public:
    */
   itkSetMacro(TargetReachedMode, int);
   itkGetConstReferenceMacro(TargetReachedMode, int);
-  void
-  SetTargetReachedModeToNoTargets()
-  {
-    this->SetTargetReachedMode(NoTargets);
-  }
-  void
-  SetTargetReachedModeToOneTarget()
-  {
-    this->SetTargetReachedMode(OneTarget);
-  }
-  void
-  SetTargetReachedModeToSomeTargets(SizeValueType numberOfTargets)
+  void SetTargetReachedModeToNoTargets()
+  { this->SetTargetReachedMode(NoTargets); }
+  void SetTargetReachedModeToOneTarget()
+  { this->SetTargetReachedMode(OneTarget); }
+  void SetTargetReachedModeToSomeTargets(SizeValueType numberOfTargets)
   {
     this->SetTargetReachedMode(SomeTargets);
     m_NumberOfTargets = numberOfTargets;
   }
 
-  void
-  SetTargetReachedModeToAllTargets()
-  {
-    this->SetTargetReachedMode(AllTargets);
-  }
+  void SetTargetReachedModeToAllTargets()
+  { this->SetTargetReachedMode(AllTargets); }
 
   /** Get the number of targets. */
   itkGetConstReferenceMacro(NumberOfTargets, SizeValueType);
@@ -189,45 +171,42 @@ public:
    */
   itkGetConstReferenceMacro(TargetValue, double);
 
-  enum
-  {
+  enum {
     NoTargets,
     OneTarget,
     SomeTargets,
     AllTargets
-  };
+    };
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(LevelSetDoubleDivisionOperatorsCheck,
-                  (Concept::DivisionOperators<typename TLevelSet::PixelType, double>));
-  itkConceptMacro(LevelSetDoubleDivisionAndAssignOperatorsCheck,
-                  (Concept::DivisionAndAssignOperators<typename TLevelSet::PixelType, double>));
+  itkConceptMacro( LevelSetDoubleDivisionOperatorsCheck,
+                   ( Concept::DivisionOperators< typename TLevelSet::PixelType, double > ) );
+  itkConceptMacro( LevelSetDoubleDivisionAndAssignOperatorsCheck,
+                   ( Concept::DivisionAndAssignOperators< typename TLevelSet::PixelType, double > ) );
   // End concept checking
 #endif
 
 protected:
   FastMarchingUpwindGradientImageFilter();
-  ~FastMarchingUpwindGradientImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~FastMarchingUpwindGradientImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  Initialize(LevelSetImageType *) override;
+  virtual void Initialize(LevelSetImageType *) ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  UpdateNeighbors(const IndexType & index, const SpeedImageType *, LevelSetImageType *) override;
+  virtual void UpdateNeighbors(const IndexType & index,
+                               const SpeedImageType *, LevelSetImageType *) ITK_OVERRIDE;
 
-  virtual void
-  ComputeGradient(const IndexType &         index,
-                  const LevelSetImageType * output,
-                  const LabelImageType *    labelImage,
-                  GradientImageType *       gradientImage);
+  virtual void ComputeGradient(const IndexType & index,
+                               const LevelSetImageType *output,
+                               const LabelImageType *labelImage,
+                               GradientImageType *gradientImage);
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingUpwindGradientImageFilter);
+
   NodeContainerPointer m_TargetPoints;
   NodeContainerPointer m_ReachedTargetPoints;
 
@@ -246,7 +225,7 @@ private:
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFastMarchingUpwindGradientImageFilter.hxx"
+#include "itkFastMarchingUpwindGradientImageFilter.hxx"
 #endif
 
 #endif

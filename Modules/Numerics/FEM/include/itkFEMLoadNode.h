@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@
 
 #ifndef itkFEMLoadNode_h
 #define itkFEMLoadNode_h
-
-#include <utility>
 
 #include "itkFEMLoadBase.h"
 #include "ITKFEMExport.h"
@@ -43,11 +41,11 @@ namespace fem
 class ITKFEM_EXPORT LoadNode : public Load
 {
 public:
-  /** Standard class type aliases. */
-  using Self = LoadNode;
-  using Superclass = Load;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LoadNode                 Self;
+  typedef Load                     Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** New macro for creation of through the object factory. */
   itkSimpleNewMacro(Self);
@@ -55,54 +53,50 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(LoadNode, Load);
 
-  using Float = Element::Node::Float;
+  typedef Element::Node::Float Float;
 
   /**
-   * Set the force acting at the node
-   */
-  void
-  SetForce(const vnl_vector<Float> force);
+    * Set the force acting at the node
+    */
+  void SetForce(const vnl_vector<Float> force);
 
   /**
-   * Get the force acting at the node
-   */
-  vnl_vector<Float>
-  GetForce() const;
+  * Get the force acting at the node
+  */
+  vnl_vector<Float> GetForce() const;
 
   /**
    * Set the node number on which the load is being applied.
    */
-  void
-  SetNode(int num);
+  void SetNode(int num);
 
   /**
    * Get the node number on which the load is being applied.
    */
-  int
-  GetNode() const;
+  int GetNode() const;
 
-  LoadNode() = default;
-
-  LoadNode(Element::ConstPointer element_, unsigned int pt_, vnl_vector<Float> F_)
-    : m_Point(pt_)
-    , m_Force(std::move(F_))
+  LoadNode():
+    m_Point(0)
+  {
+  }                             // default constructor
+  LoadNode(Element::ConstPointer element_, unsigned int pt_, vnl_vector<Float> F_) :
+    m_Point(pt_), m_Force(F_)
   {
     this->m_Element = element_;
   }
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /**
    * Point within the element on which the force acts.
    */
-  unsigned int m_Point{ 0 };
+  unsigned int m_Point;
 
   /**
    * Force applied on the node. Dimension of F should equal
@@ -110,7 +104,8 @@ protected:
    */
   vnl_vector<Float> m_Force;
 };
-} // end namespace fem
-} // end namespace itk
 
-#endif // itkFEMLoadNode_h
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMLoadDOF_h

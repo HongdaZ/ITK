@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,78 +21,77 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkTextOutput.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 
-int
-itkBoxMeanImageFilterTest(int ac, char * av[])
+int itkBoxMeanImageFilterTest(int ac, char* av[] )
 {
   // Comment the following if you want to use the itk text output window
   itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
-  if (ac < 4)
-  {
+  if(ac < 4)
+    {
     std::cerr << "Usage: " << av[0] << " InputImage BaselineImage radius" << std::endl;
     return -1;
-  }
+    }
 
-  using ImageType = itk::Image<unsigned char, 2>;
+  typedef itk::Image<unsigned char, 2> ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer input = ReaderType::New();
+  typedef itk::ImageFileReader<ImageType> ReaderType;
+  ReaderType::Pointer input  = ReaderType::New();
   input->SetFileName(av[1]);
 
   // Create a filter
-  using FilterType = itk::BoxMeanImageFilter<ImageType, ImageType>;
-  FilterType::Pointer      filter = FilterType::New();
-  itk::SimpleFilterWatcher filterWatch(filter);
+  typedef itk::BoxMeanImageFilter<ImageType,ImageType> FilterType;
+  FilterType::Pointer filter = FilterType::New();
+  FilterWatcher filterWatch(filter);
 
-  using RadiusType = FilterType::RadiusType;
+  typedef FilterType::RadiusType RadiusType;
 
   // test default values
   RadiusType r1;
-  r1.Fill(1);
-  if (filter->GetRadius() != r1)
-  {
+  r1.Fill( 1 );
+  if ( filter->GetRadius() != r1 )
+    {
     std::cerr << "Wrong default Radius." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // set radius with a radius type
   RadiusType r5;
-  r5.Fill(5);
-  filter->SetRadius(r5);
-  if (filter->GetRadius() != r5)
-  {
+  r5.Fill( 5 );
+  filter->SetRadius( r5 );
+  if ( filter->GetRadius() != r5 )
+    {
     std::cerr << "Radius value is not the expected one: r5." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // set radius with an integer
-  filter->SetRadius(1);
-  if (filter->GetRadius() != r1)
-  {
+  filter->SetRadius( 1 );
+  if ( filter->GetRadius() != r1 )
+    {
     std::cerr << "Radius value is not the expected one: r1." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   try
-  {
-    int r = std::stoi(av[3]);
+    {
+    int r = atoi( av[3] );
     filter->SetInput(input->GetOutput());
-    filter->SetRadius(r);
+    filter->SetRadius( r );
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception detected: " << e.GetDescription();
+    }
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception detected: "  << e.GetDescription();
     return EXIT_FAILURE;
-  }
+    }
 
   // Generate test image
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter<ImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(filter->GetOutput());
-  writer->SetFileName(av[2]);
+  writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( av[2] );
   writer->Update();
 
   return EXIT_SUCCESS;

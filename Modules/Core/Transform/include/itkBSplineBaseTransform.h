@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,63 +30,62 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double, unsigned int NDimensions = 3, unsigned int VSplineOrder = 3>
-class ITK_TEMPLATE_EXPORT BSplineBaseTransform : public Transform<TParametersValueType, NDimensions, NDimensions>
+template<typename TParametersValueType=double,
+           unsigned int NDimensions = 3,
+          unsigned int VSplineOrder = 3>
+class ITK_TEMPLATE_EXPORT BSplineBaseTransform :
+  public Transform<TParametersValueType, NDimensions, NDimensions>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineBaseTransform);
-
-  /** Standard class type aliases. */
-  using Self = BSplineBaseTransform;
-  using Superclass = Transform<TParametersValueType, NDimensions, NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BSplineBaseTransform                                      Self;
+  typedef Transform<TParametersValueType, NDimensions, NDimensions> Superclass;
+  typedef SmartPointer<Self>                                        Pointer;
+  typedef SmartPointer<const Self>                                  ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(BSplineBaseTransform, Transform);
+  itkTypeMacro( BSplineBaseTransform, Transform );
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = NDimensions;
+  itkStaticConstMacro( SpaceDimension, unsigned int, NDimensions );
 
   /** The BSpline order. */
-  static constexpr unsigned int SplineOrder = VSplineOrder;
+  itkStaticConstMacro( SplineOrder, unsigned int, VSplineOrder );
 
   /** implement type-specific clone method*/
   itkCloneMacro(Self);
 
   /** Standard scalar type for this class. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Standard parameters container. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using ParametersType = typename Superclass::ParametersType;
+  typedef typename Superclass::FixedParametersType FixedParametersType;
+  typedef typename Superclass::ParametersType      ParametersType;
 
   /** Standard Jacobian container. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   /** Transform category type. */
-  using TransformCategoryEnum = typename Superclass::TransformCategoryEnum;
+  typedef typename Superclass::TransformCategoryType TransformCategoryType;
 
-  /** The number of parameters defining this transform. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  /** The number of parameters defininig this transform. */
+  typedef typename Superclass::NumberOfParametersType NumberOfParametersType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = Vector<TParametersValueType, Self::SpaceDimension>;
-  using OutputVectorType = Vector<TParametersValueType, Self::SpaceDimension>;
+  typedef Vector<TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> InputVectorType;
+  typedef Vector<TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> OutputVectorType;
 
   /** Standard covariant vector type for this class. */
-  using InputCovariantVectorType = CovariantVector<TParametersValueType, Self::SpaceDimension>;
-  using OutputCovariantVectorType = CovariantVector<TParametersValueType, Self::SpaceDimension>;
+  typedef CovariantVector<TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> InputCovariantVectorType;
+  typedef CovariantVector<TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> OutputCovariantVectorType;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = vnl_vector_fixed<TParametersValueType, SpaceDimension>;
-  using OutputVnlVectorType = vnl_vector_fixed<TParametersValueType, SpaceDimension>;
+  typedef vnl_vector_fixed<TParametersValueType, SpaceDimension> InputVnlVectorType;
+  typedef vnl_vector_fixed<TParametersValueType, SpaceDimension> OutputVnlVectorType;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = Point<TParametersValueType, Self::SpaceDimension>;
-  using OutputPointType = Point<TParametersValueType, Self::SpaceDimension>;
+  typedef Point <TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> InputPointType;
+  typedef Point <TParametersValueType, itkGetStaticConstMacro( SpaceDimension )> OutputPointType;
 
   /** This method sets the parameters of the transform.
    * For a BSpline deformation transform, the parameters are the BSpline
@@ -107,8 +106,7 @@ public:
    * NOTE: The transform domain must be set first.
    *
    */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  void SetParameters( const ParametersType & parameters ) ITK_OVERRIDE;
 
   /** This method sets the fixed parameters of the transform.
    * For a BSpline deformation transform, the fixed parameters are the
@@ -132,8 +130,7 @@ public:
    * itkTransformReader/Writer I/O filters.
    *
    */
-  void
-  SetFixedParameters(const FixedParametersType & parameters) override = 0;
+  virtual void SetFixedParameters( const FixedParametersType & parameters ) ITK_OVERRIDE = 0;
 
   /** This method sets the parameters of the transform.
    * For a BSpline deformation transform, the parameters are the BSpline
@@ -151,8 +148,7 @@ public:
    * fixed parameters.
    * NOTE: The fixed parameters must be set first.
    */
-  void
-  SetParametersByValue(const ParametersType & parameters) override;
+  void SetParametersByValue( const ParametersType & parameters ) ITK_OVERRIDE;
 
   /** This method can ONLY be invoked AFTER calling SetParameters().
    *  This restriction is due to the fact that the BSplineBaseTransform
@@ -162,22 +158,19 @@ public:
    *  parameter array has been passed to the transform on a 'const' basis but
    *  the values get modified when the user invokes SetIdentity().
    */
-  void
-  SetIdentity();
+  void SetIdentity();
 
   /** Get the Transformation Parameters. */
-  const ParametersType &
-  GetParameters() const override;
+  virtual const ParametersType & GetParameters() const ITK_OVERRIDE;
 
   /** Get the Transformation Fixed Parameters. */
-  const FixedParametersType &
-  GetFixedParameters() const override;
+  virtual const FixedParametersType & GetFixedParameters() const ITK_OVERRIDE;
 
   /** Parameters as SpaceDimension number of images. */
-  using ParametersValueType = typename ParametersType::ValueType;
-  using ImageType = Image<ParametersValueType, Self::SpaceDimension>;
-  using ImagePointer = typename ImageType::Pointer;
-  using CoefficientImageArray = FixedArray<ImagePointer, NDimensions>;
+  typedef typename ParametersType::ValueType           ParametersValueType;
+  typedef Image<ParametersValueType, itkGetStaticConstMacro( SpaceDimension )> ImageType;
+  typedef typename ImageType::Pointer                  ImagePointer;
+  typedef FixedArray<ImagePointer, NDimensions>        CoefficientImageArray;
 
   /** Set the array of coefficient images.
    *
@@ -190,17 +183,15 @@ public:
    * Warning: use either the SetParameters() or SetCoefficientImages()
    * API. Mixing the two modes may results in unexpected results.
    */
-  virtual void
-  SetCoefficientImages(const CoefficientImageArray & images) = 0;
+  virtual void SetCoefficientImages( const CoefficientImageArray & images ) = 0;
 
   /** Get the array of coefficient images. */
-  const CoefficientImageArray
-  GetCoefficientImages() const
+  const CoefficientImageArray GetCoefficientImages() const
   {
     return this->m_CoefficientImages;
   }
 
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType DerivativeType;
 
   /** Update the transform's parameters by the adding values in \c update
    * to current parameter values.
@@ -209,33 +200,33 @@ public:
    * \c factor is a scalar multiplier for each value in update.
    * SetParameters is called at the end of this method, to allow transforms
    * to perform any required operations on the update parameters, typically
-   * a conversion to member variables for use in TransformPoint.
+   * a converion to member variables for use in TransformPoint.
    * Derived classes should override to provide specialized behavior.
    */
-  void
-  UpdateTransformParameters(const DerivativeType & update, TParametersValueType factor = 1.0) override;
+  virtual void UpdateTransformParameters( const DerivativeType & update, TParametersValueType factor = 1.0 ) ITK_OVERRIDE;
 
   /** Typedefs for specifying the extent of the grid. */
-  using RegionType = ImageRegion<Self::SpaceDimension>;
+  typedef ImageRegion<itkGetStaticConstMacro( SpaceDimension )> RegionType;
 
-  using IndexType = typename RegionType::IndexType;
-  using SizeType = typename RegionType::SizeType;
-  using SpacingType = typename ImageType::SpacingType;
-  using DirectionType = typename ImageType::DirectionType;
-  using OriginType = typename ImageType::PointType;
+  typedef typename RegionType::IndexType    IndexType;
+  typedef typename RegionType::SizeType     SizeType;
+  typedef typename ImageType::SpacingType   SpacingType;
+  typedef typename ImageType::DirectionType DirectionType;
+  typedef typename ImageType::PointType     OriginType;
 
   /** Transform points by a BSpline deformable transformation. */
-  OutputPointType
-  TransformPoint(const InputPointType & point) const override;
+  OutputPointType  TransformPoint( const InputPointType & point ) const ITK_OVERRIDE;
 
   /** Interpolation weights function type. */
-  using WeightsFunctionType = BSplineInterpolationWeightFunction<ScalarType, Self::SpaceDimension, Self::SplineOrder>;
+  typedef BSplineInterpolationWeightFunction<ScalarType,
+    itkGetStaticConstMacro( SpaceDimension ),
+     itkGetStaticConstMacro( SplineOrder )> WeightsFunctionType;
 
-  using WeightsType = typename WeightsFunctionType::WeightsType;
-  using ContinuousIndexType = typename WeightsFunctionType::ContinuousIndexType;
+  typedef typename WeightsFunctionType::WeightsType         WeightsType;
+  typedef typename WeightsFunctionType::ContinuousIndexType ContinuousIndexType;
 
   /** Parameter index array type. */
-  using ParameterIndexArrayType = Array<unsigned long>;
+  typedef Array<unsigned long> ParameterIndexArrayType;
 
   /**
    * Transform points by a BSpline deformable transformation.
@@ -245,16 +236,11 @@ public:
    * Parameter indices for the i-th dimension can be obtained by adding
    * ( i * this->GetNumberOfParametersPerDimension() ) to the indices array.
    */
-  virtual void
-  TransformPoint(const InputPointType &    inputPoint,
-                 OutputPointType &         outputPoint,
-                 WeightsType &             weights,
-                 ParameterIndexArrayType & indices,
-                 bool &                    inside) const = 0;
+  virtual void TransformPoint( const InputPointType & inputPoint, OutputPointType & outputPoint,
+    WeightsType & weights, ParameterIndexArrayType & indices, bool & inside ) const = 0;
 
   /** Get number of weights. */
-  unsigned long
-  GetNumberOfWeights() const
+  unsigned long GetNumberOfWeights() const
   {
     return m_WeightsFunction->GetNumberOfWeights();
   }
@@ -262,120 +248,98 @@ public:
   /** Method to transform a vector -
    *  not applicable for this type of transform. */
   using Superclass::TransformVector;
-  OutputVectorType
-  TransformVector(const InputVectorType &) const override
+  virtual OutputVectorType TransformVector( const InputVectorType & ) const ITK_OVERRIDE
   {
-    itkExceptionMacro(<< "Method not applicable for deformable transform.");
+    itkExceptionMacro( << "Method not applicable for deformable transform." );
   }
 
   /** Method to transform a vnl_vector -
    *  not applicable for this type of transform */
-  OutputVnlVectorType
-  TransformVector(const InputVnlVectorType &) const override
+  virtual OutputVnlVectorType TransformVector( const InputVnlVectorType & ) const ITK_OVERRIDE
   {
-    itkExceptionMacro(<< "Method not applicable for deformable transform. ");
+    itkExceptionMacro( << "Method not applicable for deformable transform. " );
   }
 
   /** Method to transform a CovariantVector -
    *  not applicable for this type of transform */
   using Superclass::TransformCovariantVector;
-  OutputCovariantVectorType
-  TransformCovariantVector(const InputCovariantVectorType &) const override
+  virtual OutputCovariantVectorType TransformCovariantVector(
+    const InputCovariantVectorType & ) const ITK_OVERRIDE
   {
-    itkExceptionMacro(<< "Method not applicable for deformable transform. ");
+    itkExceptionMacro( << "Method not applicable for deformable transform. " );
   }
 
   /** Get Jacobian at a point. A very specialized function just for BSplines */
-  void
-  ComputeJacobianFromBSplineWeightsWithRespectToPosition(const InputPointType &,
-                                                         WeightsType &,
-                                                         ParameterIndexArrayType &) const;
+  void ComputeJacobianFromBSplineWeightsWithRespectToPosition(
+    const InputPointType &, WeightsType &, ParameterIndexArrayType & ) const;
 
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType &, JacobianType &) const override = 0;
+  virtual void ComputeJacobianWithRespectToParameters( const InputPointType &, JacobianType & ) const ITK_OVERRIDE = 0;
 
-  void
-  ComputeJacobianWithRespectToPosition(const InputPointType &, JacobianPositionType &) const override
+  virtual void ComputeJacobianWithRespectToPosition( const InputPointType &, JacobianType & ) const ITK_OVERRIDE
   {
-    itkExceptionMacro(<< "ComputeJacobianWithRespectToPosition not yet implemented "
-                         "for "
-                      << this->GetNameOfClass());
+    itkExceptionMacro( << "ComputeJacobianWithRespectToPosition not yet implemented "
+                       "for " << this->GetNameOfClass() );
   }
-  using Superclass::ComputeJacobianWithRespectToPosition;
 
   /** Return the number of parameters that completely define the Transfom */
-  NumberOfParametersType
-  GetNumberOfParameters() const override = 0;
+  virtual NumberOfParametersType GetNumberOfParameters() const ITK_OVERRIDE = 0;
 
   /** Return the number of parameters per dimension */
-  virtual NumberOfParametersType
-  GetNumberOfParametersPerDimension() const = 0;
+  virtual NumberOfParametersType GetNumberOfParametersPerDimension() const = 0;
 
-  TransformCategoryEnum
-  GetTransformCategory() const override
+  virtual TransformCategoryType GetTransformCategory() const ITK_OVERRIDE
   {
-    return Self::TransformCategoryEnum::BSpline;
+    return Self::BSpline;
   }
 
-  unsigned int
-  GetNumberOfAffectedWeights() const;
+  unsigned int GetNumberOfAffectedWeights() const;
 
-  using PhysicalDimensionsType = typename ImageType::SpacingType;
-  using PixelType = typename ImageType::PixelType;
+  typedef typename ImageType::SpacingType   PhysicalDimensionsType;
+  typedef typename ImageType::PixelType     PixelType;
 
-  using MeshSizeType = SizeType;
+  typedef SizeType MeshSizeType;
 
   /** Return the number of local parameters */
-  NumberOfParametersType
-  GetNumberOfLocalParameters() const override
+  virtual NumberOfParametersType GetNumberOfLocalParameters() const ITK_OVERRIDE
   {
     return this->GetNumberOfParameters();
   }
 
 protected:
   /** Print contents of an BSplineBaseTransform. */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
   BSplineBaseTransform();
-  ~BSplineBaseTransform() override = default;
+  virtual ~BSplineBaseTransform() ITK_OVERRIDE;
 
   /** Get/Set to allow subclasses to access and manipulate the weights function. */
-  itkSetObjectMacro(WeightsFunction, WeightsFunctionType);
-  itkGetModifiableObjectMacro(WeightsFunction, WeightsFunctionType);
+  itkSetObjectMacro( WeightsFunction, WeightsFunctionType );
+  itkGetModifiableObjectMacro(WeightsFunction, WeightsFunctionType );
 
   /** Wrap flat array into images of coefficients. */
-  void
-  WrapAsImages();
+  void WrapAsImages();
 
 protected:
   /** Construct control point grid from transform domain information */
-  void
-  SetFixedParametersFromTransformDomainInformation() const;
+  void SetFixedParametersFromTransformDomainInformation() const;
 
   /** Construct control point grid size from transform domain information */
-  virtual void
-  SetFixedParametersGridSizeFromTransformDomainInformation() const = 0;
+  virtual void SetFixedParametersGridSizeFromTransformDomainInformation() const = 0;
 
   /** Construct control point grid origin from transform domain information */
-  virtual void
-  SetFixedParametersGridOriginFromTransformDomainInformation() const = 0;
+  virtual void SetFixedParametersGridOriginFromTransformDomainInformation() const = 0;
 
   /** Construct control point grid spacing from transform domain information */
-  virtual void
-  SetFixedParametersGridSpacingFromTransformDomainInformation() const = 0;
+  virtual void SetFixedParametersGridSpacingFromTransformDomainInformation() const = 0;
 
   /** Construct control point grid direction from transform domain information */
-  virtual void
-  SetFixedParametersGridDirectionFromTransformDomainInformation() const = 0;
+  virtual void SetFixedParametersGridDirectionFromTransformDomainInformation() const = 0;
 
   /** Construct control point grid size from transform domain information */
-  virtual void
-  SetCoefficientImageInformationFromFixedParameters() = 0;
+  virtual void SetCoefficientImageInformationFromFixedParameters() =0;
 
   /** Check if a continuous index is inside the valid region. */
-  virtual bool
-  InsideValidRegion(ContinuousIndexType &) const = 0;
+  virtual bool InsideValidRegion( ContinuousIndexType & ) const = 0;
 
   // NOTE:  There is a natural duality between the
   //       two representations of of the coefficients
@@ -400,13 +364,14 @@ protected:
   typename WeightsFunctionType::Pointer m_WeightsFunction;
 
 private:
-  static CoefficientImageArray
-  ArrayOfImagePointerGeneratorHelper();
+  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineBaseTransform);
+
+  static CoefficientImageArray ArrayOfImagePointerGeneratorHelper();
 }; // class BSplineBaseTransform
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBSplineBaseTransform.hxx"
+#include "itkBSplineBaseTransform.hxx"
 #endif
 
 #endif /* itkBSplineBaseTransform_h */

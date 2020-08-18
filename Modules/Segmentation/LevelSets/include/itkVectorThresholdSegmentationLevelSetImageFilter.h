@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ namespace itk
  *
  *    \par OUTPUTS
  *    The filter outputs a single, scalar, real-valued image.
- *    Positive values in the output image are inside the segmented region
+ *    Positive values in the output image are inside the segmentated region
  *    and negative values in the image are outside of the inside region.  The
  *    zero crossings of the image correspond to the position of the level set
  *    front.
@@ -85,30 +85,30 @@ namespace itk
  *   \sa SparseFieldLevelSetImageFilter
  * \ingroup ITKLevelSets
  */
-template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType = float>
-class ITK_TEMPLATE_EXPORT VectorThresholdSegmentationLevelSetImageFilter
-  : public SegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>
+template< typename TInputImage,
+          typename TFeatureImage,
+          typename TOutputPixelType = float >
+class ITK_TEMPLATE_EXPORT VectorThresholdSegmentationLevelSetImageFilter:
+  public SegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputPixelType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorThresholdSegmentationLevelSetImageFilter);
+  /** Standard class typedefs */
+  typedef VectorThresholdSegmentationLevelSetImageFilter                                   Self;
+  typedef  SegmentationLevelSetImageFilter< TInputImage, TFeatureImage, TOutputPixelType > Superclass;
+  typedef SmartPointer< Self >                                                             Pointer;
+  typedef SmartPointer< const Self >                                                       ConstPointer;
 
-  /** Standard class type aliases */
-  using Self = VectorThresholdSegmentationLevelSetImageFilter;
-  using Superclass = SegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Inherited type alias from the superclass. */
-  using ValueType = typename Superclass::ValueType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using FeatureImageType = typename Superclass::FeatureImageType;
+  /** Inherited typedef from the superclass. */
+  typedef typename Superclass::ValueType        ValueType;
+  typedef typename Superclass::OutputImageType  OutputImageType;
+  typedef typename Superclass::FeatureImageType FeatureImageType;
 
   /** Type of the segmentation function */
-  using ThresholdFunctionType = VectorThresholdSegmentationLevelSetFunction<OutputImageType, FeatureImageType>;
-  using ThresholdFunctionPointer = typename ThresholdFunctionType::Pointer;
-  using MeanVectorType = typename ThresholdFunctionType::MeanVectorType;
-  using CovarianceMatrixType = typename ThresholdFunctionType::CovarianceMatrixType;
-  using ScalarValueType = typename ThresholdFunctionType::ScalarValueType;
+  typedef VectorThresholdSegmentationLevelSetFunction< OutputImageType, FeatureImageType > ThresholdFunctionType;
+  typedef typename ThresholdFunctionType::Pointer                                          ThresholdFunctionPointer;
+  typedef typename ThresholdFunctionType::MeanVectorType                                   MeanVectorType;
+  typedef typename ThresholdFunctionType::CovarianceMatrixType                             CovarianceMatrixType;
+  typedef typename ThresholdFunctionType::ScalarValueType                                  ScalarValueType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorThresholdSegmentationLevelSetImageFilter, SegmentationLevelSetImageFilter);
@@ -118,52 +118,47 @@ public:
 
   /** Set/Get mean and covariance that will be used to calculate the speed
     function */
-  void
-  SetMean(const MeanVectorType & mean)
+  void SetMean(const MeanVectorType & mean)
   {
     m_ThresholdFunction->SetMean(mean);
     this->Modified();
   }
 
-  const MeanVectorType &
-  GetMean() const
+  const MeanVectorType & GetMean() const
   {
     return m_ThresholdFunction->GetMean();
   }
 
-  void
-  SetCovariance(const CovarianceMatrixType & cov)
+  void SetCovariance(const CovarianceMatrixType & cov)
   {
     m_ThresholdFunction->SetCovariance(cov);
     this->Modified();
   }
 
-  const CovarianceMatrixType &
-  GetCovariance() const
+  const CovarianceMatrixType & GetCovariance() const
   {
     return m_ThresholdFunction->GetCovariance();
   }
 
   /** Set/Get the threshold for the Mahanalobis Distance */
-  void
-  SetThreshold(ScalarValueType thr)
+  void SetThreshold(ScalarValueType thr)
   {
     m_ThresholdFunction->SetThreshold(thr);
     this->Modified();
   }
 
-  ScalarValueType
-  GetThreshold()
+  ScalarValueType GetThreshold()
   {
     return m_ThresholdFunction->GetThreshold();
   }
 
 protected:
-  ~VectorThresholdSegmentationLevelSetImageFilter() override = default;
+  ~VectorThresholdSegmentationLevelSetImageFilter() ITK_OVERRIDE {}
   VectorThresholdSegmentationLevelSetImageFilter();
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorThresholdSegmentationLevelSetImageFilter);
 
 private:
   ThresholdFunctionPointer m_ThresholdFunction;
@@ -171,7 +166,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVectorThresholdSegmentationLevelSetImageFilter.hxx"
+#include "itkVectorThresholdSegmentationLevelSetImageFilter.hxx"
 #endif
 
 #endif

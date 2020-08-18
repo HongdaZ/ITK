@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,17 +44,15 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char ** argv)
+int main( int argc, char ** argv )
 {
   // Verify the number of parameters in the command line
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " firstSliceValue lastSliceValue  outputImageFile "
-              << std::endl;
+    std::cerr << argv[0] << " firstSliceValue lastSliceValue  outputImageFile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // Software Guide : BeginLatex
@@ -65,10 +63,10 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char                       PixelType;
+  const unsigned int Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -83,16 +81,16 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageSeriesReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageSeriesReader< ImageType >  ReaderType;
+  typedef itk::ImageFileWriter<   ImageType >  WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int first = std::stoi(argv[1]);
-  const unsigned int last = std::stoi(argv[2]);
+  const unsigned int first = atoi( argv[1] );
+  const unsigned int last  = atoi( argv[2] );
 
   const char * outputFilename = argv[3];
 
@@ -104,7 +102,7 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using NameGeneratorType = itk::NumericSeriesFileNames;
+  typedef itk::NumericSeriesFileNames    NameGeneratorType;
 
   NameGeneratorType::Pointer nameGenerator = NameGeneratorType::New();
   // Software Guide : EndCodeSnippet
@@ -119,11 +117,11 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  nameGenerator->SetSeriesFormat("vwe%03d.png");
+  nameGenerator->SetSeriesFormat( "vwe%03d.png" );
 
-  nameGenerator->SetStartIndex(first);
-  nameGenerator->SetEndIndex(last);
-  nameGenerator->SetIncrementIndex(1);
+  nameGenerator->SetStartIndex( first );
+  nameGenerator->SetEndIndex( last );
+  nameGenerator->SetIncrementIndex( 1 );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -136,7 +134,7 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetImageIO(itk::PNGImageIO::New());
+  reader->SetImageIO( itk::PNGImageIO::New() );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -148,9 +146,9 @@ main(int argc, char ** argv)
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  reader->SetFileNames(nameGenerator->GetFileNames());
+  reader->SetFileNames( nameGenerator->GetFileNames()  );
 
-  writer->SetFileName(outputFilename);
+  writer->SetFileName( outputFilename );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -160,7 +158,7 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -175,15 +173,15 @@ main(int argc, char ** argv)
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

@@ -14,7 +14,6 @@
 #ifndef GDCMDICOMDIR_H
 #define GDCMDICOMDIR_H
 
-#include <utility>
 #include "gdcmFileSet.h"
 
 namespace gdcm
@@ -27,8 +26,8 @@ namespace gdcm
 class GDCM_EXPORT DICOMDIR
 {
 public:
-  DICOMDIR() = default;
-  DICOMDIR(FileSet  fs):_FS(std::move(std::move(fs))) {}
+  DICOMDIR() {}
+  DICOMDIR(const FileSet& fs):_FS(fs) {}
 
 private:
   FileSet _FS;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,72 +23,74 @@
 namespace itk
 {
 // Constructor with default arguments
-template <typename TParametersValueType>
-Euler2DTransform<TParametersValueType>::Euler2DTransform()
-  : Superclass(ParametersDimension)
+template<typename TParametersValueType>
+Euler2DTransform<TParametersValueType>
+::Euler2DTransform():
+  Superclass(ParametersDimension)
 {}
 
 // Constructor with arguments
-template <typename TParametersValueType>
-Euler2DTransform<TParametersValueType>::Euler2DTransform(unsigned int parametersDimension)
-  : Superclass(parametersDimension)
+template<typename TParametersValueType>
+Euler2DTransform<TParametersValueType>::Euler2DTransform(unsigned int parametersDimension):
+  Superclass(parametersDimension)
 {}
 
 // Create and return an inverse transformation
-template <typename TParametersValueType>
+template<typename TParametersValueType>
 void
 Euler2DTransform<TParametersValueType>::CloneInverseTo(Pointer & result) const
 {
   result = New();
-  this->GetInverse(result);
+  this->GetInverse( result.GetPointer() );
 }
 
 // return an inverse transformation
-template <typename TParametersValueType>
+template<typename TParametersValueType>
 bool
-Euler2DTransform<TParametersValueType>::GetInverse(Self * inverse) const
+Euler2DTransform<TParametersValueType>::GetInverse(Self *inverse) const
 {
-  if (!inverse)
-  {
+  if ( !inverse )
+    {
     return false;
-  }
+    }
 
-  inverse->SetFixedParameters(this->GetFixedParameters());
-  inverse->SetCenter(this->GetCenter()); // inverse have the same center
-  inverse->SetAngle(-this->GetAngle());
-  inverse->SetTranslation(-(this->GetInverseMatrix() * this->GetTranslation()));
+  inverse->SetFixedParameters( this->GetFixedParameters() );
+  inverse->SetCenter( this->GetCenter() );  // inverse have the same center
+  inverse->SetAngle( -this->GetAngle() );
+  inverse->SetTranslation( -( this->GetInverseMatrix() * this->GetTranslation() ) );
 
   return true;
 }
 
 // Return an inverse of this transform
-template <typename TParametersValueType>
+template<typename TParametersValueType>
 typename Euler2DTransform<TParametersValueType>::InverseTransformBasePointer
-Euler2DTransform<TParametersValueType>::GetInverseTransform() const
+Euler2DTransform<TParametersValueType>
+::GetInverseTransform() const
 {
   Pointer inv = New();
 
-  return GetInverse(inv) ? inv.GetPointer() : nullptr;
+  return GetInverse(inv) ? inv.GetPointer() : ITK_NULLPTR;
 }
 
 // Create and return an inverse transformation
-template <typename TParametersValueType>
+template<typename TParametersValueType>
 void
 Euler2DTransform<TParametersValueType>::CloneTo(Pointer & result) const
 {
   result = New();
-  result->SetCenter(this->GetCenter());
-  result->SetAngle(this->GetAngle());
-  result->SetTranslation(this->GetTranslation());
+  result->SetCenter( this->GetCenter() );
+  result->SetAngle( this->GetAngle() );
+  result->SetTranslation( this->GetTranslation() );
 }
 
 // Print self
-template <typename TParametersValueType>
+template<typename TParametersValueType>
 void
 Euler2DTransform<TParametersValueType>::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
 }
-} // namespace itk
+} // namespace
 
 #endif

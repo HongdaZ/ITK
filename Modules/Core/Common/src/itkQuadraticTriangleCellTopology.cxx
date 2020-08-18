@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,15 @@ namespace itk
 /**
  * The triangle's topology data: Edges
  */
-const int QuadraticTriangleCellTopology ::m_Edges[3][3] = { { 0, 4, 1 }, { 1, 5, 2 }, { 2, 3, 0 } };
+const int
+QuadraticTriangleCellTopology
+:: m_Edges[3][3] = { { 0, 4, 1 }, { 1, 5, 2 }, { 2, 3, 0 } };
 
-QuadraticTriangleCellTopology ::QuadraticTriangleCellTopology() = default;
+QuadraticTriangleCellTopology
+::QuadraticTriangleCellTopology()
+{}
 
-QuadraticTriangleCellTopology ::~QuadraticTriangleCellTopology() = default;
+QuadraticTriangleCellTopology
+::~QuadraticTriangleCellTopology()
+{}
 } // end namespace itk

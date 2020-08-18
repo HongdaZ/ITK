@@ -9,9 +9,7 @@
 
 #include <iostream>
 #include "vnl_scatter_3x3.h"
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 #include <vnl/algo/vnl_symmetric_eigensystem.h>
 
 template <class T>

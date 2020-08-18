@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,29 +48,32 @@ namespace itk
  * \sa BinaryDilateImageFilter
  * \ingroup ITKBinaryMathematicalMorphology
  */
-template <typename TInputImage, typename TOutputImage, typename TKernel>
-class FastIncrementalBinaryDilateImageFilter : public BinaryDilateImageFilter<TInputImage, TOutputImage, TKernel>
+template< typename TInputImage, typename TOutputImage, typename TKernel >
+class FastIncrementalBinaryDilateImageFilter:
+  public BinaryDilateImageFilter< TInputImage, TOutputImage, TKernel >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastIncrementalBinaryDilateImageFilter);
-
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Extract the dimension of the kernel */
-  static constexpr unsigned int KernelDimension = TKernel::NeighborhoodDimension;
+  itkStaticConstMacro(KernelDimension, unsigned int,
+                      TKernel::NeighborhoodDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using KernelType = TKernel;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
+  typedef TKernel      KernelType;
 
-  /** Standard class type aliases. */
-  using Self = FastIncrementalBinaryDilateImageFilter;
-  using Superclass = BinaryDilateImageFilter<InputImageType, OutputImageType, KernelType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FastIncrementalBinaryDilateImageFilter Self;
+  typedef BinaryDilateImageFilter< InputImageType, OutputImageType, KernelType >
+  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -79,8 +82,11 @@ public:
   itkTypeMacro(FastIncrementalBinaryDilateImageFilter, ImageToImageFilter);
 
 protected:
-  FastIncrementalBinaryDilateImageFilter() = default;
-  ~FastIncrementalBinaryDilateImageFilter() override = default;
+  FastIncrementalBinaryDilateImageFilter() {}
+  virtual ~FastIncrementalBinaryDilateImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastIncrementalBinaryDilateImageFilter);
 };
 } // end namespace itk
 

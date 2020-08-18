@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,62 +20,59 @@
 #include "itkListSample.h"
 #include "itkSampleToSubsampleFilter.h"
 
-namespace itk
-{
-namespace Statistics
-{
-namespace itkSampleToSubsampleFilter1Namespace
-{
+namespace itk {
+namespace Statistics {
+namespace itkSampleToSubsampleFilter1Namespace {
 
-template <typename TSample>
-class SubsamplerTester : public SampleToSubsampleFilter<TSample>
+template<typename TSample >
+class SubsamplerTester : public SampleToSubsampleFilter< TSample >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SubsamplerTester);
-
-  /** Standard class type aliases. */
-  using Self = SubsamplerTester;
-  using Superclass = SampleToSubsampleFilter<TSample>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SubsamplerTester                    Self;
+  typedef SampleToSubsampleFilter<TSample>    Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Standard macros */
-  itkTypeMacro(SubsamplerTester, SampleToSubsampleFilter);
+  itkTypeMacro(SubsamplerTester,SampleToSubsampleFilter);
   itkNewMacro(Self);
 
 protected:
-  SubsamplerTester() = default;
-  ~SubsamplerTester() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
-  {
-    this->Superclass::PrintSelf(os, indent);
-    os << "Superclass = " << this->Superclass::GetNameOfClass() << std::endl;
-  }
+  SubsamplerTester() {}
+  virtual ~SubsamplerTester() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE
+    {
+    this->Superclass::PrintSelf(os,indent);
+    os << "Superclass = " <<  this->Superclass::GetNameOfClass() << std::endl;
+    }
 
-  void
-  GenerateData() override
-  {}
+  void GenerateData() ITK_OVERRIDE
+    {
+    }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SubsamplerTester);
+
+
 };
 
-} // namespace itkSampleToSubsampleFilter1Namespace
-} // namespace Statistics
-} // namespace itk
+} // end of itkSampleToSubsampleFilter1Namespace
+} // end of Standard namespace
+} // end of itk namespace
 
 
-int
-itkSampleToSubsampleFilterTest1(int, char *[])
+int itkSampleToSubsampleFilterTest1(int, char* [] )
 {
 
-  constexpr unsigned int MeasurementVectorSize = 17;
+  const unsigned int MeasurementVectorSize = 17;
 
-  using MeasurementVectorType = itk::FixedArray<float, MeasurementVectorSize>;
+  typedef itk::FixedArray<
+    float, MeasurementVectorSize >  MeasurementVectorType;
 
-  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
+  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
 
-  using FilterType = itk::Statistics::itkSampleToSubsampleFilter1Namespace::SubsamplerTester<SampleType>;
+  typedef itk::Statistics::itkSampleToSubsampleFilter1Namespace::SubsamplerTester< SampleType > FilterType;
 
 
   SampleType::Pointer sample = SampleType::New();
@@ -83,32 +80,32 @@ itkSampleToSubsampleFilterTest1(int, char *[])
   FilterType::Pointer filter = FilterType::New();
 
   // Test GetInput() before setting the input
-  if (filter->GetInput() != nullptr)
-  {
-    std::cerr << "GetInput() should have returned nullptr" << std::endl;
+  if( filter->GetInput() != ITK_NULLPTR )
+    {
+    std::cerr << "GetInput() should have returned ITK_NULLPTR" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Test GetOutput() before creating the output
-  if (filter->GetOutput() == nullptr)
-  {
-    std::cerr << "GetOutput() should have returned NON-nullptr" << std::endl;
+  if( filter->GetOutput() == ITK_NULLPTR )
+    {
+    std::cerr << "GetOutput() should have returned NON-ITK_NULLPTR" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  filter->SetInput(sample);
+  filter->SetInput( sample );
 
-  if (filter->GetInput() != sample.GetPointer())
-  {
+  if( filter->GetInput() != sample.GetPointer() )
+    {
     std::cerr << "GetInput() didn't matched SetInput()" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //
   // Exercise the Print() method
   //
-  filter->Print(std::cout);
+  filter->Print( std::cout );
 
 
   filter->Update();

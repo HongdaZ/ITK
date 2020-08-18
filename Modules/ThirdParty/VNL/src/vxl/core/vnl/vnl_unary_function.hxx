@@ -21,9 +21,7 @@
 
 #include <limits>
 #include "vnl_unary_function.h"
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: Return bounding cube of range (outputs)
 template <class RETURN, class ARGUMENT>

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@
 #include <vector>
 // Software Guide : EndCodeSnippet
 
-int
-main(int, char *[])
+int main(int, char*[])
 {
   // Software Guide : BeginLatex
   //
@@ -46,7 +45,7 @@ main(int, char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using DecisionRuleType = itk::Statistics::MinimumDecisionRule;
+  typedef itk::Statistics::MinimumDecisionRule DecisionRuleType;
   DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
   // Software Guide : EndCodeSnippet
 
@@ -61,12 +60,13 @@ main(int, char *[])
 
   // Software Guide : BeginCodeSnippet
   DecisionRuleType::MembershipVectorType discriminantScores;
-  discriminantScores.push_back(0.1);
-  discriminantScores.push_back(0.3);
-  discriminantScores.push_back(0.6);
+  discriminantScores.push_back( 0.1 );
+  discriminantScores.push_back( 0.3 );
+  discriminantScores.push_back( 0.6 );
 
   std::cout << "MinimumDecisionRule: The index of the chosen = "
-            << decisionRule->Evaluate(discriminantScores) << std::endl;
+            << decisionRule->Evaluate( discriminantScores )
+            << std::endl;
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

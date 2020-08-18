@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,38 +29,41 @@ namespace itk
  * \ingroup QEMeshModifierFunctions
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh, typename TQEType>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorJoinFacetFunction : public QuadEdgeMeshFunctionBase<TMesh, TQEType *>
+template< typename TMesh, typename TQEType >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorJoinFacetFunction:
+  public QuadEdgeMeshFunctionBase< TMesh, TQEType * >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorJoinFacetFunction);
-
-  /** Standard class type aliases. */
-  using Self = QuadEdgeMeshEulerOperatorJoinFacetFunction;
-  using Superclass = QuadEdgeMeshFunctionBase<TMesh, TQEType *>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef QuadEdgeMeshEulerOperatorJoinFacetFunction   Self;
+  typedef QuadEdgeMeshFunctionBase< TMesh, TQEType * > Superclass;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
 
   itkNewMacro(Self);
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadEdgeMeshEulerOperatorJoinFacetFunction, QuadEdgeMeshFunctionBase);
 
   /** Type of QuadEdge with which to apply slicing. */
-  using QEType = TQEType;
+  typedef TQEType QEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::MeshType   MeshType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Evaluate at the specified input position */
-  virtual OutputType
-  Evaluate(QEType * e);
+  virtual OutputType Evaluate(QEType *e);
 
 protected:
-  QuadEdgeMeshEulerOperatorJoinFacetFunction() = default;
-  ~QuadEdgeMeshEulerOperatorJoinFacetFunction() override = default;
+  QuadEdgeMeshEulerOperatorJoinFacetFunction(){}
+  ~QuadEdgeMeshEulerOperatorJoinFacetFunction() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorJoinFacetFunction);
 };
-} // end namespace itk
+} // namespace itk
 
 #include "itkQuadEdgeMeshEulerOperatorJoinFacetFunction.hxx"
 
 #endif
+
+// eof - itkQuadEdgeMeshEulerOperatorJoinFacetFunction.h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ namespace itk
 namespace Functor
 {
 
-/**
- *\class LabelObjectLineComparator
+  /** \class LabelObjectLineComparator
  *  \brief Performs a comparison of l1 < l2.  Returns true if l1 is strictly less
  *  than l2.
  *
@@ -38,27 +37,26 @@ namespace Functor
  * \ingroup LabeledImageObject
  * \ingroup ITKLabelMap
  */
-template <typename TLabelObjectLine>
+template< typename TLabelObjectLine >
 class LabelObjectLineComparator
 {
 public:
-  bool
-  operator()(TLabelObjectLine const & l1, TLabelObjectLine const & l2) const
+  bool operator()(TLabelObjectLine const & l1, TLabelObjectLine const & l2) const
   {
     const typename TLabelObjectLine::IndexType & idx1 = l1.GetIndex();
     const typename TLabelObjectLine::IndexType & idx2 = l2.GetIndex();
 
-    for (int i = TLabelObjectLine::ImageDimension - 1; i >= 0; i--)
-    {
-      if (idx1[i] < idx2[i])
+    for ( int i = TLabelObjectLine::ImageDimension - 1; i >= 0; i-- )
       {
+      if ( idx1[i] < idx2[i] )
+        {
         return true;
-      }
-      else if (idx1[i] > idx2[i])
-      {
+        }
+      else if ( idx1[i] > idx2[i] )
+        {
         return false;
+        }
       }
-    }
     return l1.GetLength() < l2.GetLength();
   }
 };

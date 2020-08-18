@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,19 +22,27 @@
 #include <iostream>
 
 /**
- * Some type alias to make things easier.
+ * Some typedefs to make things easier.
  */
 
 /**
  * Define a mesh type that stores a PixelType of "int".  Use the defaults
  * for the other template parameters.
  */
-using MeshTraits = itk::DefaultDynamicMeshTraits<int, 2, 2, float, float>;
+typedef itk::DefaultDynamicMeshTraits< int,
+                                       2,
+                                       2,
+                                       float,
+                                       float
+                                       >  MeshTraits;
 
-using MeshType = itk::Mesh<MeshTraits::PixelType, MeshTraits::PointDimension, MeshTraits>;
+typedef itk::Mesh< MeshTraits::PixelType,
+                   MeshTraits::PointDimension,
+                   MeshTraits
+                   >  MeshType;
 
 
-using CellTraits = MeshType::CellTraits;
+typedef MeshType::CellTraits  CellTraits;
 
 
 /**
@@ -42,22 +50,21 @@ using CellTraits = MeshType::CellTraits;
  * with defaults (itkDefaultDynamicMeshTraits), the point dimension is 3 and
  * the coordinate representation is float.
  */
-using PointType = MeshType::PointType;
-using VectorType = PointType::VectorType;
+typedef MeshType::PointType             PointType;
+typedef PointType::VectorType           VectorType;
 
-using MeshPointer = MeshType::Pointer;
-using MeshConstPointer = MeshType::ConstPointer;
+typedef MeshType::Pointer               MeshPointer;
+typedef MeshType::ConstPointer          MeshConstPointer;
 
-using PointType = MeshType::PointType;
+typedef MeshType::PointType             PointType;
 
-using PointsContainer = MeshType::PointsContainer;
-using PointDataContainer = MeshType::PointDataContainer;
+typedef MeshType::PointsContainer       PointsContainer;
+typedef MeshType::PointDataContainer    PointDataContainer;
 
-using PointsIterator = PointsContainer::Iterator;
-using CellsIterator = PointDataContainer::Iterator;
+typedef PointsContainer::Iterator       PointsIterator;
+typedef PointDataContainer::Iterator    CellsIterator;
 
-int
-itkDynamicMeshTest(int, char *[])
+int itkDynamicMeshTest(int, char* [] )
 {
 
   /**
@@ -75,30 +82,31 @@ itkDynamicMeshTest(int, char *[])
   displacement[0] = 2;
   displacement[1] = 5;
 
-  pointA.Fill(0.0);
+  pointA.Fill( 0.0 );
   pointB = pointA + displacement;
   pointC = pointB + displacement;
   pointD = pointC + displacement;
 
   PointsContainer::Pointer pointsContainter = mesh->GetPoints();
 
-  pointsContainter->SetElement(0, pointA);
-  pointsContainter->SetElement(1, pointB);
-  pointsContainter->SetElement(2, pointC);
-  pointsContainter->SetElement(3, pointD);
+  pointsContainter->SetElement( 0, pointA );
+  pointsContainter->SetElement( 1, pointB );
+  pointsContainter->SetElement( 2, pointC );
+  pointsContainter->SetElement( 3, pointD );
 
 
   std::cout << "Number of Points = " << mesh->GetNumberOfPoints() << std::endl;
 
-  PointsIterator point = pointsContainter->Begin();
+  PointsIterator point    = pointsContainter->Begin();
   PointsIterator endpoint = pointsContainter->End();
 
-  while (point != endpoint)
-  {
+  while( point != endpoint )
+    {
     std::cout << point.Index() << " = " << point.Value() << std::endl;
     point++;
-  }
+    }
 
 
   return EXIT_SUCCESS;
+
 }

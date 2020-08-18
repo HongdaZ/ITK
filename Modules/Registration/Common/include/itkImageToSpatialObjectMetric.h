@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 namespace itk
 {
 /** \class ImageToSpatialObjectMetric
- * \brief Computes similarity between a moving spatial object
+ * \brief Computes similarity between a moving spatial obejct
  *        and an Image to be registered
  *
  *  The ImageToSpatialObjectMetric is different from the rest of the
@@ -57,70 +57,77 @@ namespace itk
  * \ingroup ITKRegistrationCommon
  */
 
-template <typename TFixedImage, typename TMovingSpatialObject>
-class ITK_TEMPLATE_EXPORT ImageToSpatialObjectMetric : public SingleValuedCostFunction
+template< typename TFixedImage, typename TMovingSpatialObject >
+class ITK_TEMPLATE_EXPORT ImageToSpatialObjectMetric:
+  public SingleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToSpatialObjectMetric);
-
-  using Self = ImageToSpatialObjectMetric;
-  using Superclass = SingleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef ImageToSpatialObjectMetric Self;
+  typedef SingleValuedCostFunction   Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Type of the fixed image */
-  using FixedImageType = TFixedImage;
+  typedef TFixedImage FixedImageType;
 
   /** Type of the MovingSpatialObject */
-  using MovingSpatialObjectType = TMovingSpatialObject;
+  typedef TMovingSpatialObject MovingSpatialObjectType;
 
   /** Type used for representing point components  */
-  using CoordinateRepresentationType = Superclass::ParametersValueType;
+  typedef Superclass::ParametersValueType CoordinateRepresentationType;
 
   /** Image dimension enumeration. */
-  static constexpr unsigned int ImageDimension = FixedImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      FixedImageType::ImageDimension);
 
   /** Object dimension enumeration. */
-  static constexpr unsigned int ObjectDimension = MovingSpatialObjectType::ObjectDimension;
+  itkStaticConstMacro(ObjectDimension, unsigned int,
+                      MovingSpatialObjectType::ObjectDimension);
 
   /**  Type of the Transform Base class */
-  using TransformType = Transform<CoordinateRepresentationType, Self::ObjectDimension, Self::ImageDimension>;
+  typedef Transform< CoordinateRepresentationType,
+                     itkGetStaticConstMacro(ObjectDimension),
+                     itkGetStaticConstMacro(ImageDimension) > TransformType;
 
-  using TransformPointer = typename TransformType::Pointer;
-  using InputPointType = typename TransformType::InputPointType;
-  using OutputPointType = typename TransformType::OutputPointType;
-  using TransformParametersType = typename TransformType::ParametersType;
-  using TransformJacobianType = typename TransformType::JacobianType;
+  typedef typename TransformType::Pointer         TransformPointer;
+  typedef typename TransformType::InputPointType  InputPointType;
+  typedef typename TransformType::OutputPointType OutputPointType;
+  typedef typename TransformType::ParametersType  TransformParametersType;
+  typedef typename TransformType::JacobianType    TransformJacobianType;
 
   /**  Type of the Interpolator Base class */
-  using InterpolatorType = LinearInterpolateImageFunction<TFixedImage, CoordinateRepresentationType>;
+  typedef LinearInterpolateImageFunction<
+    TFixedImage,
+    CoordinateRepresentationType > InterpolatorType;
 
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
+  typedef typename InterpolatorType::Pointer InterpolatorPointer;
 
   /** Typede of the vector type to return derivatives */
-  using VectorType = vnl_vector_fixed<double, Self::ObjectDimension>;
+  typedef vnl_vector_fixed< double,
+                            itkGetStaticConstMacro(ObjectDimension) > VectorType;
 
   /**  Type of the match measure */
-  using MeasureType = Superclass::MeasureType;
+  typedef Superclass::MeasureType MeasureType;
 
   /** Type of the derivative of the match measure */
-  using DerivativeType = Superclass::DerivativeType;
+  typedef Superclass::DerivativeType DerivativeType;
 
   /** Pointer type for the FixedImage  */
-  using FixedImagePointer = typename FixedImageType::Pointer;
+  typedef typename FixedImageType::Pointer FixedImagePointer;
 
   /** Pointer type for the MovingSpatialObject */
-  using MovingSpatialObjectPointer = typename MovingSpatialObjectType::Pointer;
+  typedef typename MovingSpatialObjectType::Pointer
+  MovingSpatialObjectPointer;
 
   /** Const pointer type for the FixedImage */
-  using FixedImageConstPointer = typename FixedImageType::ConstPointer;
+  typedef typename FixedImageType::ConstPointer FixedImageConstPointer;
 
   /** Const pointer type for the MovingSpatialObject */
-  using MovingSpatialObjectConstPointer = typename MovingSpatialObjectType::ConstPointer;
+  typedef typename MovingSpatialObjectType::ConstPointer MovingSpatialObjectConstPointer;
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToSpatialObjectMetric, Object);
@@ -140,18 +147,15 @@ public:
   itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
 
   /** Get Value and Derivatives for MultipleValuedOptimizers */
-  void
-  GetValueAndDerivative(const ParametersType & parameters,
-                        MeasureType &          Value,
-                        DerivativeType &       Derivative) const override = 0;
+  virtual void GetValueAndDerivative(const ParametersType & parameters,
+                                     MeasureType & Value,
+                                     DerivativeType  & Derivative) const ITK_OVERRIDE = 0;
 
   /** Return the number of parameters required by the Transform */
-  unsigned int
-  GetNumberOfParameters() const override;
+  virtual unsigned int GetNumberOfParameters( void ) const ITK_OVERRIDE;
 
   /** Initialize the metric */
-  virtual void
-  Initialize();
+  virtual void Initialize(void);
 
   /** Get the last transformation parameters visited by
    * the optimizer. This function overload the superclass's one */
@@ -161,13 +165,14 @@ public:
   itkSetObjectMacro(Transform, TransformType);
 
 protected:
+
   ImageToSpatialObjectMetric();
-  ~ImageToSpatialObjectMetric() override = default;
+  virtual ~ImageToSpatialObjectMetric() ITK_OVERRIDE {}
+  ImageToSpatialObjectMetric(const Self &) {}
+  void operator=(const Self &) {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-
-  MeasureType              m_MatchMeasure{ 0 };
+  MeasureType              m_MatchMeasure;
   DerivativeType           m_MatchMeasureDerivatives;
   mutable TransformPointer m_Transform;
   InterpolatorPointer      m_Interpolator;
@@ -179,7 +184,7 @@ protected:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageToSpatialObjectMetric.hxx"
+#include "itkImageToSpatialObjectMetric.hxx"
 #endif
 
 #endif

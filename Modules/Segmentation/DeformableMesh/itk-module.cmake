@@ -2,7 +2,6 @@ set(DOCUMENTATION "This module contains classes to perform image segmentation by
 a deformable mesh that experiences a variety of forces.")
 
 itk_module(ITKDeformableMesh
-  ENABLE_SHARED
   DEPENDS
     ITKMesh
     ITKImageIntensity

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ namespace itk
  * \brief Representation of a tube based on the spatial object classes.
  *
  * The tube is basically defined by a set of points. Each tube can
- * be connected to a tube network, by using the AddChild() methods
+ * be connected to a tube network, by using the AddSpatialObject() methods
  * of a TubeSpatialObject Object.
  * A tube is also identified by an id number when connected to a network.
  *
@@ -38,30 +38,29 @@ namespace itk
  * \ingroup ITKSpatialObjects
  */
 
-template <unsigned int TDimension = 3, class TSpatialObjectPointType = TubeSpatialObjectPoint<TDimension>>
-class ITK_TEMPLATE_EXPORT TubeSpatialObject : public PointBasedSpatialObject<TDimension, TSpatialObjectPointType>
+template< unsigned int TDimension = 3,
+          typename TTubePointType = TubeSpatialObjectPoint< TDimension > >
+class ITK_TEMPLATE_EXPORT TubeSpatialObject:
+  public PointBasedSpatialObject< TDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TubeSpatialObject);
 
-  using Self = TubeSpatialObject;
-  using Superclass = PointBasedSpatialObject<TDimension, TSpatialObjectPointType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using ScalarType = double;
-
-  using TubePointType = TSpatialObjectPointType;
-  using TubePointListType = std::vector<TubePointType>;
-
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using SpatialObjectPointType = typename Superclass::SpatialObjectPointType;
-  using PointContainerType = VectorContainer<IdentifierType, PointType>;
-  using PointContainerPointer = SmartPointer<PointContainerType>;
-  using VectorType = typename Superclass::VectorType;
-  using CovariantVectorType = typename Superclass::CovariantVectorType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  typedef TubeSpatialObject                             Self;
+  typedef PointBasedSpatialObject< TDimension >         Superclass;
+  typedef SmartPointer< Self >                          Pointer;
+  typedef SmartPointer< const Self >                    ConstPointer;
+  typedef double                                        ScalarType;
+  typedef TTubePointType                                TubePointType;
+  typedef std::vector< TubePointType >                  PointListType;
+  typedef PointListType *                               PointListPointer;
+  typedef typename Superclass::PointType                PointType;
+  typedef typename Superclass::TransformType            TransformType;
+  typedef typename Superclass::SpatialObjectPointType   SpatialObjectPointType;
+  typedef VectorContainer< IdentifierType, PointType >  PointContainerType;
+  typedef SmartPointer< PointContainerType >            PointContainerPointer;
+  typedef typename Superclass::VectorType               VectorType;
+  typedef typename Superclass::CovariantVectorType      CovariantVectorType;
+  typedef typename Superclass::BoundingBoxType          BoundingBoxType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -69,71 +68,118 @@ public:
   /** Method for creation through the object factory. */
   itkTypeMacro(TubeSpatialObject, PointBasedSpatialObject);
 
-  /** Reset the spatial object to its initial condition, yet preserves
-   *   Id, Parent, and Child information */
-  void
-  Clear() override;
+  /** Returns a reference to the list of the tube points. */
+  virtual PointListType & GetPoints();
 
-  /** Set the type of tube end-type: false = flat, true = rounded */
-  itkSetMacro(EndRounded, bool);
-  itkGetConstMacro(EndRounded, bool);
+  /** Returns a reference to the list of the tube points. */
+  virtual const PointListType & GetPoints() const;
+
+  /** Set the list of tube points. */
+  virtual void SetPoints(PointListType & newPoints);
+
+  /** Return a point in the list given the index. */
+  virtual const SpatialObjectPointType * GetPoint(IdentifierType ind) const ITK_OVERRIDE
+  { return &( m_Points[ind] ); }
+
+  /** Return a point in the list given the index */
+  virtual SpatialObjectPointType * GetPoint(IdentifierType ind) ITK_OVERRIDE
+  { return &( m_Points[ind] ); }
+
+  /** Set a point in the list at the specified index */
+  virtual void SetPoint(IdentifierType ind, const TubePointType & pnt)
+  { m_Points[ind] = pnt; }
+
+  /** Remove a point in the list given the index */
+  virtual void RemovePoint(IdentifierType ind)
+  { m_Points.erase(m_Points.begin() + ind); }
+
+  /** Return the number of points in the list */
+  virtual SizeValueType GetNumberOfPoints(void) const ITK_OVERRIDE
+  {
+    return static_cast<SizeValueType>(m_Points.size());
+  }
+
+  /** Set the type of tube end-type: 0 = flat, 1 = rounded */
+  itkSetMacro(EndType, unsigned int);
+  itkGetConstMacro(EndType, unsigned int);
+
+  /** Remove the list of tube points */
+  void Clear(void) ITK_OVERRIDE;
 
   /** Calculate the normalized tangent */
-  bool
-  ComputeTangentAndNormals();
+  bool ComputeTangentAndNormals();
 
   /** Remove duplicate points */
-  unsigned int
-  RemoveDuplicatePointsInObjectSpace(double minSpacingInObjectSpace = 0);
+  unsigned int RemoveDuplicatePoints(unsigned int step = 1);
 
-  /** Set the parent point which corresponds to the
-   *  position of the point in the parent's points list */
-  itkSetMacro(ParentPoint, int);
+  /** Returns true if the tube is evaluable at the requested point,
+   *  false otherwise. */
+  bool IsEvaluableAt(const PointType & point,
+                     unsigned int depth = 0, char *name = ITK_NULLPTR) const ITK_OVERRIDE;
 
-  /** Get the parent point which corresponds to the
-   *  position of the point in the parent's points list */
-  itkGetConstMacro(ParentPoint, int);
-
-  /** Set a flag for tube which are a "root" of a
-   *  tube network in the scene */
-  itkSetMacro(Root, bool);
-
-  /** Get a flag for tube which are a "root" of a
-   *  tube network in the scene */
-  itkGetConstMacro(Root, bool);
+  /** Returns the value of the tube at that point.
+   *  Currently this function returns a binary value,
+   *  but it might want to return a degree of membership
+   *  in case of fuzzy tubes. */
+  bool ValueAt(const PointType & point, double & value,
+               unsigned int depth = 0, char *name = ITK_NULLPTR) const ITK_OVERRIDE;
 
   /** Returns true if the point is inside the tube, false otherwise. */
-  bool
-  IsInsideInObjectSpace(const PointType & point) const override;
+  bool IsInside(const PointType & point,
+                unsigned int depth, char *name) const ITK_OVERRIDE;
 
-  /* Avoid hiding the overload that supports depth and name arguments */
-  using Superclass::IsInsideInObjectSpace;
+  /** Test whether a point is inside or outside the object
+   *  For computational speed purposes, it is faster if the method does not
+   *  check the name of the class and the current depth */
+  virtual bool IsInside(const PointType & point) const;
+
+  /** Compute the boundaries of the tube. */
+  bool ComputeLocalBoundingBox() const ITK_OVERRIDE;
+
+  /** Set/Get the parent point which corresponds to the
+   *  position of the point in the parent's points list */
+  itkSetMacro(ParentPoint, int);
+  itkGetConstMacro(ParentPoint, int);
+
+  /** Set/Get a flag for vessel which are a "root" of a
+   *  vascular network in the scene */
+  itkSetMacro(Root, bool);
+  itkGetConstMacro(Root, bool);
+
+  /** Set/Get a flag for vessel which are an Artery */
+  itkSetMacro(Artery, bool);
+  itkGetConstMacro(Artery, bool);
+
+  /** Copy the information from another SpatialObject */
+  void CopyInformation(const DataObject *data) ITK_OVERRIDE;
 
 protected:
-  /** Compute the boundaries of the tube. */
-  void
-  ComputeMyBoundingBox() override;
+  PointListType m_Points;
+
+  int m_ParentPoint;
+
+  unsigned int m_EndType;
+
+  bool m_Root;
+  bool m_Artery;
 
   TubeSpatialObject();
-  ~TubeSpatialObject() override = default;
+  virtual ~TubeSpatialObject() ITK_OVERRIDE;
 
   /** Method to print the object. */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  typename LightObject::Pointer
-  InternalClone() const override;
+  /** TimeStamps */
+  mutable ModifiedTimeType m_OldMTime;
+  mutable ModifiedTimeType m_IndexToWorldTransformMTime;
 
 private:
-  int  m_ParentPoint;
-  bool m_EndRounded;
-  bool m_Root;
+  ITK_DISALLOW_COPY_AND_ASSIGN(TubeSpatialObject);
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkTubeSpatialObject.hxx"
+#include "itkTubeSpatialObject.hxx"
 #endif
 
 #endif // itkTubeSpatialObject_h

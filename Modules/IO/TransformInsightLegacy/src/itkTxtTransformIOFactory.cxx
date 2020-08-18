@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,28 +22,28 @@
 
 namespace itk
 {
-void
-TxtTransformIOFactory::PrintSelf(std::ostream &, Indent) const
+void TxtTransformIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 TxtTransformIOFactory::TxtTransformIOFactory()
 {
-  this->RegisterOverride("itkTransformIOBaseTemplate",
-                         "itkTxtTransformIO",
-                         "Txt Transform float IO",
-                         true,
-                         CreateObjectFunction<TxtTransformIOTemplate<float>>::New());
-  this->RegisterOverride("itkTransformIOBaseTemplate",
-                         "itkTxtTransformIO",
-                         "Txt Transform double IO",
-                         true,
-                         CreateObjectFunction<TxtTransformIOTemplate<double>>::New());
+  this->RegisterOverride( "itkTransformIOBaseTemplate",
+                          "itkTxtTransformIO",
+                          "Txt Transform float IO",
+                          1,
+                          CreateObjectFunction< TxtTransformIOTemplate< float > >::New() );
+  this->RegisterOverride( "itkTransformIOBaseTemplate",
+                          "itkTxtTransformIO",
+                          "Txt Transform double IO",
+                          1,
+                          CreateObjectFunction< TxtTransformIOTemplate< double > >::New() );
 }
 
-TxtTransformIOFactory::~TxtTransformIOFactory() = default;
+TxtTransformIOFactory::~TxtTransformIOFactory()
+{}
 
 const char *
-TxtTransformIOFactory::GetITKSourceVersion() const
+TxtTransformIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -59,13 +59,12 @@ TxtTransformIOFactory::GetDescription() const
 // DO NOT CALL DIRECTLY.
 static bool TxtTransformIOFactoryHasBeenRegistered;
 
-void ITKIOTransformInsightLegacy_EXPORT
-     TxtTransformIOFactoryRegister__Private()
+void ITKIOTransformInsightLegacy_EXPORT TxtTransformIOFactoryRegister__Private(void)
 {
-  if (!TxtTransformIOFactoryHasBeenRegistered)
-  {
+  if( ! TxtTransformIOFactoryHasBeenRegistered )
+    {
     TxtTransformIOFactoryHasBeenRegistered = true;
     TxtTransformIOFactory::RegisterOneFactory();
-  }
+    }
 }
 } // end namespace itk

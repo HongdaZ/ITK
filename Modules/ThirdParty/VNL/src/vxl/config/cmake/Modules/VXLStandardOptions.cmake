@@ -3,9 +3,9 @@
 # This CMake module is included by vxl/CMakeLists.txt.  It adds
 # several vxl-standard testing and build options to the project:
 #
-#  BUILD_SHARED_LIBS
+#  VXL_BUILD_SHARED_LIBS
 #  BUILD_TESTING
-#  VXL_BUILD_EXAMPLES
+#  BUILD_EXAMPLES
 #  WARN_DEPRECATED
 #  WARN_DEPRECATED_ONCE
 #  WARN_DEPRECATED_ABORT
@@ -32,8 +32,14 @@ if( WIN32 )
 else()
   option( BUILD_SHARED_LIBS "Build shared libraries." OFF)
 endif()
-set( BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS} )
+set( VXL_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS} )
 mark_as_advanced(BUILD_SHARED_LIBS)
+
+set( SOLARIS 0 )
+if( CMAKE_SYSTEM MATCHES "SunOS.*" )
+  set( SOLARIS 1 )
+endif()
+
 
 option( WARN_DEPRECATED "Enable runtime warnings for deprecated functions?" ON )
 option( WARN_DEPRECATED_ONCE "Only warn once per function (if runtime warnings are enabled)?" ON )

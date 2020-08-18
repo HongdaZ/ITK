@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@
 
 namespace itk
 {
-/**
- *\class ShrinkImageFilter
+/** \class ShrinkImageFilter
  * \brief Reduce the size of an image by an integer factor in each
  * dimension.
  *
@@ -55,26 +54,25 @@ namespace itk
  * ProcessObject::GenerateOutputInformation().
  *
  * This filter is implemented as a multithreaded filter.  It provides a
- * DynamicThreadedGenerateData() method for its implementation.
+ * ThreadedGenerateData() method for its implementation.
  *
  * \ingroup GeometricTransform Streamed
  * \ingroup ITKImageGrid
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageGrid/ShrinkImage,Shrink Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Images/ShrinkImageFilter,Shrink an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ShrinkImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT ShrinkImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShrinkImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = ShrinkImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ShrinkImageFilter                               Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -83,32 +81,32 @@ public:
   itkTypeMacro(ShrinkImageFilter, ImageToImageFilter);
 
   /** Typedef to images */
-  using OutputImageType = TOutputImage;
-  using InputImageType = TInputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  typedef TOutputImage                          OutputImageType;
+  typedef TInputImage                           InputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
-  using OutputIndexType = typename TOutputImage::IndexType;
-  using InputIndexType = typename TInputImage::IndexType;
-  using OutputOffsetType = typename TOutputImage::OffsetType;
+  typedef typename TOutputImage::IndexType  OutputIndexType;
+  typedef typename TInputImage::IndexType   InputIndexType;
+  typedef typename TOutputImage::OffsetType OutputOffsetType;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
   /** ImageDimension enumeration. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  using ShrinkFactorsType = FixedArray<unsigned int, ImageDimension>;
+  typedef FixedArray< unsigned int, ImageDimension > ShrinkFactorsType;
 
   /** Set the shrink factors. Values are clamped to
    * a minimum value of 1. Default is 1 for all dimensions. */
   itkSetMacro(ShrinkFactors, ShrinkFactorsType);
-  void
-  SetShrinkFactors(unsigned int factor);
-  void
-  SetShrinkFactor(unsigned int i, unsigned int factor);
+  void SetShrinkFactors(unsigned int factor);
+  void SetShrinkFactor(unsigned int i, unsigned int factor);
 
   /** Get the shrink factors. */
   itkGetConstReferenceMacro(ShrinkFactors, ShrinkFactorsType);
@@ -120,52 +118,51 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** ShrinkImageFilter needs a larger input requested region than the output
    * requested region.  As such, ShrinkImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToOutputCheck,
-                  (Concept::Convertible<typename TInputImage::PixelType, typename TOutputImage::PixelType>));
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<ImageDimension, OutputImageDimension>));
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, typename TOutputImage::PixelType > ) );
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< ImageDimension, OutputImageDimension > ) );
   // End concept checking
 #endif
 
 protected:
   ShrinkImageFilter();
-  ~ShrinkImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ShrinkImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** ShrinkImageFilter can be implemented as a multithreaded filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData() routine
+   * Therefore, this implementation provides a ThreadedGenerateData() routine
    * which is called for each processing thread. The output image data is
    * allocated automatically by the superclass prior to calling
-   * DynamicThreadedGenerateData().  DynamicThreadedGenerateData can only write to the
+   * ThreadedGenerateData().  ThreadedGenerateData can only write to the
    * portion of the output image specified by the parameter
    * "outputRegionForThread"
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShrinkImageFilter);
+
   ShrinkFactorsType m_ShrinkFactors;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShrinkImageFilter.hxx"
+#include "itkShrinkImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ namespace itk
 {
 /**
  * \class CurvatureAnisotropicDiffusionImageFilter
- * \brief This filter performs anisotropic diffusion on a scalar
- * itk::Image using the modified curvature diffusion equation (MCDE).
  *
- * For detailed information on anisotropic diffusion and the MCDE see
- * itkAnisotropicDiffusionFunction and
+ * This filter performs anisotropic diffusion on a scalar itk::Image using the
+ * modified curvature diffusion equation (MCDE) implemented in
+ * itkCurvatureNDAnisotropicDiffusionFunction.  For detailed information on
+ * anisotropic diffusion and the MCDE see itkAnisotropicDiffusionFunction and
  * itkCurvatureNDAnisotropicDiffusionFunction.
  *
  * \par Inputs and Outputs
@@ -54,57 +54,62 @@ namespace itk
  * \ingroup ImageEnhancement
  * \ingroup ITKAnisotropicSmoothing
  */
-template <typename TInputImage, typename TOutputImage>
-class CurvatureAnisotropicDiffusionImageFilter : public AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class CurvatureAnisotropicDiffusionImageFilter:
+  public AnisotropicDiffusionImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CurvatureAnisotropicDiffusionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = CurvatureAnisotropicDiffusionImageFilter;
-  using Superclass = AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef CurvatureAnisotropicDiffusionImageFilter Self;
+  typedef AnisotropicDiffusionImageFilter< TInputImage, TOutputImage >
+  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Standard method for creation through object factory. */
   itkNewMacro(Self);
 
   /** Run-time information. */
-  itkTypeMacro(CurvatureAnisotropicDiffusionImageFilter, AnisotropicDiffusionImageFilter);
+  itkTypeMacro(CurvatureAnisotropicDiffusionImageFilter,
+               AnisotropicDiffusionImageFilter);
 
   /** Extract superclass information. */
-  using UpdateBufferType = typename Superclass::UpdateBufferType;
+  typedef typename Superclass::UpdateBufferType UpdateBufferType;
 
   /** Extract superclass image dimension. */
-  static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      Superclass::ImageDimension);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename TOutputImage::PixelType>));
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   CurvatureAnisotropicDiffusionImageFilter()
   {
-    typename CurvatureNDAnisotropicDiffusionFunction<UpdateBufferType>::Pointer q =
-      CurvatureNDAnisotropicDiffusionFunction<UpdateBufferType>::New();
+    typename CurvatureNDAnisotropicDiffusionFunction< UpdateBufferType >::Pointer q =
+      CurvatureNDAnisotropicDiffusionFunction< UpdateBufferType >::New();
     this->SetDifferenceFunction(q);
   }
 
-  ~CurvatureAnisotropicDiffusionImageFilter() override = default;
+  ~CurvatureAnisotropicDiffusionImageFilter() ITK_OVERRIDE {}
 
-  void
-  InitializeIteration() override
+  virtual void InitializeIteration() ITK_OVERRIDE
   {
     Superclass::InitializeIteration();
-    if (this->GetTimeStep() > 0.5 / std::pow(2.0, static_cast<double>(ImageDimension)))
-    {
+    if ( this->GetTimeStep() >  0.5 / std::pow( 2.0, static_cast< double >( ImageDimension ) ) )
+      {
       itkWarningMacro(
         << "Anisotropic diffusion is using a time step which may introduce instability into the solution.");
-    }
+      }
   }
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CurvatureAnisotropicDiffusionImageFilter);
 };
-} // namespace itk
+} // end namspace itk
 
 #endif

@@ -1,6 +1,9 @@
 // This is core/vnl/vnl_diag_matrix.h
 #ifndef vnl_diag_matrix_h_
 #define vnl_diag_matrix_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Contains class for diagonal matrices
@@ -17,20 +20,16 @@
 //   Jan.2011 - Peter Vanroose - added methods set_diagonal() & get_diagonal()
 // \endverbatim
 
-#include <cassert>
 #include <iosfwd>
-#include <utility>
-
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_vector.h"
-#include "vnl_matrix.h"
+#include <vcl_cassert.h>
+#include <vcl_compiler.h>
+#include <vnl/vnl_vector.h>
+#include <vnl/vnl_matrix.h>
 #include "vnl/vnl_export.h"
 
 // forward declarations
 template <class T> class vnl_diag_matrix;
-template <class T> VNL_EXPORT vnl_vector<T> operator*(vnl_diag_matrix<T> const&, vnl_vector<T> const&);
+template <class T> VNL_TEMPLATE_EXPORT vnl_vector<T> operator*(vnl_diag_matrix<T> const&, vnl_vector<T> const&);
 
 //: stores a diagonal matrix as a single vector.
 //  vnl_diag_matrix stores a diagonal matrix for time and space efficiency.
@@ -38,18 +37,13 @@ template <class T> VNL_EXPORT vnl_vector<T> operator*(vnl_diag_matrix<T> const&,
 //  operations (currently *, + and -) are overloaded to use more efficient
 //  algorithms.
 
-template <class T>
-class VNL_EXPORT vnl_diag_matrix
+VCL_TEMPLATE_EXPORT template <class T>
+class VNL_TEMPLATE_EXPORT vnl_diag_matrix
 {
   vnl_vector<T> diagonal_;
 
  public:
-  vnl_diag_matrix() = default;
-  vnl_diag_matrix(const vnl_diag_matrix<T> &)  = default;
-  vnl_diag_matrix(vnl_diag_matrix<T> &&)  = default;
-  vnl_diag_matrix& operator=(const vnl_diag_matrix<T> &)  = default;
-  vnl_diag_matrix& operator=(vnl_diag_matrix<T> &&)  = default;
-  ~vnl_diag_matrix() = default;
+  vnl_diag_matrix() : diagonal_() {}
 
   //: Construct an empty diagonal matrix.
   vnl_diag_matrix(unsigned nn) : diagonal_(nn) {}
@@ -59,7 +53,13 @@ class VNL_EXPORT vnl_diag_matrix
 
   //: Construct a diagonal matrix from a vnl_vector.
   //  The vector elements become the diagonal elements.
-  vnl_diag_matrix(vnl_vector<T> that) : diagonal_(std::move(that)) {}
+  vnl_diag_matrix(vnl_vector<T> const& that): diagonal_(that) {}
+ ~vnl_diag_matrix() {}
+
+  inline vnl_diag_matrix& operator=(vnl_diag_matrix<T> const& that) {
+    this->diagonal_ = that.diagonal_;
+    return *this;
+  }
 
   // Operations----------------------------------------------------------------
 
@@ -134,9 +134,7 @@ class VNL_EXPORT vnl_diag_matrix
     (void)c;
 #if VNL_CONFIG_CHECK_BOUNDS
     if (r >= this->size())                  // If invalid size specified
-      {
       vnl_error_matrix_row_index("get", r); // Raise exception
-      }
 #endif
     diagonal_[r] = v;
   }
@@ -146,35 +144,19 @@ class VNL_EXPORT vnl_diag_matrix
     assert(r == c);
     (void)c;
 #if VNL_CONFIG_CHECK_BOUNDS
-    if (r >= this->size())                  // If invalid size specified
-      {
-      vnl_error_matrix_row_index("get", r); // Raise exception
-      }
+  if (r >= this->size())                  // If invalid size specified
+    vnl_error_matrix_row_index("get", r); // Raise exception
 #endif
     return diagonal_[r];
   }
 
-#if VXL_LEGACY_FUTURE_REMOVE
-  VXL_DEPRECATED_MSG("Deprecated inconsistent return type.\nWARNING: .as_ref returns a vnl_matrix, not a vnl_matrix_ref, use .as_matrix() directly")
-#endif
-  vnl_matrix<T> as_ref() const { return as_matrix(); }
-
   // Need this until we add a vnl_diag_matrix ctor to vnl_matrix;
-  vnl_matrix<T> as_matrix( ) const;
-#if ! VXL_LEGACY_FUTURE_REMOVE
-  VXL_DEPRECATED_MSG("Deprecated inconsistent name.\nUSE: .as_matrix() new consistent name.")
-  vnl_matrix<T> asMatrix () const { return this->as_matrix(); }
-#endif
+  inline vnl_matrix<T> asMatrix() const;
+
+  inline vnl_matrix<T> as_ref() const { return asMatrix(); }
 
   // This is as good as a vnl_diag_matrix ctor for vnl_matrix:
-#if ! VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS
-  explicit operator vnl_matrix<T> () const { return this->as_matrix(); }
-#else
-#if VXL_LEGACY_FUTURE_REMOVE
-  VXL_DEPRECATED_MSG("Implicit cast conversion is dangerous.\nUSE: .as_vector() or .as_ref() member function for clarity.")
-#endif
-  operator vnl_matrix<T> () const { return this->as_matrix(); }
-#endif
+  inline operator vnl_matrix<T> () const { return asMatrix(); }
 
   inline void set_size(int n) { diagonal_.set_size(n); }
 
@@ -193,12 +175,12 @@ class VNL_EXPORT vnl_diag_matrix
 
 //:
 // \relatesalso vnl_diag_matrix
-template <class T> VNL_EXPORT
+template <class T> VNL_TEMPLATE_EXPORT
 std::ostream& operator<< (std::ostream&, vnl_diag_matrix<T> const&);
 
 //: Convert a vnl_diag_matrix to a Matrix.
 template <class T>
-vnl_matrix<T> vnl_diag_matrix<T>::as_matrix() const
+inline vnl_matrix<T> vnl_diag_matrix<T>::asMatrix() const
 {
   unsigned len = diagonal_.size();
   vnl_matrix<T> ret(len, len);

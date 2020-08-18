@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,25 +23,24 @@
 #include "itkQuadEdgeMesh.h"
 
 
-int
-itkConformalFlatteningQuadEdgeMeshFilterTest(int argc, char * argv[])
+int itkConformalFlatteningQuadEdgeMeshFilterTest(int argc, char *argv[])
 {
-  if (argc != 6)
-  {
+  if( argc != 6 )
+    {
     std::cerr << "Usage: itkConformalFlatteningMeshFilterTest "
-              << "vtkInputFilename vtkOutputFilename "
-              << "polarCellId scale mapToSphere[0:1]" << std::endl;
+     << "vtkInputFilename vtkOutputFilename "
+     << "polarCellId scale mapToSphere[0:1]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using MeshType = itk::QuadEdgeMesh<double, 3>;
+  typedef itk::QuadEdgeMesh< double, 3 > MeshType;
 
-  using FilterType = itk::ConformalFlatteningMeshFilter<MeshType, MeshType>;
+  typedef itk::ConformalFlatteningMeshFilter<MeshType, MeshType>  FilterType;
 
-  using ReaderType = itk::MeshFileReader<MeshType>;
-  using WriterType = itk::MeshFileWriter<MeshType>;
+  typedef itk::MeshFileReader<MeshType>  ReaderType;
+  typedef itk::MeshFileWriter<MeshType>  WriterType;
 
-  using CellIdentifier = MeshType::CellIdentifier;
+  typedef MeshType::CellIdentifier  CellIdentifier;
 
   //
   // Read mesh file
@@ -50,17 +49,17 @@ itkConformalFlatteningQuadEdgeMeshFilterTest(int argc, char * argv[])
   std::cout << "Read " << argv[1] << std::endl;
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   MeshType::Pointer mesh = reader->GetOutput();
 
@@ -71,39 +70,39 @@ itkConformalFlatteningQuadEdgeMeshFilterTest(int argc, char * argv[])
   FilterType::Pointer filter = FilterType::New();
 
   // Connect the input
-  filter->SetInput(mesh);
+  filter->SetInput( mesh );
 
-  CellIdentifier polarCellId = std::stoi(argv[3]);
-  filter->SetPolarCellIdentifier(polarCellId);
+  CellIdentifier  polarCellId = atoi( argv[3] );
+  filter->SetPolarCellIdentifier( polarCellId );
 
-  int mapToSphere = std::stoi(argv[5]);
+  int mapToSphere = atoi( argv[5] );
 
-  if (mapToSphere == 1)
-  {
+  if( mapToSphere == 1 )
+    {
     filter->MapToSphere();
-  }
+    }
   else
-  {
+    {
     filter->MapToPlane();
-  }
+    }
 
-  double scale = std::stod(argv[4]);
+  double scale = atof( argv[4] );
 
-  filter->SetScale(scale);
+  filter->SetScale( scale );
 
   // Execute the filter
 
   std::cout << "Execute the filter" << std::endl;
 
   try
-  {
+    {
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Get the Smart Pointer to the Filter Output
   MeshType::Pointer newMesh = filter->GetOutput();
@@ -115,18 +114,18 @@ itkConformalFlatteningQuadEdgeMeshFilterTest(int argc, char * argv[])
   std::cout << "Write " << argv[2] << std::endl;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(newMesh);
-  writer->SetFileName(argv[2]);
+  writer->SetInput( newMesh );
+  writer->SetFileName( argv[2] );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

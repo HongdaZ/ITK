@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,28 +35,23 @@ namespace itk
  *
  * \ingroup ITKIOPhilipsREC
  */
-class ITKIOPhilipsREC_EXPORT PhilipsRECImageIOFactory : public ObjectFactoryBase
+class ITKIOPhilipsREC_EXPORT PhilipsRECImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PhilipsRECImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = PhilipsRECImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PhilipsRECImageIOFactory   Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion() const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription() const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
-  static PhilipsRECImageIOFactory *
-  FactoryNew()
+  static PhilipsRECImageIOFactory * FactoryNew()
   {
     return new PhilipsRECImageIOFactory;
   }
@@ -65,17 +60,20 @@ public:
   itkTypeMacro(PhilipsRECImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
-    PhilipsRECImageIOFactory::Pointer factory = PhilipsRECImageIOFactory::New();
+    PhilipsRECImageIOFactory::Pointer factory =
+      PhilipsRECImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(factory);
   }
 
 protected:
   PhilipsRECImageIOFactory();
-  ~PhilipsRECImageIOFactory() override;
+  ~PhilipsRECImageIOFactory() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhilipsRECImageIOFactory);
 };
 } // end namespace itk
 

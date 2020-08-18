@@ -18,7 +18,6 @@
 #include "gdcmIPPSorter.h"
 #include "gdcmImageReader.h"
 #include "gdcmImageHelper.h"
-#include "gdcmAttribute.h"
 #include "gdcmTrace.h"
 
 namespace gdcm
@@ -29,7 +28,7 @@ SerieHelper::SerieHelper()
   Trace::WarningOff();
   UseSeriesDetails = false;
   Clear();
-  UserLessThanFunction = nullptr;
+  UserLessThanFunction = 0;
   DirectOrder = true;
   //LoadMode = 0;
 }
@@ -235,7 +234,7 @@ FileList *SerieHelper::GetFirstSingleSerieUIDFileSet()
   ItFileSetHt = SingleSerieUIDFileSetHT.begin();
   if ( ItFileSetHt != SingleSerieUIDFileSetHT.end() )
     return ItFileSetHt->second;
-  return nullptr;
+  return NULL;
 }
 
 FileList *SerieHelper::GetNextSingleSerieUIDFileSet()
@@ -245,7 +244,7 @@ FileList *SerieHelper::GetNextSingleSerieUIDFileSet()
   ++ItFileSetHt;
   if ( ItFileSetHt != SingleSerieUIDFileSetHT.end() )
     return ItFileSetHt->second;
-  return nullptr;
+  return NULL;
 }
 
 bool SerieHelper::UserOrdering(FileList *fileList)
@@ -263,17 +262,6 @@ bool MyFileNameSortPredicate(const SmartPointer<FileWithName>& d1, const SmartPo
 {
   return d1->filename < d2->filename;
 }
-bool MyInstanceSortPredicate(const SmartPointer<FileWithName>& d1, const SmartPointer<FileWithName>& d2)
-{
-  Attribute<0x0020,0x0013> instancenumber1;
-  Attribute<0x0020,0x0013> instancenumber2;
-  const DataSet& ds1 = d1->GetDataSet();
-  instancenumber1.SetFromDataSet( ds1 );
-  const DataSet& ds2 = d2->GetDataSet();
-  instancenumber2.SetFromDataSet( ds2 );
-
-  return instancenumber1.GetValue() < instancenumber2.GetValue();
-}
 }
 
 bool SerieHelper::FileNameOrdering( FileList *fileList )
@@ -281,28 +269,6 @@ bool SerieHelper::FileNameOrdering( FileList *fileList )
   std::sort(fileList->begin(), fileList->end(), details::MyFileNameSortPredicate);
 
   return true;
-}
-
-bool SerieHelper::ImageNumberOrdering( FileList *fileList )
-{
-  Attribute<0x0020,0x0013> instancenumber;
-  std::set<int> instancenumbers;
-  for ( FileList::const_iterator
-    it = fileList->begin();
-    it != fileList->end(); ++it )
-    {
-    instancenumber.SetValue( -1 );
-    const DataSet& ds = (*it)->GetDataSet();
-    instancenumber.SetFromDataSet( ds );
-    int in = instancenumber.GetValue();
-    instancenumbers.insert( in );
-    }
-  if( instancenumbers.size() == fileList->size() )
-    {
-    std::sort(fileList->begin(), fileList->end(), details::MyInstanceSortPredicate);
-    return true;
-    }
-  return false;
 }
 
 bool SerieHelper::ImagePositionPatientOrdering( FileList *fileList )
@@ -439,10 +405,11 @@ void SerieHelper::OrderFileList(FileList *fileSet)
     {
     return ;
     }
+  /*
   else if ( ImageNumberOrdering(fileSet ) )
   {
   return ;
-  }
+  }*/
   else
   {
   FileNameOrdering(fileSet );

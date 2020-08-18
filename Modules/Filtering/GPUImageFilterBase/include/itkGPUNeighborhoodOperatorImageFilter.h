@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,22 +43,19 @@ namespace itk
 /** Create a helper GPU Kernel class for GPUNeighborhoodOperatorImageFilter */
 itkGPUKernelClassMacro(GPUNeighborhoodOperatorImageFilterKernel);
 
-template <typename TInputImage,
-          typename TOutputImage,
+template< typename TInputImage, typename TOutputImage,
           typename TOperatorValueType = typename TOutputImage::PixelType,
-          typename TParentImageFilter = NeighborhoodOperatorImageFilter<TInputImage, TOutputImage, TOperatorValueType>>
-class ITK_TEMPLATE_EXPORT GPUNeighborhoodOperatorImageFilter
-  : public GPUImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>
+          typename TParentImageFilter = NeighborhoodOperatorImageFilter< TInputImage, TOutputImage, TOperatorValueType> >
+class ITK_TEMPLATE_EXPORT GPUNeighborhoodOperatorImageFilter :
+  public GPUImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUNeighborhoodOperatorImageFilter);
-
-  /** Standard "Self" & Superclass type alias. */
-  using Self = GPUNeighborhoodOperatorImageFilter;
-  using CPUSuperclass = TParentImageFilter;
-  using GPUSuperclass = GPUImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" & Superclass typedef. */
+  typedef GPUNeighborhoodOperatorImageFilter                                     Self;
+  typedef TParentImageFilter                                                     CPUSuperclass;
+  typedef GPUImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter > GPUSuperclass;
+  typedef SmartPointer< Self >                                                   Pointer;
+  typedef SmartPointer< const Self >                                             ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,38 +65,40 @@ public:
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  using OperatorValueType = TOperatorValueType;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename  TInputImage::PixelType         InputPixelType;
+  typedef typename  TInputImage::InternalPixelType InputInternalPixelType;
+  typedef TOperatorValueType                       OperatorValueType;
 
-  using InputPixelValueType = typename NumericTraits<InputPixelType>::ValueType;
-  using ComputingPixelType = typename NumericTraits<OutputPixelType>::RealType;
+  typedef typename NumericTraits<InputPixelType>::ValueType InputPixelValueType;
+  typedef typename NumericTraits<OutputPixelType>::RealType ComputingPixelType;
 
-  using NeighborhoodGPUBufferType = GPUImage<TOperatorValueType, Self::ImageDimension>;
+  typedef GPUImage<TOperatorValueType,itkGetStaticConstMacro(ImageDimension)> NeighborhoodGPUBufferType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
-  /** Image type alias support */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
+  /** Image typedef support. */
+  typedef TInputImage                      InputImageType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename InputImageType::Pointer InputImagePointer;
 
   /** Typedef for generic boundary condition pointer. */
-  using ImageBoundaryConditionPointerType = ImageBoundaryCondition<InputImageType> *;
+  typedef ImageBoundaryCondition< InputImageType > *
+  ImageBoundaryConditionPointerType;
 
   /** Typedef for the default boundary condition */
-  using DefaultBoundaryCondition = ZeroFluxNeumannBoundaryCondition<InputImageType>;
+  typedef ZeroFluxNeumannBoundaryCondition< InputImageType > DefaultBoundaryCondition;
 
-  /** Superclass type alias. */
-  using OutputImageRegionType = typename GPUSuperclass::OutputImageRegionType;
+  /** Superclass typedefs. */
+  typedef typename GPUSuperclass::OutputImageRegionType OutputImageRegionType;
 
   /** Neighborhood types */
-  using OutputNeighborhoodType = Neighborhood<OperatorValueType, Self::ImageDimension>;
+  typedef Neighborhood< OperatorValueType,
+                        itkGetStaticConstMacro(ImageDimension) > OutputNeighborhoodType;
 
   /** Get OpenCL Kernel source as a string, creates a GetOpenCLSource method */
   itkGetOpenCLSourceFromKernelMacro(GPUNeighborhoodOperatorImageFilterKernel);
@@ -107,8 +106,7 @@ public:
   /** Sets the operator that is used to filter the image. Note
    * that the operator is stored as an internal COPY (it
    * is not part of the pipeline).*/
-  void
-  SetOperator(const OutputNeighborhoodType & p);
+  void SetOperator(const OutputNeighborhoodType & p);
 
   /** Get the operator that is used to filter the image.
   const OutputNeighborhoodType & GetOperator() const
@@ -152,7 +150,7 @@ public:
 
 protected:
   GPUNeighborhoodOperatorImageFilter();
-  ~GPUNeighborhoodOperatorImageFilter() override = default;
+  virtual ~GPUNeighborhoodOperatorImageFilter() ITK_OVERRIDE {}
 
   /** NeighborhoodOperatorImageFilter can be implemented as a
    * multithreaded filter.  Therefore, this implementation provides a
@@ -168,16 +166,16 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             ThreadIdType threadId);*/
 
-  void
-  GPUGenerateData() override;
+  void GPUGenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     GPUSuperclass::PrintSelf(os, indent);
   }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUNeighborhoodOperatorImageFilter);
+
   /** Internal operator used to filter the image.
   OutputNeighborhoodType m_Operator;*/
 
@@ -195,7 +193,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUNeighborhoodOperatorImageFilter.hxx"
+#include "itkGPUNeighborhoodOperatorImageFilter.hxx"
 #endif
 
 #endif

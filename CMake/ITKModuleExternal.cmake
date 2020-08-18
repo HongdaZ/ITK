@@ -11,11 +11,8 @@ if(NOT EXISTS ${ITK_CMAKE_DIR}/ITKModuleMacros.cmake)
   message(FATAL_ERROR "Modules can only be built against an ITK build tree; they cannot be built against an ITK install tree.")
 endif()
 
-set(PYTHON_DEVELOPMENT_REQUIRED ${ITK_WRAP_PYTHON})
-include(ITKSetPython3Vars)
-
 # To hide dependent variables
-include(CMakeDependentOption)
+include( CMakeDependentOption )
 
 # Install rules when creating a Python package with scikit-build
 if(SKBUILD)
@@ -28,11 +25,6 @@ if(SKBUILD)
     unset(CMAKE_INSTALL_COMPONENT)
     return()
 ")
-endif()
-
-# Configure find_package behavior
-if(NOT DEFINED CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY)
-  set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY 1)
 endif()
 
 # Setup build locations.
@@ -134,6 +126,8 @@ if(ITK_WRAPPING)
                        "ITK_WRAP_EXPLICIT" OFF)
   CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_DOC "Build Doxygen support." OFF
                        "ITK_WRAP_DOC" OFF)
+  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_DOC_MAN "Build man pages support." OFF
+                       "ITK_WRAP_DOC_MAN" OFF)
   set(${itk-module}_WRAP_CASTXML ${ITK_WRAPPING})
   set(${itk-module}_WRAP_SWIGINTERFACE ${ITK_WRAPPING})
   if( (${itk-module}_WRAP_PYTHON OR
@@ -142,7 +136,8 @@ if(ITK_WRAPPING)
        ${itk-module}_WRAP_PERL OR
        ${itk-module}_WRAP_TCL OR
        ${itk-module}_WRAP_EXPLICIT OR
-       ${itk-module}_WRAP_DOC
+       ${itk-module}_WRAP_DOC OR
+       ${itk-module}_WRAP_DOC_MAN
       )
     AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/wrapping/CMakeLists.txt"
     )
@@ -165,6 +160,6 @@ endif()
 # Create target to download data from the ITKData group.  This must come after
 # all tests have been added that reference the group, so we put it last.
 if(NOT TARGET ITKData)
-  include(ExternalData)
+  include(${ITK_CMAKE_DIR}/ExternalData.cmake)
   ExternalData_Add_Target(ITKData)
 endif()

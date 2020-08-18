@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,38 +21,41 @@
 #include "itkCheckerBoardImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkObjectFactory.h"
-#include "itkTotalProgressReporter.h"
+#include "itkProgressReporter.h"
 
 namespace itk
 {
 
-template <typename TImage>
-CheckerBoardImageFilter<TImage>::CheckerBoardImageFilter()
+template< typename TImage >
+CheckerBoardImageFilter< TImage >
+::CheckerBoardImageFilter()
 {
   m_CheckerPattern.Fill(4);
-  this->DynamicMultiThreadingOn();
-  this->ThreaderUpdateProgressOff();
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-CheckerBoardImageFilter<TImage>::SetInput1(const InputImageType * image1)
+CheckerBoardImageFilter< TImage >
+::SetInput1(const InputImageType *image1)
 {
   // Process object is not const-correct so the const casting is required.
-  this->SetNthInput(0, const_cast<InputImageType *>(image1));
+  this->SetNthInput( 0, const_cast< InputImageType * >( image1 ) );
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-CheckerBoardImageFilter<TImage>::SetInput2(const InputImageType * image2)
+CheckerBoardImageFilter< TImage >
+::SetInput2(const InputImageType *image2)
 {
   // Process object is not const-correct so the const casting is required.
-  this->SetNthInput(1, const_cast<InputImageType *>(image2));
+  this->SetNthInput( 1, const_cast< InputImageType * >( image2 ) );
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-CheckerBoardImageFilter<TImage>::DynamicThreadedGenerateData(const ImageRegionType & outputRegionForThread)
+CheckerBoardImageFilter< TImage >
+::ThreadedGenerateData(
+  const ImageRegionType & outputRegionForThread, ThreadIdType threadId)
 {
   // Get the output pointers
   OutputImagePointer     outputPtr = this->GetOutput();
@@ -60,8 +63,8 @@ CheckerBoardImageFilter<TImage>::DynamicThreadedGenerateData(const ImageRegionTy
   InputImageConstPointer input2Ptr = this->GetInput(1);
 
   // Create an iterator that will walk the output region for this thread.
-  using OutputIterator = ImageRegionIteratorWithIndex<OutputImageType>;
-  using InputIterator = ImageRegionConstIteratorWithIndex<InputImageType>;
+  typedef ImageRegionIteratorWithIndex< OutputImageType >     OutputIterator;
+  typedef ImageRegionConstIteratorWithIndex< InputImageType > InputIterator;
 
   OutputIterator outItr(outputPtr, outputRegionForThread);
   InputIterator  in1Itr(input1Ptr, outputRegionForThread);
@@ -71,55 +74,60 @@ CheckerBoardImageFilter<TImage>::DynamicThreadedGenerateData(const ImageRegionTy
   in1Itr.GoToBegin();
   in2Itr.GoToBegin();
 
-  TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
+  // Support for progress methods/callbacks
+  ProgressReporter progress( this, threadId,
+                             outputRegionForThread.GetNumberOfPixels() );
 
-  typename InputImageType::SizeType size = input2Ptr->GetLargestPossibleRegion().GetSize();
+  typename InputImageType::SizeType size =
+    input2Ptr->GetLargestPossibleRegion().GetSize();
 
   PatternArrayType factors;
 
-  for (unsigned int d = 0; d < ImageDimension; d++)
-  {
+  for ( unsigned int d = 0; d < ImageDimension; d++ )
+    {
     factors[d] = size[d] / m_CheckerPattern[d];
-  }
+    }
 
-  using PixelType = typename InputImageType::PixelType;
-  using IndexType = typename InputImageType::IndexType;
+  typedef typename InputImageType::PixelType PixelType;
+  typedef typename InputImageType::IndexType IndexType;
 
   PixelType pixval;
 
   // Walk the output region
-  while (!outItr.IsAtEnd())
-  {
+  while ( !outItr.IsAtEnd() )
+    {
     IndexType index = outItr.GetIndex();
 
     unsigned int sum = 0;
 
-    for (unsigned int i = 0; i < ImageDimension; i++)
-    {
-      sum += static_cast<unsigned int>(index[i] / factors[i]);
-    }
+    for ( unsigned int i = 0; i < ImageDimension; i++ )
+      {
+      sum += static_cast< unsigned int >( index[i] / factors[i] );
+      }
 
-    if (sum & 1)
-    {
+    if ( sum & 1 )
+      {
       pixval = in2Itr.Get();
-    }
+      }
     else
-    {
+      {
       pixval = in1Itr.Get();
-    }
+      }
 
     outItr.Set(pixval);
+
+    progress.CompletedPixel();
 
     ++outItr;
     ++in1Itr;
     ++in2Itr;
-    progress.CompletedPixel();
-  }
+    }
 }
 
-template <typename TImage>
+template< typename TImage >
 void
-CheckerBoardImageFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
+CheckerBoardImageFilter< TImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,15 +19,22 @@
 
 namespace itk
 {
-SegmentationRegion ::SegmentationRegion() = default;
+SegmentationRegion
+::SegmentationRegion(void):
+  m_RegionLabel(0),
+  m_RegionArea(0)
+{}
 
-SegmentationRegion ::~SegmentationRegion() = default;
+SegmentationRegion
+::~SegmentationRegion()
+{}
 
 /**
  * PrintSelf
  */
 void
-SegmentationRegion ::PrintSelf(std::ostream & os, Indent indent) const
+SegmentationRegion
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

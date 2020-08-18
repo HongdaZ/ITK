@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,74 +23,74 @@
 #include "itkTestingMacros.h"
 
 
-template <unsigned int ImageDimension>
-int
-BSpline(int argc, char * argv[])
+template< unsigned int ImageDimension >
+int BSpline( int argc, char *argv[] )
 {
-  using RealType = float;
-  using ScalarPixelType = itk::Vector<RealType, 1>;
+  typedef float                      RealType;
+  typedef itk::Vector< RealType, 1 > ScalarPixelType;
 
-  using ScalarFieldType = itk::Image<ScalarPixelType, ImageDimension>;
+  typedef itk::Image< ScalarPixelType, ImageDimension > ScalarFieldType;
 
-  using ReaderType = itk::ImageFileReader<ScalarFieldType>;
+  typedef itk::ImageFileReader< ScalarFieldType > ReaderType;
   typename ReaderType::Pointer reader = ReaderType::New();
-  if (argc > 2)
-  {
-    reader->SetFileName(argv[2]);
+  if( argc > 2 )
+    {
+    reader->SetFileName( argv[2] );
     reader->Update();
-  }
+    }
   else
-  {
+    {
     std::cerr << "No input image specified." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Reconstruction of the scalar field from the control points
 
   typename ScalarFieldType::PointType origin;
-  origin.Fill(0);
+  origin.Fill( 0 );
   typename ScalarFieldType::SizeType size;
-  size.Fill(100);
+  size.Fill( 100 );
   typename ScalarFieldType::SpacingType spacing;
-  spacing.Fill(1.0);
+  spacing.Fill( 1.0 );
 
-  using BSplinerType = itk::BSplineControlPointImageFilter<ScalarFieldType, ScalarFieldType>;
+  typedef itk::BSplineControlPointImageFilter< ScalarFieldType,
+    ScalarFieldType > BSplinerType;
   typename BSplinerType::Pointer bspliner = BSplinerType::New();
 
-  bspliner->SetInput(reader->GetOutput());
+  bspliner->SetInput( reader->GetOutput() );
 
   typename BSplinerType::ArrayType splineOrder = 3;
-  bspliner->SetSplineOrder(3);
-  ITK_TEST_SET_GET_VALUE(splineOrder, bspliner->GetSplineOrder());
+  bspliner->SetSplineOrder( 3 );
+  TEST_SET_GET_VALUE( splineOrder, bspliner->GetSplineOrder() );
 
-  bspliner->SetSize(size);
-  ITK_TEST_SET_GET_VALUE(size, bspliner->GetSize());
+  bspliner->SetSize( size );
+  TEST_SET_GET_VALUE( size, bspliner->GetSize() );
 
-  bspliner->SetOrigin(origin);
-  ITK_TEST_SET_GET_VALUE(origin, bspliner->GetOrigin());
+  bspliner->SetOrigin( origin );
+  TEST_SET_GET_VALUE( origin, bspliner->GetOrigin() );
 
-  bspliner->SetSpacing(spacing);
-  ITK_TEST_SET_GET_VALUE(spacing, bspliner->GetSpacing());
+  bspliner->SetSpacing( spacing );
+  TEST_SET_GET_VALUE( spacing, bspliner->GetSpacing() );
 
   typename BSplinerType::DirectionType direction = reader->GetOutput()->GetDirection();
-  bspliner->SetDirection(direction);
-  ITK_TEST_SET_GET_VALUE(direction, bspliner->GetDirection());
+  bspliner->SetDirection( direction );
+  TEST_SET_GET_VALUE( direction, bspliner->GetDirection() );
 
   try
-  {
+    {
     bspliner->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject &excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using WriterType = itk::ImageFileWriter<ScalarFieldType>;
+  typedef itk::ImageFileWriter< ScalarFieldType > WriterType;
   typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[3]);
-  writer->SetInput(bspliner->GetOutput());
+  writer->SetFileName( argv[3] );
+  writer->SetInput( bspliner->GetOutput() );
   writer->Update();
 
   //
@@ -99,72 +99,75 @@ BSpline(int argc, char * argv[])
   // resolution twice as the refinement is doubled at every level.
   //
   typename BSplinerType::ArrayType numberOfRefinementLevels;
-  numberOfRefinementLevels.Fill(3);
+  numberOfRefinementLevels.Fill( 3 );
 
-  typename BSplinerType::ControlPointLatticeType::Pointer refinedControlPointLattice =
-    bspliner->RefineControlPointLattice(numberOfRefinementLevels);
+  typename BSplinerType::ControlPointLatticeType::Pointer
+  refinedControlPointLattice =
+    bspliner->RefineControlPointLattice( numberOfRefinementLevels );
 
   typename BSplinerType::Pointer bspliner2 = BSplinerType::New();
-  bspliner2->SetInput(refinedControlPointLattice);
-  bspliner2->SetSplineOrder(3);
-  bspliner2->SetSize(size);
-  bspliner2->SetOrigin(origin);
-  bspliner2->SetSpacing(spacing);
-  bspliner2->SetDirection(reader->GetOutput()->GetDirection());
+  bspliner2->SetInput( refinedControlPointLattice );
+  bspliner2->SetSplineOrder( 3 );
+  bspliner2->SetSize( size );
+  bspliner2->SetOrigin( origin );
+  bspliner2->SetSpacing( spacing );
+  bspliner2->SetDirection( reader->GetOutput()->GetDirection() );
 
   try
-  {
+    {
     bspliner2->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject &excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   typename WriterType::Pointer writer2 = WriterType::New();
-  writer2->SetFileName(argv[4]);
-  writer2->SetInput(bspliner2->GetOutput());
+  writer2->SetFileName( argv[4] );
+  writer2->SetInput( bspliner2->GetOutput() );
   writer2->Update();
 
   return EXIT_SUCCESS;
 }
 
-int
-itkBSplineControlPointImageFilterTest(int argc, char * argv[])
+int itkBSplineControlPointImageFilterTest( int argc, char *argv[] )
 {
-  if (argc < 5)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " imageDimension inputControlPointImage"
-              << " outputSampledBSplineObject outputSampledBSplineObjectRefined" << std::endl;
-    exit(EXIT_FAILURE);
-  }
+  if ( argc < 5 )
+    {
+    std::cerr << "Usage: " << argv[0] << " imageDimension inputControlPointImage"
+              << " outputSampledBSplineObject outputSampledBSplineObjectRefined"
+              << std::endl;
+    exit( EXIT_FAILURE );
+    }
 
-  constexpr unsigned int Dimension = 2;
-  using RealType = float;
-  using ScalarPixelType = itk::Vector<RealType, 1>;
+  const unsigned int                 Dimension = 2;
+  typedef float                      RealType;
+  typedef itk::Vector< RealType, 1 > ScalarPixelType;
 
-  using ScalarFieldType = itk::Image<ScalarPixelType, Dimension>;
+  typedef itk::Image< ScalarPixelType, Dimension > ScalarFieldType;
 
-  using BSplinerType = itk::BSplineControlPointImageFilter<ScalarFieldType, ScalarFieldType>;
+  typedef itk::BSplineControlPointImageFilter< ScalarFieldType,
+    ScalarFieldType > BSplinerType;
   BSplinerType::Pointer bspliner = BSplinerType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(bspliner, BSplineControlPointImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( bspliner, BSplineControlPointImageFilter,
+    ImageToImageFilter );
 
   int successOrFailure = EXIT_FAILURE;
 
-  switch (std::stoi(argv[1]))
-  {
+  switch( atoi( argv[1] ) )
+    {
     case 2:
-      successOrFailure = BSpline<2>(argc, argv);
+      successOrFailure = BSpline<2>( argc, argv );
       break;
     case 3:
-      successOrFailure = BSpline<3>(argc, argv);
+      successOrFailure = BSpline<3>( argc, argv );
       break;
     default:
       std::cerr << "Unsupported dimension" << std::endl;
-      exit(EXIT_FAILURE);
-  }
+      exit( EXIT_FAILURE );
+    }
   return successOrFailure;
 }

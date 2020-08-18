@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,17 +39,16 @@ namespace itk
  * \ingroup ImageFilters
  * \ingroup ITKSpatialFunction
  */
-template <typename TSpatialFunction, typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT SpatialFunctionImageEvaluatorFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TSpatialFunction, typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT SpatialFunctionImageEvaluatorFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialFunctionImageEvaluatorFilter);
-
-  /** Standard class type aliases. */
-  using Self = SpatialFunctionImageEvaluatorFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SpatialFunctionImageEvaluatorFilter             Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,52 +57,51 @@ public:
   itkTypeMacro(SpatialFunctionImageEvaluatorFilter, ImageToImageFilter);
 
   /** Number of dimensions. */
-  static constexpr unsigned int NDimensions = TInputImage::ImageDimension;
+  itkStaticConstMacro(NDimensions, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Image size type alias. */
-  using SizeType = typename TInputImage::SizeType;
+  /** Image size typedef. */
+  typedef typename TInputImage::SizeType SizeType;
 
-  /** Image index type alias. */
-  using IndexType = typename TOutputImage::IndexType;
+  /** Image index typedef. */
+  typedef typename TOutputImage::IndexType IndexType;
 
-  /** Image pixel value type alias. */
-  using PixelType = typename TOutputImage::PixelType;
+  /** Image pixel value typedef. */
+  typedef typename TOutputImage::PixelType PixelType;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
   /** Type of function. */
-  using FunctionType = TSpatialFunction;
+  typedef TSpatialFunction FunctionType;
 
   /** Return type of function. */
-  using FunctionValueType = typename FunctionType::OutputType;
+  typedef typename FunctionType::OutputType FunctionValueType;
 
   /** Typedef describing vector info. */
-  using PositionType = typename FunctionType::InputType;
+  typedef typename FunctionType::InputType PositionType;
 
   /** Set the internal spatial function. */
-  void
-  SetFunction(FunctionType * PixelFunction)
-  {
-    m_PixelFunction = PixelFunction;
-  }
+  void SetFunction(FunctionType *PixelFunction)
+  { m_PixelFunction = PixelFunction; }
 
 protected:
   SpatialFunctionImageEvaluatorFilter();
-  ~SpatialFunctionImageEvaluatorFilter() override = default;
+  virtual ~SpatialFunctionImageEvaluatorFilter() ITK_OVERRIDE {}
 
   /** Method for evaluating the implicit function over the image. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialFunctionImageEvaluatorFilter);
+
   /** The function that will be evaluated over the image */
-  FunctionType * m_PixelFunction;
+  FunctionType *m_PixelFunction;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSpatialFunctionImageEvaluatorFilter.hxx"
+#include "itkSpatialFunctionImageEvaluatorFilter.hxx"
 #endif
 
 #endif

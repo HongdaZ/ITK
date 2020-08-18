@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@
 
 namespace itk
 {
-/**
- *\class ConvertLabelMapFilter
- * \brief Converts the LabelObjects of a LabelMap to a different type of LabelObejct
+/** \class ConvertLabelMapFilter
+ * \brief Converts the LabelObjects of a LabelMap to a differente type of LabelObejct
  *
  * The LabelObjects are copied and not simply dynamically casted so the filter ensures
  * that the type of the label objects are of the type specified with TOutputImage.
@@ -40,37 +39,36 @@ namespace itk
  * \ingroup LabeledImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT ConvertLabelMapFilter : public LabelMapFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT ConvertLabelMapFilter:
+  public LabelMapFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConvertLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef ConvertLabelMapFilter                       Self;
+  typedef LabelMapFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = ConvertLabelMapFilter;
-  using Superclass = LabelMapFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TInputImage                                 InputImageType;
+  typedef TOutputImage                                OutputImageType;
+  typedef typename InputImageType::Pointer            InputImagePointer;
+  typedef typename InputImageType::ConstPointer       InputImageConstPointer;
+  typedef typename InputImageType::RegionType         InputImageRegionType;
+  typedef typename InputImageType::PixelType          InputImagePixelType;
+  typedef typename InputImageType::LabelObjectType    LabelObjectType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using LabelObjectType = typename InputImageType::LabelObjectType;
-
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageConstPointer = typename OutputImageType::ConstPointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
-  using IndexType = typename OutputImageType::IndexType;
-  using OutputLabelObjectType = typename OutputImageType::LabelObjectType;
+  typedef typename OutputImageType::Pointer           OutputImagePointer;
+  typedef typename OutputImageType::ConstPointer      OutputImageConstPointer;
+  typedef typename OutputImageType::RegionType        OutputImageRegionType;
+  typedef typename OutputImageType::PixelType         OutputImagePixelType;
+  typedef typename OutputImageType::IndexType         IndexType;
+  typedef typename OutputImageType::LabelObjectType   OutputLabelObjectType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -79,16 +77,18 @@ public:
   itkTypeMacro(ConvertLabelMapFilter, LabelMapFilter);
 
 protected:
-  ConvertLabelMapFilter() = default;
-  ~ConvertLabelMapFilter() override = default;
+  ConvertLabelMapFilter() {}
+  ~ConvertLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
-}; // end of class
+  virtual void GenerateData() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConvertLabelMapFilter);
+};                                          // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkConvertLabelMapFilter.hxx"
+#include "itkConvertLabelMapFilter.hxx"
 #endif
 
 #endif

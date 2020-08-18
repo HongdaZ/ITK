@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,127 +64,123 @@ namespace itk
  *
  * \ingroup ITKReview
  */
-template <typename TInputImage, typename TFeatureImage, typename TSingleData>
-class RegionBasedLevelSetFunctionSharedData : public LightObject
+template< typename TInputImage, typename TFeatureImage, typename TSingleData >
+class RegionBasedLevelSetFunctionSharedData:public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionBasedLevelSetFunctionSharedData);
 
-  using Self = RegionBasedLevelSetFunctionSharedData;
-  using Superclass = LightObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef RegionBasedLevelSetFunctionSharedData Self;
+  typedef LightObject                           Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
 
-  static constexpr unsigned int ImageDimension = TFeatureImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TFeatureImage::ImageDimension);
 
   itkTypeMacro(RegionBasedLevelSetFunctionSharedData, LightObject);
 
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputPixelType = typename InputImageType::PixelType;
-  using InputRegionType = typename InputImageType::RegionType;
-  using InputSizeType = typename InputImageType::SizeType;
-  using InputSizeValueType = typename InputSizeType::SizeValueType;
-  using InputSpacingType = typename InputImageType::SpacingType;
-  using InputIndexType = typename InputImageType::IndexType;
-  using InputIndexValueType = typename InputIndexType::IndexValueType;
-  using InputPointType = typename InputImageType::PointType;
+  typedef TInputImage                             InputImageType;
+  typedef typename InputImageType::Pointer        InputImagePointer;
+  typedef typename InputImageType::ConstPointer   InputImageConstPointer;
+  typedef typename InputImageType::PixelType      InputPixelType;
+  typedef typename InputImageType::RegionType     InputRegionType;
+  typedef typename InputImageType::SizeType       InputSizeType;
+  typedef typename InputSizeType::SizeValueType   InputSizeValueType;
+  typedef typename InputImageType::SpacingType    InputSpacingType;
+  typedef typename InputImageType::IndexType      InputIndexType;
+  typedef typename InputIndexType::IndexValueType InputIndexValueType;
+  typedef typename InputImageType::PointType      InputPointType;
 
-  using FeatureImageType = TFeatureImage;
-  using FeatureImagePointer = typename FeatureImageType::Pointer;
-  using FeatureImageConstPointer = typename FeatureImageType::ConstPointer;
-  using FeaturePixelType = typename FeatureImageType::PixelType;
-  using FeatureRegionType = typename FeatureImageType::RegionType;
-  using FeatureSizeType = typename FeatureImageType::SizeType;
-  using FeatureSizeValueType = typename FeatureSizeType::SizeValueType;
-  using FeatureSpacingType = typename FeatureImageType::SpacingType;
-  using FeatureIndexType = typename FeatureImageType::IndexType;
-  using FeaturePointType = typename FeatureImageType::PointType;
+  typedef TFeatureImage                           FeatureImageType;
+  typedef typename FeatureImageType::Pointer      FeatureImagePointer;
+  typedef typename FeatureImageType::ConstPointer FeatureImageConstPointer;
+  typedef typename FeatureImageType::PixelType    FeaturePixelType;
+  typedef typename FeatureImageType::RegionType   FeatureRegionType;
+  typedef typename FeatureImageType::SizeType     FeatureSizeType;
+  typedef typename FeatureSizeType::SizeValueType FeatureSizeValueType;
+  typedef typename FeatureImageType::SpacingType  FeatureSpacingType;
+  typedef typename FeatureImageType::IndexType    FeatureIndexType;
+  typedef typename FeatureImageType::PointType    FeaturePointType;
 
-  using ListPixelType = std::list<unsigned int>;
-  using ListImageType = Image<ListPixelType, Self::ImageDimension>;
-  using ListImagePointer = typename ListImageType::Pointer;
-  using ListImageConstPointer = typename ListImageType::ConstPointer;
-  using ListRegionType = typename ListImageType::RegionType;
-  using ListSizeType = typename ListImageType::SizeType;
-  using ListSizeValueType = typename ListSizeType::SizeValueType;
-  using ListSpacingType = typename ListImageType::SpacingType;
-  using ListIndexType = typename ListImageType::IndexType;
-  using ListIndexValueType = typename ListIndexType::IndexValueType;
-  using ListPointType = typename ListImageType::PointType;
-  using ListIteratorType = ImageRegionIteratorWithIndex<ListImageType>;
+  typedef std::list< unsigned int > ListPixelType;
+  typedef Image< ListPixelType, itkGetStaticConstMacro(ImageDimension) >
+  ListImageType;
+  typedef typename ListImageType::Pointer               ListImagePointer;
+  typedef typename ListImageType::ConstPointer          ListImageConstPointer;
+  typedef typename ListImageType::RegionType            ListRegionType;
+  typedef typename ListImageType::SizeType              ListSizeType;
+  typedef typename ListSizeType::SizeValueType          ListSizeValueType;
+  typedef typename ListImageType::SpacingType           ListSpacingType;
+  typedef typename ListImageType::IndexType             ListIndexType;
+  typedef typename ListIndexType::IndexValueType        ListIndexValueType;
+  typedef typename ListImageType::PointType             ListPointType;
+  typedef ImageRegionIteratorWithIndex< ListImageType > ListIteratorType;
 
-  using CentroidVectorType = Vector<float, Self::ImageDimension>;
-  using SampleType = itk::Statistics::ListSample<CentroidVectorType>;
-  using TreeGeneratorType = itk::Statistics::KdTreeGenerator<SampleType>;
-  using TreePointer = typename TreeGeneratorType::Pointer;
-  using TreeType = typename TreeGeneratorType::KdTreeType;
-  using KdTreePointer = typename TreeType::Pointer;
+  typedef Vector< float, itkGetStaticConstMacro(ImageDimension) >
+  CentroidVectorType;
+  typedef itk::Statistics::ListSample< CentroidVectorType > SampleType;
+  typedef itk::Statistics::KdTreeGenerator< SampleType >    TreeGeneratorType;
+  typedef typename TreeGeneratorType::Pointer               TreePointer;
+  typedef typename TreeGeneratorType::KdTreeType            TreeType;
+  typedef typename TreeType::Pointer                        KdTreePointer;
 
-  using LevelSetDataType = TSingleData;
-  using LevelSetDataPointer = typename LevelSetDataType::Pointer;
-  using LevelSetDataPointerVector = std::vector<LevelSetDataPointer>;
-  using LevelSetDataPointerVectorIterator = typename LevelSetDataPointerVector::iterator;
+  typedef TSingleData                                  LevelSetDataType;
+  typedef typename LevelSetDataType::Pointer           LevelSetDataPointer;
+  typedef std::vector< LevelSetDataPointer >           LevelSetDataPointerVector;
+  typedef typename LevelSetDataPointerVector::iterator LevelSetDataPointerVectorIterator;
 
-  void
-  SetFunctionCount(const unsigned int & n)
+  void SetFunctionCount(const unsigned int & n)
   {
     this->m_FunctionCount = n;
-    this->m_LevelSetDataPointerVector.resize(n, nullptr);
+    this->m_LevelSetDataPointerVector.resize(n, ITK_NULLPTR);
 
-    auto it = m_LevelSetDataPointerVector.begin();
-    auto end = m_LevelSetDataPointerVector.end();
-    while (it != end)
-    {
-      (*it) = LevelSetDataType::New();
+    LevelSetDataPointerVectorIterator it = m_LevelSetDataPointerVector.begin();
+    LevelSetDataPointerVectorIterator end = m_LevelSetDataPointerVector.end();
+    while ( it != end )
+      {
+      ( *it ) = LevelSetDataType::New();
       it++;
-    }
+      }
   }
 
-  void
-  SetNumberOfNeighbors(const unsigned int & n)
+  void SetNumberOfNeighbors(const unsigned int & n)
   {
     this->m_NumberOfNeighbors = n;
   }
 
-  void
-  CreateHeavisideFunctionOfLevelSetImage(const unsigned int & j, const InputImageType * image)
+  void CreateHeavisideFunctionOfLevelSetImage(const unsigned int & j, const InputImageType *image)
   {
     m_LevelSetDataPointerVector[j]->CreateHeavisideFunctionOfLevelSetImage(image);
   }
 
-  void
-  SetKdTree(KdTreePointer kdtree)
+  void SetKdTree(KdTreePointer kdtree)
   {
     this->m_KdTree = kdtree;
   }
 
-  void
-  AllocateListImage(const FeatureImageType * featureImage)
+  void AllocateListImage(const FeatureImageType *featureImage)
   {
     this->m_NearestNeighborListImage = ListImageType::New();
     this->m_NearestNeighborListImage->CopyInformation(featureImage);
-    this->m_NearestNeighborListImage->SetRegions(featureImage->GetLargestPossibleRegion());
+    this->m_NearestNeighborListImage->SetRegions( featureImage->GetLargestPossibleRegion() );
     this->m_NearestNeighborListImage->Allocate();
   }
 
-  virtual void
-  PopulateListImage() = 0;
+  virtual void PopulateListImage() = 0;
 
   LevelSetDataPointerVector m_LevelSetDataPointerVector;
 
   unsigned int     m_FunctionCount;
-  unsigned int     m_NumberOfNeighbors{ 6 };
+  unsigned int     m_NumberOfNeighbors;
   ListImagePointer m_NearestNeighborListImage;
   KdTreePointer    m_KdTree;
 
 protected:
-  RegionBasedLevelSetFunctionSharedData()
-    : m_KdTree(nullptr)
-  {}
-  ~RegionBasedLevelSetFunctionSharedData() override = default;
+  RegionBasedLevelSetFunctionSharedData():m_NumberOfNeighbors(6), m_KdTree(ITK_NULLPTR){}
+  ~RegionBasedLevelSetFunctionSharedData(){}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegionBasedLevelSetFunctionSharedData);
 };
-} // end namespace itk
+} //end namespace itk
 
 #endif

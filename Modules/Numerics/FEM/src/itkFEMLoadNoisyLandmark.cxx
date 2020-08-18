@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ namespace itk
 namespace fem
 {
 
-void
-LoadNoisyLandmark::PrintSelf(std::ostream & os, Indent indent) const
+void LoadNoisyLandmark::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -38,7 +37,8 @@ LoadNoisyLandmark::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Has Structure Tensor? " << this->m_HasStructureTensor << std::endl;
   os << indent << "Structure Tensor: " << this->m_StructureTensor << std::endl;
   os << indent << "Landmark Tensor: " << this->m_LandmarkTensor << std::endl;
+
 }
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem

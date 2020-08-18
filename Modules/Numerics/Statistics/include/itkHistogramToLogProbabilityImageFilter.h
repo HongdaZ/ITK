@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,72 +46,70 @@ namespace itk
 
 namespace Function
 {
-template <typename TInput, typename TOutput = double>
+template< typename TInput, typename TOutput = double >
 class HistogramLogProbabilityFunction
 {
 public:
-  // Probability function = Number of occurrences in each bin /
+
+  //Probability function = Number of occurrences in each bin /
   //   Total Number of occurrences.
   //
   // Returns pixels of float..
-  using OutputPixelType = TOutput;
+  typedef  TOutput OutputPixelType;
 
-  HistogramLogProbabilityFunction() = default;
+  HistogramLogProbabilityFunction():
+    m_TotalFrequency(1) {}
 
-  ~HistogramLogProbabilityFunction() = default;
+  ~HistogramLogProbabilityFunction() {}
 
-  inline OutputPixelType
-  operator()(const TInput & A) const
+  inline OutputPixelType operator()(const TInput & A) const
   {
-    if (A)
-    {
-      return static_cast<OutputPixelType>(
-        std::log(static_cast<OutputPixelType>(A) / static_cast<OutputPixelType>(m_TotalFrequency)) / std::log(2.0));
-    }
+    if ( A )
+      {
+      return static_cast< OutputPixelType >( std::log( static_cast< OutputPixelType >( A )
+                                                      / static_cast< OutputPixelType >( m_TotalFrequency ) )
+                                             / std::log(2.0) );
+      }
     else
-    { // Check for Log 0. Always assume that the frequency is atleast 1.
-      return static_cast<OutputPixelType>(
-        std::log(static_cast<OutputPixelType>(A + 1) / static_cast<OutputPixelType>(m_TotalFrequency)) / std::log(2.0));
-    }
+      {   // Check for Log 0. Always assume that the frequency is atleast 1.
+      return static_cast< OutputPixelType >( std::log( static_cast< OutputPixelType >( A + 1 )
+                                                      / static_cast< OutputPixelType >( m_TotalFrequency ) )
+                                             / std::log(2.0) );
+      }
   }
 
-  void
-  SetTotalFrequency(SizeValueType n)
+  void SetTotalFrequency(SizeValueType n)
   {
     m_TotalFrequency = n;
   }
 
-  SizeValueType
-  GetTotalFrequency() const
+  SizeValueType GetTotalFrequency() const
   {
     return m_TotalFrequency;
   }
 
 private:
-  SizeValueType m_TotalFrequency{ 1 };
+  SizeValueType m_TotalFrequency;
 };
-} // namespace Function
+}
 
-template <typename THistogram, typename TImage = Image<double, 3>>
-class HistogramToLogProbabilityImageFilter
-  : public HistogramToImageFilter<THistogram,
-                                  TImage,
-                                  Function::HistogramLogProbabilityFunction<SizeValueType, typename TImage::PixelType>>
+template< typename THistogram, typename TImage=Image< double, 3 > >
+class HistogramToLogProbabilityImageFilter:
+  public HistogramToImageFilter< THistogram, TImage,
+                                 Function::HistogramLogProbabilityFunction< SizeValueType, typename TImage::PixelType > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToLogProbabilityImageFilter);
 
-  /** Standard class type aliases. */
-  using Self = HistogramToLogProbabilityImageFilter;
+  /** Standard class typedefs. */
+  typedef HistogramToLogProbabilityImageFilter Self;
 
-  /** Standard "Superclass" type alias. */
-  using Superclass =
-    HistogramToImageFilter<THistogram,
-                           TImage,
-                           Function::HistogramLogProbabilityFunction<SizeValueType, typename TImage::PixelType>>;
+  /** Standard "Superclass" typedef. */
+  typedef HistogramToImageFilter< THistogram, TImage,
+                                 Function::HistogramLogProbabilityFunction< SizeValueType, typename TImage::PixelType > >
+  Superclass;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(HistogramToLogProbabilityImageFilter, HistogramToImageFilter);
@@ -120,8 +118,11 @@ public:
   itkNewMacro(Self);
 
 protected:
-  HistogramToLogProbabilityImageFilter() = default;
-  ~HistogramToLogProbabilityImageFilter() override = default;
+  HistogramToLogProbabilityImageFilter() {}
+  virtual ~HistogramToLogProbabilityImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToLogProbabilityImageFilter);
 };
 } // end namespace itk
 

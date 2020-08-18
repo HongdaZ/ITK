@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class GaborImageSource
+/** \class GaborImageSource
  * \brief Generate an n-dimensional image of a Gabor filter.
  *
  * GaborImageSource generates an image of either the real
@@ -44,27 +43,27 @@ namespace itk
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GaborImageSource : public GenerateImageSource<TOutputImage>
+template< typename TOutputImage >
+class ITK_TEMPLATE_EXPORT GaborImageSource:
+  public GenerateImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaborImageSource);
 
-  /** Standard class type aliases. */
-  using Self = GaborImageSource;
-  using Superclass = GenerateImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GaborImageSource                    Self;
+  typedef GenerateImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
-  /** Output image type alias */
-  using OutputImageType = TOutputImage;
-  using PixelType = typename OutputImageType::PixelType;
-  using RegionType = typename OutputImageType::RegionType;
-  using SpacingType = typename OutputImageType::SpacingType;
-  using PointType = typename OutputImageType::PointType;
-  using DirectionType = typename OutputImageType::DirectionType;
+  /** Output image typedefs */
+  typedef TOutputImage                            OutputImageType;
+  typedef typename OutputImageType::PixelType     PixelType;
+  typedef typename OutputImageType::RegionType    RegionType;
+  typedef typename OutputImageType::SpacingType   SpacingType;
+  typedef typename OutputImageType::PointType     PointType;
+  typedef typename OutputImageType::DirectionType DirectionType;
 
-  using SizeType = typename RegionType::SizeType;
+  typedef typename RegionType::SizeType SizeType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GaborImageSource, GenerateImageSource);
@@ -73,10 +72,12 @@ public:
   itkNewMacro(Self);
 
   /** Dimensionality of the output image */
-  static constexpr unsigned int ImageDimension = OutputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      OutputImageType::ImageDimension);
 
   /** Type used to store gabor parameters. */
-  using ArrayType = FixedArray<double, Self::ImageDimension>;
+  typedef FixedArray< double,
+                      itkGetStaticConstMacro(ImageDimension) >    ArrayType;
 
   /** Set/Get the the standard deviation in each direction. */
   itkSetMacro(Sigma, ArrayType);
@@ -98,20 +99,20 @@ public:
 
 protected:
   GaborImageSource();
-  ~GaborImageSource() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  // ~GaborImageSource(); default implementation ok
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
-  bool m_CalculateImaginaryPart{ false };
+  ITK_DISALLOW_COPY_AND_ASSIGN(GaborImageSource);
 
-  double m_Frequency{ 0.4 };
+  bool m_CalculateImaginaryPart;
+
+  double m_Frequency;
 
   /** Evaluate using a stretched gabor filter (ensure zero dc response) */
-  double m_PhaseOffset{ 0.0 };
+  double m_PhaseOffset;
 
   ArrayType m_Sigma;
 
@@ -120,7 +121,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGaborImageSource.hxx"
+#include "itkGaborImageSource.hxx"
 #endif
 
 #endif

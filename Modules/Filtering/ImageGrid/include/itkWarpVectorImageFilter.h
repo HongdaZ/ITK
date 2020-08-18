@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@
 
 namespace itk
 {
-/**
- *\class WarpVectorImageFilter
+/** \class WarpVectorImageFilter
  * \brief Warps an image using an input displacement field.
  *
  * WarpVectorImageFilter warps an existing image with respect to
@@ -85,17 +84,20 @@ namespace itk
  * \ingroup GeometricTransform MultiThreaded
  * \ingroup ITKImageGrid
  */
-template <typename TInputImage, typename TOutputImage, typename TDisplacementField>
-class ITK_TEMPLATE_EXPORT WarpVectorImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template<
+  typename TInputImage,
+  typename TOutputImage,
+  typename TDisplacementField
+  >
+class ITK_TEMPLATE_EXPORT WarpVectorImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WarpVectorImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = WarpVectorImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef WarpVectorImageFilter                           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -104,55 +106,78 @@ public:
   itkTypeMacro(WarpVectorImageFilter, ImageToImageFilter);
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
   /** Inherit some types from the superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  typedef typename Superclass::InputImageType         InputImageType;
+  typedef typename Superclass::InputImagePointer      InputImagePointer;
+  typedef typename Superclass::OutputImageType        OutputImageType;
+  typedef typename Superclass::OutputImagePointer     OutputImagePointer;
+  typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
 
-  using IndexType = typename OutputImageType::IndexType;
-  using SizeType = typename OutputImageType::SizeType;
-  using PixelType = typename OutputImageType::PixelType;
-  using SpacingType = typename OutputImageType::SpacingType;
-  using ValueType = typename OutputImageType::PixelType::ValueType;
+  typedef typename OutputImageType::IndexType            IndexType;
+  typedef typename OutputImageType::SizeType             SizeType;
+  typedef typename OutputImageType::PixelType            PixelType;
+  typedef typename OutputImageType::SpacingType          SpacingType;
+  typedef typename OutputImageType::PixelType::ValueType ValueType;
 
   /** Determine the image dimension. */
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
   /** Dimension of the Vector pixel type. */
-  static constexpr unsigned int PixelDimension = PixelType::Dimension;
+  itkStaticConstMacro(PixelDimension, unsigned int,
+                      PixelType::Dimension);
 
-  /** Displacement field type alias support */
-  using DisplacementFieldType = TDisplacementField;
-  using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
-  using DisplacementType = typename DisplacementFieldType::PixelType;
+  /** Displacement field typedef support. */
+  typedef TDisplacementField                        DisplacementFieldType;
+  typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
+  typedef typename DisplacementFieldType::PixelType DisplacementType;
 
-  /** Interpolator type alias support */
-  using CoordRepType = double;
-  using InterpolatorType = VectorInterpolateImageFunction<InputImageType, CoordRepType>;
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
-  using DefaultInterpolatorType = VectorLinearInterpolateImageFunction<InputImageType, CoordRepType>;
+#ifdef ITKV3_COMPATIBILITY
+  typedef TDisplacementField                       DeformationFieldType;
+  typedef typename DeformationFieldType::Pointer   DeformationFieldPointer;
+  typedef typename DeformationFieldType::PixelType DeformationType;
+#endif
+
+  /** Interpolator typedef support. */
+  typedef double                                                         CoordRepType;
+  typedef VectorInterpolateImageFunction< InputImageType, CoordRepType > InterpolatorType;
+  typedef typename InterpolatorType::Pointer                             InterpolatorPointer;
+  typedef VectorLinearInterpolateImageFunction< InputImageType, CoordRepType >
+  DefaultInterpolatorType;
 
   /** Point type */
-  using PointType = Point<CoordRepType, Self::ImageDimension>;
+  typedef Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) > PointType;
 
   /** Type for representing the direction of the output image */
-  using DirectionType = typename TOutputImage::DirectionType;
+  typedef typename TOutputImage::DirectionType DirectionType;
 
   /** Set the displacement field. */
-  void
-  SetDisplacementField(const DisplacementFieldType * field);
+  void SetDisplacementField(const DisplacementFieldType *field);
 
   /** Set the displacement field (non const for backward compatibility). */
-  void
-  SetDisplacementField(DisplacementFieldType * field);
+  void SetDisplacementField(DisplacementFieldType *field);
 
   /** Get a pointer the displacement field. */
-  DisplacementFieldType *
-  GetDisplacementField();
+  DisplacementFieldType * GetDisplacementField();
+
+#ifdef ITKV3_COMPATIBILITY
+  void SetDeformationField(const DeformationFieldType *field)
+  {
+    this->SetDisplacementField(field);
+  }
+
+  void SetDeformationField(DeformationFieldType *field)
+  {
+    this->SetDisplacementField(field);
+  }
+
+  DeformationFieldType * GetDeformationField(void)
+  {
+    return static_cast<DeformationFieldType *> (GetDisplacementField());
+  }
+#endif
 
   /** Get/Set the interpolator function. */
   itkSetObjectMacro(Interpolator, InterpolatorType);
@@ -160,16 +185,14 @@ public:
 
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
-  virtual void
-  SetOutputSpacing(const double * values);
+  virtual void SetOutputSpacing(const double *values);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
 
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, PointType);
-  virtual void
-  SetOutputOrigin(const double * values);
+  virtual void SetOutputOrigin(const double *values);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, PointType);
@@ -189,8 +212,7 @@ public:
    * implementation for GenerateOutputInformation() which set
    * the output information according the OutputSpacing, OutputOrigin
    * and the displacement field's LargestPossibleRegion. */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** It is difficult to compute in advance the input image region
    * required to compute the requested output region. Thus the safest
@@ -198,37 +220,37 @@ public:
    *
    * For the displacement field, the input requested region
    * set to be the same as that of the output requested region. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** This method is used to set the state of the filter before
    * multi-threading. */
-  void
-  BeforeThreadedGenerateData() override;
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<typename TInputImage::PixelType::ValueType>));
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<ValueType>));
-  itkConceptMacro(DisplacementFieldHasNumericTraitsCheck,
-                  (Concept::HasNumericTraits<typename TDisplacementField::PixelType::ValueType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TInputImage::PixelType::ValueType > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< ValueType > ) );
+  itkConceptMacro( DisplacementFieldHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< typename TDisplacementField::PixelType::ValueType > ) );
   // End concept checking
 #endif
 
 protected:
   WarpVectorImageFilter();
-  ~WarpVectorImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~WarpVectorImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** WarpVectorImageFilter is implemented as a multi-threaded filter.
    * As such, it needs to provide and implementation for
-   * DynamicThreadedGenerateData(). */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+   * ThreadedGenerateData(). */
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(WarpVectorImageFilter);
+
   PixelType     m_EdgePaddingValue;
   SpacingType   m_OutputSpacing;
   PointType     m_OutputOrigin;
@@ -239,7 +261,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWarpVectorImageFilter.hxx"
+#include "itkWarpVectorImageFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,9 +28,10 @@ namespace itk
  * It is assumed that the value of the element is modified through the
  * reference.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::Element &
-MapContainer<TElementIdentifier, TElement>::ElementAt(ElementIdentifier id)
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::Element &
+MapContainer< TElementIdentifier, TElement >
+::ElementAt(ElementIdentifier id)
 {
   this->Modified();
   return this->MapType::operator[](id);
@@ -40,9 +41,10 @@ MapContainer<TElementIdentifier, TElement>::ElementAt(ElementIdentifier id)
  * Get a reference to the element at the given index.
  *
  */
-template <typename TElementIdentifier, typename TElement>
-const typename MapContainer<TElementIdentifier, TElement>::Element &
-MapContainer<TElementIdentifier, TElement>::ElementAt(ElementIdentifier id) const
+template< typename TElementIdentifier, typename TElement >
+const typename MapContainer< TElementIdentifier, TElement >::Element &
+MapContainer< TElementIdentifier, TElement >
+::ElementAt(ElementIdentifier id) const
 {
   return this->MapType::find(id)->second;
 }
@@ -54,9 +56,10 @@ MapContainer<TElementIdentifier, TElement>::ElementAt(ElementIdentifier id) cons
  * It is assumed that the value of the element is modified through the
  * reference.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::Element &
-MapContainer<TElementIdentifier, TElement>::CreateElementAt(ElementIdentifier id)
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::Element &
+MapContainer< TElementIdentifier, TElement >
+::CreateElementAt(ElementIdentifier id)
 {
   this->Modified();
   return this->MapType::operator[](id);
@@ -66,9 +69,10 @@ MapContainer<TElementIdentifier, TElement>::CreateElementAt(ElementIdentifier id
  * Get the element at the specified index.  There is no check for
  * existence performed.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::Element
-MapContainer<TElementIdentifier, TElement>::GetElement(ElementIdentifier id) const
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::Element
+MapContainer< TElementIdentifier, TElement >
+::GetElement(ElementIdentifier id) const
 {
   return this->MapType::find(id)->second;
 }
@@ -77,9 +81,10 @@ MapContainer<TElementIdentifier, TElement>::GetElement(ElementIdentifier id) con
  * Set the given index value to the given element.  If the index doesn't
  * exist, it is automatically created.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::SetElement(ElementIdentifier id, Element element)
+MapContainer< TElementIdentifier, TElement >
+::SetElement(ElementIdentifier id, Element element)
 {
   MapType::operator[](id) = element;
   this->Modified();
@@ -89,9 +94,10 @@ MapContainer<TElementIdentifier, TElement>::SetElement(ElementIdentifier id, Ele
  * Set the given index value to the given element.  If the index doesn't
  * exist, it is automatically created.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::InsertElement(ElementIdentifier id, Element element)
+MapContainer< TElementIdentifier, TElement >
+::InsertElement(ElementIdentifier id, Element element)
 {
   this->MapType::operator[](id) = element;
   this->Modified();
@@ -101,11 +107,12 @@ MapContainer<TElementIdentifier, TElement>::InsertElement(ElementIdentifier id, 
  * Check if the STL map has an entry corresponding to the given index.
  * The count will be either 1 or 0.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 bool
-MapContainer<TElementIdentifier, TElement>::IndexExists(ElementIdentifier id) const
+MapContainer< TElementIdentifier, TElement >
+::IndexExists(ElementIdentifier id) const
 {
-  return (this->MapType::find(id) != this->MapType::end());
+  return ( this->MapType::find(id) != this->MapType::end() );
 }
 
 /**
@@ -113,19 +120,20 @@ MapContainer<TElementIdentifier, TElement>::IndexExists(ElementIdentifier id) co
  * Otherwise, set the element through the pointer (if it isn't null), and
  * return true.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 bool
-MapContainer<TElementIdentifier, TElement>::GetElementIfIndexExists(ElementIdentifier id, Element * element) const
+MapContainer< TElementIdentifier, TElement >
+::GetElementIfIndexExists(ElementIdentifier id, Element *element) const
 {
-  auto it = this->MapType::find(id);
-  if (it != this->MapType::end())
-  {
-    if (element)
+  MapConstIterator it = this->MapType::find(id);
+  if( it != this->MapType::end() )
     {
+    if( element )
+      {
       *element = it->second;
-    }
+      }
     return true;
-  }
+    }
   return false;
 }
 
@@ -134,9 +142,10 @@ MapContainer<TElementIdentifier, TElement>::GetElementIfIndexExists(ElementIdent
  * operator.  Whether or not it is created, it will be assigned to the
  * default element.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::CreateIndex(ElementIdentifier id)
+MapContainer< TElementIdentifier, TElement >
+::CreateIndex(ElementIdentifier id)
 {
   this->MapType::operator[](id) = Element();
   this->Modified();
@@ -146,9 +155,10 @@ MapContainer<TElementIdentifier, TElement>::CreateIndex(ElementIdentifier id)
  * Delete the entry in the STL map corresponding to the given identifier.
  * If the entry does not exist, nothing happens.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::DeleteIndex(ElementIdentifier id)
+MapContainer< TElementIdentifier, TElement >
+::DeleteIndex(ElementIdentifier id)
 {
   this->MapType::erase(id);
   this->Modified();
@@ -157,51 +167,56 @@ MapContainer<TElementIdentifier, TElement>::DeleteIndex(ElementIdentifier id)
 /**
  * Get a begin const iterator for the map.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::ConstIterator
-MapContainer<TElementIdentifier, TElement>::Begin() const
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::ConstIterator
+MapContainer< TElementIdentifier, TElement >
+::Begin(void) const
 {
-  return ConstIterator(this->MapType::begin());
+  return ConstIterator( this->MapType::begin() );
 }
 
 /**
  * Get an end const iterator for the map.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::ConstIterator
-MapContainer<TElementIdentifier, TElement>::End() const
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::ConstIterator
+MapContainer< TElementIdentifier, TElement >
+::End(void) const
 {
-  return ConstIterator(this->MapType::end());
+  return ConstIterator( this->MapType::end() );
 }
 
 /**
  * Get a begin const iterator for the map.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::Iterator
-MapContainer<TElementIdentifier, TElement>::Begin()
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::Iterator
+MapContainer< TElementIdentifier, TElement >
+::Begin(void)
 {
-  return Iterator(this->MapType::begin());
+  return Iterator( this->MapType::begin() );
 }
 
 /**
  * Get an end const iterator for the map.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::Iterator
-MapContainer<TElementIdentifier, TElement>::End()
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::Iterator
+MapContainer< TElementIdentifier, TElement >
+::End(void)
 {
-  return Iterator(this->MapType::end());
+  return Iterator( this->MapType::end() );
 }
 
 /**
  * Get the number of elements currently stored in the map.
  */
-template <typename TElementIdentifier, typename TElement>
-typename MapContainer<TElementIdentifier, TElement>::ElementIdentifier
-MapContainer<TElementIdentifier, TElement>::Size() const
+template< typename TElementIdentifier, typename TElement >
+typename MapContainer< TElementIdentifier, TElement >::ElementIdentifier
+MapContainer< TElementIdentifier, TElement >
+::Size(void) const
 {
-  return static_cast<ElementIdentifier>(this->MapType::size());
+  return static_cast< ElementIdentifier >( this->MapType::size() );
 }
 
 /**
@@ -214,17 +229,18 @@ MapContainer<TElementIdentifier, TElement>::Size() const
  * allocates memory for one element, not for the ones with index between zero
  * and "size".
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::Reserve(ElementIdentifier sz)
+MapContainer< TElementIdentifier, TElement >
+::Reserve(ElementIdentifier sz)
 {
   ElementIdentifier curSize = this->Size();
 
-  while (curSize < sz)
-  {
+  while ( curSize < sz )
+    {
     this->CreateIndex(curSize);
     curSize = this->Size();
-  }
+    }
 }
 
 /**
@@ -232,18 +248,20 @@ MapContainer<TElementIdentifier, TElement>::Reserve(ElementIdentifier sz)
  * the current number of elements.  This is NOT guaranteed to decrease
  * memory usage.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::Squeeze()
+MapContainer< TElementIdentifier, TElement >
+::Squeeze(void)
 {}
 
 /**
  * Tell the container to release any memory it may have allocated and
  * return itself to its initial state.
  */
-template <typename TElementIdentifier, typename TElement>
+template< typename TElementIdentifier, typename TElement >
 void
-MapContainer<TElementIdentifier, TElement>::Initialize()
+MapContainer< TElementIdentifier, TElement >
+::Initialize(void)
 {
   this->MapType::clear();
 }

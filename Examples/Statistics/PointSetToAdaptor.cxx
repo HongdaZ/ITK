@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@
 #include "itkPointSet.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -65,19 +64,19 @@ main()
   // Software Guide :EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FloatPointSet2DType = itk::PointSet<float, 2>;
+  typedef itk::PointSet<float,2> FloatPointSet2DType;
 
   itk::RandomPointSetSource<FloatPointSet2DType>::Pointer random;
   random = itk::RandomPointSetSource<FloatPointSet2DType>::New();
   random->SetMin(0.0);
   random->SetMax(1000.0);
 
-  unsigned long size[2] = { 20, 20 };
+  unsigned long size[2] = {20, 20};
   random->SetSize(size);
-  float spacing[2] = { 0.7, 2.1 };
-  random->SetSpacing(spacing);
-  float origin[2] = { 15, 400 };
-  random->SetOrigin(origin);
+  float spacing[2] = {0.7, 2.1};
+  random->SetSpacing( spacing );
+  float origin[2] = {15, 400};
+  random->SetOrigin( origin );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -94,13 +93,13 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MeasurementVectorType = itk::FixedArray<float, 1>;
-  using ArrayPointSetType = itk::PointSet<MeasurementVectorType, 2>;
-  using CasterType =
-    itk::ScalarToArrayCastPointSetFilter<FloatPointSet2DType, ArrayPointSetType>;
+  typedef itk::FixedArray< float, 1 >               MeasurementVectorType;
+  typedef itk::PointSet< MeasurementVectorType, 2 > ArrayPointSetType;
+  typedef itk::ScalarToArrayCastPointSetFilter< FloatPointSet2DType,
+                             ArrayPointSetType >    CasterType;
 
   CasterType::Pointer caster = CasterType::New();
-  caster->SetInput(random->GetOutput());
+  caster->SetInput( random->GetOutput() );
   caster->Update();
   // Software Guide : EndCodeSnippet
 
@@ -114,7 +113,8 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SampleType = itk::Statistics::PointSetToListSampleAdaptor<ArrayPointSetType>;
+  typedef itk::Statistics::PointSetToListSampleAdaptor<
+                                               ArrayPointSetType > SampleType;
   SampleType::Pointer sample = SampleType::New();
   // Software Guide : EndCodeSnippet
 
@@ -127,7 +127,7 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  sample->SetPointSet(caster->GetOutput());
+  sample->SetPointSet( caster->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,13 +51,14 @@
 //  SpatialObjects.
 //
 //  \index{itk::EllipseSpatialObject!header}
+//  \index{itk::CylinderSpatialObject!header}
 //
 //  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
 #include "itkEllipseSpatialObject.h"
-#include "itkTubeSpatialObject.h"
+#include "itkCylinderSpatialObject.h"
 // Software Guide : EndCodeSnippet
 
 
@@ -78,14 +79,13 @@
 #include "itkImageFileWriter.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc != 2)
-  {
+  if( argc != 2 )
+    {
     std::cerr << "Usage: " << argv[0] << " outputimagefile " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -96,10 +96,10 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = signed short;
-  constexpr unsigned int Dimension = 3;
+  typedef signed short  PixelType;
+  const unsigned int    Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >       ImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -112,9 +112,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using EllipseType = itk::EllipseSpatialObject<Dimension>;
-  using TubeType = itk::TubeSpatialObject<Dimension>;
-  using GroupType = itk::GroupSpatialObject<Dimension>;
+  typedef itk::EllipseSpatialObject< Dimension >   EllipseType;
+  typedef itk::CylinderSpatialObject               CylinderType;
+  typedef itk::GroupSpatialObject< Dimension >     GroupType;
   // Software Guide : EndCodeSnippet
 
 
@@ -126,8 +126,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SpatialObjectToImageFilterType =
-    itk::SpatialObjectToImageFilter<GroupType, ImageType>;
+  typedef itk::SpatialObjectToImageFilter<
+    GroupType, ImageType >   SpatialObjectToImageFilterType;
 
   SpatialObjectToImageFilterType::Pointer imageFilter =
     SpatialObjectToImageFilterType::New();
@@ -144,20 +144,20 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   ImageType::SizeType size;
-  size[0] = 50;
-  size[1] = 50;
-  size[2] = 150;
+  size[ 0 ] =  50;
+  size[ 1 ] =  50;
+  size[ 2 ] = 150;
 
-  imageFilter->SetSize(size);
+  imageFilter->SetSize( size );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginCodeSnippet
   ImageType::SpacingType spacing;
-  spacing[0] = 100.0 / size[0];
-  spacing[1] = 100.0 / size[1];
-  spacing[2] = 300.0 / size[2];
+  spacing[0] =  100.0 / size[0];
+  spacing[1] =  100.0 / size[1];
+  spacing[2] =  300.0 / size[2];
 
-  imageFilter->SetSpacing(spacing);
+  imageFilter->SetSpacing( spacing );
   // Software Guide : EndCodeSnippet
 
 
@@ -169,9 +169,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  EllipseType::Pointer ellipse = EllipseType::New();
-  TubeType::Pointer    tube1 = TubeType::New();
-  TubeType::Pointer    tube2 = TubeType::New();
+  EllipseType::Pointer ellipse    = EllipseType::New();
+  CylinderType::Pointer cylinder1 = CylinderType::New();
+  CylinderType::Pointer cylinder2 = CylinderType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -179,47 +179,18 @@ main(int argc, char * argv[])
   //
   //  The Elementary shapes have internal parameters of their own. These
   //  parameters define the geometrical characteristics of the basic shapes.
-  //  For example, a tube is defined by its radius and height.
+  //  For example, a cylinder is defined by its radius and height.
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ellipse->SetRadiusInObjectSpace(size[0] * 0.2 * spacing[0]);
+  ellipse->SetRadius(  size[0] * 0.2 * spacing[0] );
 
-  typename TubeType::PointType         point;
-  typename TubeType::TubePointType     tubePoint;
-  typename TubeType::TubePointListType tubePointList;
-  point[0] = size[0] * 0.2 * spacing[0];
-  point[1] = size[1] * 0.2 * spacing[1];
-  point[2] = size[2] * 0.2 * spacing[2];
-  tubePoint.SetPositionInObjectSpace(point);
-  tubePoint.SetRadiusInObjectSpace(size[0] * 0.05 * spacing[0]);
-  tubePointList.push_back(tubePoint);
+  cylinder1->SetRadius(  size[0] * 0.2 * spacing[0] );
+  cylinder2->SetRadius(  size[0] * 0.2 * spacing[0] );
 
-  point[0] = size[0] * 0.8 * spacing[0];
-  point[1] = size[1] * 0.2 * spacing[1];
-  point[2] = size[2] * 0.2 * spacing[2];
-  tubePoint.SetPositionInObjectSpace(point);
-  tubePoint.SetRadiusInObjectSpace(size[0] * 0.05 * spacing[0]);
-  tubePointList.push_back(tubePoint);
-  tube1->SetPoints(tubePointList);
-
-  tubePointList.clear();
-  point[0] = size[0] * 0.2 * spacing[0];
-  point[1] = size[1] * 0.8 * spacing[1];
-  point[2] = size[2] * 0.2 * spacing[2];
-  tubePoint.SetPositionInObjectSpace(point);
-  tubePoint.SetRadiusInObjectSpace(size[0] * 0.05 * spacing[0]);
-  tubePointList.push_back(tubePoint);
-
-  point[0] = size[0] * 0.8 * spacing[0];
-  point[1] = size[1] * 0.8 * spacing[1];
-  point[2] = size[2] * 0.8 * spacing[1];
-  tubePoint.SetPositionInObjectSpace(point);
-  tubePoint.SetRadiusInObjectSpace(size[0] * 0.05 * spacing[0]);
-  tubePointList.push_back(tubePoint);
-  tube2->SetPoints(tubePointList);
-
+  cylinder1->SetHeight( size[2] * 0.30 * spacing[2]);
+  cylinder2->SetHeight( size[2] * 0.30 * spacing[2]);
   // Software Guide : EndCodeSnippet
 
 
@@ -232,7 +203,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using TransformType = GroupType::TransformType;
+  typedef GroupType::TransformType                 TransformType;
 
   TransformType::Pointer transform1 = TransformType::New();
   TransformType::Pointer transform2 = TransformType::New();
@@ -252,26 +223,26 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  TransformType::OutputVectorType translation;
+  TransformType::OutputVectorType  translation;
+  TransformType::CenterType        center;
 
-  translation[0] = size[0] * spacing[0] / 2.0;
-  translation[1] = size[1] * spacing[1] / 4.0;
-  translation[2] = size[2] * spacing[2] / 2.0;
-  transform1->Translate(translation, false);
+  translation[ 0 ] =  size[0] * spacing[0] / 2.0;
+  translation[ 1 ] =  size[1] * spacing[1] / 4.0;
+  translation[ 2 ] =  size[2] * spacing[2] / 2.0;
+  transform1->Translate( translation, false );
 
-  translation[1] = size[1] * spacing[1] / 2.0;
-  translation[2] = size[2] * spacing[2] * 0.22;
-  transform2->Rotate(1, 2, itk::Math::pi / 2.0);
-  transform2->Translate(translation, false);
+  translation[ 1 ] =  size[1] * spacing[1] / 2.0;
+  translation[ 2 ] =  size[2] * spacing[2] * 0.22;
+  transform2->Rotate( 1, 2, itk::Math::pi / 2.0 );
+  transform2->Translate( translation, false );
 
-  translation[2] = size[2] * spacing[2] * 0.78;
-  transform3->Rotate(1, 2, itk::Math::pi / 2.0);
-  transform3->Translate(translation, false);
+  translation[ 2 ] = size[2] * spacing[2] * 0.78;
+  transform3->Rotate( 1, 2, itk::Math::pi / 2.0 );
+  transform3->Translate( translation, false );
 
-  ellipse->SetObjectToParentTransform(transform1);
-  tube1->SetObjectToParentTransform(transform2);
-  tube2->SetObjectToParentTransform(transform3);
-
+  ellipse->SetObjectToParentTransform( transform1 );
+  cylinder1->SetObjectToParentTransform( transform2 );
+  cylinder2->SetObjectToParentTransform( transform3 );
   // Software Guide : EndCodeSnippet
 
 
@@ -284,16 +255,11 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   GroupType::Pointer group = GroupType::New();
-  group->AddChild(ellipse);
-  group->AddChild(tube1);
-  group->AddChild(tube2);
+  group->AddSpatialObject( ellipse );
+  group->AddSpatialObject( cylinder1 );
+  group->AddSpatialObject( cylinder2 );
 
-  ellipse->Update();
-
-  tube1->Update();
-  tube2->Update();
-
-  imageFilter->SetInput(group);
+  imageFilter->SetInput(  group  );
   // Software Guide : EndCodeSnippet
 
 
@@ -310,20 +276,20 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  const PixelType     airHounsfieldUnits = -1000;
-  constexpr PixelType boneHounsfieldUnits = 800;
+  const PixelType airHounsfieldUnits  = -1000;
+  const PixelType boneHounsfieldUnits =   800;
 
-  ellipse->SetDefaultInsideValue(boneHounsfieldUnits);
-  tube1->SetDefaultInsideValue(boneHounsfieldUnits);
-  tube2->SetDefaultInsideValue(boneHounsfieldUnits);
+  ellipse->SetDefaultInsideValue(   boneHounsfieldUnits );
+  cylinder1->SetDefaultInsideValue( boneHounsfieldUnits );
+  cylinder2->SetDefaultInsideValue( boneHounsfieldUnits );
 
-  ellipse->SetDefaultOutsideValue(airHounsfieldUnits);
-  tube1->SetDefaultOutsideValue(airHounsfieldUnits);
-  tube2->SetDefaultOutsideValue(airHounsfieldUnits);
+  ellipse->SetDefaultOutsideValue(   airHounsfieldUnits );
+  cylinder1->SetDefaultOutsideValue( airHounsfieldUnits );
+  cylinder2->SetDefaultOutsideValue( airHounsfieldUnits );
 
-  imageFilter->SetUseObjectValue(true);
+  imageFilter->SetUseObjectValue( true );
 
-  imageFilter->SetOutsideValue(airHounsfieldUnits);
+  imageFilter->SetOutsideValue( airHounsfieldUnits );
   // Software Guide : EndCodeSnippet
 
 
@@ -336,22 +302,22 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType >     WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[1]);
-  writer->SetInput(imageFilter->GetOutput());
+  writer->SetFileName( argv[1] );
+  writer->SetInput( imageFilter->GetOutput() );
 
   try
-  {
+    {
     imageFilter->Update();
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 

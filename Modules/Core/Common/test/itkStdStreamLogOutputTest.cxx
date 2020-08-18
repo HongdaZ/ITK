@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,24 +20,22 @@
 #include <fstream>
 #include "itkStdStreamLogOutput.h"
 #include "itkStdStreamStateSave.h"
-#include "itkTestingMacros.h"
 
-int
-itkStdStreamLogOutputTest(int argc, char * argv[])
+int itkStdStreamLogOutputTest( int argc, char *argv [] )
 {
-  // Save the format stream variables for std::cout
-  // They will be restored when coutState goes out of scope
-  // scope.
+// Save the format stream variables for std::cout
+// They will be restored when coutState goes out of scope
+// scope.
   itk::StdStreamStateSave coutState(std::cout);
 
   try
-  {
+    {
 
     if (argc < 2)
-    {
-      std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << " logFilename" << std::endl;
+      {
+      std::cout << "Usage: " << argv[0] << " logFilename" << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
     // Create an ITK StdStreamLogOutput
     itk::StdStreamLogOutput::Pointer output = itk::StdStreamLogOutput::New();
@@ -59,12 +57,12 @@ itkStdStreamLogOutputTest(int argc, char * argv[])
     output->Write("This is the second test message.\n", 1.2345);
     output->Flush();
     output->Print(std::cout);
-  }
-  catch (...)
-  {
+    }
+  catch(...)
+    {
     std::cerr << "Exception caught !!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "[PASSED]" << std::endl;
   return EXIT_SUCCESS;

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,69 +20,69 @@
 
 #include "itkWienerDeconvolutionImageFilter.h"
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 
 namespace itk
 {
 
-template <typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision>
-WienerDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::
-  WienerDeconvolutionImageFilter()
+template< typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision >
+WienerDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
+::WienerDeconvolutionImageFilter()
 {
   m_NoiseVariance = 0.0;
 }
 
-template <typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision>
+template< typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision >
 void
-WienerDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::GenerateData()
+WienerDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
+::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this
   // minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
-  progress->SetMiniPipelineFilter(this);
+  progress->SetMiniPipelineFilter( this );
 
   typename InputImageType::Pointer localInput = InputImageType::New();
-  localInput->Graft(this->GetInput());
+  localInput->Graft( this->GetInput() );
 
-  const KernelImageType * kernelImage = this->GetKernelImage();
+  const KernelImageType* kernelImage = this->GetKernelImage();
 
-  InternalComplexImagePointerType input = nullptr;
-  InternalComplexImagePointerType kernel = nullptr;
+  InternalComplexImagePointerType input = ITK_NULLPTR;
+  InternalComplexImagePointerType kernel = ITK_NULLPTR;
 
-  this->PrepareInputs(localInput, kernelImage, input, kernel, progress, 0.7);
+  this->PrepareInputs( localInput, kernelImage, input, kernel, progress, 0.7 );
 
-  using FunctorType = Functor::WienerDeconvolutionFunctor<InternalComplexType>;
-  FunctorType wienerFunctor;
-  wienerFunctor.SetNoisePowerSpectralDensityConstant(m_NoiseVariance);
-  wienerFunctor.SetKernelZeroMagnitudeThreshold(this->GetKernelZeroMagnitudeThreshold());
-
-  using WienerFilterType =
-    BinaryGeneratorImageFilter<InternalComplexImageType, InternalComplexImageType, InternalComplexImageType>;
+  typedef Functor::WienerDeconvolutionFunctor< InternalComplexType > FunctorType;
+  typedef BinaryFunctorImageFilter< InternalComplexImageType,
+                                    InternalComplexImageType,
+                                    InternalComplexImageType,
+                                    FunctorType > WienerFilterType;
   typename WienerFilterType::Pointer wienerFilter = WienerFilterType::New();
-  wienerFilter->SetInput(0, input);
-  wienerFilter->SetInput(1, kernel);
-  wienerFilter->SetFunctor(wienerFunctor);
-  wienerFilter->ReleaseDataFlagOn();
+  wienerFilter->SetInput( 0, input );
+  wienerFilter->SetInput( 1, kernel );
 
-  progress->RegisterInternalFilter(wienerFilter, 0.1);
+  typename WienerFilterType::FunctorType & wienerFunctor = wienerFilter->GetFunctor();
+  wienerFunctor.SetNoisePowerSpectralDensityConstant( m_NoiseVariance );
+  wienerFunctor.SetKernelZeroMagnitudeThreshold( this->GetKernelZeroMagnitudeThreshold() );
+  wienerFilter->ReleaseDataFlagOn();
+  progress->RegisterInternalFilter( wienerFilter, 0.1 );
 
   // Free up the memory for the prepared inputs
-  input = nullptr;
-  kernel = nullptr;
+  input = ITK_NULLPTR;
+  kernel = ITK_NULLPTR;
 
-  this->ProduceOutput(wienerFilter->GetOutput(), progress, 0.2);
+  this->ProduceOutput( wienerFilter->GetOutput(), progress, 0.2 );
 }
 
-template <typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision>
+template< typename TInputImage, typename TKernelImage, typename TOutputImage, typename TInternalPrecision >
 void
-WienerDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::PrintSelf(
-  std::ostream & os,
-  Indent         indent) const
+WienerDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
-  this->Superclass::PrintSelf(os, indent);
+  this->Superclass::PrintSelf( os, indent );
 
   os << indent << "NoiseVariance: " << m_NoiseVariance << std::endl;
 }
 
-} // end namespace itk
+}  // end namespace itk
 #endif

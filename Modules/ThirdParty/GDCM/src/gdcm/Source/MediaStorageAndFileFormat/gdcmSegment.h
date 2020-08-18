@@ -50,7 +50,7 @@ public:
 
   Segment();
 
-  ~Segment() override;
+  virtual ~Segment();
 
   //**        Segment getters/setters     **//
   unsigned short GetSegmentNumber() const;

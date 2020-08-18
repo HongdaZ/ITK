@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,84 +23,88 @@
 
 #include "itkVectorIndexSelectionCastImageFilter.h"
 
-int
-itkVectorIndexSelectionCastImageFilterTest(int argc, char * argv[])
+int itkVectorIndexSelectionCastImageFilterTest(int argc, char * argv [] )
 {
 
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "itkVectorIndexSelectionCastImageFilterTest "
-              << " InputVectorImage OutputScalarImage indexToExtract" << std::endl;
+              << " InputVectorImage OutputScalarImage indexToExtract"
+              << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using InputPixelType = unsigned short;
-  using OutputPixelType = unsigned short;
+  typedef unsigned short InputPixelType;
+  typedef unsigned short OutputPixelType;
 
-  constexpr unsigned int ImageDimension = 2;
+  const unsigned int ImageDimension = 2;
 
-  using InputImageType = itk::VectorImage<InputPixelType, ImageDimension>;
-  using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
+  typedef itk::VectorImage< InputPixelType, ImageDimension > InputImageType;
+  typedef itk::Image< OutputPixelType, ImageDimension  >     OutputImageType;
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileReader< InputImageType  > ReaderType;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
-  using FilterType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>;
+  typedef itk::VectorIndexSelectionCastImageFilter<
+                                     InputImageType,
+                                     OutputImageType> FilterType;
 
   FilterType::Pointer filter = FilterType::New();
 
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
 
-  const unsigned int index = std::stoi(argv[3]);
+  const unsigned int index = atoi( argv[3] );
 
-  filter->SetIndex(index);
+  filter->SetIndex( index );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception detected: " << e;
+    }
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception detected: "  << e;
     return -1;
-  }
+    }
 
 
   std::cout << "Test the exception if the index is too large" << std::endl;
 
   InputImageType::ConstPointer inputImage = reader->GetOutput();
 
-  const unsigned int maximumIndex = inputImage->GetNumberOfComponentsPerPixel();
+  const unsigned int maximumIndex =
+    inputImage->GetNumberOfComponentsPerPixel();
 
-  filter->SetIndex(maximumIndex); // this index is an invalid value;
+  filter->SetIndex( maximumIndex ); // this index is an invalid value;
 
   bool exceptionCaught = false;
 
   try
-  {
+    {
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught as expected: " << e;
+    }
+  catch ( itk::ExceptionObject& e )
+    {
+    std::cerr << "Exception caught as expected: "  << e;
     exceptionCaught = true;
-  }
+    }
 
-  if (!exceptionCaught)
-  {
+  if( !exceptionCaught )
+    {
     std::cerr << "Failed to catch exception "
               << "when index is too large !!" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   std::cout << "Test PASSED ! " << std::endl;
   return EXIT_SUCCESS;
+
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class ScalarImageToRunLengthFeaturesFilter
+/** \class ScalarImageToRunLengthFeaturesFilter
  *  \brief This class computes run length descriptions from an image.
  *
  * By default, run length features are computed for each spatial
@@ -92,15 +91,16 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TImageType, typename THistogramFrequencyContainer = DenseFrequencyContainer2>
-class ITK_TEMPLATE_EXPORT ScalarImageToRunLengthFeaturesFilter : public ProcessObject
+template< typename TImageType,
+          typename THistogramFrequencyContainer = DenseFrequencyContainer2 >
+class ITK_TEMPLATE_EXPORT ScalarImageToRunLengthFeaturesFilter:public ProcessObject
 {
 public:
-  /** Standard type alias */
-  using Self = ScalarImageToRunLengthFeaturesFilter;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs */
+  typedef ScalarImageToRunLengthFeaturesFilter  Self;
+  typedef ProcessObject                         Superclass;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ScalarImageToRunLengthFeaturesFilter, ProcessObject);
@@ -108,51 +108,51 @@ public:
   /** standard New() method support */
   itkNewMacro(Self);
 
-  using FrequencyContainerType = THistogramFrequencyContainer;
-  using ImageType = TImageType;
-  using ImagePointer = typename ImageType::Pointer;
+  typedef THistogramFrequencyContainer FrequencyContainerType;
+  typedef TImageType                   ImageType;
+  typedef typename ImageType::Pointer  ImagePointer;
 
-  using PixelType = typename ImageType::PixelType;
-  using OffsetType = typename ImageType::OffsetType;
-  using OffsetVector = VectorContainer<unsigned char, OffsetType>;
-  using OffsetVectorPointer = typename OffsetVector::Pointer;
-  using OffsetVectorConstPointer = typename OffsetVector::ConstPointer;
+  typedef typename ImageType::PixelType                PixelType;
+  typedef typename ImageType::OffsetType               OffsetType;
+  typedef VectorContainer< unsigned char, OffsetType > OffsetVector;
+  typedef typename OffsetVector::Pointer               OffsetVectorPointer;
+  typedef typename OffsetVector::ConstPointer          OffsetVectorConstPointer;
 
-  using RunLengthMatrixFilterType = ScalarImageToRunLengthMatrixFilter<ImageType, FrequencyContainerType>;
+  typedef ScalarImageToRunLengthMatrixFilter<
+    ImageType, FrequencyContainerType >               RunLengthMatrixFilterType;
 
-  using HistogramType = typename RunLengthMatrixFilterType::HistogramType;
+  typedef typename RunLengthMatrixFilterType::HistogramType
+  HistogramType;
 
-  using RunLengthFeaturesFilterType = HistogramToRunLengthFeaturesFilter<HistogramType>;
+  typedef HistogramToRunLengthFeaturesFilter< HistogramType >
+  RunLengthFeaturesFilterType;
 
-  // More work needs to be done to fix wrapping
-  // using RunLengthFeatureName = itk::Statistics::RunLengthFeatureEnum;
-  using RunLengthFeatureName = uint8_t;
-  using FeatureNameVector = VectorContainer<unsigned char, RunLengthFeatureName>;
-  using FeatureNameVectorPointer = typename FeatureNameVector::Pointer;
-  using FeatureNameVectorConstPointer = typename FeatureNameVector::ConstPointer;
-  using FeatureValueVector = VectorContainer<unsigned char, double>;
-  using FeatureValueVectorPointer = typename FeatureValueVector::Pointer;
+  typedef short                                    RunLengthFeatureName;
+  typedef VectorContainer<unsigned char,
+    RunLengthFeatureName>                          FeatureNameVector;
+  typedef typename FeatureNameVector::Pointer      FeatureNameVectorPointer;
+  typedef typename FeatureNameVector::ConstPointer FeatureNameVectorConstPointer;
+  typedef VectorContainer< unsigned char, double > FeatureValueVector;
+  typedef typename FeatureValueVector::Pointer     FeatureValueVectorPointer;
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = DataObject::Pointer;
+  typedef DataObject::Pointer DataObjectPointer;
 
   /** Type of DataObjects used for scalar outputs */
-  using FeatureValueVectorDataObjectType = DataObjectDecorator<FeatureValueVector>;
+  typedef DataObjectDecorator< FeatureValueVector >
+  FeatureValueVectorDataObjectType;
 
-  const FeatureValueVectorDataObjectType *
-  GetFeatureMeansOutput() const;
+  const FeatureValueVectorDataObjectType * GetFeatureMeansOutput() const;
 
-  const FeatureValueVectorDataObjectType *
-  GetFeatureStandardDeviationsOutput() const;
+  const FeatureValueVectorDataObjectType * GetFeatureStandardDeviationsOutput()
+    const;
 
   /** Connects the input image for which the features are going to be computed
-   */
+    */
   using Superclass::SetInput;
-  void
-  SetInput(const ImageType *);
+  void SetInput(const ImageType *);
 
-  const ImageType *
-  GetInput() const;
+  const ImageType * GetInput() const;
 
   /** Return the feature means and deviations.  */
   itkGetConstReferenceObjectMacro(FeatureMeans, FeatureValueVector);
@@ -169,31 +169,25 @@ public:
 
   /** Set number of histogram bins along each axis.
       Optional; for default value see above. */
-  void
-  SetNumberOfBinsPerAxis(unsigned int);
+  void SetNumberOfBinsPerAxis(unsigned int);
 
   /** Set the min and max (inclusive) pixel value that will be used for
       feature calculations. Optional; for default value see above. */
-  void
-  SetPixelValueMinMax(PixelType min, PixelType max);
+  void SetPixelValueMinMax(PixelType min, PixelType max);
 
   /** Set the min and max (inclusive) pixel value that will be used for
       feature calculations. Optional; for default value see above. */
-  void
-  SetDistanceValueMinMax(double min, double max);
+  void SetDistanceValueMinMax( double min, double max );
 
   /** Connects the mask image for which the histogram is going to be computed.
       Optional; for default value see above. */
-  void
-  SetMaskImage(const ImageType *);
+  void SetMaskImage(const ImageType *);
 
-  const ImageType *
-  GetMaskImage() const;
+  const ImageType * GetMaskImage() const;
 
   /** Set the pixel value of the mask that should be considered "inside" the
       object. Optional; for default value see above. */
-  void
-  SetInsidePixelValue(PixelType InsidePixelValue);
+  void SetInsidePixelValue(PixelType InsidePixelValue);
 
   itkGetConstMacro(FastCalculations, bool);
   itkSetMacro(FastCalculations, bool);
@@ -201,24 +195,20 @@ public:
 
 protected:
   ScalarImageToRunLengthFeaturesFilter();
-  ~ScalarImageToRunLengthFeaturesFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~ScalarImageToRunLengthFeaturesFilter() ITK_OVERRIDE {}
+  virtual void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
-  void
-  FastCompute();
+  void FastCompute();
 
-  void
-  FullCompute();
+  void FullCompute();
 
   /** This method causes the filter to generate its output. */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Make a DataObject to be used for output output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType) ITK_OVERRIDE;
 
 private:
   typename RunLengthMatrixFilterType::Pointer m_RunLengthMatrixGenerator;
@@ -233,7 +223,7 @@ private:
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkScalarImageToRunLengthFeaturesFilter.hxx"
+#include "itkScalarImageToRunLengthFeaturesFilter.hxx"
 #endif
 
 #endif

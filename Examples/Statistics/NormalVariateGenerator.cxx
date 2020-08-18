@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@
 #include "itkNormalVariateGenerator.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -49,14 +48,14 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using GeneratorType = itk::Statistics::NormalVariateGenerator;
+  typedef itk::Statistics::NormalVariateGenerator GeneratorType;
   GeneratorType::Pointer generator = GeneratorType::New();
-  generator->Initialize((int)2003);
+  generator->Initialize( (int) 2003 );
 
-  for (unsigned int i = 0; i < 50; ++i)
-  {
+  for ( unsigned int i = 0; i < 50; ++i )
+    {
     std::cout << i << " : \t" << generator->GetVariate() << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

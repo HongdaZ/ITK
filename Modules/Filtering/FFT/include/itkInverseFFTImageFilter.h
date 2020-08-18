@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class InverseFFTImageFilter
+/** \class InverseFFTImageFilter
  *
  * \brief Base class for inverse Fast Fourier Transform.
  *
@@ -40,63 +39,65 @@ namespace itk
  *
  * \sa ForwardFFTImageFilter, InverseFFTImageFilter
  * \ingroup ITKFFT
- *
- * \sphinx
- * \sphinxexample{Filtering/FFT/ComputeInverseFFTOfImage,Compute Inverse FFT Of Image}
- * \endsphinx
  */
-template <typename TInputImage,
-          typename TOutputImage = Image<typename TInputImage::PixelType::value_type, TInputImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT InverseFFTImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage=Image< typename TInputImage::PixelType::value_type, TInputImage::ImageDimension> >
+class ITK_TEMPLATE_EXPORT InverseFFTImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InverseFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef TInputImage                          InputImageType;
+  typedef typename InputImageType::PixelType   InputPixelType;
+  typedef TOutputImage                         OutputImageType;
+  typedef typename OutputImageType::PixelType  OutputPixelType;
 
-  /** Standard class type aliases. */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
+  typedef InverseFFTImageFilter                                 Self;
+  typedef ImageToImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
-  using Self = InverseFFTImageFilter;
-  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Customized object creation methods that support configuration-based
-   * selection of FFT implementation.
-   *
-   * Default implementation is VnlFFT. */
-  static Pointer
-  New();
+  * selection of FFT implementation.
+  *
+  * Default implementation is VnlFFT. */
+  static Pointer New();
 
-  /* Return the preferred greatest prime factor supported for the input image
+  /* Return the prefered greatest prime factor supported for the input image
    * size. Defaults to 2 as many implementations work only for sizes that are
    * power of 2.
    */
-  virtual SizeValueType
-  GetSizeGreatestPrimeFactor() const;
+  virtual SizeValueType GetSizeGreatestPrimeFactor() const;
 
 protected:
-  InverseFFTImageFilter() = default;
-  ~InverseFFTImageFilter() override = default;
+  InverseFFTImageFilter() {}
+  virtual ~InverseFFTImageFilter(){}
 
   /** This class requires the entire input. */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion();
 
   /** Sets the output requested region to the largest possible output
    * region. */
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) );
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(InverseFFTImageFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkInverseFFTImageFilter.hxx"
+#ifndef itkVnlInverseFFTImageFilter_h
+#ifndef itkVnlInverseFFTImageFilter_hxx
+#ifndef itkFFTWInverseFFTImageFilter_h
+#ifndef itkFFTWInverseFFTImageFilter_hxx
+#include "itkInverseFFTImageFilter.hxx"
+#endif
+#endif
+#endif
+#endif
 #endif
 
 #endif

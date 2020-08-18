@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,66 +35,65 @@ namespace Function
  * \ingroup ITKOptimizersv4
  */
 
-template <typename TScalar = double>
-class ITK_TEMPLATE_EXPORT WindowConvergenceMonitoringFunction : public ConvergenceMonitoringFunction<TScalar, TScalar>
+template<typename TScalar = double>
+class ITK_TEMPLATE_EXPORT WindowConvergenceMonitoringFunction
+: public ConvergenceMonitoringFunction<TScalar, TScalar>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WindowConvergenceMonitoringFunction);
 
-  using Self = WindowConvergenceMonitoringFunction;
-  using Superclass = ConvergenceMonitoringFunction<TScalar, TScalar>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef WindowConvergenceMonitoringFunction                     Self;
+  typedef ConvergenceMonitoringFunction<TScalar, TScalar>         Superclass;
+  typedef SmartPointer<Self>                                      Pointer;
+  typedef SmartPointer<const Self>                                ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(WindowConvergenceMonitoringFunction, ConvergenceMonitoringFunction);
+  itkTypeMacro( WindowConvergenceMonitoringFunction, ConvergenceMonitoringFunction );
 
-  using ScalarType = TScalar;
-  using RealType = typename NumericTraits<ScalarType>::RealType;
+  typedef TScalar                                            ScalarType;
+  typedef typename NumericTraits<ScalarType>::RealType       RealType;
 
-  using EnergyValueType = typename Superclass::EnergyValueType;
-  using EnergyValueContainerType = typename Superclass::EnergyValueContainerType;
-  using EnergyValueContainerSizeType = typename Superclass::EnergyValueContainerSizeType;
-  using EnergyValueIterator = typename EnergyValueContainerType::iterator;
-  using EnergyValueConstIterator = typename EnergyValueContainerType::const_iterator;
+  typedef typename Superclass::EnergyValueType               EnergyValueType;
+  typedef typename Superclass::EnergyValueContainerType      EnergyValueContainerType;
+  typedef typename Superclass::EnergyValueContainerSizeType  EnergyValueContainerSizeType;
+  typedef typename EnergyValueContainerType::iterator        EnergyValueIterator;
+  typedef typename EnergyValueContainerType::const_iterator  EnergyValueConstIterator;
 
   /** Add energy value */
-  void
-  AddEnergyValue(const EnergyValueType) override;
+  virtual void AddEnergyValue( const EnergyValueType ) ITK_OVERRIDE;
 
   /* Clear energy values and set total energy to 0 */
-  void
-  ClearEnergyValues() override;
+  virtual void ClearEnergyValues() ITK_OVERRIDE;
 
   /** Set/Get window size over which the convergence value is calculated */
-  itkSetMacro(WindowSize, EnergyValueContainerSizeType);
-  itkGetConstMacro(WindowSize, EnergyValueContainerSizeType);
+  itkSetMacro( WindowSize, EnergyValueContainerSizeType );
+  itkGetConstMacro( WindowSize, EnergyValueContainerSizeType );
 
   /** Calculate convergence value by fitting to a window of the enrgy profile */
-  RealType
-  GetConvergenceValue() const override;
+  virtual RealType GetConvergenceValue() const ITK_OVERRIDE;
 
 protected:
   WindowConvergenceMonitoringFunction();
 
-  ~WindowConvergenceMonitoringFunction() override = default;
+  ~WindowConvergenceMonitoringFunction() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf( std::ostream & os, Indent indent ) const ITK_OVERRIDE;
 
 private:
-  EnergyValueContainerSizeType m_WindowSize;
+  ITK_DISALLOW_COPY_AND_ASSIGN(WindowConvergenceMonitoringFunction);
 
-  RealType m_TotalEnergy;
+  EnergyValueContainerSizeType                   m_WindowSize;
+
+  RealType                                       m_TotalEnergy;
+
 };
-} // end namespace Function
+} // end namespace function
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWindowConvergenceMonitoringFunction.hxx"
+#include "itkWindowConvergenceMonitoringFunction.hxx"
 #endif
 
 #endif

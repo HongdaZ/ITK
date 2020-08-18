@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,9 @@ namespace itk
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
-PathToPathFilter<TInputPath, TOutputPath>::PathToPathFilter()
+template< typename TInputPath, typename TOutputPath >
+PathToPathFilter< TInputPath, TOutputPath >
+::PathToPathFilter()
 {
   // Let the superclass do everything
 }
@@ -34,51 +35,58 @@ PathToPathFilter<TInputPath, TOutputPath>::PathToPathFilter()
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
+template< typename TInputPath, typename TOutputPath >
 void
-PathToPathFilter<TInputPath, TOutputPath>::SetInput(const InputPathType * path)
+PathToPathFilter< TInputPath, TOutputPath >
+::SetInput(const InputPathType *path)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(0, const_cast<InputPathType *>(path));
+  this->ProcessObject::SetNthInput( 0,
+                                    const_cast< InputPathType * >( path ) );
 }
 
 /**
  * Connect one of the operands for pixel-wise addition
  */
-template <typename TInputPath, typename TOutputPath>
+template< typename TInputPath, typename TOutputPath >
 void
-PathToPathFilter<TInputPath, TOutputPath>::SetInput(unsigned int index, const TInputPath * path)
+PathToPathFilter< TInputPath, TOutputPath >
+::SetInput(unsigned int index, const TInputPath *path)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(index, const_cast<TInputPath *>(path));
+  this->ProcessObject::SetNthInput( index,
+                                    const_cast< TInputPath * >( path ) );
 }
 
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
-const typename PathToPathFilter<TInputPath, TOutputPath>::InputPathType *
-PathToPathFilter<TInputPath, TOutputPath>::GetInput()
+template< typename TInputPath, typename TOutputPath >
+const typename PathToPathFilter< TInputPath, TOutputPath >::InputPathType *
+PathToPathFilter< TInputPath, TOutputPath >
+::GetInput(void)
 {
-  return itkDynamicCastInDebugMode<const TInputPath *>(this->GetPrimaryInput());
+  return itkDynamicCastInDebugMode< const TInputPath * >( this->GetPrimaryInput() );
 }
 
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
-const typename PathToPathFilter<TInputPath, TOutputPath>::InputPathType *
-PathToPathFilter<TInputPath, TOutputPath>::GetInput(unsigned int idx)
+template< typename TInputPath, typename TOutputPath >
+const typename PathToPathFilter< TInputPath, TOutputPath >::InputPathType *
+PathToPathFilter< TInputPath, TOutputPath >
+::GetInput(unsigned int idx)
 {
-  return itkDynamicCastInDebugMode<const TInputPath *>(this->ProcessObject::GetInput(idx));
+  return itkDynamicCastInDebugMode< const TInputPath * > ( this->ProcessObject::GetInput(idx) );
 }
 
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
+template< typename TInputPath, typename TOutputPath >
 void
-PathToPathFilter<TInputPath, TOutputPath>::GenerateInputRequestedRegion()
+PathToPathFilter< TInputPath, TOutputPath >
+::GenerateInputRequestedRegion()
 {
   // ProcessObject::GenerateInputRequestedRegion() will (for each input) call
   // Path::SetRequestedRegionToLargestPossibleRegion(), which is empty.
@@ -88,9 +96,10 @@ PathToPathFilter<TInputPath, TOutputPath>::GenerateInputRequestedRegion()
 /**
  *
  */
-template <typename TInputPath, typename TOutputPath>
+template< typename TInputPath, typename TOutputPath >
 void
-PathToPathFilter<TInputPath, TOutputPath>::PrintSelf(std::ostream & os, Indent indent) const
+PathToPathFilter< TInputPath, TOutputPath >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

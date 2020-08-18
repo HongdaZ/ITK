@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,17 +52,16 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double>
-class ITK_TEMPLATE_EXPORT Rigid2DTransform : public MatrixOffsetTransformBase<TParametersValueType, 2, 2>
+template<typename TParametersValueType=double>
+class ITK_TEMPLATE_EXPORT Rigid2DTransform :
+  public MatrixOffsetTransformBase<TParametersValueType, 2, 2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid2DTransform);
-
-  /** Standard class type aliases. */
-  using Self = Rigid2DTransform;
-  using Superclass = MatrixOffsetTransformBase<TParametersValueType, 2, 2>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Rigid2DTransform                                      Self;
+  typedef MatrixOffsetTransformBase<TParametersValueType, 2, 2> Superclass;
+  typedef SmartPointer<Self>                                    Pointer;
+  typedef SmartPointer<const Self>                              ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Rigid2DTransform, MatrixOffsetTransformBase);
@@ -71,53 +70,51 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the space. */
-  static constexpr unsigned int InputSpaceDimension = 2;
-  static constexpr unsigned int OutputSpaceDimension = 2;
-  static constexpr unsigned int ParametersDimension = 3;
+  itkStaticConstMacro(InputSpaceDimension, unsigned int, 2);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int, 2);
+  itkStaticConstMacro(ParametersDimension, unsigned int, 3);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  typedef typename Superclass::ScalarType ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
+  typedef typename Superclass::ParametersType           ParametersType;
+  typedef typename Superclass::ParametersValueType      ParametersValueType;
+  typedef typename Superclass::FixedParametersType      FixedParametersType;
+  typedef typename Superclass::FixedParametersValueType FixedParametersValueType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  typedef typename Superclass::JacobianType JacobianType;
 
   // / Standard matrix type for this class
-  using MatrixType = typename Superclass::MatrixType;
-  using MatrixValueType = typename Superclass::MatrixValueType;
+  typedef typename Superclass::MatrixType      MatrixType;
+  typedef typename Superclass::MatrixValueType MatrixValueType;
 
   // / Standard vector type for this class
-  using OffsetType = typename Superclass::OffsetType;
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  typedef typename Superclass::OffsetType      OffsetType;
+  typedef typename Superclass::OffsetValueType OffsetValueType;
 
   // / Standard vector type for this class
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputVectorValueType = typename Superclass::OutputVectorValueType;
+  typedef typename Superclass::InputVectorType       InputVectorType;
+  typedef typename Superclass::OutputVectorType      OutputVectorType;
+  typedef typename Superclass::OutputVectorValueType OutputVectorValueType;
 
   // / Standard covariant vector type for this class
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  typedef typename Superclass::InputCovariantVectorType  InputCovariantVectorType;
+  typedef typename Superclass::OutputCovariantVectorType OutputCovariantVectorType;
 
   // / Standard vnl_vector type for this class
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  typedef typename Superclass::InputVnlVectorType  InputVnlVectorType;
+  typedef typename Superclass::OutputVnlVectorType OutputVnlVectorType;
 
   // / Standard coordinate point type for this class
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  typedef typename Superclass::InputPointType  InputPointType;
+  typedef typename Superclass::OutputPointType OutputPointType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
-  using InverseTransformBaseType = typename Superclass::InverseTransformBaseType;
-  using InverseTransformBasePointer = typename InverseTransformBaseType::Pointer;
+  typedef typename Superclass::InverseTransformBaseType InverseTransformBaseType;
+  typedef typename InverseTransformBaseType::Pointer    InverseTransformBasePointer;
 
   /**
    * Set the rotation Matrix of a Rigid2D Transform
@@ -131,8 +128,7 @@ public:
    *
    * \sa MatrixOffsetTransformBase::SetMatrix()
    */
-  void
-  SetMatrix(const MatrixType & matrix) override;
+  virtual void SetMatrix(const MatrixType & matrix) ITK_OVERRIDE;
 
   /**
    * Set the rotation Matrix of a Rigid2D Transform
@@ -146,8 +142,7 @@ public:
    *
    * \sa MatrixOffsetTransformBase::SetMatrix()
    */
-  virtual void
-  SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance);
+  virtual void SetMatrix(const MatrixType & matrix, const TParametersValueType tolerance);
 
   /**
    * Compose the transformation with a translation
@@ -156,8 +151,7 @@ public:
    * origin.  The translation is precomposed with self if pre is
    * true, and postcomposed otherwise.
    */
-  void
-  Translate(const OffsetType & offset, bool pre = false);
+  void Translate(const OffsetType & offset, bool pre = false);
 
   /**
    * Back transform by an rigid transformation.
@@ -167,38 +161,30 @@ public:
    * an inverse transform and  then perform the transform using that
    * inverted transform.
    */
-  inline InputPointType
-  BackTransform(const OutputPointType & point) const;
+  inline InputPointType      BackTransform(const OutputPointType  & point) const;
 
-  inline InputVectorType
-  BackTransform(const OutputVectorType & vector) const;
+  inline InputVectorType     BackTransform(const OutputVectorType & vector) const;
 
-  inline InputVnlVectorType
-  BackTransform(const OutputVnlVectorType & vector) const;
+  inline InputVnlVectorType  BackTransform(const OutputVnlVectorType & vector) const;
 
-  inline InputCovariantVectorType
-  BackTransform(const OutputCovariantVectorType & vector) const;
+  inline InputCovariantVectorType BackTransform(const OutputCovariantVectorType & vector) const;
 
   /** Set/Get the angle of rotation in radians */
-  void
-  SetAngle(TParametersValueType angle);
+  void SetAngle(TParametersValueType angle);
 
   itkGetConstReferenceMacro(Angle, TParametersValueType);
 
   /** Set the angle of rotation in degrees. */
-  void
-  SetAngleInDegrees(TParametersValueType angle);
+  void SetAngleInDegrees(TParametersValueType angle);
 
   /** Set/Get the angle of rotation in radians. These methods
    * are old and are retained for backward compatibility.
    * Instead, use SetAngle() and GetAngle(). */
-  void
-  SetRotation(TParametersValueType angle)
+  void SetRotation(TParametersValueType angle)
   {
     this->SetAngle(angle);
   }
-  virtual const TParametersValueType &
-  GetRotation() const
+  virtual const TParametersValueType & GetRotation() const
   {
     return m_Angle;
   }
@@ -211,8 +197,7 @@ public:
    *
    * \sa Transform::SetParameters()
    * \sa Transform::SetFixedParameters() */
-  void
-  SetParameters(const ParametersType & parameters) override;
+  virtual void SetParameters(const ParametersType & parameters) ITK_OVERRIDE;
 
   /** Get the parameters that uniquely define the transform
    * This is typically used by optimizers.
@@ -222,122 +207,136 @@ public:
    *
    * \sa Transform::GetParameters()
    * \sa Transform::GetFixedParameters() */
-  const ParametersType &
-  GetParameters() const override;
+  virtual const ParametersType & GetParameters() const ITK_OVERRIDE;
 
   /** Compute the Jacobian Matrix of the transformation at one point,
    *  allowing for thread-safety. */
-  void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  virtual void ComputeJacobianWithRespectToParameters(const InputPointType  & p, JacobianType & jacobian) const ITK_OVERRIDE;
 
   /**
    * This method creates and returns a new Rigid2DTransform object
    * which is the inverse of self.
    */
-  void
-  CloneInverseTo(Pointer & newinverse) const;
+  void CloneInverseTo(Pointer & newinverse) const;
 
   /** Get an inverse of this transform. */
-  bool
-  GetInverse(Self * inverse) const;
+  bool GetInverse(Self *inverse) const;
 
   /** Return an inverse of this transform. */
-  InverseTransformBasePointer
-  GetInverseTransform() const override;
+  virtual InverseTransformBasePointer GetInverseTransform() const ITK_OVERRIDE;
 
   /**
    * This method creates and returns a new Rigid2DTransform object
    * which has the same parameters.
    */
-  void
-  CloneTo(Pointer & clone) const;
+  void CloneTo(Pointer & clone) const;
 
   /** Reset the parameters to create and identity transform. */
-  void
-  SetIdentity() override;
+  virtual void SetIdentity() ITK_OVERRIDE;
+
+#ifdef ITKV3_COMPATIBILITY
+  /**
+   * \deprecated
+   * Set/Get the rotation matrix. These methods are old and are
+   * retained for backward compatibility. Instead, use SetMatrix()
+   * GetMatrix().
+   */
+  itkLegacyMacro(virtual void SetRotationMatrix(const MatrixType & matrix));
+  itkLegacyMacro(const MatrixType & GetRotationMatrix() const);
+#endif
 
 protected:
   Rigid2DTransform(unsigned int outputSpaceDimension, unsigned int parametersDimension);
   Rigid2DTransform(unsigned int parametersDimension);
   Rigid2DTransform();
 
-  ~Rigid2DTransform() override = default;
+  ~Rigid2DTransform() ITK_OVERRIDE;
 
   /**
-   * Print contents of an Rigid2DTransform
-   */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+    * Print contents of an Rigid2DTransform
+    */
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Compute the matrix from angle. This is used in Set methods
    * to update the underlying matrix whenever a transform parameter
    * is changed. */
-  void
-  ComputeMatrix() override;
+  virtual void ComputeMatrix() ITK_OVERRIDE;
 
   /** Compute the angle from the matrix. This is used to compute
    * transform parameters from a given matrix. This is used in
    * MatrixOffsetTransformBase::Compose() and
    * MatrixOffsetTransformBase::GetInverse(). */
-  void
-  ComputeMatrixParameters() override;
+  virtual void ComputeMatrixParameters() ITK_OVERRIDE;
 
   /** Update angle without recomputation of other internal variables. */
-  void
-  SetVarAngle(TParametersValueType angle)
+  void SetVarAngle(TParametersValueType angle)
   {
     m_Angle = angle;
   }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid2DTransform);
+
   TParametersValueType m_Angle;
 
 }; // class Rigid2DTransform
 
 // Back transform a point
-template <typename TParametersValueType>
-inline typename Rigid2DTransform<TParametersValueType>::InputPointType
+template<typename TParametersValueType>
+inline
+typename Rigid2DTransform<TParametersValueType>::InputPointType
 Rigid2DTransform<TParametersValueType>::BackTransform(const OutputPointType & point) const
 {
-  itkWarningMacro(<< "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() "
-                     "to generate an inverse transform and then perform the transform using that inverted transform.");
-  return this->GetInverseMatrix() * (point - this->GetOffset());
+  itkWarningMacro(
+    <<
+    "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() to generate an inverse transform and then perform the transform using that inverted transform."
+    );
+  return this->GetInverseMatrix() * ( point - this->GetOffset() );
 }
 
 // Back transform a vector
-template <typename TParametersValueType>
-inline typename Rigid2DTransform<TParametersValueType>::InputVectorType
+template<typename TParametersValueType>
+inline
+typename Rigid2DTransform<TParametersValueType>::InputVectorType
 Rigid2DTransform<TParametersValueType>::BackTransform(const OutputVectorType & vect) const
 {
-  itkWarningMacro(<< "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() "
-                     "to generate an inverse transform and then perform the transform using that inverted transform.");
+  itkWarningMacro(
+    <<
+    "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() to generate an inverse transform and then perform the transform using that inverted transform."
+    );
   return this->GetInverseMatrix() * vect;
 }
 
 // Back transform a vnl_vector
-template <typename TParametersValueType>
-inline typename Rigid2DTransform<TParametersValueType>::InputVnlVectorType
+template<typename TParametersValueType>
+inline
+typename Rigid2DTransform<TParametersValueType>::InputVnlVectorType
 Rigid2DTransform<TParametersValueType>::BackTransform(const OutputVnlVectorType & vect) const
 {
-  itkWarningMacro(<< "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() "
-                     "to generate an inverse transform and then perform the transform using that inverted transform.");
+  itkWarningMacro(
+    <<
+    "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() to generate an inverse transform and then perform the transform using that inverted transform."
+    );
   return this->GetInverseMatrix() * vect;
 }
 
 // Back Transform a CovariantVector
-template <typename TParametersValueType>
-inline typename Rigid2DTransform<TParametersValueType>::InputCovariantVectorType
+template<typename TParametersValueType>
+inline
+typename Rigid2DTransform<TParametersValueType>::InputCovariantVectorType
 Rigid2DTransform<TParametersValueType>::BackTransform(const OutputCovariantVectorType & vect) const
 {
-  itkWarningMacro(<< "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() "
-                     "to generate an inverse transform and then perform the transform using that inverted transform.");
+  itkWarningMacro(
+    <<
+    "BackTransform(): This method is slated to be removed from ITK.  Instead, please use GetInverse() to generate an inverse transform and then perform the transform using that inverted transform."
+    );
   return this->GetMatrix() * vect;
 }
 
-} // namespace itk
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkRigid2DTransform.hxx"
+#include "itkRigid2DTransform.hxx"
 #endif
 
 #endif /* itkRigid2DTransform_h */

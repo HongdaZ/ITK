@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
 #ifndef itkBoundedReciprocalImageFilter_h
 #define itkBoundedReciprocalImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 
 namespace itk
 {
@@ -43,67 +43,71 @@ namespace itk
  */
 namespace Functor
 {
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class BoundedReciprocal
 {
 public:
-  BoundedReciprocal() = default;
-  ~BoundedReciprocal() = default;
-  bool
-  operator!=(const BoundedReciprocal &) const
+  BoundedReciprocal() {}
+  ~BoundedReciprocal() {}
+  bool operator!=(const BoundedReciprocal &) const
   {
     return false;
   }
 
-  bool
-  operator==(const BoundedReciprocal & other) const
+  bool operator==(const BoundedReciprocal & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(1.0 / (1.0 + static_cast<double>(A)));
+    return static_cast< TOutput >( 1.0 / ( 1.0 +  static_cast< double >( A ) ) );
   }
 };
-} // namespace Functor
+}
 
-template <typename TInputImage, typename TOutputImage>
-class BoundedReciprocalImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class BoundedReciprocalImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::BoundedReciprocal<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BoundedReciprocalImageFilter);
+  /** Standard class typedefs. */
+  typedef BoundedReciprocalImageFilter Self;
+  typedef UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                                   Functor::BoundedReciprocal<
+                                     typename TInputImage::PixelType,
+                                     typename TOutputImage::PixelType >
+                                   >                                     Superclass;
 
-  /** Standard class type aliases. */
-  using Self = BoundedReciprocalImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::BoundedReciprocal<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(BoundedReciprocalImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(BoundedReciprocalImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( InputConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  BoundedReciprocalImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  BoundedReciprocalImageFilter() {}
+  virtual ~BoundedReciprocalImageFilter() ITK_OVERRIDE {}
 
-  ~BoundedReciprocalImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BoundedReciprocalImageFilter);
 };
 } // end namespace itk
 

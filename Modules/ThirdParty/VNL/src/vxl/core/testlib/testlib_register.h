@@ -7,7 +7,7 @@
 //
 // A test driver program would simply look like
 // \code
-//   #include "testlib_register.h"
+//   #include <testlib/testlib_register.h>
 //   DECLARE( some_test_name );
 //   void register_tests()
 //   {
@@ -23,15 +23,13 @@
 // See the vxl tests for further examples (such as vil/tests).
 
 #include <string>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 typedef int (*TestMainFunction)( int, char*[] );
 
 //: Declare the existence of the test.
 // If you DECLARE( x ), then you will need to define a function int x_main(int,char*[]).
-#ifdef _MSC_VER
+#ifdef VCL_VC
 #define DECLARE( testname ) int _cdecl testname ## _main ( int argc, char* argv[] )
 #else
 #define DECLARE( testname )  int testname ## _main ( int argc, char* argv[] )

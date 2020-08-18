@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #include "ITKIOGEExport.h"
 namespace itk
 {
-extern float
-MvtSunf(int numb);
+extern float MvtSunf(int numb);
 }
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@
 #define itkNoiseBaseImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
+#if !defined( ITK_LEGACY_FUTURE_REMOVE )
+# include <vcl_ctime.h>
+#endif
 #include <ctime>
 
 namespace itk
 {
 
-/**
- *\class NoiseBaseImageFilter
+/** \class NoiseBaseImageFilter
  *
  * \brief An Abstract Base class for Noise image filters
  *
@@ -35,19 +37,18 @@ namespace itk
  * \sa InPlaceImageFilter
  * \ingroup ITKImageNoise
  */
-template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT NoiseBaseImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage=TInputImage>
+class ITK_TEMPLATE_EXPORT NoiseBaseImageFilter :
+  public InPlaceImageFilter<TInputImage,TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NoiseBaseImageFilter);
+  /** Standard class typedefs. */
+  typedef NoiseBaseImageFilter                          Self;
+  typedef InPlaceImageFilter<TInputImage,TOutputImage > Superclass;
+  typedef SmartPointer<Self>                            Pointer;
+  typedef SmartPointer<const Self>                      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = NoiseBaseImageFilter;
-  using Superclass = InPlaceImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  typedef typename Superclass::OutputImagePixelType OutputImagePixelType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(NoiseBaseImageFilter, InPlaceImageFilter);
@@ -58,35 +59,34 @@ public:
 
   /** Set the seed to a value initialized with the current time and
    * process clock. */
-  virtual void
-  SetSeed();
+  virtual void SetSeed();
 
 protected:
   NoiseBaseImageFilter();
 
-  ~NoiseBaseImageFilter() override = default;
+  virtual ~NoiseBaseImageFilter() ITK_OVERRIDE = 0;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  inline static uint32_t
-  Hash(uint32_t a, uint32_t b)
+  inline static uint32_t Hash(uint32_t a, uint32_t b)
   {
     //  Knuth's Multiplicative Method for hashing
-    return (a + b) * 2654435761u;
+    return (a+b)*2654435761u;
   }
 
   // Clamp and round the input value to the output
-  static OutputImagePixelType
-  ClampCast(const double & value);
+  static OutputImagePixelType ClampCast(const double &value);
 
 private:
-  uint32_t m_Seed{ 0 };
+  ITK_DISALLOW_COPY_AND_ASSIGN(NoiseBaseImageFilter);
+
+  uint32_t m_Seed;
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNoiseBaseImageFilter.hxx"
+#include "itkNoiseBaseImageFilter.hxx"
 #endif
 
 #endif

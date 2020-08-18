@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ namespace gdcm
 
 BaseQuery* QueryFactory::ProduceQuery( const std::string & sopInstanceUID, ENQueryType inQueryType )
 {
-  BaseQuery* theReturn = nullptr;
+  BaseQuery* theReturn = NULL;
     switch (inQueryType)
     {
 	case eCreateMMPS :
@@ -49,7 +49,7 @@ BaseQuery* QueryFactory::ProduceQuery( const std::string & sopInstanceUID, ENQue
 BaseRootQuery* QueryFactory::ProduceQuery(ERootType inRootType, EQueryType inQueryType,
  EQueryLevel inQueryLevel)
 {
-  BaseRootQuery* theReturn = nullptr;
+  BaseRootQuery* theReturn = NULL;
   switch (inQueryType)
     {
   case eFind:

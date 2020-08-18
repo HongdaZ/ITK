@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,70 +20,69 @@
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 
 #include "itkGrayscaleConnectedOpeningImageFilter.h"
-#include "itkTestingMacros.h"
 
 
-int
-itkGrayscaleConnectedOpeningImageFilterTest(int argc, char * argv[])
+int itkGrayscaleConnectedOpeningImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << "  inputImageFile  ";
+    std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile seedX seedY " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //
   //  The following code defines the input and output pixel types and their
   //  associated image types.
   //
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = unsigned char;
-  using OutputPixelType = unsigned char;
-  using WritePixelType = unsigned char;
+  typedef unsigned char   InputPixelType;
+  typedef unsigned char   OutputPixelType;
+  typedef unsigned char   WritePixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using WriteImageType = itk::Image<WritePixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::Image< WritePixelType, Dimension >    WriteImageType;
 
 
   // readers/writers
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileReader< InputImageType  > ReaderType;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
 
   // define the fillhole filter
-  using ConnectedOpeningFilterType = itk::GrayscaleConnectedOpeningImageFilter<InputImageType, OutputImageType>;
+  typedef itk::GrayscaleConnectedOpeningImageFilter<
+                            InputImageType,
+                            OutputImageType >  ConnectedOpeningFilterType;
 
 
   // Creation of Reader and Writer filters
   ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  WriterType::Pointer writer  = WriterType::New();
 
   // Create the filter
-  ConnectedOpeningFilterType::Pointer connectedOpening = ConnectedOpeningFilterType::New();
-  itk::SimpleFilterWatcher            watcher(connectedOpening, "Opening");
-  watcher.QuietOn();
+  ConnectedOpeningFilterType::Pointer  connectedOpening = ConnectedOpeningFilterType::New();
+  FilterWatcher watcher(connectedOpening, "Opening"); watcher.QuietOn();
 
   // Setup the input and output files
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName(  argv[2] );
 
   // Setup the connected opening method
-  connectedOpening->SetInput(reader->GetOutput());
+  connectedOpening->SetInput(  reader->GetOutput() );
 
   InputImageType::IndexType seed;
-  seed[0] = std::stoi(argv[3]);
-  seed[1] = std::stoi(argv[4]);
+  seed[0] = atoi(argv[3]);
+  seed[1] = atoi(argv[4]);
   connectedOpening->SetSeed(seed);
 
   // Run the filter
-  writer->SetInput(connectedOpening->GetOutput());
+  writer->SetInput( connectedOpening->GetOutput() );
   writer->Update();
 
   return EXIT_SUCCESS;

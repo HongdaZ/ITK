@@ -1,3 +1,2 @@
 project(ITKRegistrationMethodsv4)
-set(ITKRegistrationMethodsv4_LIBRARIES ITKRegistrationMethodsv4)
 itk_module_impl()

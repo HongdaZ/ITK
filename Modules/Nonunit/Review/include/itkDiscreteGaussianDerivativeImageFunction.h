@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,19 +43,21 @@ namespace itk
  * \sa ImageFunction
  * \ingroup ITKReview
  */
-template <typename TInputImage, typename TOutput = double>
-class ITK_TEMPLATE_EXPORT DiscreteGaussianDerivativeImageFunction : public ImageFunction<TInputImage, TOutput, TOutput>
+template< typename TInputImage, typename TOutput = double >
+class ITK_TEMPLATE_EXPORT DiscreteGaussianDerivativeImageFunction:
+  public ImageFunction< TInputImage, TOutput, TOutput >
 {
 public:
-  /**Standard "Self" type alias */
-  using Self = DiscreteGaussianDerivativeImageFunction;
 
-  /** Standard "Superclass" type alias */
-  using Superclass = ImageFunction<TInputImage, TOutput, TOutput>;
+  /**Standard "Self" typedef */
+  typedef DiscreteGaussianDerivativeImageFunction Self;
 
-  /** Smart pointer type alias support */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Superclass" typedef */
+  typedef ImageFunction< TInputImage, TOutput, TOutput > Superclass;
+
+  /** Smart pointer typedef support. */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,56 +66,54 @@ public:
   itkTypeMacro(DiscreteGaussianDerivativeImageFunction, ImageFunction);
 
   /** Image dependent types. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
-  using PointType = typename Superclass::PointType;
+  typedef typename Superclass::InputImageType      InputImageType;
+  typedef typename Superclass::InputPixelType      InputPixelType;
+  typedef typename Superclass::IndexType           IndexType;
+  typedef typename Superclass::IndexValueType      IndexValueType;
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
+  typedef typename Superclass::PointType           PointType;
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension2 = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension2, unsigned int,
+                      InputImageType::ImageDimension);
 
   /** Output type. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Arrays for native types. */
-  using VarianceArrayType = FixedArray<double, Self::ImageDimension2>;
-  using OrderArrayType = FixedArray<unsigned int, Self::ImageDimension2>;
+  typedef FixedArray< double, itkGetStaticConstMacro(ImageDimension2) >       VarianceArrayType;
+  typedef FixedArray< unsigned int, itkGetStaticConstMacro(ImageDimension2) > OrderArrayType;
 
-  using GaussianDerivativeOperatorType = itk::GaussianDerivativeOperator<TOutput, Self::ImageDimension2>;
+  typedef itk::GaussianDerivativeOperator< TOutput,
+                                           itkGetStaticConstMacro(ImageDimension2) >    GaussianDerivativeOperatorType;
 
   /** Array to store gaussian derivative operators one for each dimension. */
-  using GaussianDerivativeOperatorArrayType = FixedArray<GaussianDerivativeOperatorType, Self::ImageDimension2>;
+  typedef FixedArray< GaussianDerivativeOperatorType,
+                      itkGetStaticConstMacro(ImageDimension2) >            GaussianDerivativeOperatorArrayType;
 
   /** Precomputed N-dimensional derivative kernel. */
-  using KernelType = Neighborhood<TOutput, Self::ImageDimension2>;
+  typedef Neighborhood< TOutput, itkGetStaticConstMacro(ImageDimension2) > KernelType;
 
   /** Image function that performs convolution with the neighborhood operator.
-   */
-  using OperatorImageFunctionType = NeighborhoodOperatorImageFunction<InputImageType, TOutput>;
-  using OperatorImageFunctionPointer = typename OperatorImageFunctionType::Pointer;
+    */
+  typedef NeighborhoodOperatorImageFunction
+  < InputImageType, TOutput >                           OperatorImageFunctionType;
+  typedef typename OperatorImageFunctionType::Pointer OperatorImageFunctionPointer;
 
-  using InterpolationModeEnum = GaussianDerivativeOperatorEnums::InterpolationMode;
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr InterpolationModeEnum NearestNeighbourInterpolation =
-    InterpolationModeEnum::NearestNeighbourInterpolation;
-  static constexpr InterpolationModeEnum LinearInterpolation = InterpolationModeEnum::LinearInterpolation;
-#endif
+  /** Interpolation modes. */
+  enum InterpolationModeType { NearestNeighbourInterpolation, LinearInterpolation };
 
 public:
+
   /** Evaluate the function at specified point. */
-  OutputType
-  Evaluate(const PointType & point) const override;
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE;
 
   /** Evaluate the function at specified Index position */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at specified ContinuousIndex position. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & index) const ITK_OVERRIDE;
 
   /** Set/Get the variance for the discrete Gaussian kernel.
    * Sets the variance for individual dimensions. The default is 0.0
@@ -126,8 +126,7 @@ public:
   itkSetVectorMacro(Variance, double, VarianceArrayType::Length);
 
   /** Convenience method for setting the variance for all dimensions. */
-  virtual void
-  SetVariance(double variance)
+  virtual void SetVariance(double variance)
   {
     m_Variance.Fill(variance);
     this->Modified();
@@ -136,8 +135,7 @@ public:
   /** Convenience method for setting the variance through the standard
    * deviation.
    */
-  void
-  SetSigma(const double sigma)
+  void SetSigma(const double sigma)
   {
     SetVariance(sigma * sigma);
   }
@@ -157,16 +155,15 @@ public:
   itkSetVectorMacro(Order, unsigned int, OrderArrayType::Length);
 
   /** Convenience method for setting the order for all dimensions. */
-  virtual void
-  SetOrder(unsigned int order)
+  virtual void SetOrder(unsigned int order)
   {
     m_Order.Fill(order);
     this->Modified();
   }
 
   /** Set/Get the flag for calculating scale-space normalized derivatives.
-   * Normalized derivatives are obtained multiplying by the scale
-   * parameter t. */
+    * Normalized derivatives are obtained multiplying by the scale
+    * parameter t. */
   itkSetMacro(NormalizeAcrossScale, bool);
   itkGetConstMacro(NormalizeAcrossScale, bool);
   itkBooleanMacro(NormalizeAcrossScale);
@@ -184,41 +181,34 @@ public:
   itkGetConstMacro(MaximumKernelWidth, unsigned int);
 
   /** Set/Get the interpolation mode. */
-  itkSetEnumMacro(InterpolationMode, InterpolationModeEnum);
-  itkGetEnumMacro(InterpolationMode, InterpolationModeEnum);
+  itkSetMacro(InterpolationMode, InterpolationModeType);
+  itkGetConstMacro(InterpolationMode, InterpolationModeType);
 
   /** Set the input image.
    * \warning this method caches BufferedRegion information.
    * If the BufferedRegion has changed, user must call
    * SetInputImage again to update cached values. */
-  void
-  SetInputImage(const InputImageType * ptr) override;
+  virtual void SetInputImage(const InputImageType *ptr) ITK_OVERRIDE;
 
   /** Initialize the Gaussian kernel. Call this method before
    * evaluating the function. This method MUST be called after any
    * changes to function parameters. */
-  virtual void
-  Initialize()
-  {
-    RecomputeGaussianKernel();
-  }
+  virtual void Initialize() { RecomputeGaussianKernel(); }
 
 protected:
+
   DiscreteGaussianDerivativeImageFunction();
-  DiscreteGaussianDerivativeImageFunction(const Self &) {}
+  DiscreteGaussianDerivativeImageFunction(const Self &){}
 
-  ~DiscreteGaussianDerivativeImageFunction() override = default;
+  ~DiscreteGaussianDerivativeImageFunction(){}
 
-  void
-  operator=(const Self &)
-  {}
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void operator=(const Self &){}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  RecomputeGaussianKernel();
+  void RecomputeGaussianKernel();
 
 private:
+
   /** Desired variance of the discrete Gaussian function. */
   VarianceArrayType m_Variance;
 
@@ -227,36 +217,36 @@ private:
 
   /** Difference between the areas under the curves of the continuous and
    * discrete Gaussian functions. */
-  double m_MaximumError{ 0.005 };
+  double m_MaximumError;
 
   /** Maximum kernel size allowed.  This value is used to truncate a kernel
    *  that has grown too large.  A warning is given when the specified maximum
    *  error causes the kernel to exceed this size. */
-  unsigned int m_MaximumKernelWidth{ 30 };
+  unsigned int m_MaximumKernelWidth;
 
   /** Array of derivative operators, one for each dimension. */
   GaussianDerivativeOperatorArrayType m_OperatorArray;
 
   /** N-dimensional kernel which is the result of convolving the operators
-   * for calculating derivatives. */
+    * for calculating derivatives. */
   KernelType m_DerivativeKernel;
 
   /** OperatorImageFunction */
   OperatorImageFunctionPointer m_OperatorImageFunction;
 
   /** Flag for scale-space normalization of derivatives. */
-  bool m_NormalizeAcrossScale{ true };
+  bool m_NormalizeAcrossScale;
 
   /** Flag to indicate whether to use image spacing */
-  bool m_UseImageSpacing{ true };
+  bool m_UseImageSpacing;
 
   /** Interpolation mode. */
-  InterpolationModeEnum m_InterpolationMode{ InterpolationModeEnum::NearestNeighbourInterpolation };
+  InterpolationModeType m_InterpolationMode;
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkDiscreteGaussianDerivativeImageFunction.hxx"
+#include "itkDiscreteGaussianDerivativeImageFunction.hxx"
 #endif
 
 #endif

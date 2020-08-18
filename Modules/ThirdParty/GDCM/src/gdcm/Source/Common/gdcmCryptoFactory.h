@@ -62,8 +62,8 @@ private:
   }
 
 protected:
-  CryptoFactory()= default;
-  ~CryptoFactory()= default;
+  CryptoFactory(){}
+  ~CryptoFactory(){}
 };
 
 } // end namespace gdcm

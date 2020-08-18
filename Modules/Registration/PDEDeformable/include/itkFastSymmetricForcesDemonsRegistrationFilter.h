@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -69,122 +69,118 @@ namespace itk
  * \ingroup DeformableImageRegistration MultiThreaded
  * \ingroup ITKPDEDeformableRegistration
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
-class ITK_TEMPLATE_EXPORT FastSymmetricForcesDemonsRegistrationFilter
-  : public PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
+class ITK_TEMPLATE_EXPORT FastSymmetricForcesDemonsRegistrationFilter:
+  public PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
+                                          TDisplacementField >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastSymmetricForcesDemonsRegistrationFilter);
-
-  /** Standard class type aliases. */
-  using Self = FastSymmetricForcesDemonsRegistrationFilter;
-  using Superclass = PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FastSymmetricForcesDemonsRegistrationFilter                                     Self;
+  typedef PDEDeformableRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField > Superclass;
+  typedef SmartPointer< Self >                                                            Pointer;
+  typedef SmartPointer< const Self >                                                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FastSymmetricForcesDemonsRegistrationFilter, PDEDeformableRegistrationFilter);
+  itkTypeMacro(FastSymmetricForcesDemonsRegistrationFilter,
+               PDEDeformableRegistrationFilter);
 
   /** FixedImage image type. */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
+  typedef typename Superclass::FixedImageType    FixedImageType;
+  typedef typename Superclass::FixedImagePointer FixedImagePointer;
 
   /** MovingImage image type. */
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  typedef typename Superclass::MovingImageType    MovingImageType;
+  typedef typename Superclass::MovingImagePointer MovingImagePointer;
 
   /** Deformation field type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename Superclass::DisplacementFieldPointer;
+  typedef typename Superclass::DisplacementFieldType    DisplacementFieldType;
+  typedef typename Superclass::DisplacementFieldPointer DisplacementFieldPointer;
 
-  static constexpr unsigned int ImageDimension = FixedImageType::ImageDimension;
+  itkStaticConstMacro(
+    ImageDimension, unsigned int, FixedImageType::ImageDimension);
 
   /** Get the metric value. The metric value is the mean square difference
    * in intensity between the fixed image and transforming moving image
    * computed over the the overlapping region between the two images.
    * This value is calculated for the current iteration */
-  virtual double
-  GetMetric() const;
+  virtual double GetMetric() const;
 
-  const double &
-  GetRMSChange() const override;
+  virtual const double & GetRMSChange() const ITK_OVERRIDE;
 
   /** DemonsRegistrationFilterFunction type.
    *
    *  FIXME: Why is this the only permissible function ?
    *
    */
-  using DemonsRegistrationFunctionType =
-    ESMDemonsRegistrationFunction<FixedImageType, MovingImageType, DisplacementFieldType>;
+  typedef ESMDemonsRegistrationFunction<
+    FixedImageType,
+    MovingImageType, DisplacementFieldType >                DemonsRegistrationFunctionType;
 
-  using GradientType = typename DemonsRegistrationFunctionType::GradientEnum;
-  virtual void
-  SetUseGradientType(GradientType gtype);
+  typedef typename DemonsRegistrationFunctionType::GradientType GradientType;
+  virtual void SetUseGradientType(GradientType gtype);
 
-  virtual GradientType
-  GetUseGradientType() const;
+  virtual GradientType GetUseGradientType() const;
 
   /** Set/Get the threshold below which the absolute difference of
    * intensity yields a match. When the intensities match between a
    * moving and fixed image pixel, the update vector (for that
    * iteration) will be the zero vector. Default is 0.001. */
-  virtual void
-  SetIntensityDifferenceThreshold(double);
+  virtual void SetIntensityDifferenceThreshold(double);
 
-  virtual double
-  GetIntensityDifferenceThreshold() const;
+  virtual double GetIntensityDifferenceThreshold() const;
 
-  virtual void
-  SetMaximumUpdateStepLength(double);
+  virtual void SetMaximumUpdateStepLength(double);
 
-  virtual double
-  GetMaximumUpdateStepLength() const;
+  virtual double GetMaximumUpdateStepLength() const;
 
 protected:
   FastSymmetricForcesDemonsRegistrationFilter();
-  ~FastSymmetricForcesDemonsRegistrationFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~FastSymmetricForcesDemonsRegistrationFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Initialize the state of filter and equation before each iteration. */
-  void
-  InitializeIteration() override;
+  virtual void InitializeIteration() ITK_OVERRIDE;
 
   /** This method allocates storage in m_UpdateBuffer.  It is called from
    * FiniteDifferenceFilter::GenerateData(). */
-  void
-  AllocateUpdateBuffer() override;
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE;
 
   /** FiniteDifferenceFunction type. */
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  typedef typename
+  Superclass::FiniteDifferenceFunctionType FiniteDifferenceFunctionType;
 
   /** Take timestep type from the FiniteDifferenceFunction. */
-  using TimeStepType = typename FiniteDifferenceFunctionType::TimeStepType;
+  typedef typename
+  FiniteDifferenceFunctionType::TimeStepType TimeStepType;
 
   /** Apply update. */
-  void
-  ApplyUpdate(const TimeStepType & dt) override;
+  virtual void ApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
-  /** other type alias */
-  using MultiplyByConstantType =
-    MultiplyImageFilter<DisplacementFieldType, itk::Image<TimeStepType, ImageDimension>, DisplacementFieldType>;
+  /** other typedefs */
+  typedef MultiplyImageFilter<
+    DisplacementFieldType,
+    itk::Image<TimeStepType, ImageDimension>,
+    DisplacementFieldType >                                MultiplyByConstantType;
 
-  using AdderType = AddImageFilter<DisplacementFieldType, DisplacementFieldType, DisplacementFieldType>;
+  typedef AddImageFilter<
+    DisplacementFieldType,
+    DisplacementFieldType, DisplacementFieldType >          AdderType;
 
-  using MultiplyByConstantPointer = typename MultiplyByConstantType::Pointer;
-  using AdderPointer = typename AdderType::Pointer;
+  typedef typename MultiplyByConstantType::Pointer MultiplyByConstantPointer;
+  typedef typename AdderType::Pointer              AdderPointer;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastSymmetricForcesDemonsRegistrationFilter);
+
   /** Downcast the DifferenceFunction using a dynamic_cast to ensure that it is of the correct type.
    * this method will throw an exception if the function is not of the expected type. */
-  DemonsRegistrationFunctionType *
-  DownCastDifferenceFunctionType();
+  DemonsRegistrationFunctionType *  DownCastDifferenceFunctionType();
 
-  const DemonsRegistrationFunctionType *
-  DownCastDifferenceFunctionType() const;
+  const DemonsRegistrationFunctionType *  DownCastDifferenceFunctionType() const;
 
   MultiplyByConstantPointer m_Multiplier;
   AdderPointer              m_Adder;
@@ -192,7 +188,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFastSymmetricForcesDemonsRegistrationFilter.hxx"
+#include "itkFastSymmetricForcesDemonsRegistrationFilter.hxx"
 #endif
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,28 +24,28 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class EuclideanDistanceMetric
+/** \class EuclideanDistanceMetric
  * \brief Euclidean distance function.
  *
  *
  * \ingroup ITKStatistics
  */
-template <typename TVector>
-class ITK_TEMPLATE_EXPORT EuclideanDistanceMetric : public DistanceMetric<TVector>
+template< typename TVector >
+class ITK_TEMPLATE_EXPORT EuclideanDistanceMetric:
+  public DistanceMetric< TVector >
 {
 public:
-  /** Standard "Self" type alias. */
-  using Self = EuclideanDistanceMetric;
-  using Superclass = DistanceMetric<TVector>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef EuclideanDistanceMetric    Self;
+  typedef DistanceMetric< TVector >  Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using ValueType = typename MeasurementVectorTraitsTypes<MeasurementVectorType>::ValueType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
+  typedef typename Superclass::MeasurementVectorType                                MeasurementVectorType;
+  typedef typename MeasurementVectorTraitsTypes< MeasurementVectorType >::ValueType ValueType;
+  typedef typename Superclass::MeasurementVectorSizeType                            MeasurementVectorSizeType;
 
-  using OriginType = typename Superclass::OriginType;
+  typedef typename Superclass::OriginType OriginType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(EuclideanDistanceMetric, DistanceMetric);
@@ -54,29 +54,26 @@ public:
   itkNewMacro(Self);
 
   /** Gets the distance between the origin and x */
-  double
-  Evaluate(const MeasurementVectorType & x) const override;
+  double Evaluate(const MeasurementVectorType & x) const ITK_OVERRIDE;
 
   /** Gets the distance between x1 and x2 */
-  double
-  Evaluate(const MeasurementVectorType & x1, const MeasurementVectorType & x2) const override;
+  double Evaluate(const MeasurementVectorType & x1, const MeasurementVectorType & x2) const ITK_OVERRIDE;
 
-  /** Gets the coordinate distance between a and b. NOTE: a and b
+  /** Gets the cooridnate distance between a and b. NOTE: a and b
    * should be type of component. This method is used by
-   * KdTreeKMeans estimators. When the estimator is refactored,
-   * this method should be removed. */
-  double
-  Evaluate(const ValueType & a, const ValueType & b) const;
+    * KdTreeKMeans estimators. When the estimator is refactored,
+    * this method should be removed. */
+  double Evaluate(const ValueType & a, const ValueType & b) const;
 
 protected:
-  EuclideanDistanceMetric() = default;
-  ~EuclideanDistanceMetric() override = default;
-}; // end of class
+  EuclideanDistanceMetric() {}
+  virtual ~EuclideanDistanceMetric() ITK_OVERRIDE {}
+};  // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEuclideanDistanceMetric.hxx"
+#include "itkEuclideanDistanceMetric.hxx"
 #endif
 
 #endif

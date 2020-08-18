@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,61 +41,63 @@ namespace itk
  * \ingroup ITKRegistrationCommon
  */
 
-template <typename TFixedPointSet, typename TMovingPointSet>
-class ITK_TEMPLATE_EXPORT PointSetToPointSetMetric : public MultipleValuedCostFunction
+template< typename TFixedPointSet,  typename TMovingPointSet >
+class ITK_TEMPLATE_EXPORT PointSetToPointSetMetric:public MultipleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToPointSetMetric);
 
-  /** Standard class type aliases. */
-  using Self = PointSetToPointSetMetric;
-  using Superclass = MultipleValuedCostFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PointSetToPointSetMetric   Self;
+  typedef MultipleValuedCostFunction Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Type used for representing point components  */
-  using CoordinateRepresentationType = Superclass::ParametersValueType;
+  typedef Superclass::ParametersValueType CoordinateRepresentationType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PointSetToPointSetMetric, MultipleValuedCostFunction);
 
   /**  Type of the moving Pointset. */
-  using MovingPointSetType = TMovingPointSet;
-  using MovingPointSetPixelType = typename TMovingPointSet::PixelType;
-  using MovingPointSetConstPointer = typename MovingPointSetType::ConstPointer;
+  typedef TMovingPointSet                           MovingPointSetType;
+  typedef typename TMovingPointSet::PixelType       MovingPointSetPixelType;
+  typedef typename MovingPointSetType::ConstPointer MovingPointSetConstPointer;
 
   /**  Type of the fixed Pointset. */
-  using FixedPointSetType = TFixedPointSet;
-  using FixedPointSetConstPointer = typename FixedPointSetType::ConstPointer;
+  typedef TFixedPointSet                           FixedPointSetType;
+  typedef typename FixedPointSetType::ConstPointer FixedPointSetConstPointer;
 
   /** Constants for the pointset dimensions */
-  static constexpr unsigned int MovingPointSetDimension = TMovingPointSet::PointDimension;
-  static constexpr unsigned int FixedPointSetDimension = TFixedPointSet::PointDimension;
+  itkStaticConstMacro(MovingPointSetDimension, unsigned int,
+                      TMovingPointSet::PointDimension);
+  itkStaticConstMacro(FixedPointSetDimension, unsigned int,
+                      TFixedPointSet::PointDimension);
 
-  using FixedPointIterator = typename FixedPointSetType::PointsContainer::ConstIterator;
-  using FixedPointDataIterator = typename FixedPointSetType::PointDataContainer::ConstIterator;
+  typedef typename FixedPointSetType::PointsContainer::ConstIterator     FixedPointIterator;
+  typedef typename FixedPointSetType::PointDataContainer::ConstIterator  FixedPointDataIterator;
 
-  using MovingPointIterator = typename MovingPointSetType::PointsContainer::ConstIterator;
-  using MovingPointDataIterator = typename MovingPointSetType::PointDataContainer::ConstIterator;
+  typedef typename MovingPointSetType::PointsContainer::ConstIterator    MovingPointIterator;
+  typedef typename MovingPointSetType::PointDataContainer::ConstIterator MovingPointDataIterator;
 
   /**  Type of the Transform Base class */
-  using TransformType =
-    Transform<CoordinateRepresentationType, Self::MovingPointSetDimension, Self::FixedPointSetDimension>;
+  typedef Transform< CoordinateRepresentationType,
+                     itkGetStaticConstMacro(MovingPointSetDimension),
+                     itkGetStaticConstMacro(FixedPointSetDimension) > TransformType;
 
-  using TransformPointer = typename TransformType::Pointer;
-  using InputPointType = typename TransformType::InputPointType;
-  using OutputPointType = typename TransformType::OutputPointType;
-  using TransformParametersType = typename TransformType::ParametersType;
-  using TransformJacobianType = typename TransformType::JacobianType;
+  typedef typename TransformType::Pointer         TransformPointer;
+  typedef typename TransformType::InputPointType  InputPointType;
+  typedef typename TransformType::OutputPointType OutputPointType;
+  typedef typename TransformType::ParametersType  TransformParametersType;
+  typedef typename TransformType::JacobianType    TransformJacobianType;
 
   /**  Type of the measure. */
-  using MeasureType = Superclass::MeasureType;
+  typedef Superclass::MeasureType MeasureType;
 
   /**  Type of the derivative. */
-  using DerivativeType = Superclass::DerivativeType;
+  typedef Superclass::DerivativeType DerivativeType;
 
   /**  Type of the parameters. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
   /** Get/Set the Fixed Pointset.  */
   itkSetConstObjectMacro(FixedPointSet, FixedPointSetType);
@@ -112,37 +114,34 @@ public:
   itkGetModifiableObjectMacro(Transform, TransformType);
 
   /** Set the parameters defining the Transform. */
-  void
-  SetTransformParameters(const ParametersType & parameters) const;
+  void SetTransformParameters(const ParametersType & parameters) const;
 
   /** Return the number of parameters required by the Transform */
-  unsigned int
-  GetNumberOfParameters() const override
-  {
-    return m_Transform->GetNumberOfParameters();
-  }
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
+  { return m_Transform->GetNumberOfParameters(); }
 
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
-  virtual void
-  Initialize();
+  virtual void Initialize(void);
 
 protected:
   PointSetToPointSetMetric();
-  ~PointSetToPointSetMetric() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~PointSetToPointSetMetric() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   FixedPointSetConstPointer m_FixedPointSet;
 
   MovingPointSetConstPointer m_MovingPointSet;
 
   mutable TransformPointer m_Transform;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToPointSetMetric);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPointSetToPointSetMetric.hxx"
+#include "itkPointSetToPointSetMetric.hxx"
 #endif
 
 #endif

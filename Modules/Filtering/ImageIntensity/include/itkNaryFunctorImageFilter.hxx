@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,93 +24,108 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TOutputImage, typename TFunction>
-NaryFunctorImageFilter<TInputImage, TOutputImage, TFunction>::NaryFunctorImageFilter()
+/**
+ * Constructor
+ */
+template< typename TInputImage, typename TOutputImage, typename TFunction >
+NaryFunctorImageFilter< TInputImage, TOutputImage, TFunction >
+::NaryFunctorImageFilter()
 {
-  // This number will be incremented each time an image is added.
-  this->SetNumberOfRequiredInputs(1);
+  // This number will be incremented each time an image
+  // is added over the two minimum required
+  this->SetNumberOfRequiredInputs(2);
   this->InPlaceOff();
-  this->DynamicMultiThreadingOn();
 }
 
-
-template <typename TInputImage, typename TOutputImage, typename TFunction>
+/**
+ * ThreadedGenerateData Performs the pixel-wise addition
+ */
+template< typename TInputImage, typename TOutputImage, typename TFunction >
 void
-NaryFunctorImageFilter<TInputImage, TOutputImage, TFunction>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+NaryFunctorImageFilter< TInputImage, TOutputImage, TFunction >
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       ThreadIdType threadId)
 {
   const SizeValueType size0 = outputRegionForThread.GetSize(0);
-  if (size0 == 0)
-  {
+  if( size0 == 0)
+    {
     return;
-  }
-  const auto numberOfInputImages = static_cast<unsigned int>(this->GetNumberOfIndexedInputs());
+    }
+  const unsigned int numberOfInputImages =
+    static_cast< unsigned int >( this->GetNumberOfIndexedInputs() );
 
-  using ImageScanlineConstIteratorType = ImageScanlineConstIterator<TInputImage>;
-  std::vector<ImageScanlineConstIteratorType *> inputItrVector;
+  typedef ImageScanlineConstIterator< TInputImage > ImageScanlineConstIteratorType;
+  std::vector< ImageScanlineConstIteratorType * >   inputItrVector;
   inputItrVector.reserve(numberOfInputImages);
 
+  // support progress methods/callbacks.
   // count the number of inputs that are non-null
-  for (unsigned int i = 0; i < numberOfInputImages; ++i)
-  {
-    InputImagePointer inputPtr = dynamic_cast<TInputImage *>(ProcessObject::GetInput(i));
-
-    if (inputPtr)
+  for ( unsigned int i = 0; i < numberOfInputImages; ++i )
     {
-      inputItrVector.push_back(new ImageScanlineConstIteratorType(inputPtr, outputRegionForThread));
+    InputImagePointer inputPtr =
+      dynamic_cast< TInputImage * >( ProcessObject::GetInput(i) );
+
+    if ( inputPtr )
+      {
+      inputItrVector.push_back( new ImageScanlineConstIteratorType(inputPtr, outputRegionForThread) );
+      }
     }
-  }
 
-  const auto numberOfValidInputImages = static_cast<const unsigned int>(inputItrVector.size());
+  const size_t numberOfLinesToProcess = outputRegionForThread.GetNumberOfPixels() / size0;
+  ProgressReporter progress( this, threadId, static_cast<SizeValueType>( numberOfLinesToProcess ) );
 
-  if (numberOfValidInputImages == 0)
-  {
-    // No valid regions in the thread
+  const unsigned int numberOfValidInputImages = static_cast<const unsigned int>( inputItrVector.size() );
+
+  if ( numberOfValidInputImages == 0 )
+    {
+    //No valid regions in the thread
     //(and no region iterators to delete)
     return;
-  }
+    }
 
   NaryArrayType naryInputArray(numberOfValidInputImages);
 
-  OutputImagePointer                  outputPtr = this->GetOutput(0);
-  ImageScanlineIterator<TOutputImage> outputIt(outputPtr, outputRegionForThread);
+  OutputImagePointer                    outputPtr = this->GetOutput(0);
+  ImageScanlineIterator< TOutputImage > outputIt(outputPtr, outputRegionForThread);
 
-  typename std::vector<ImageScanlineConstIteratorType *>::iterator             regionIterators;
-  const typename std::vector<ImageScanlineConstIteratorType *>::const_iterator regionItEnd = inputItrVector.end();
+  typename std::vector< ImageScanlineConstIteratorType * >::iterator regionIterators;
+  const typename std::vector< ImageScanlineConstIteratorType * >::const_iterator regionItEnd =
+    inputItrVector.end();
 
   typename NaryArrayType::iterator arrayIt;
 
-  while (!outputIt.IsAtEnd())
-  {
-    while (!outputIt.IsAtEndOfLine())
+  while ( !outputIt.IsAtEnd() )
     {
-      arrayIt = naryInputArray.begin();
-      regionIterators = inputItrVector.begin();
-      while (regionIterators != regionItEnd)
-      {
-        *arrayIt++ = (*regionIterators)->Get();
-        ++(*(*regionIterators));
-        ++regionIterators;
-      }
-      outputIt.Set(m_Functor(naryInputArray));
-      ++outputIt;
-    }
+     while ( !outputIt.IsAtEndOfLine() )
+       {
+       arrayIt = naryInputArray.begin();
+       regionIterators = inputItrVector.begin();
+       while ( regionIterators != regionItEnd )
+         {
+         *arrayIt++ = ( *regionIterators )->Get();
+         ++( *( *regionIterators ) );
+         ++regionIterators;
+         }
+       outputIt.Set( m_Functor(naryInputArray) );
+       ++outputIt;
+       }
 
-    regionIterators = inputItrVector.begin();
-    while (regionIterators != regionItEnd)
-    {
-      (*regionIterators)->NextLine();
-      ++regionIterators;
+     regionIterators = inputItrVector.begin();
+     while ( regionIterators != regionItEnd )
+       {
+       ( *regionIterators )->NextLine();
+       ++regionIterators;
+       }
+     outputIt.NextLine();
+     progress.CompletedPixel(); // potential exception thrown here
     }
-    outputIt.NextLine();
-  }
 
   // Free memory
   regionIterators = inputItrVector.begin();
-  while (regionIterators != regionItEnd)
-  {
-    delete (*regionIterators++);
-  }
+  while ( regionIterators != regionItEnd )
+    {
+    delete ( *regionIterators++ );
+    }
 }
 } // end namespace itk
 

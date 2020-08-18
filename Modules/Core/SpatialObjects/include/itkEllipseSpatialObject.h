@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,109 +24,96 @@
 
 namespace itk
 {
-/**
- *\class EllipseSpatialObject
+/** \class EllipseSpatialObject
  *
+ * \brief TODO
  * \ingroup ITKSpatialObjects
  *
- * \sphinx
- * \sphinxexample{Core/SpatialObjects/Ellipse,Ellipse}
- * \endsphinx
+ * \wiki
+ * \wikiexample{SpatialObjects/EllipseSpatialObject,Ellipse}
+ * \endwiki
  */
 
-template <unsigned int TDimension = 3>
-class ITK_TEMPLATE_EXPORT EllipseSpatialObject : public SpatialObject<TDimension>
+template< unsigned int TDimension = 3 >
+class ITK_TEMPLATE_EXPORT EllipseSpatialObject:
+  public SpatialObject< TDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EllipseSpatialObject);
 
-  using Self = EllipseSpatialObject;
-  using ScalarType = double;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = SpatialObject<TDimension>;
-  using SuperclassPointer = SmartPointer<Superclass>;
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
-  using PointContainerType = VectorContainer<IdentifierType, PointType>;
-  using PointContainerPointer = SmartPointer<PointContainerType>;
+  typedef EllipseSpatialObject                         Self;
+  typedef double                                       ScalarType;
+  typedef SmartPointer< Self >                         Pointer;
+  typedef SmartPointer< const Self >                   ConstPointer;
+  typedef SpatialObject< TDimension >                  Superclass;
+  typedef SmartPointer< Superclass >                   SuperclassPointer;
+  typedef typename Superclass::PointType               PointType;
+  typedef typename Superclass::TransformType           TransformType;
+  typedef typename Superclass::BoundingBoxType         BoundingBoxType;
+  typedef VectorContainer< IdentifierType, PointType > PointContainerType;
+  typedef SmartPointer< PointContainerType >           PointContainerPointer;
 
-  using ArrayType = FixedArray<double, TDimension>;
+  typedef FixedArray< double, TDimension > ArrayType;
+  itkStaticConstMacro(NumberOfDimension, unsigned int,
+                      TDimension);
 
-  static constexpr unsigned int ObjectDimension = TDimension;
-
-  /** Method for creation through the object factory. */
   itkNewMacro(Self);
-
-  /** Run-time type information (and related methods). */
   itkTypeMacro(EllipseSpatialObject, SpatialObject);
-
-  /** Reset the spatial object to its initial condition, yet preserves
-   *   Id, Parent, and Child information */
-  void
-  Clear() override;
 
   /** Set all radii to the same radius value.  Each radius is
    *  half the length of one axis of the ellipse.  */
-  void
-  SetRadiusInObjectSpace(double radius);
+  void SetRadius(double radius);
 
   /** Set radii via an array of radius values */
-  itkSetMacro(RadiusInObjectSpace, ArrayType);
+  itkSetMacro(Radius, ArrayType);
 
   /** Get radii via an array of radius values */
-  itkGetConstReferenceMacro(RadiusInObjectSpace, ArrayType);
+  itkGetConstReferenceMacro(Radius, ArrayType);
 
-  /** Set center point in object space. */
-  itkSetMacro(CenterInObjectSpace, PointType);
+  /** Returns a degree of membership to the object.
+   *  That's useful for fuzzy objects. */
+  virtual bool ValueAt(const PointType & point, double & value,
+                       unsigned int depth = 0,
+                       char *name = ITK_NULLPTR) const ITK_OVERRIDE;
 
-  /** Get center in object space */
-  itkGetConstReferenceMacro(CenterInObjectSpace, PointType);
+  /** Return true if the object provides a method to evaluate the value
+   * at the specified point, false otherwise. */
+  virtual bool IsEvaluableAt(const PointType & point,
+                             unsigned int depth = 0,
+                             char *name = ITK_NULLPTR) const ITK_OVERRIDE;
 
   /** Test whether a point is inside or outside the object */
-  bool
-  IsInsideInObjectSpace(const PointType & point) const override;
+  virtual bool IsInside(const PointType & point,
+                        unsigned int depth,
+                        char *) const ITK_OVERRIDE;
 
-  /* Avoid hiding the overload that supports depth and name arguments */
-  using Superclass::IsInsideInObjectSpace;
+  /** Test whether a point is inside or outside the object
+   *  For computational speed purposes, it is faster if the method does not
+   *  check the name of the class and the current depth */
+  virtual bool IsInside(const PointType & point) const;
 
-#if !defined(ITK_LEGACY_REMOVE)
-  itkLegacyMacro(void SetRadius(double radius)) { this->SetRadiusInObjectSpace(radius); }
-
-  itkLegacyMacro(void SetRadius(ArrayType radii)) { this->SetRadiusInObjectSpace(radii); }
-
-  itkLegacyMacro(ArrayType GetRadius() const) { return this->GetRadiusInObjectSpace(); }
-
-  itkLegacyMacro(void SetRadiiInObjectSpace(ArrayType radii)) { this->SetRadiusInObjectSpace(radii); }
-#endif
-protected:
   /** Get the boundaries of a specific object.  This function needs to
    *  be called every time one of the object's components is
    *  changed. */
-  void
-  ComputeMyBoundingBox() override;
+  virtual bool ComputeLocalBoundingBox() const ITK_OVERRIDE;
+
+  /** Copy the information from another SpatialObject */
+  void CopyInformation(const DataObject *data) ITK_OVERRIDE;
+
+protected:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EllipseSpatialObject);
 
   EllipseSpatialObject();
-  ~EllipseSpatialObject() override = default;
+  ~EllipseSpatialObject() ITK_OVERRIDE;
+
+  ArrayType m_Radius;
 
   /** Print the object informations in a stream. */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
-
-  typename LightObject::Pointer
-  InternalClone() const override;
-
-private:
-  /* object space */
-  ArrayType m_RadiusInObjectSpace;
-  PointType m_CenterInObjectSpace;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 };
-
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkEllipseSpatialObject.hxx"
+#include "itkEllipseSpatialObject.hxx"
 #endif
 
 #endif // itkEllipseSpatialObject_h

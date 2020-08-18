@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ namespace network
 class BasePDU
 {
 public:
-  virtual ~BasePDU() = default;
+  virtual ~BasePDU() {}
 
   virtual std::istream &Read(std::istream &is) = 0;
   virtual const std::ostream &Write(std::ostream &os) const = 0;

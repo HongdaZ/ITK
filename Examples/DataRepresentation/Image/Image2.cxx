@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@
 #include "itkImageFileReader.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int, char * argv[])
+int main( int , char * argv[])
 {
   // Software Guide : BeginLatex
   //
@@ -40,10 +39,10 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char          PixelType;
+  const unsigned int             Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >   ImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -65,7 +64,7 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType >  ReaderType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -100,7 +99,7 @@ main(int, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   const char * filename = argv[1];
-  reader->SetFileName(filename);
+  reader->SetFileName( filename );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

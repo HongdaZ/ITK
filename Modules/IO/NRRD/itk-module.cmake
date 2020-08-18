@@ -4,9 +4,8 @@ set(DOCUMENTATION "This module contains an ImageIO class to read and write the
 
 itk_module(ITKIONRRD
   ENABLE_SHARED
-  DEPENDS
-    ITKIOImageBase
   PRIVATE_DEPENDS
+    ITKIOImageBase
     ITKNrrdIO
   TEST_DEPENDS
     ITKTestKernel

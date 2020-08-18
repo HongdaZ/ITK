@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -70,27 +70,26 @@ namespace itk
  * \ingroup ITKImageGrid
  */
 
-template <typename TInputImage,
+template< typename TInputImage,
           typename TOutputImage,
-          typename TInputFilter =
-            ImageToImageFilter<Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>,
-                               Image<typename TOutputImage::PixelType, TOutputImage ::ImageDimension - 1>>,
+          typename TInputFilter = ImageToImageFilter<
+            Image< typename TInputImage::PixelType,  TInputImage::ImageDimension - 1 >,
+            Image< typename TOutputImage::PixelType,  TOutputImage ::ImageDimension - 1 > >,
           class TOutputFilter = typename TInputFilter::Superclass,
           class TInternalInputImage = typename TInputFilter::InputImageType,
-          class TInternalOutputImage = typename TOutputFilter::OutputImageType>
-class ITK_TEMPLATE_EXPORT SliceBySliceImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+          class TInternalOutputImage = typename TOutputFilter::OutputImageType >
+class ITK_TEMPLATE_EXPORT SliceBySliceImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SliceBySliceImageFilter);
+  /** Standard class typedefs. */
+  typedef SliceBySliceImageFilter                         Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = SliceBySliceImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Superclass type alias. */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  /** Superclass typedefs. */
+  typedef typename Superclass::InputImagePointer InputImagePointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -98,61 +97,58 @@ public:
   /** Runtime information support. */
   itkTypeMacro(SliceBySliceImageFilter, ImageToImageFilter);
 
-  /** Image related type alias. */
-  using InputImageType = TInputImage;
-  using RegionType = typename TInputImage::RegionType;
-  using SizeType = typename TInputImage::SizeType;
-  using IndexType = typename TInputImage::IndexType;
-  using PixelType = typename TInputImage::PixelType;
-  using OffsetType = typename TInputImage::OffsetType;
+  /** Image related typedefs. */
+  typedef TInputImage                      InputImageType;
+  typedef typename TInputImage::RegionType RegionType;
+  typedef typename TInputImage::SizeType   SizeType;
+  typedef typename TInputImage::IndexType  IndexType;
+  typedef typename TInputImage::PixelType  PixelType;
+  typedef typename TInputImage::OffsetType OffsetType;
 
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename TOutputImage::PixelType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
 
-  using InputFilterType = TInputFilter;
-  using OutputFilterType = TOutputFilter;
+  typedef TInputFilter  InputFilterType;
+  typedef TOutputFilter OutputFilterType;
 
-  using InternalInputImageType = TInternalInputImage;
-  using InternalRegionType = typename InternalInputImageType::RegionType;
-  using InternalSizeType = typename InternalInputImageType::SizeType;
-  using InternalIndexType = typename InternalInputImageType::IndexType;
-  using InternalOffsetType = typename InternalInputImageType::OffsetType;
-  using InternalInputPixelType = typename InternalInputImageType::PixelType;
-  using InternalSpacingType = typename InternalInputImageType::SpacingType;
-  using InternalPointType = typename InternalInputImageType::PointType;
+  typedef TInternalInputImage                            InternalInputImageType;
+  typedef typename InternalInputImageType::RegionType    InternalRegionType;
+  typedef typename InternalInputImageType::SizeType      InternalSizeType;
+  typedef typename InternalInputImageType::IndexType     InternalIndexType;
+  typedef typename InternalInputImageType::OffsetType    InternalOffsetType;
+  typedef typename InternalInputImageType::PixelType     InternalInputPixelType;
+  typedef typename InternalInputImageType::SpacingType   InternalSpacingType;
+  typedef typename InternalInputImageType::PointType     InternalPointType;
 
-  using InternalOutputImageType = TInternalOutputImage;
-  using InternalOutputPixelType = typename InternalOutputImageType::PixelType;
+  typedef TInternalOutputImage                        InternalOutputImageType;
+  typedef typename InternalOutputImageType::PixelType InternalOutputPixelType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  /** Image related typedefs. */
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  static constexpr unsigned int InternalImageDimension = InternalInputImageType::ImageDimension;
+  itkStaticConstMacro(InternalImageDimension, unsigned int,
+                      InternalInputImageType::ImageDimension);
 
   itkSetMacro(Dimension, unsigned int);
   itkGetConstMacro(Dimension, unsigned int);
 
-  void
-  SetFilter(InputFilterType * filter);
+  void SetFilter(InputFilterType *filter);
 
-  InputFilterType *
-  GetFilter()
+  InputFilterType * GetFilter()
   {
     return this->m_InputFilter;
   }
 
-  const InputFilterType *
-  GetFilter() const
+  const InputFilterType * GetFilter() const
   {
     return this->m_InputFilter;
   }
 
-  void
-  SetInputFilter(InputFilterType * filter);
+  void SetInputFilter(InputFilterType *filter);
   itkGetModifiableObjectMacro(InputFilter, InputFilterType);
 
-  void
-  SetOutputFilter(OutputFilterType * filter);
+  void SetOutputFilter(OutputFilterType *filter);
   itkGetModifiableObjectMacro(OutputFilter, OutputFilterType);
 
   /** The index of the slice currently processed by the filter. This is intended to be
@@ -163,21 +159,19 @@ public:
 
 protected:
   SliceBySliceImageFilter();
-  ~SliceBySliceImageFilter() override = default;
+  ~SliceBySliceImageFilter() ITK_OVERRIDE {}
 
-  void
-  VerifyInputInformation() ITKv5_CONST override;
+  void VerifyInputInformation() ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SliceBySliceImageFilter);
+
   unsigned int m_Dimension;
 
   typename InputFilterType::Pointer m_InputFilter;
@@ -186,10 +180,10 @@ private:
 
   IndexValueType m_SliceIndex;
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkSliceBySliceImageFilter.hxx"
+#include "itkSliceBySliceImageFilter.hxx"
 #endif
 
 #endif

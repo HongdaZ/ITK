@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,37 +21,30 @@
 #include "itkSaltAndPepperNoiseImageFilter.h"
 #include "itkMersenneTwisterRandomVariateGenerator.h"
 #include "itkImageScanlineIterator.h"
-#include "itkTotalProgressReporter.h"
+#include "itkProgressReporter.h"
 
 namespace itk
 {
 
 template <class TInputImage, class TOutputImage>
-SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>::SaltAndPepperNoiseImageFilter()
-  : m_SaltValue(NumericTraits<OutputImagePixelType>::max())
-  , m_PepperValue(NumericTraits<OutputImagePixelType>::NonpositiveMin())
+SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>
+::SaltAndPepperNoiseImageFilter() :
+  m_Probability( 0.01 )
 {
-  this->DynamicMultiThreadingOn();
-  this->ThreaderUpdateProgressOff();
 }
 
 template <class TInputImage, class TOutputImage>
 void
-SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>
+::ThreadedGenerateData( const OutputImageRegionType &outputRegionForThread, ThreadIdType threadId)
 {
-  const InputImageType * inputPtr = this->GetInput();
-  OutputImageType *      outputPtr = this->GetOutput(0);
+  const InputImageType* inputPtr = this->GetInput();
+  OutputImageType*      outputPtr = this->GetOutput(0);
 
   // Create a random generator per thread
-  IndexValueType indSeed = 0;
-  for (unsigned d = 0; d < TOutputImage::ImageDimension; d++)
-  {
-    indSeed += outputRegionForThread.GetIndex(d);
-  }
   typename Statistics::MersenneTwisterRandomVariateGenerator::Pointer rand =
     Statistics::MersenneTwisterRandomVariateGenerator::New();
-  const uint32_t seed = Self::Hash(this->GetSeed(), uint32_t(indSeed));
+  const uint32_t seed = Self::Hash( this->GetSeed(), threadId );
   rand->Initialize(seed);
 
   // Define the portion of the input to walk for this thread, using
@@ -64,49 +57,52 @@ SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerat
   ImageScanlineConstIterator<TInputImage> inputIt(inputPtr, inputRegionForThread);
   ImageScanlineIterator<TOutputImage>     outputIt(outputPtr, outputRegionForThread);
 
+  ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels() );
+
   inputIt.GoToBegin();
   outputIt.GoToBegin();
 
-  TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
-
-  while (!inputIt.IsAtEnd())
-  {
-    while (!inputIt.IsAtEndOfLine())
+  while ( !inputIt.IsAtEnd() )
     {
-      if (rand->GetVariate() < m_Probability)
+    while ( !inputIt.IsAtEndOfLine() )
       {
-        if (rand->GetVariate() < 0.5)
+      if( rand->GetVariate() < m_Probability )
         {
+        if( rand->GetVariate() < 0.5 )
+          {
           // Salt
-          outputIt.Set(m_SaltValue);
-        }
+          outputIt.Set( NumericTraits<OutputImagePixelType>::max() );
+          }
         else
-        {
+          {
           // Pepper
-          outputIt.Set(m_PepperValue);
+          outputIt.Set( NumericTraits<OutputImagePixelType>::NonpositiveMin() );
+          }
         }
-      }
       else
-      {
+        {
         // Keep the data unchanged
-        outputIt.Set((OutputImagePixelType)inputIt.Get());
-      }
+        outputIt.Set( (OutputImagePixelType) inputIt.Get() );
+        }
       ++inputIt;
       ++outputIt;
-    }
+      }
     inputIt.NextLine();
     outputIt.NextLine();
-    progress.Completed(outputRegionForThread.GetSize()[0]);
-  }
+    progress.CompletedPixel();  // potential exception thrown here
+    }
 }
 
 template <class TInputImage, class TOutputImage>
 void
-SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
+SaltAndPepperNoiseImageFilter<TInputImage, TOutputImage>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Probability: " << static_cast<typename NumericTraits<double>::PrintType>(m_Probability) << std::endl;
+  os << indent << "Probability: "
+     << static_cast<typename NumericTraits<double>::PrintType>( m_Probability )
+     << std::endl;
 }
 } // end namespace itk
 

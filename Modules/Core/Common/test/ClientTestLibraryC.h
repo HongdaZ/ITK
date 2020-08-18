@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,22 +31,20 @@ class ClientTestLibraryC_EXPORT ITKObjectProducer
 public:
   ITKObjectProducer();
 
-  itk::Object *
-  EquivalencyTable();
+  itk::Object * EquivalencyTable();
 
-  itk::Object *
-  Image();
+  itk::Object * Image();
 
 private:
   itk::Object::Pointer m_EquivalencyTable;
   itk::Object::Pointer m_Image;
 };
 
-int ClientTestLibraryC_EXPORT
-    dynamic_castDownCastEquivalencyTable(const char * type, const char * instanceSource, itk::Object const * base);
+int
+ClientTestLibraryC_EXPORT dynamic_castDownCastEquivalencyTable( const char * type, const char * instanceSource, itk::Object const * base );
 
-int ClientTestLibraryC_EXPORT
-    dynamic_castDownCastImage(const char * type, const char * instanceSource, itk::Object const * base);
+int
+ClientTestLibraryC_EXPORT dynamic_castDownCastImage( const char * type, const char * instanceSource, itk::Object const * base );
 
 } // end namespace LibraryC
 

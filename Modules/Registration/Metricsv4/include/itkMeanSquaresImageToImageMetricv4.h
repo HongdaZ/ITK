@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,24 +37,19 @@ namespace itk
  *
  * \ingroup ITKMetricsv4
  */
-template <typename TFixedImage,
-          typename TMovingImage,
-          typename TVirtualImage = TFixedImage,
+template <typename TFixedImage, typename TMovingImage, typename TVirtualImage = TFixedImage,
           typename TInternalComputationValueType = double,
-          typename TMetricTraits =
-            DefaultImageToImageMetricTraitsv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType>>
-class ITK_TEMPLATE_EXPORT MeanSquaresImageToImageMetricv4
-  : public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
+          typename TMetricTraits = DefaultImageToImageMetricTraitsv4<TFixedImage,TMovingImage,TVirtualImage,TInternalComputationValueType>
+          >
+class ITK_TEMPLATE_EXPORT MeanSquaresImageToImageMetricv4 :
+  public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSquaresImageToImageMetricv4);
-
-  /** Standard class type aliases. */
-  using Self = MeanSquaresImageToImageMetricv4;
-  using Superclass =
-    ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MeanSquaresImageToImageMetricv4                                                                        Self;
+  typedef ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits> Superclass;
+  typedef SmartPointer<Self>                                                                                     Pointer;
+  typedef SmartPointer<const Self>                                                                               ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -62,55 +57,49 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MeanSquaresImageToImageMetricv4, ImageToImageMetricv4);
 
-  using DerivativeType = typename Superclass::DerivativeType;
+  typedef typename Superclass::DerivativeType          DerivativeType;
 
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
+  typedef typename Superclass::FixedImagePointType     FixedImagePointType;
+  typedef typename Superclass::FixedImagePixelType     FixedImagePixelType;
+  typedef typename Superclass::FixedImageGradientType  FixedImageGradientType;
 
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
+  typedef typename Superclass::MovingImagePointType    MovingImagePointType;
+  typedef typename Superclass::MovingImagePixelType    MovingImagePixelType;
+  typedef typename Superclass::MovingImageGradientType MovingImageGradientType;
 
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using JacobianType = typename Superclass::JacobianType;
-  using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualPointSetType = typename Superclass::VirtualPointSetType;
+  typedef typename Superclass::MovingTransformType        MovingTransformType;
+  typedef typename Superclass::JacobianType               JacobianType;
+  typedef typename Superclass::VirtualImageType           VirtualImageType;
+  typedef typename Superclass::VirtualIndexType           VirtualIndexType;
+  typedef typename Superclass::VirtualPointType           VirtualPointType;
+  typedef typename Superclass::VirtualPointSetType        VirtualPointSetType;
 
   /* Image dimension accessors */
-  static constexpr typename TVirtualImage::ImageDimensionType VirtualImageDimension = TVirtualImage::ImageDimension;
-  static constexpr typename TFixedImage::ImageDimensionType   FixedImageDimension = TFixedImage::ImageDimension;
-  static constexpr typename TMovingImage::ImageDimensionType  MovingImageDimension = TMovingImage::ImageDimension;
+  itkStaticConstMacro(VirtualImageDimension, typename TVirtualImage::ImageDimensionType, TVirtualImage::ImageDimension);
+  itkStaticConstMacro(FixedImageDimension,   typename TFixedImage::ImageDimensionType,   TFixedImage::ImageDimension);
+  itkStaticConstMacro(MovingImageDimension,  typename TMovingImage::ImageDimensionType,  TMovingImage::ImageDimension);
 
 protected:
   MeanSquaresImageToImageMetricv4();
-  ~MeanSquaresImageToImageMetricv4() override = default;
+  virtual ~MeanSquaresImageToImageMetricv4() ITK_OVERRIDE;
 
-  friend class MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader<
-    ThreadedImageRegionPartitioner<Superclass::VirtualImageDimension>,
-    Superclass,
-    Self>;
-  friend class MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader<ThreadedIndexedContainerPartitioner,
-                                                                            Superclass,
-                                                                            Self>;
-  using MeanSquaresDenseGetValueAndDerivativeThreaderType =
-    MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader<
-      ThreadedImageRegionPartitioner<Superclass::VirtualImageDimension>,
-      Superclass,
-      Self>;
-  using MeanSquaresSparseGetValueAndDerivativeThreaderType =
-    MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader<ThreadedIndexedContainerPartitioner, Superclass, Self>;
+  friend class MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedImageRegionPartitioner< Superclass::VirtualImageDimension >, Superclass, Self >;
+  friend class MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedIndexedContainerPartitioner, Superclass, Self >;
+  typedef MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedImageRegionPartitioner< Superclass::VirtualImageDimension >, Superclass, Self >
+    MeanSquaresDenseGetValueAndDerivativeThreaderType;
+  typedef MeanSquaresImageToImageMetricv4GetValueAndDerivativeThreader< ThreadedIndexedContainerPartitioner, Superclass, Self >
+    MeanSquaresSparseGetValueAndDerivativeThreaderType;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSquaresImageToImageMetricv4);
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMeanSquaresImageToImageMetricv4.hxx"
+#include "itkMeanSquaresImageToImageMetricv4.hxx"
 #endif
 
 #endif

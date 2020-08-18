@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,23 +21,23 @@
 
 namespace itk
 {
-void
-SiemensVisionImageIOFactory::PrintSelf(std::ostream &, Indent) const
+void SiemensVisionImageIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 SiemensVisionImageIOFactory::SiemensVisionImageIOFactory()
 {
-  this->RegisterOverride("itkImageIOBase",
-                         "itkSiemensVisionImageIO",
-                         "SiemensVision Image IO",
-                         true,
-                         CreateObjectFunction<SiemensVisionImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkSiemensVisionImageIO",
+                          "SiemensVision Image IO",
+                          1,
+                          CreateObjectFunction< SiemensVisionImageIO >::New() );
 }
 
-SiemensVisionImageIOFactory::~SiemensVisionImageIOFactory() = default;
+SiemensVisionImageIOFactory::~SiemensVisionImageIOFactory()
+{}
 
 const char *
-SiemensVisionImageIOFactory::GetITKSourceVersion() const
+SiemensVisionImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -53,14 +53,13 @@ SiemensVisionImageIOFactory::GetDescription() const
 
 static bool SiemensVisionImageIOFactoryHasBeenRegistered;
 
-void ITKIOSiemens_EXPORT
-     SiemensVisionImageIOFactoryRegister__Private()
+void ITKIOSiemens_EXPORT SiemensVisionImageIOFactoryRegister__Private(void)
 {
-  if (!SiemensVisionImageIOFactoryHasBeenRegistered)
-  {
+  if( ! SiemensVisionImageIOFactoryHasBeenRegistered )
+    {
     SiemensVisionImageIOFactoryHasBeenRegistered = true;
     SiemensVisionImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

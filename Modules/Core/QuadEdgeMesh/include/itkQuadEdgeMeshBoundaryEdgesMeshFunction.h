@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,42 +33,43 @@ namespace itk
  *        components.
  * \ingroup ITKQuadEdgeMesh
  */
-template <typename TMesh>
-class ITK_TEMPLATE_EXPORT QuadEdgeMeshBoundaryEdgesMeshFunction
-  : public FunctionBase<TMesh, typename TMesh::EdgeListPointerType>
+template< typename TMesh >
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshBoundaryEdgesMeshFunction:
+  public FunctionBase< TMesh, typename TMesh::EdgeListPointerType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshBoundaryEdgesMeshFunction);
-
   // Standard types
-  using Self = QuadEdgeMeshBoundaryEdgesMeshFunction;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = FunctionBase<TMesh, typename TMesh::EdgeListPointerType>;
+  typedef QuadEdgeMeshBoundaryEdgesMeshFunction Self;
+  typedef SmartPointer< Self >                  Pointer;
+  typedef SmartPointer< const Self >            ConstPointer;
+  typedef FunctionBase< TMesh,
+                        typename  TMesh::EdgeListPointerType > Superclass;
 
   // Types in superclass:
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::InputType  InputType;
+  typedef typename Superclass::OutputType OutputType;
 
   // Local aliases
-  using MeshType = InputType;
-  using QEPrimal = typename MeshType::QEPrimal;
-  using EdgeCellType = typename MeshType::EdgeCellType;
-  using EdgeListType = typename MeshType::EdgeListType;
+  typedef InputType                       MeshType;
+  typedef typename MeshType::QEPrimal     QEPrimal;
+  typedef typename MeshType::EdgeCellType EdgeCellType;
+  typedef typename MeshType::EdgeListType EdgeListType;
 
   itkTypeMacro(QuadEdgeMeshBoundaryEdgesMeshFunction, FunctionBase);
   itkNewMacro(Self);
 
-  OutputType
-  Evaluate(const InputType & mesh) const override;
+  virtual OutputType Evaluate(const InputType & mesh) const ITK_OVERRIDE;
 
 protected:
-  QuadEdgeMeshBoundaryEdgesMeshFunction() = default;
+  QuadEdgeMeshBoundaryEdgesMeshFunction() {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshBoundaryEdgesMeshFunction);
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.hxx"
+#include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.hxx"
 #endif
 
 #endif

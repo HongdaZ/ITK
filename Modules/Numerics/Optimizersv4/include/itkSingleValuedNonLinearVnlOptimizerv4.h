@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class SingleValuedNonLinearVnlOptimizerv4
+/** \class SingleValuedNonLinearVnlOptimizerv4
  * \brief This is a base for the ITKv4 Optimization methods using
  * the vnl library.
  *
@@ -35,39 +34,37 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-class ITKOptimizersv4_EXPORT SingleValuedNonLinearVnlOptimizerv4 : public ObjectToObjectOptimizerBaseTemplate<double>
+class ITKOptimizersv4_EXPORT SingleValuedNonLinearVnlOptimizerv4 :
+    public ObjectToObjectOptimizerBaseTemplate<double>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedNonLinearVnlOptimizerv4);
-
-  /** Standard class type aliases. */
-  using Self = SingleValuedNonLinearVnlOptimizerv4;
-  using Superclass = ObjectToObjectOptimizerBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef SingleValuedNonLinearVnlOptimizerv4 Self;
+  typedef ObjectToObjectOptimizerBase         Superclass;
+  typedef SmartPointer< Self >                Pointer;
+  typedef SmartPointer< const Self >          ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SingleValuedNonLinearVnlOptimizerv4, ObjectToObjectOptimizerBase)
 
-    /** Command observer that will interact with the ITKVNL cost-function
-     * adaptor in order to generate iteration events. This will allow to overcome
-     * the limitation of VNL optimizers not offering callbacks for every
-     * iteration */
-    using CommandType = ReceptorMemberCommand<Self>;
+  /** Command observer that will interact with the ITKVNL cost-function
+   * adaptor in order to generate iteration events. This will allow to overcome
+   * the limitation of VNL optimizers not offering callbacks for every
+   * iteration */
+  typedef ReceptorMemberCommand< Self >   CommandType;
 
-  using MetricType = Superclass::MetricType;
-  using DerivativeType = Superclass::DerivativeType;
-  using ParametersType = Superclass::ParametersType;
-  using ScalesType = Superclass::ScalesType;
+  typedef Superclass::MetricType     MetricType;
+  typedef Superclass::DerivativeType DerivativeType;
+  typedef Superclass::ParametersType ParametersType;
+  typedef Superclass::ScalesType     ScalesType;
 
   /** Stop condition return string type */
-  using StopConditionReturnStringType = Superclass::StopConditionReturnStringType;
+  typedef Superclass::StopConditionReturnStringType StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  using StopConditionDescriptionType = Superclass::StopConditionDescriptionType;
+  typedef Superclass::StopConditionDescriptionType  StopConditionDescriptionType;
 
-  void
-  StartOptimization(bool doOnlyInitialization = false) override;
+  virtual void StartOptimization(bool doOnlyInitialization = false) ITK_OVERRIDE;
 
   /** Set the metric (cost function). This method has to be overloaded
    *  by derived classes because the CostFunctionAdaptor requires
@@ -75,8 +72,7 @@ public:
    *  number of parameters is obtained at run-time from the itkObjectToObjectMetric.
    *  As a consequence each derived optimizer should construct its own
    *  CostFunctionAdaptor when overloading this method  */
-  void
-  SetMetric(MetricType * metric) override = 0;
+  virtual void SetMetric(MetricType *metric) ITK_OVERRIDE = 0;
 
   /** Return Cached Values. These method have the advantage of not triggering a
    * recomputation of the metric value, but it has the disadvantage of returning
@@ -87,32 +83,26 @@ public:
   itkGetConstReferenceMacro(CachedCurrentPosition, ParametersType);
 
   /** Get the reason for termination */
-  const StopConditionReturnStringType
-  GetStopConditionDescription() const override = 0;
+  virtual const StopConditionReturnStringType GetStopConditionDescription() const ITK_OVERRIDE = 0;
 
 protected:
   SingleValuedNonLinearVnlOptimizerv4();
-  ~SingleValuedNonLinearVnlOptimizerv4() override;
+  virtual ~SingleValuedNonLinearVnlOptimizerv4() ITK_OVERRIDE;
 
-  using CostFunctionAdaptorType = SingleValuedVnlCostFunctionAdaptorv4;
+  typedef SingleValuedVnlCostFunctionAdaptorv4 CostFunctionAdaptorType;
 
-  void
-  SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor);
+  void SetCostFunctionAdaptor(CostFunctionAdaptorType *adaptor);
 
-  const CostFunctionAdaptorType *
-  GetCostFunctionAdaptor() const;
+  const CostFunctionAdaptorType * GetCostFunctionAdaptor() const;
 
-  CostFunctionAdaptorType *
-  GetCostFunctionAdaptor();
+  CostFunctionAdaptorType * GetCostFunctionAdaptor();
 
   /** The purpose of this method is to get around the lack of
    *  const-correctness in VNL cost-functions and optimizers */
-  CostFunctionAdaptorType *
-  GetNonConstCostFunctionAdaptor() const;
+  CostFunctionAdaptorType * GetNonConstCostFunctionAdaptor() const;
 
   /** Print out internal state */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
   /** The purpose of this method is to get around the lack of iteration reporting
@@ -121,10 +111,11 @@ private:
    * here are produce PER EVALUATION of the metric, not per real iteration of the
    * vnl optimizer. Optimizers that evaluate the metric multiple times at each
    * iteration will generate a lot more of Iteration events here. */
-  void
-  IterationReport(const EventObject & event);
+  void IterationReport(const EventObject & event);
 
-  CostFunctionAdaptorType * m_CostFunctionAdaptor;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedNonLinearVnlOptimizerv4);
+
+  CostFunctionAdaptorType *m_CostFunctionAdaptor;
 
   CommandType::Pointer m_Command;
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,118 +52,102 @@ namespace fem
  *                If not specified, it defaults to the Element class.
  * \ingroup ITKFEM
  */
-template <unsigned int VNumberOfNodes, unsigned int VNumberOfSpatialDimensions, typename TBaseClass = Element>
+template< unsigned int VNumberOfNodes, unsigned int VNumberOfSpatialDimensions, typename TBaseClass = Element >
 class ITK_TEMPLATE_EXPORT ElementStd : public TBaseClass
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ElementStd;
-  using Superclass = TBaseClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ElementStd               Self;
+  typedef TBaseClass               Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ElementStd, TBaseClass);
 
-  // FIXME: Add concept cheking for TBaseClass, and TPointClass
+// FIXME: Add concept cheking for TBaseClass, and TPointClass
 
-  // Repeat type alias and enums from parent class
+  // Repeat typedefs and enums from parent class
 
-  using Float = typename Superclass::Float;
-  using MatrixType = typename Superclass::MatrixType;
-  using VectorType = typename Superclass::VectorType;
-  using LoadType = typename Superclass::LoadType;
-  using LoadPointer = typename Superclass::LoadPointer;
-  using NodeIDType = typename Superclass::NodeIDType;
-  using DegreeOfFreedomIDType = typename Superclass::DegreeOfFreedomIDType;
-  using Node = typename Superclass::Node;
-  enum
-  {
-    InvalidDegreeOfFreedomID = Superclass::InvalidDegreeOfFreedomID
-  };
+  typedef typename Superclass::Float                 Float;
+  typedef typename Superclass::MatrixType            MatrixType;
+  typedef typename Superclass::VectorType            VectorType;
+  typedef typename Superclass::LoadType              LoadType;
+  typedef typename Superclass::LoadPointer           LoadPointer;
+  typedef typename Superclass::NodeIDType            NodeIDType;
+  typedef typename Superclass::DegreeOfFreedomIDType DegreeOfFreedomIDType;
+  typedef typename Superclass::Node                  Node;
+  enum { InvalidDegreeOfFreedomID = Superclass::InvalidDegreeOfFreedomID };
 
   /** Number of nodes that define the element. */
-  enum
-  {
-    NumberOfNodes = VNumberOfNodes
-  };
+  enum { NumberOfNodes = VNumberOfNodes };
 
   /** Number of dimensions of space in which element can exist. */
-  enum
-  {
-    NumberOfSpatialDimensions = VNumberOfSpatialDimensions
-  };
+  enum { NumberOfSpatialDimensions = VNumberOfSpatialDimensions };
 
   /** Default constructor. Just clears the ivars. */
   ElementStd();
 
   /** Methods that define the geometry of an element. */
-  unsigned int
-  GetNumberOfNodes() const override
+  virtual unsigned int GetNumberOfNodes(void) const ITK_OVERRIDE
   {
     return NumberOfNodes;
   }
 
   /** Get/Set the Nodes that define the element. */
-  NodeIDType
-  GetNode(unsigned int n) const override
+  virtual NodeIDType GetNode(unsigned int n) const ITK_OVERRIDE
   {
-    if (n >= NumberOfNodes)
-    {
-      return nullptr;
-    }
+    if( n >= NumberOfNodes )
+      {
+      return ITK_NULLPTR;
+      }
     return this->m_node[n];
   }
 
-  void
-  SetNode(unsigned int n, NodeIDType node) override
+  virtual void SetNode(unsigned int n, NodeIDType node) ITK_OVERRIDE
   {
-    this->SetNodeInternal(n, node);
+    this->SetNodeInternal(n,node);
   }
-  void
-  SetNode(unsigned int n, typename Superclass::Node::Pointer node) override
+  virtual void SetNode(unsigned int n, typename Superclass::Node::Pointer node) ITK_OVERRIDE
   {
-    this->SetNodeInternal(n, node);
+    this->SetNodeInternal(n,node);
   }
 
   /** Get the nodal coordinates. */
-  const VectorType &
-  GetNodeCoordinates(unsigned int n) const override
+  virtual const VectorType & GetNodeCoordinates(unsigned int n) const ITK_OVERRIDE
   {
     return m_node[n]->GetCoordinates();
   }
 
   /** Get the number of spatial dimensions. */
-  unsigned int
-  GetNumberOfSpatialDimensions() const override
+  virtual unsigned int GetNumberOfSpatialDimensions() const ITK_OVERRIDE
   {
     return NumberOfSpatialDimensions;
   }
 
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  virtual void
-  SetNodeInternal(unsigned int n, const Node * node)
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
+
+  virtual void SetNodeInternal(unsigned int n, const Node *node)
   {
-    if (n >= NumberOfNodes)
-    {
+    if( n >= NumberOfNodes )
+      {
       return;
-    }
+      }
     this->m_node[n] = node;
   }
 
   // Array of pointers to point objects that define the element
-  const Node * m_node[NumberOfNodes];
+  const Node *m_node[NumberOfNodes];
 };
 
-} // end namespace fem
-} // end namespace itk
+}  // end namespace fem
+}  // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFEMElementStd.hxx"
+#include "itkFEMElementStd.hxx"
 #endif
 
-#endif // itkFEMElementStd_h
+#endif // #ifndef itkFEMElementStd_h

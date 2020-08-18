@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class Bruker2dseqImageIO
+/** \class Bruker2dseqImageIO
  * \brief Class that defines how to read Bruker file format.
  *
  * The following is a brief description of the Bruker file format.
@@ -79,13 +78,11 @@ namespace itk
 class ITKIOBruker_EXPORT Bruker2dseqImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Bruker2dseqImageIO);
-
-  /* Standard class type aliases. */
-  using Self = Bruker2dseqImageIO;
-  using Superclass = ImageIOBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /* Standard class typedefs. */
+  typedef Bruker2dseqImageIO          Self;
+  typedef ImageIOBase                 Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self >  ConstPointer;
 
   /** New macro for creation of through a SmartPointer. */
   itkNewMacro(Self);
@@ -95,52 +92,46 @@ public:
 
   /** Determine if the necessary files exist to read the specified 2dseq file.
    * Returns true if all required files exist. */
-  bool
-  CanReadFile(const char * FileNameToRead) override;
+  virtual bool CanReadFile(const char *FileNameToRead) ITK_OVERRIDE;
 
   /** Set the spacing and dimension information for the set filename. */
-  void
-  ReadImageInformation() override;
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void
-  Read(void * buffer) override;
+  virtual void Read(void *buffer) ITK_OVERRIDE;
 
   /** Writing files has not been implemented for Bruker 2dseq.
    * This function will always return false. */
-  bool
-  CanWriteFile(const char * itkNotUsed(FileNameToWrite)) override
-  {
+  virtual bool CanWriteFile( const char *itkNotUsed(FileNameToWrite) ) ITK_OVERRIDE
+    {
     return false;
-  }
+    }
 
   /** Not implemented. */
-  void
-  WriteImageInformation() override
-  {
+  virtual void WriteImageInformation() ITK_OVERRIDE
+    {
     return;
-  }
+    }
 
   /** Not implemented - does nothing */
-  void
-  Write(const void * itkNotUsed(buffer)) override
-  {
+  virtual void Write( const void *itkNotUsed(buffer) ) ITK_OVERRIDE
+    {
     return;
-  }
+    }
 
 protected:
   Bruker2dseqImageIO();
-  ~Bruker2dseqImageIO() override;
+  ~Bruker2dseqImageIO() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  void
-  SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels);
+  ITK_DISALLOW_COPY_AND_ASSIGN(Bruker2dseqImageIO);
 
-  IOComponentEnum m_OnDiskComponentType{ IOComponentEnum::UCHAR };
-  IOByteOrderEnum m_MachineByteOrder;
+  void SwapBytesIfNecessary(void *buffer, SizeValueType numberOfPixels);
+
+  ImageIOBase::IOComponentType  m_OnDiskComponentType;
+  ImageIOBase::ByteOrder        m_MachineByteOrder;
 };
 
 } // end namespace itk

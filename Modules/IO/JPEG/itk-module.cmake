@@ -3,9 +3,8 @@ writing files in the JPEG format.")
 
 itk_module(ITKIOJPEG
   ENABLE_SHARED
-  DEPENDS
-    ITKIOImageBase
   PRIVATE_DEPENDS
+    ITKIOImageBase
     ITKJPEG
   TEST_DEPENDS
     ITKTestKernel

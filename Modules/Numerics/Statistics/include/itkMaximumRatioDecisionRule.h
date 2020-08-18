@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,15 +29,14 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class MaximumRatioDecisionRule
+/** \class MaximumRatioDecisionRule
  *  \brief A decision rule that operates as a frequentist's
  *  approximation to Bayes rule.
  *
  * MaximumRatioDecisionRule returns the class label using a Bayesian
  * style decision rule. The discriminant scores are evaluated in the
  * context of class priors. If the discriminant scores are actual
- * conditional probabilities (likelihoods) and the class priors are
+ * conditional probabilites (likelihoods) and the class priors are
  * actual a priori class probabilities, then this decision rule operates
  * as Bayes rule, returning the class \f$i\f$ if
  * \f$p(x|i) p(i) > p(x|j) p(j)\f$ for all class \f$j\f$. The
@@ -59,12 +58,10 @@ namespace Statistics
 class ITKStatistics_EXPORT MaximumRatioDecisionRule : public DecisionRule
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumRatioDecisionRule);
-
-  /** Standard class type aliases */
-  using Self = MaximumRatioDecisionRule;
-  using Superclass = DecisionRule;
-  using Pointer = SmartPointer<Self>;
+  /** Standard class typedefs */
+  typedef MaximumRatioDecisionRule  Self;
+  typedef DecisionRule              Superclass;
+  typedef SmartPointer< Self >      Pointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(MaximumRatioDecisionRule, DecisionRule);
@@ -73,16 +70,16 @@ public:
   itkNewMacro(Self);
 
   /** Types for discriminant values and vectors. */
-  using MembershipValueType = Superclass::MembershipValueType;
-  using MembershipVectorType = Superclass::MembershipVectorType;
+  typedef Superclass::MembershipValueType  MembershipValueType;
+  typedef Superclass::MembershipVectorType MembershipVectorType;
 
   /** Types for class identifiers. */
-  using ClassIdentifierType = Superclass::ClassIdentifierType;
+  typedef Superclass::ClassIdentifierType ClassIdentifierType;
 
   /** Types for priors and values */
-  using PriorProbabilityValueType = MembershipValueType;
-  using PriorProbabilityVectorType = std::vector<PriorProbabilityValueType>;
-  using PriorProbabilityVectorSizeType = PriorProbabilityVectorType::size_type;
+  typedef MembershipValueType                      PriorProbabilityValueType;
+  typedef std::vector< PriorProbabilityValueType > PriorProbabilityVectorType;
+  typedef PriorProbabilityVectorType::size_type    PriorProbabilityVectorSizeType;
 
   /**
    * Evaluate the decision rule \f$p(x|i) p(i) > p(x|j) p(j)\f$. Prior
@@ -91,29 +88,28 @@ public:
    * assumed). Parameter to Evaluate() is the discriminant score in
    * the form of a likelihood \f$p(x|i)\f$.
    */
-  ClassIdentifierType
-  Evaluate(const MembershipVectorType & discriminantScores) const override;
+  virtual ClassIdentifierType Evaluate(const MembershipVectorType & discriminantScores) const ITK_OVERRIDE;
 
   /** Set the prior probabilities used in evaluating
    * \f$p(x|i) p(i) > p(x|j) p(j)\f$. The likelihoods are set using
    * the Evaluate() method. SetPriorProbabilities needs to be called before
    * Evaluate(). If not set, assumes a uniform prior.  */
-  void
-  SetPriorProbabilities(const PriorProbabilityVectorType & p);
+  void SetPriorProbabilities(const PriorProbabilityVectorType& p);
 
   /** Get the prior probabilities. */
   itkGetConstReferenceMacro(PriorProbabilities, PriorProbabilityVectorType);
 
 protected:
   MaximumRatioDecisionRule();
-  ~MaximumRatioDecisionRule() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MaximumRatioDecisionRule() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumRatioDecisionRule);
+
   PriorProbabilityVectorType m_PriorProbabilities;
 
-}; // end of class
-} // namespace Statistics
-} // namespace itk
+};  // end of class
+} // end of Statistics namespace
+} // end of ITK namespace
 #endif

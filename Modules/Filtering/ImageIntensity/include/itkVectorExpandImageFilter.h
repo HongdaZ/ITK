@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include "itkImageToImageFilter.h"
 #include "itkVectorLinearInterpolateImageFunction.h"
 
-#if !defined(ITK_LEGACY_REMOVE)
 namespace itk
 {
 /** \class VectorExpandImageFilter
@@ -63,64 +62,60 @@ namespace itk
  * \sa Vector
  * \sa VectorInterpolateImageFunction
  * \sa VectorLinearInterpolationImageFunction
- * \sa ExpandImageFilter
  *
- * \deprecated Please use ExpandImageFilter instead.
+ * \sa ExpandImageFilter
  *
  * \ingroup GeometricTransform
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT VectorExpandImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT VectorExpandImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorExpandImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = VectorExpandImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef VectorExpandImageFilter                         Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Typedef to describe the output image region type. */
-  using InputImagePointer = typename TInputImage::Pointer;
-  using OutputImagePointer = typename TOutputImage::Pointer;
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TInputImage::Pointer     InputImagePointer;
+  typedef typename TOutputImage::Pointer    OutputImagePointer;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorExpandImageFilter, ImageToImageFilter);
 
   /** ImageDimension enumeration */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Inherit some types from superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  typedef typename Superclass::InputImageType  InputImageType;
+  typedef typename Superclass::OutputImageType OutputImageType;
 
   /** Input/output vector types. */
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using OutputValueType = typename OutputPixelType::ValueType;
-  using InputPixelType = typename InputImageType::PixelType;
-  using InputValueType = typename InputPixelType::ValueType;
+  typedef typename OutputImageType::PixelType OutputPixelType;
+  typedef typename OutputPixelType::ValueType OutputValueType;
+  typedef typename InputImageType::PixelType  InputPixelType;
+  typedef typename InputPixelType::ValueType  InputValueType;
 
   /** Determine the vector dimension. */
-  enum
-  {
-    VectorDimension = InputPixelType::Dimension
-  };
+  enum { VectorDimension = InputPixelType::Dimension };
 
   /** The type of the expand factors representation */
-  using ExpandFactorsType = float;
-  using ExpandFactorsArrayType = FixedArray<ExpandFactorsType, ImageDimension>;
+  typedef float                                           ExpandFactorsType;
+  typedef FixedArray< ExpandFactorsType, ImageDimension > ExpandFactorsArrayType;
 
   /** Typedef support for the interpolation function */
-  using CoordRepType = double;
-  using InterpolatorType = VectorInterpolateImageFunction<InputImageType, CoordRepType>;
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
-  using DefaultInterpolatorType = VectorLinearInterpolateImageFunction<InputImageType, CoordRepType>;
+  typedef double                                                               CoordRepType;
+  typedef VectorInterpolateImageFunction< InputImageType, CoordRepType >       InterpolatorType;
+  typedef typename InterpolatorType::Pointer                                   InterpolatorPointer;
+  typedef VectorLinearInterpolateImageFunction< InputImageType, CoordRepType > DefaultInterpolatorType;
 
   /** Get/Set the interpolator function. */
   itkSetObjectMacro(Interpolator, InterpolatorType);
@@ -129,12 +124,20 @@ public:
   /** Set the expand factors. Values are clamped to
    * a minimum value of 1. Default is 1 for all dimensions. */
   itkSetMacro(ExpandFactors, ExpandFactorsArrayType);
-  virtual void
-  SetExpandFactors(const float factor);
+  virtual void SetExpandFactors(const float factor);
   itkSetVectorMacro(ExpandFactors, const unsigned int, ImageDimension);
 
   /** Get the expand factors. */
   itkGetConstReferenceMacro(ExpandFactors, ExpandFactorsArrayType);
+
+//TEST_RMV20100728  /** Set the edge padding value. The default is a vector of
+// zero. */
+//TEST_RMV20100728  virtual void SetEdgePaddingValue( const OutputPixelType&
+// value );
+//TEST_RMV20100728
+//TEST_RMV20100728  /** Get the edge padding value. */
+//TEST_RMV20100728  virtual const OutputPixelType& GetEdgePaddingValue()
+//TEST_RMV20100728    { return m_EdgePaddingValue; }
 
   /** VectorExpandImageFilter produces an image which is a different
    * resolution and with a different pixel spacing than its input image.  As
@@ -142,55 +145,63 @@ public:
    * UpdateOutputInformation() in order to inform the pipeline execution
    * model.  The original documentation of this method is below.  \sa
    * ProcessObject::GenerateOutputInformaton() */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** VectorExpandImageFilter needs a smaller input requested region than the
    * output requested region.  As such, ShrinkImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.  \sa
    * ProcessObject::GenerateInputRequestedRegion() */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-#  ifdef ITK_USE_CONCEPT_CHECKING
+#ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputValueType>));
-  itkConceptMacro(OutputHasNumericTraitsCheck, (Concept::HasNumericTraits<OutputValueType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputValueType > ) );
+  itkConceptMacro( OutputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< OutputValueType > ) );
   // End concept checking
-#  endif
+#endif
 
 protected:
+
   VectorExpandImageFilter();
-  ~VectorExpandImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~VectorExpandImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** VectorExpandImageFilter is implemented as a multithreaded filter.
-   * Therefore, this implementation provides a DynamicThreadedGenerateData() routine
+   * Therefore, this implementation provides a ThreadedGenerateData() routine
    * which is called for each processing thread. The output image data is
    * allocated automatically by the superclass prior to calling
-   * DynamicThreadedGenerateData().  DynamicThreadedGenerateData can only write to the
+   * ThreadedGenerateData().  ThreadedGenerateData can only write to the
    * portion of the output image specified by the parameter
    * "outputRegionForThread" \sa ImageToImageFilter::ThreadedGenerateData(),
    * ImageToImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  virtual
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
-
-  /** This method is used to set the state of the filter before multi-threading. */
-  void
-  BeforeThreadedGenerateData() override;
+  /** This method is used to set the state of the filter before
+   * multi-threading. */
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
-  ExpandFactorsArrayType m_ExpandFactors;
-  InterpolatorPointer    m_Interpolator;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VectorExpandImageFilter);
+
+  ExpandFactorsArrayType   m_ExpandFactors;
+  InterpolatorPointer      m_Interpolator;
+//TEST_RMV20100728 * \warning: The following is valid only when the flag
+//TEST_RMV20100728 * ITK_USE_CENTERED_PIXEL_COORDINATES_CONSISTENTLY is ON
+//TEST_RMV20100728 * The output image will not contain any padding, and
+// therefore the
+//TEST_RMV20100728 * EdgePaddingValue will not be used.
+//TEST_RMV20100728 *
+//TEST_RMV20100728  OutputPixelType        m_EdgePaddingValue;
 };
 } // end namespace itk
-#endif // ITK_LEGACY_REMOVE
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVectorExpandImageFilter.hxx"
+#include "itkVectorExpandImageFilter.hxx"
 #endif
 
 #endif

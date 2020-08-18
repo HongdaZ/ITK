@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -80,15 +80,14 @@
 #include <vector>
 #include "itksys/SystemTools.hxx"
 
-int
-main(int argc, char * argv[])
+int main( int argc, char* argv[] )
 {
-  if (argc < 3)
-  {
-    std::cerr << "Usage: " << argv[0] << " DicomDirectory  OutputDicomDirectory"
-              << std::endl;
+  if( argc < 3 )
+    {
+    std::cerr << "Usage: " << argv[0] <<
+      " DicomDirectory  OutputDicomDirectory" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -99,11 +98,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = signed short;
-  constexpr unsigned int Dimension = 3;
+  typedef signed short    PixelType;
+  const unsigned int      Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
-  using ReaderType = itk::ImageSeriesReader<ImageType>;
+  typedef itk::Image< PixelType, Dimension >      ImageType;
+  typedef itk::ImageSeriesReader< ImageType >     ReaderType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -117,10 +116,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ImageIOType = itk::GDCMImageIO;
-  using NamesGeneratorType = itk::GDCMSeriesFileNames;
+  typedef itk::GDCMImageIO                        ImageIOType;
+  typedef itk::GDCMSeriesFileNames                NamesGeneratorType;
 
-  ImageIOType::Pointer        gdcmIO = ImageIOType::New();
+  ImageIOType::Pointer gdcmIO = ImageIOType::New();
   NamesGeneratorType::Pointer namesGenerator = NamesGeneratorType::New();
   // Software Guide : EndCodeSnippet
 
@@ -137,19 +136,19 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  namesGenerator->SetInputDirectory(argv[1]);
+  namesGenerator->SetInputDirectory( argv[1] );
 
   const ReaderType::FileNamesContainer & filenames =
-    namesGenerator->GetInputFileNames();
+                            namesGenerator->GetInputFileNames();
   // Software Guide : EndCodeSnippet
 
   std::size_t numberOfFileNames = filenames.size();
   std::cout << numberOfFileNames << std::endl;
-  for (unsigned int fni = 0; fni < numberOfFileNames; ++fni)
-  {
+  for(unsigned int fni = 0; fni < numberOfFileNames; ++fni)
+    {
     std::cout << "filename # " << fni << " = ";
     std::cout << filenames[fni] << std::endl;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -161,8 +160,8 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   ReaderType::Pointer reader = ReaderType::New();
 
-  reader->SetImageIO(gdcmIO);
-  reader->SetFileNames(filenames);
+  reader->SetImageIO( gdcmIO );
+  reader->SetFileNames( filenames );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -174,17 +173,17 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   try
-  {
+    {
     // Software Guide : BeginCodeSnippet
     reader->Update();
     // Software Guide : EndCodeSnippet
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch (itk::ExceptionObject &excp)
+    {
     std::cerr << "Exception thrown while writing the image" << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -220,7 +219,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  itksys::SystemTools::MakeDirectory(outputDirectory);
+  itksys::SystemTools::MakeDirectory( outputDirectory );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -231,12 +230,13 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using OutputPixelType = signed short;
-  constexpr unsigned int OutputDimension = 2;
+  typedef signed short    OutputPixelType;
+  const unsigned int      OutputDimension = 2;
 
-  using Image2DType = itk::Image<OutputPixelType, OutputDimension>;
+  typedef itk::Image< OutputPixelType, OutputDimension >    Image2DType;
 
-  using SeriesWriterType = itk::ImageSeriesWriter<ImageType, Image2DType>;
+  typedef itk::ImageSeriesWriter<
+                             ImageType, Image2DType >  SeriesWriterType;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -250,8 +250,8 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   SeriesWriterType::Pointer seriesWriter = SeriesWriterType::New();
 
-  seriesWriter->SetInput(reader->GetOutput());
-  seriesWriter->SetImageIO(gdcmIO);
+  seriesWriter->SetInput( reader->GetOutput() );
+  seriesWriter->SetImageIO( gdcmIO );
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -267,9 +267,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  namesGenerator->SetOutputDirectory(outputDirectory);
+  namesGenerator->SetOutputDirectory( outputDirectory );
 
-  seriesWriter->SetFileNames(namesGenerator->GetOutputFileNames());
+  seriesWriter->SetFileNames( namesGenerator->GetOutputFileNames() );
   // Software Guide : EndCodeSnippet
 
 
@@ -286,7 +286,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  seriesWriter->SetMetaDataDictionaryArray(reader->GetMetaDataDictionaryArray());
+  seriesWriter->SetMetaDataDictionaryArray(
+                        reader->GetMetaDataDictionaryArray() );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -299,15 +300,15 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     seriesWriter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown while writing the series " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

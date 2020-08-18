@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@
 #include "itkVector.h"
 // Software Guide : EndCodeSnippet
 
-int
-main()
+int main()
 {
   // Software Guide : BeginLatex
   //
@@ -67,7 +66,7 @@ main()
   // Software Guide :EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PointSetType = itk::PointSet<short>;
+  typedef itk::PointSet< short > PointSetType;
   PointSetType::Pointer pointSet = PointSetType::New();
   // Software Guide : EndCodeSnippet
 
@@ -102,13 +101,13 @@ main()
   point[1] = 2.0;
   point[2] = 3.0;
 
-  pointSet->SetPoint(0UL, point);
+  pointSet->SetPoint( 0UL, point);
 
   point[0] = 2.0;
   point[1] = 4.0;
   point[2] = 6.0;
 
-  pointSet->SetPoint(1UL, point);
+  pointSet->SetPoint( 1UL, point );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -121,7 +120,8 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SampleType = itk::Statistics::PointSetToListSampleAdaptor<PointSetType>;
+  typedef itk::Statistics::PointSetToListSampleAdaptor<
+                                                     PointSetType > SampleType;
   SampleType::Pointer sample = SampleType::New();
   // Software Guide : EndCodeSnippet
 
@@ -135,17 +135,20 @@ main()
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  sample->SetPointSet(pointSet);
+  sample->SetPointSet( pointSet );
 
   SampleType::Iterator iter = sample->Begin();
 
-  while (iter != sample->End())
-  {
+  while( iter != sample->End() )
+    {
     std::cout << "id = " << iter.GetInstanceIdentifier()
-              << "\t measurement vector = " << iter.GetMeasurementVector()
-              << "\t frequency = " << iter.GetFrequency() << std::endl;
+              << "\t measurement vector = "
+              << iter.GetMeasurementVector()
+              << "\t frequency = "
+              << iter.GetFrequency()
+              << std::endl;
     ++iter;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;

@@ -11,13 +11,13 @@
 ============================================================================*/
 #include "metaImage.h"
 
-#include <algorithm> // for std::min & std::max
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib> // for atoi
-#include <cstring> // for memcpy
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
+#include <string.h> // for memcpy
+#include <stdlib.h> // for atoi
+#include <math.h>
+#include <algorithm> // for std::min & std::max
 
 #if defined (__BORLANDC__) && (__BORLANDC__ >= 0x0580)
 #include <mem.h>
@@ -29,60 +29,62 @@
 
 // support for access
 #ifndef _WIN32
-#include <climits>
-#include <csignal>    /* sigprocmask */
-#include <pwd.h>
-#include <sys/ioctl.h>
+#include <limits.h>
 #include <sys/param.h>
 #include <sys/wait.h>
-#include <termios.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <termios.h>
+#include <signal.h>    /* sigprocmask */
 #endif
 
 namespace {
 
-void openReadStream(std::ifstream & inputStream, const std::string& fname)
+void openReadStream(METAIO_STREAM::ifstream & inputStream, const char * fname)
 {
 #ifdef __sgi
-  inputStream.open( fname, std::ios::in );
+  inputStream.open( fname, METAIO_STREAM::ios::in );
 #else
-  inputStream.open( fname, std::ios::in |
-                           std::ios::binary );
+  inputStream.open( fname, METAIO_STREAM::ios::in |
+                           METAIO_STREAM::ios::binary );
 #endif
 }
 
-void openWriteStream(std::ofstream & outputStream, const std::string& fname, bool append)
+void openWriteStream(METAIO_STREAM::ofstream & outputStream, const char * fname, bool append)
 {
 // Some older sgi compilers have a error in the ofstream constructor
 // that requires a file to exist for output
 #ifdef __sgi
-{
-  std::ofstream tFile(fname, std::ios::out);
+  {
+  METAIO_STREAM::ofstream tFile(fname, METAIO_STREAM::ios::out);
   tFile.close();
-}
+  }
 #endif
 
   if(!append)
     {
 #ifdef __sgi
-    outputStream.open(fname, std::ios::out);
+    outputStream.open(fname, METAIO_STREAM::ios::out);
 #else
-    outputStream.open(fname, std::ios::binary |
-                             std::ios::out);
+    outputStream.open(fname, METAIO_STREAM::ios::binary |
+                             METAIO_STREAM::ios::out);
 #endif
     }
   else
     {
 #ifdef __sgi
-    outputStream.open(fname, std::ios::app |
-                             std::ios::out);
+    outputStream.open(fname, METAIO_STREAM::ios::app |
+                             METAIO_STREAM::ios::out);
 #else
-    outputStream.open(fname, std::ios::binary |
-                             std::ios::app |
-                             std::ios::out);
+    outputStream.open(fname, METAIO_STREAM::ios::binary |
+                             METAIO_STREAM::ios::app |
+                             METAIO_STREAM::ios::out);
 #endif
     }
 }
+
+const unsigned int MAXPATHLENGHT = 2048;
 
 } // end anonymous namespace
 
@@ -91,7 +93,7 @@ namespace METAIO_NAMESPACE {
 #endif
 
 // 1 Gigabyte is the maximum chunk to read/write in on function call
-static const std::streamoff MaxIOChunk = 1024*1024*1024;
+static const METAIO_STL::streamoff MaxIOChunk = 1024*1024*1024;
 
 //
 // MetaImage Constructors
@@ -99,49 +101,49 @@ static const std::streamoff MaxIOChunk = 1024*1024*1024;
 MetaImage::
 MetaImage()
 :MetaObject()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->compressedStream = nullptr;
-  m_CompressionTable->buffer = nullptr;
+  m_CompressionTable->compressedStream = NULL;
+  m_CompressionTable->buffer = NULL;
   Clear();
-}
+  }
 
 //
 MetaImage::
 MetaImage(const char *_headerName)
 :MetaObject()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->compressedStream = nullptr;
-  m_CompressionTable->buffer = nullptr;
+  m_CompressionTable->compressedStream = NULL;
+  m_CompressionTable->buffer = NULL;
   Clear();
 
   Read(_headerName);
-}
+  }
 
 //
 MetaImage::
 MetaImage(MetaImage *_im)
 :MetaObject()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->compressedStream = nullptr;
-  m_CompressionTable->buffer = nullptr;
+  m_CompressionTable->compressedStream = NULL;
+  m_CompressionTable->buffer = NULL;
   Clear();
 
   InitializeEssential(_im->NDims(),
@@ -152,7 +154,7 @@ MetaImage(MetaImage *_im)
                       _im->ElementData(),
                       false);
   CopyInfo(_im);
-}
+  }
 
 //
 void MetaImage::
@@ -162,25 +164,25 @@ InitHelper(int _nDims,
           MET_ValueEnumType _elementType,
           int _elementNumberOfChannels,
           void *_elementData)
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->buffer = nullptr;
-  m_CompressionTable->compressedStream = nullptr;
+  m_CompressionTable->buffer = NULL;
+  m_CompressionTable->compressedStream = NULL;
   Clear();
 
-  if(_elementData == nullptr)
+  if(_elementData == NULL)
     {
     InitializeEssential(_nDims,
                         _dimSize,
                         _elementSpacing,
                         _elementType,
                         _elementNumberOfChannels,
-                        nullptr, true);
+                        NULL, true);
     }
   else
     {
@@ -192,7 +194,7 @@ InitHelper(int _nDims,
                         _elementData, false);
     }
 
-}
+  }
 
 //
 MetaImage::
@@ -203,7 +205,7 @@ MetaImage(int _nDims,
           int _elementNumberOfChannels,
           void *_elementData)
 :MetaObject()
-{
+  {
   // Only consider at most 10 element of spacing:
   // See MetaObject::InitializeEssential(_nDims)
   double tmpElementSpacing[10];
@@ -214,7 +216,7 @@ MetaImage(int _nDims,
     }
    InitHelper(_nDims, _dimSize, tmpElementSpacing, _elementType,
      _elementNumberOfChannels, _elementData);
-}
+  }
 
 //
 MetaImage::
@@ -225,10 +227,10 @@ MetaImage(int _nDims,
           int _elementNumberOfChannels,
           void *_elementData)
 :MetaObject()
-{
+  {
   InitHelper(_nDims, _dimSize, _elementSpacing, _elementType,
     _elementNumberOfChannels, _elementData);
-}
+  }
 
 //
 MetaImage::
@@ -237,15 +239,15 @@ MetaImage(int _x, int _y,
           MET_ValueEnumType _elementType,
           int _elementNumberOfChannels, void *_elementData)
 :MetaObject()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->compressedStream = nullptr;
-  m_CompressionTable->buffer = nullptr;
+  m_CompressionTable->compressedStream = NULL;
+  m_CompressionTable->buffer = NULL;
   Clear();
 
   int ds[2];
@@ -256,14 +258,14 @@ MetaImage(int _x, int _y,
   es[0] = _elementSpacingX;
   es[1] = _elementSpacingY;
 
-  if(_elementData == nullptr)
+  if(_elementData == NULL)
     {
     InitializeEssential(2,
                         ds,
                         es,
                         _elementType,
                         _elementNumberOfChannels,
-                        nullptr,
+                        NULL,
                         true);
     }
   else
@@ -276,7 +278,7 @@ MetaImage(int _x, int _y,
                         _elementData,
                         false);
     }
-}
+  }
 
 //
 MetaImage::
@@ -288,15 +290,15 @@ MetaImage(int _x, int _y, int _z,
           int _elementNumberOfChannels,
           void *_elementData)
 :MetaObject()
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage()" << std::endl;
+    METAIO_STREAM::cout << "MetaImage()" << METAIO_STREAM::endl;
     }
 
   m_CompressionTable = new MET_CompressionTableType;
-  m_CompressionTable->compressedStream = nullptr;
-  m_CompressionTable->buffer = nullptr;
+  m_CompressionTable->compressedStream = NULL;
+  m_CompressionTable->buffer = NULL;
   Clear();
 
   int ds[3];
@@ -309,14 +311,14 @@ MetaImage(int _x, int _y, int _z,
   es[1] = _elementSpacingY;
   es[2] = _elementSpacingZ;
 
-  if(_elementData == nullptr)
+  if(_elementData == NULL)
     {
     InitializeEssential(3,
                         ds,
                         es,
                         _elementType,
                         _elementNumberOfChannels,
-                        nullptr,
+                        NULL,
                         true);
     }
   else
@@ -329,103 +331,103 @@ MetaImage(int _x, int _y, int _z,
                         _elementData,
                         false);
     }
-}
+  }
 
 //
 MetaImage::
 ~MetaImage()
-{
+  {
   M_Destroy();
-}
+  }
 
 //
 void MetaImage::
 PrintInfo() const
-{
+  {
   int i;
 
   MetaObject::PrintInfo();
 
-  std::string s;
+  char s[MAXPATHLENGHT];
   MET_ImageModalityToString(m_Modality, s);
-  std::cout << "Modality = " << s << std::endl;
+  METAIO_STREAM::cout << "Modality = " << s << METAIO_STREAM::endl;
 
-  std::cout << "DimSize = ";
+  METAIO_STREAM::cout << "DimSize = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_DimSize[i] << " ";
+    METAIO_STREAM::cout << m_DimSize[i] << " ";
     }
-  std::cout << std::endl;
-  std::cout << "SubQuantity = ";
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "SubQuantity = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_SubQuantity[i] << " ";
+    METAIO_STREAM::cout << m_SubQuantity[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "Quantity = " << m_Quantity << std::endl;
+  METAIO_STREAM::cout << "Quantity = " << m_Quantity << METAIO_STREAM::endl;
 
 
-  std::cout << "HeaderSize = " << m_HeaderSize << std::endl;
+  METAIO_STREAM::cout << "HeaderSize = " << m_HeaderSize << METAIO_STREAM::endl;
 
-  std::cout << "SequenceID = ";
+  METAIO_STREAM::cout << "SequenceID = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_SequenceID[i] << " ";
+    METAIO_STREAM::cout << m_SequenceID[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  std::cout << "ElementSizeValid = " << (int)m_ElementSizeValid
-            << std::endl;
-  std::cout << "ElementSize = ";
+  METAIO_STREAM::cout << "ElementSizeValid = " << (int)m_ElementSizeValid
+            << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ElementSize = ";
   for(i=0; i<m_NDims; i++)
     {
-    std::cout << m_ElementSize[i] << " ";
+    METAIO_STREAM::cout << m_ElementSize[i] << " ";
     }
-  std::cout << std::endl;
+  METAIO_STREAM::cout << METAIO_STREAM::endl;
 
-  char str[22];
+  char str[MAXPATHLENGHT];
   MET_TypeToString(m_ElementType, str);
-  std::cout << "ElementType = " << str << std::endl;
+  METAIO_STREAM::cout << "ElementType = " << str << METAIO_STREAM::endl;
 
-  std::cout << "ElementNumberOfChannels = "
-                      << m_ElementNumberOfChannels << std::endl;
+  METAIO_STREAM::cout << "ElementNumberOfChannels = "
+                      << m_ElementNumberOfChannels << METAIO_STREAM::endl;
 
   if(m_ElementMinMaxValid)
     {
-    std::cout << "Min and Max are valid" << std::endl;
-    std::cout << "   Min = " << m_ElementMin << std::endl;
-    std::cout << "   Max = " << m_ElementMax << std::endl;
+    METAIO_STREAM::cout << "Min and Max are valid" << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "   Min = " << m_ElementMin << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "   Max = " << m_ElementMax << METAIO_STREAM::endl;
     }
   else
     {
-    std::cout << "Min and Max are not valid" << std::endl;
+    METAIO_STREAM::cout << "Min and Max are not valid" << METAIO_STREAM::endl;
     }
 
-  std::cout << "ElementToIntensityFunctionSlope = "
+  METAIO_STREAM::cout << "ElementToIntensityFunctionSlope = "
                       << m_ElementToIntensityFunctionSlope
-                      << std::endl;
-  std::cout << "ElementToIntensityFunctionOffset = "
+                      << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "ElementToIntensityFunctionOffset = "
                       << m_ElementToIntensityFunctionOffset
-                      << std::endl;
+                      << METAIO_STREAM::endl;
 
 
-  std::cout << "AutoFreeElementData = "
+  METAIO_STREAM::cout << "AutoFreeElementData = "
                       << ((m_AutoFreeElementData)?"True":"False")
-                      << std::endl;
+                      << METAIO_STREAM::endl;
 
-  std::cout << "ElementData = "
-                      << ((m_ElementData==nullptr)?"NULL":"Valid")
-                      << std::endl;
+  METAIO_STREAM::cout << "ElementData = "
+                      << ((m_ElementData==NULL)?"NULL":"Valid")
+                      << METAIO_STREAM::endl;
 
-  std::cout << "ElementDataFileName = "
-                      << m_ElementDataFileName << std::endl;
+  METAIO_STREAM::cout << "ElementDataFileName = "
+                      << m_ElementDataFileName << METAIO_STREAM::endl;
 
-}
+  }
 
 void MetaImage::
 CopyInfo(const MetaObject * _object)
-{
+  {
   MetaObject::CopyInfo(_object);
 
   if(_object)
@@ -433,7 +435,7 @@ CopyInfo(const MetaObject * _object)
     const MetaImage * im;
     try
       {
-      im = static_cast<const MetaImage *>(_object);
+      im = (const MetaImage *)(_object);
       }
     catch( ... )
       {
@@ -465,14 +467,14 @@ CopyInfo(const MetaObject * _object)
       ElementToIntensityFunctionOffset(im->ElementToIntensityFunctionOffset());
       }
     }
-}
+  }
 
 /** Clear function */
-void MetaImage::Clear()
+void MetaImage::Clear(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: Clear" << std::endl;
+    METAIO_STREAM::cout << "MetaImage: Clear" << METAIO_STREAM::endl;
     }
 
   m_Modality = MET_MOD_UNKNOWN;
@@ -501,13 +503,11 @@ void MetaImage::Clear()
 
   m_AutoFreeElementData = true;
 
-  m_ElementData = nullptr;
+  m_ElementData = NULL;
 
-  m_ElementDataFileName = "";
+  strcpy(m_ElementDataFileName, "");
 
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Image");
 
   // Change the default for this object
   m_BinaryData = true;
@@ -519,15 +519,15 @@ void MetaImage::Clear()
       inflateEnd(m_CompressionTable->compressedStream);
       delete m_CompressionTable->compressedStream;
       delete [] m_CompressionTable->buffer;
-      m_CompressionTable->buffer = nullptr;
+      m_CompressionTable->buffer = NULL;
       }
-    m_CompressionTable->compressedStream = nullptr;
+    m_CompressionTable->compressedStream = NULL;
     m_CompressionTable->offsetList.clear();
     }
   else
     {
     m_CompressionTable = new MET_CompressionTableType;
-    m_CompressionTable->compressedStream = nullptr;
+    m_CompressionTable->compressedStream = NULL;
     }
 
 }
@@ -561,10 +561,10 @@ InitializeEssential(int _nDims,
                     int _elementNumberOfChannels,
                     void * _elementData,
                     bool _allocElementMemory)
-{
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: Initialize" << std::endl;
+    METAIO_STREAM::cout << "MetaImage: Initialize" << METAIO_STREAM::endl;
     }
 
   MetaObject::InitializeEssential(_nDims);
@@ -573,8 +573,8 @@ InitializeEssential(int _nDims,
   if(!m_CompressionTable)
     {
     m_CompressionTable = new MET_CompressionTableType;
-    m_CompressionTable->buffer = nullptr;
-    m_CompressionTable->compressedStream = nullptr;
+    m_CompressionTable->buffer = NULL;
+    m_CompressionTable->compressedStream = NULL;
     }
   m_SubQuantity[0] = 1;
   m_Quantity = 1;
@@ -602,7 +602,7 @@ InitializeEssential(int _nDims,
 
   m_ElementNumberOfChannels = _elementNumberOfChannels;
 
-  if(_elementData != nullptr)
+  if(_elementData != NULL)
     {
     m_AutoFreeElementData = false;
     m_ElementData = (void *)_elementData;
@@ -612,185 +612,215 @@ InitializeEssential(int _nDims,
     m_AutoFreeElementData = true;
     MET_SizeOfType(m_ElementType, &i);
     m_ElementData = new char[static_cast<size_t>(m_Quantity*m_ElementNumberOfChannels*i)];
-    if(m_ElementData == nullptr)
+    if(m_ElementData == NULL)
       {
-      std::cerr << "MetaImage:: M_Allocate:: Insufficient memory"
-                          << std::endl;
+      METAIO_STREAM::cerr << "MetaImage:: M_Allocate:: Insufficient memory"
+                          << METAIO_STREAM::endl;
       return false;
       }
     }
   else
     {
     m_AutoFreeElementData = true;
-    m_ElementData = nullptr;
+    m_ElementData = NULL;
     }
 
   return true;
-}
+  }
 
 
+//
+//
+//
 int MetaImage::
-HeaderSize() const
-{
+HeaderSize(void) const
+  {
   return m_HeaderSize;
-}
+  }
 
 void MetaImage::
 HeaderSize(int _headerSize)
-{
+  {
   m_HeaderSize = _headerSize;
-}
+  }
 
+//
+//
+//
 MET_ImageModalityEnumType MetaImage::
-Modality() const
-{
+Modality(void) const
+  {
   return m_Modality;
-}
+  }
 
 void MetaImage::
 Modality(MET_ImageModalityEnumType _modality)
-{
+  {
   m_Modality = _modality;
-}
+  }
 
+//
+//
+//
 const int * MetaImage::
-DimSize() const
-{
+DimSize(void) const
+  {
   return m_DimSize;
-}
+  }
 
 int MetaImage::
 DimSize(int _i) const
-{
+  {
   return m_DimSize[_i];
-}
+  }
 
-std::streamoff MetaImage::
-Quantity() const
-{
+//
+//
+//
+METAIO_STL::streamoff MetaImage::
+Quantity(void) const
+  {
   return m_Quantity;
-}
+  }
 
-const std::streamoff * MetaImage::
-SubQuantity() const
-{
+//
+//
+//
+const METAIO_STL::streamoff * MetaImage::
+SubQuantity(void) const
+  {
   return m_SubQuantity;
-}
+  }
 
-std::streamoff MetaImage::
+METAIO_STL::streamoff MetaImage::
 SubQuantity(int _i) const
-{
+  {
   return m_SubQuantity[_i];
-}
+  }
 
+//
+//
+//
 const float * MetaImage::
-SequenceID() const
-{
+SequenceID(void) const
+  {
   return m_SequenceID;
-}
+  }
 
 float MetaImage::
 SequenceID(int _i) const
-{
+  {
   return m_SequenceID[_i];
-}
+  }
 
 void MetaImage::
 SequenceID(const float *_sequenceID)
-{
+  {
   memcpy(m_SequenceID, _sequenceID, m_NDims*sizeof(float));
-}
+  }
 
 void MetaImage::
 SequenceID(int _i, float _value)
-{
+  {
   m_SequenceID[_i] = _value;
-}
+  }
 
+//
+//
+//
 bool MetaImage::
-ElementSizeValid() const
-{
+ElementSizeValid(void) const
+  {
   return m_ElementSizeValid;
-}
+  }
 
 void MetaImage::
 ElementSizeValid(bool _elementSizeValid)
-{
+  {
   m_ElementSizeValid = _elementSizeValid;
-}
+  }
 
 const double * MetaImage::
-ElementSize() const
-{
+ElementSize(void) const
+  {
   return m_ElementSize;
-}
+  }
 
 double MetaImage::
 ElementSize(int _i) const
-{
+  {
   return m_ElementSize[_i];
-}
+  }
 
 void MetaImage::
 ElementSize(const double *_elementSize)
-{
+  {
   memcpy(m_ElementSize, _elementSize, m_NDims*sizeof(*m_ElementSize));
   m_ElementSizeValid = true;
-}
+  }
 
 void MetaImage::
 ElementSize(const float *_elementSize)
-{
+  {
   for(int i = 0; i < m_NDims; ++i)
     {
     m_ElementSize[i] = static_cast<double>(_elementSize[i]);
     }
   m_ElementSizeValid = true;
-}
+  }
 
 
 void MetaImage::
 ElementSize(int _i, double _value)
-{
+  {
   m_ElementSize[_i] = _value;
   m_ElementSizeValid = true;
-}
+  }
 
+//
+//
+//
 MET_ValueEnumType MetaImage::
-ElementType() const
-{
+ElementType(void) const
+  {
   return m_ElementType;
-}
+  }
 
 void MetaImage::
 ElementType(MET_ValueEnumType _elementType)
-{
+  {
   m_ElementType = _elementType;
-}
+  }
 
+//
+//
+//
 int MetaImage::
-ElementNumberOfChannels() const
-{
+ElementNumberOfChannels(void) const
+  {
   return m_ElementNumberOfChannels;
-}
+  }
 
 void MetaImage::
 ElementNumberOfChannels(int _elementNumberOfChannels)
-{
+  {
   m_ElementNumberOfChannels = _elementNumberOfChannels;
-}
+  }
 
+//
+//
+//
 void MetaImage::
-ElementByteOrderSwap(std::streamoff _quantity)
-{
+ElementByteOrderSwap(METAIO_STL::streamoff _quantity)
+  {
 
   // use the user provided value if provided or the internal ivar
-  std::streamoff quantity = _quantity ? _quantity : m_Quantity;
+  METAIO_STL::streamoff quantity = _quantity ? _quantity : m_Quantity;
 
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: ElementByteOrderSwap"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaImage: ElementByteOrderSwap"
+                        << METAIO_STREAM::endl;
     }
 
   int eSize;
@@ -836,37 +866,40 @@ ElementByteOrderSwap(std::streamoff _quantity)
       }
     }
   m_BinaryDataByteOrderMSB = !m_BinaryDataByteOrderMSB;
-}
+  }
 
 bool MetaImage::
-ElementByteOrderFix(std::streamoff _quantity)
-{
+ElementByteOrderFix(METAIO_STL::streamoff _quantity)
+  {
   if(m_BinaryDataByteOrderMSB != MET_SystemByteOrderMSB())
     {
     ElementByteOrderSwap(_quantity);
     return true;
     }
   return true;
-}
+  }
 
+//
+//
+//
 bool MetaImage::
-ElementMinMaxValid() const
-{
+ElementMinMaxValid(void) const
+  {
   return m_ElementMinMaxValid;
-}
+  }
 
 void MetaImage::
 ElementMinMaxValid(bool _elementMinMaxValid)
-{
+  {
   m_ElementMinMaxValid = _elementMinMaxValid;
-}
+  }
 
 void MetaImage::
-ElementMinMaxRecalc()
-{
+ElementMinMaxRecalc(void)
+  {
   double tf;
 
-  if(m_ElementData == nullptr)
+  if(m_ElementData == NULL)
     return;
 
   ElementByteOrderFix();
@@ -889,121 +922,136 @@ ElementMinMaxRecalc()
     }
 
   m_ElementMinMaxValid = true;
-}
+  }
 
 double MetaImage::
-ElementMin() const
-{
+ElementMin(void) const
+  {
   return m_ElementMin;
-}
+  }
 
 void MetaImage::
 ElementMin(double _elementMin)
-{
+  {
   m_ElementMin = _elementMin;
-}
+  }
 
 double MetaImage::
-ElementMax() const
-{
+ElementMax(void) const
+  {
   return m_ElementMax;
-}
+  }
 
 void MetaImage::
 ElementMax(double _elementMax)
-{
+  {
   m_ElementMax = _elementMax;
-}
+  }
 
+//
+//
+//
 double MetaImage::
-ElementToIntensityFunctionSlope() const
-{
+ElementToIntensityFunctionSlope(void) const
+  {
   return m_ElementToIntensityFunctionSlope;
-}
+  }
 
 void MetaImage::
 ElementToIntensityFunctionSlope(double _elementToIntensityFunctionSlope)
-{
+  {
   m_ElementToIntensityFunctionSlope = _elementToIntensityFunctionSlope;
-}
+  }
 
 double MetaImage::
-ElementToIntensityFunctionOffset() const
-{
+ElementToIntensityFunctionOffset(void) const
+  {
   return m_ElementToIntensityFunctionOffset;
-}
+  }
 
 void MetaImage::
 ElementToIntensityFunctionOffset(double _elementOffset)
-{
+  {
   m_ElementToIntensityFunctionOffset = _elementOffset;
-}
+  }
 
+//
+//
+//
 bool MetaImage::
-AutoFreeElementData() const
-{
+AutoFreeElementData(void) const
+  {
   return m_AutoFreeElementData;
-}
+  }
 
 void MetaImage::
 AutoFreeElementData(bool _autoFreeElementData)
-{
+  {
   m_AutoFreeElementData = _autoFreeElementData;
-}
+  }
 
+//
+//
+//
 const char * MetaImage::
-ElementDataFileName() const
-{
-  return m_ElementDataFileName.c_str();
-}
+ElementDataFileName(void) const
+  {
+  return m_ElementDataFileName;
+  }
 
 void MetaImage::
 ElementDataFileName(const char * _elementDataFileName)
-{
-  m_ElementDataFileName = _elementDataFileName;
-}
+  {
+  strcpy(m_ElementDataFileName, _elementDataFileName);
+  }
 
+//
+//
+//
 void * MetaImage::
-ElementData()
-{
+ElementData(void)
+  {
   return m_ElementData;
-}
+  }
 
 double MetaImage::
-ElementData(std::streamoff _i) const
-{
+ElementData(METAIO_STL::streamoff _i) const
+  {
   double tf = 0;
   MET_ValueToDouble(m_ElementType, m_ElementData, _i, &tf);
 
   return tf;
-}
+  }
 
 bool MetaImage::
-ElementData(std::streamoff _i, double _v)
-{
+ElementData(METAIO_STL::streamoff _i, double _v)
+  {
   if(_i<m_Quantity)
     {
     MET_DoubleToValue(_v, m_ElementType, m_ElementData, _i);
     return true;
     }
   return false;
-}
+  }
 
 void MetaImage::
 ElementData(void * _elementData, bool _autoFreeElementData)
-{
+  {
   if(m_AutoFreeElementData)
     {
     delete [] (char *)m_ElementData;
     }
   m_ElementData = _elementData;
   m_AutoFreeElementData = _autoFreeElementData;
-}
+  }
 
+//
+//
+//
 bool MetaImage::
 ConvertElementDataTo(MET_ValueEnumType _elementType,
                      double _toMin, double _toMax)
-{
+  {
   int eSize;
   MET_SizeOfType(_elementType, &eSize);
   void * newElementData = new char[ static_cast<size_t>(
@@ -1035,11 +1083,11 @@ ConvertElementDataTo(MET_ValueEnumType _elementType,
   m_AutoFreeElementData = true;
 
   return true;
-}
+  }
 
 bool MetaImage::
 ConvertElementDataToIntensityData(MET_ValueEnumType _elementType)
-{
+  {
   ElementByteOrderFix();
   if(!ElementMinMaxValid())
     {
@@ -1052,11 +1100,11 @@ ConvertElementDataToIntensityData(MET_ValueEnumType _elementType)
                    + m_ElementMin;
 
   return ConvertElementDataTo(_elementType, toMin, toMax);
-}
+  }
 
 bool MetaImage::
 ConvertIntensityDataToElementData(MET_ValueEnumType _elementType)
-{
+  {
   ElementByteOrderFix();
   if(!ElementMinMaxValid())
     {
@@ -1069,7 +1117,7 @@ ConvertIntensityDataToElementData(MET_ValueEnumType _elementType)
                    + toMin;
 
   return ConvertElementDataTo(_elementType, toMin, toMax);
-}
+  }
 
 // return true if the file exists
 bool MetaImage::M_FileExists(const char* filename) const
@@ -1130,35 +1178,35 @@ bool MetaImage::FileIsFullPath(const char* in_name) const
 }
 
 // Return the value of a tag
-std::string
+METAIO_STL::string
 MetaImage::
-M_GetTagValue(const std::string & buffer, const char* tag) const
+M_GetTagValue(const METAIO_STL::string & buffer, const char* tag) const
 {
   size_t stringPos = buffer.find(tag);
-  if( stringPos == std::string::npos )
+  if( stringPos == METAIO_STL::string::npos )
     {
     return "";
     }
 
-  size_t pos2 = buffer.find('=',stringPos);
-  if(pos2 == std::string::npos )
+  size_t pos2 = buffer.find("=",stringPos);
+  if(pos2 == METAIO_STL::string::npos )
     {
-    pos2 = buffer.find(':',stringPos);
+    pos2 = buffer.find(":",stringPos);
     }
 
-  if(pos2 == std::string::npos )
+  if(pos2 == METAIO_STL::string::npos )
     {
     return "";
     }
 
   size_t posend = buffer.find('\r',pos2);
-  if(posend == std::string::npos )
+  if(posend == METAIO_STL::string::npos )
     {
     posend = buffer.find('\n',pos2);
     }
 
   // Get the element data filename
-  std::string value = "";
+  METAIO_STL::string value = "";
   bool firstspace = true;
   size_t index = pos2+1;
   while(index<buffer.size()
@@ -1180,11 +1228,14 @@ M_GetTagValue(const std::string & buffer, const char* tag) const
   return value;
 }
 
+//
+//
+//
 bool MetaImage::
 CanRead(const char *_headerName) const
-{
+  {
   // First check the extension
-  std::string fname = _headerName;
+  METAIO_STL::string fname = _headerName;
   if(  fname == "" )
     {
     return false;
@@ -1192,15 +1243,15 @@ CanRead(const char *_headerName) const
 
   bool extensionFound = false;
 
-  std::string::size_type stringPos = fname.rfind(".mhd");
-  if ((stringPos != std::string::npos)
+  METAIO_STL::string::size_type stringPos = fname.rfind(".mhd");
+  if ((stringPos != METAIO_STL::string::npos)
       && (stringPos == fname.length() - 4))
     {
     extensionFound = true;
     }
 
   stringPos = fname.rfind(".mha");
-  if ((stringPos != std::string::npos)
+  if ((stringPos != METAIO_STL::string::npos)
       && (stringPos == fname.length() - 4))
     {
     extensionFound = true;
@@ -1212,7 +1263,7 @@ CanRead(const char *_headerName) const
     }
 
   // Now check the file content
-  std::ifstream inputStream;
+  METAIO_STREAM::ifstream inputStream;
 
   openReadStream(inputStream, fname.c_str());
 
@@ -1225,39 +1276,39 @@ CanRead(const char *_headerName) const
   inputStream.read(buf,8000);
   unsigned long fileSize = static_cast<unsigned long>(inputStream.gcount());
   buf[fileSize] = 0;
-  std::string header(buf);
+  METAIO_STL::string header(buf);
   header.resize(fileSize);
   delete [] buf;
   inputStream.close();
 
   stringPos = header.find("NDims");
-  if( stringPos == std::string::npos )
+  if( stringPos == METAIO_STL::string::npos )
     {
     return false;
     }
 
-  std::string elementDataFileName = M_GetTagValue(header,"ElementDataFile");
+  METAIO_STL::string elementDataFileName = M_GetTagValue(header,"ElementDataFile");
 
   return true;
-}
+  }
 
 bool MetaImage::
 Read(const char *_headerName, bool _readElements, void * _buffer)
-{
+  {
   M_Destroy();
 
   Clear();
 
   M_SetupReadFields();
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
-    m_FileName = _headerName;
+    strcpy(m_FileName, _headerName);
     }
 
   M_PrepareNewReadStream();
 
-  std::ifstream * tmpReadStream = new std::ifstream;
+  METAIO_STREAM::ifstream * tmpReadStream = new METAIO_STREAM::ifstream;
 
   openReadStream(*tmpReadStream, m_FileName);
 
@@ -1279,42 +1330,42 @@ Read(const char *_headerName, bool _readElements, void * _buffer)
   delete tmpReadStream;
 
   return true;
-}
+  }
 
 bool MetaImage::
-CanReadStream(std::ifstream * _stream) const
-{
+CanReadStream(METAIO_STREAM::ifstream * _stream) const
+  {
   if(!strncmp(MET_ReadType(*_stream).c_str(), "Image", 5))
     {
     return true;
     }
   return false;
-}
+  }
 
 
 bool MetaImage::
 ReadStream(int _nDims,
-           std::ifstream * _stream,
+           METAIO_STREAM::ifstream * _stream,
            bool _readElements,
            void * _buffer)
-{
+  {
   if(!MetaObject::ReadStream(_nDims, _stream))
     {
-    std::cerr << "MetaImage: Read: Cannot parse file"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaImage: Read: Cannot parse file"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
   if(_readElements)
     {
-    if(_buffer == nullptr)
+    if(_buffer == NULL)
       {
       InitializeEssential(m_NDims,
                           m_DimSize,
                           m_ElementSpacing,
                           m_ElementType,
                           m_ElementNumberOfChannels,
-                          nullptr, true);
+                          NULL, true);
       }
     else
       {
@@ -1329,22 +1380,22 @@ ReadStream(int _nDims,
     int i;
     size_t j;
     bool usePath;
-    std::string pathName;
-    std::string fName;
+    char pathName[MAXPATHLENGHT];
+    char fName[MAXPATHLENGHT];
     usePath = MET_GetFilePath(m_FileName, pathName);
 
-    if("Local" == m_ElementDataFileName ||
-       "LOCAL" == m_ElementDataFileName ||
-       "local" == m_ElementDataFileName)
+    if(!strcmp("Local", m_ElementDataFileName) ||
+       !strcmp("LOCAL", m_ElementDataFileName) ||
+       !strcmp("local", m_ElementDataFileName))
       {
       M_ReadElements(_stream, m_ElementData, m_Quantity);
       }
-    else if("LIST" == m_ElementDataFileName.substr(0, 4))
+    else if(!strncmp("LIST", m_ElementDataFileName,4))
       {
       int fileImageDim = m_NDims - 1;
       int nWrds;
       char **wrds;
-      MET_StringToWordArray(m_ElementDataFileName.c_str(), &nWrds, &wrds);
+      MET_StringToWordArray(m_ElementDataFileName, &nWrds, &wrds);
       if(nWrds > 1)
         {
         fileImageDim = (int)atof(wrds[1]);
@@ -1360,8 +1411,8 @@ ReadStream(int _nDims,
         // overall dimension then default to a size of m_NDims - 1.
         fileImageDim = m_NDims-1;
         }
-      std::string s;
-      std::ifstream* readStreamTemp = new std::ifstream;
+      char s[1024];
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
       elementSize *= m_ElementNumberOfChannels;
@@ -1372,28 +1423,28 @@ ReadStream(int _nDims,
         }
       for(i=0; i< totalFiles && !_stream->eof(); i++)
         {
-        std::getline(*_stream, s);
+        _stream->getline(s, 1024);
         if(!_stream->eof())
           {
-          j = s.length() - 1;
+          j = strlen(s)-1;
           while(j>0 && (isspace(s[j]) || !isprint(s[j])))
             {
             s[j--] = '\0';
             }
-          if(usePath && !FileIsFullPath(s.c_str()))
+          if(usePath && !FileIsFullPath(s))
             {
-            fName = pathName + s;
+            sprintf(fName, "%s%s", pathName, s);
             }
           else
             {
-            fName = s;
+            strcpy(fName, s);
             }
 
           openReadStream(*readStreamTemp, fName);
           if(!readStreamTemp->is_open())
             {
-            std::cerr << "MetaImage: Read: cannot open slice"
-                                << std::endl;
+            METAIO_STREAM::cerr << "MetaImage: Read: cannot open slice"
+                                << METAIO_STREAM::endl;
             continue;
             }
           M_ReadElements(readStreamTemp,
@@ -1405,7 +1456,7 @@ ReadStream(int _nDims,
         }
       delete readStreamTemp;
       }
-    else if(m_ElementDataFileName.find('%') != std::string::npos)
+    else if(strstr(m_ElementDataFileName, "%"))
       {
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
@@ -1416,9 +1467,9 @@ ReadStream(int _nDims,
       int minV = 1;
       int maxV = m_DimSize[m_NDims-1];
       int stepV = 1;
-      std::string s;
-      std::ifstream* readStreamTemp = new std::ifstream;
-      MET_StringToWordArray(m_ElementDataFileName.c_str(), &nWrds, &wrds);
+      char s[MAXPATHLENGHT];
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
+      MET_StringToWordArray(m_ElementDataFileName, &nWrds, &wrds);
       if(nWrds >= 2)
         {
         minV = (int)atof(wrds[1]);
@@ -1446,8 +1497,8 @@ ReadStream(int _nDims,
           {
             if( !isdigit(wrds[i][j]) )
             {
-              std::cerr << "MetaImage: Read: Last three arguments must be numbers!"
-                  << std::endl;
+              METAIO_STREAM::cerr << "MetaImage: Read: Last three arguments must be numbers!"
+                  << METAIO_STREAM::endl;
               continue;
             }
           }
@@ -1474,20 +1525,20 @@ ReadStream(int _nDims,
       int cnt = 0;
       for(i=minV; i<=maxV; i += stepV)
         {
-        s = string_format(wrds[0], i);
-        if(usePath && !FileIsFullPath(s.c_str()))
+        sprintf(s, wrds[0], i);
+        if(usePath && !FileIsFullPath(s))
           {
-          fName = pathName + s;
+          sprintf(fName, "%s%s", pathName, s);
           }
         else
           {
-          fName = s;
+          strcpy(fName, s);
           }
         openReadStream(*readStreamTemp,fName);
         if(!readStreamTemp->is_open())
           {
-          std::cerr << "MetaImage: Read: cannot construct file"
-                              << std::endl;
+          METAIO_STREAM::cerr << "MetaImage: Read: cannot construct file"
+                              << METAIO_STREAM::endl;
           continue;
           }
 
@@ -1508,21 +1559,21 @@ ReadStream(int _nDims,
       }
     else
       {
-      if(usePath && !FileIsFullPath(m_ElementDataFileName.c_str()))
+      if(usePath && !FileIsFullPath(m_ElementDataFileName))
         {
-        fName = pathName + m_ElementDataFileName;
+        sprintf(fName, "%s%s", pathName, m_ElementDataFileName);
         }
       else
         {
-        fName = m_ElementDataFileName;
+        strcpy(fName, m_ElementDataFileName);
         }
 
-      std::ifstream* readStreamTemp = new std::ifstream;
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
 
-      const char *extensions[] = { "", ".gz", ".Z", nullptr };
-      for(unsigned ii = 0; extensions[ii] != nullptr; ii++)
+      const char *extensions[] = { "", ".gz", ".Z", 0 };
+      for(unsigned ii = 0; extensions[ii] != 0; ii++)
         {
-        std::string tempFName(fName);
+        METAIO_STL::string tempFName(fName);
         tempFName += extensions[ii];
         openReadStream(*readStreamTemp,tempFName.c_str());
         if(readStreamTemp->is_open())
@@ -1538,8 +1589,8 @@ ReadStream(int _nDims,
 
       if(!readStreamTemp->is_open())
         {
-        std::cerr << "MetaImage: Read: Cannot open data file"
-                            << std::endl;
+        METAIO_STREAM::cerr << "MetaImage: Read: Cannot open data file"
+                            << METAIO_STREAM::endl;
         if(m_ReadStream)
           {
           m_ReadStream->close();
@@ -1554,23 +1605,26 @@ ReadStream(int _nDims,
     }
 
   return true;
-}
+  }
 
 
+//
+//
+//
 bool MetaImage::
 Write(const char *_headName,
       const char *_dataName,
       bool _writeElements,
       const void * _constElementData,
       bool _append)
-{
-  if(_headName != nullptr)
+  {
+  if(_headName != NULL)
     {
     FileName(_headName);
     }
 
   bool userDataFileName = true;
-  if(_dataName == nullptr && m_ElementDataFileName.empty())
+  if(_dataName == NULL && strlen(m_ElementDataFileName) == 0)
     {
     userDataFileName = false;
     int sPtr = 0;
@@ -1585,7 +1639,7 @@ Write(const char *_headName,
         {
         MET_SetFileSuffix(m_FileName, "mhd");
         }
-      m_ElementDataFileName = m_FileName;
+      strcpy(m_ElementDataFileName, m_FileName);
       if(m_CompressedData)
         {
         MET_SetFileSuffix(m_ElementDataFileName, "zraw");
@@ -1596,7 +1650,7 @@ Write(const char *_headName,
         }
       }
     }
-  else if(_dataName != nullptr)
+  else if(_dataName != NULL)
     {
     userDataFileName = false;
     ElementDataFileName(_dataName);
@@ -1605,30 +1659,30 @@ Write(const char *_headName,
   // make sure suffix is valid
   if(!_append)
     {
-    if (m_ElementDataFileName == "LOCAL")
+    if(!strcmp(m_ElementDataFileName, "LOCAL"))
       {
       MET_SetFileSuffix(m_FileName, "mha");
       }
-    else
+     else
       {
       MET_SetFileSuffix(m_FileName, "mhd");
       }
     }
 
-  std::string pathName;
+  char pathName[MAXPATHLENGHT];
   bool usePath = MET_GetFilePath(m_FileName, pathName);
   if(usePath)
     {
-    std::string elementPathName;
+    char elementPathName[MAXPATHLENGHT];
     MET_GetFilePath(m_ElementDataFileName, elementPathName);
-    if (pathName == elementPathName)
+    if(!strcmp(pathName, elementPathName))
       {
-      elementPathName = m_ElementDataFileName.substr(pathName.length());
-      m_ElementDataFileName = elementPathName;
+      strcpy(elementPathName, &m_ElementDataFileName[strlen(pathName)]);
+      strcpy(m_ElementDataFileName, elementPathName);
       }
     }
 
-  std::ofstream * tmpWriteStream = new std::ofstream;
+  METAIO_STREAM::ofstream * tmpWriteStream = new METAIO_STREAM::ofstream;
 
   openWriteStream(*tmpWriteStream, m_FileName, _append);
 
@@ -1657,45 +1711,43 @@ Write(const char *_headName,
   delete tmpWriteStream;
 
   return result;
-}
+  }
 
 bool MetaImage::
-WriteStream(std::ofstream * _stream,
+WriteStream(METAIO_STREAM::ofstream * _stream,
             bool _writeElements,
             const void * _constElementData)
-{
-  if(m_WriteStream != nullptr)
+  {
+  if(m_WriteStream != NULL)
     {
-    std::cerr << "MetaArray: WriteStream: two files open?"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaArray: WriteStream: two files open?"
+                        << METAIO_STREAM::endl;
     delete m_WriteStream;
     }
 
   m_WriteStream = _stream;
 
-  unsigned char * compressedElementData = nullptr;
-  if(m_BinaryData && m_CompressedData && m_ElementDataFileName.find('%') == std::string::npos)
+  unsigned char * compressedElementData = NULL;
+  if(m_BinaryData && m_CompressedData && !strstr(m_ElementDataFileName, "%"))
     // compressed & !slice/file
     {
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
     int elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
-    if(_constElementData == nullptr)
+    if(_constElementData == NULL)
       {
       compressedElementData = MET_PerformCompression(
                                   (const unsigned char *)m_ElementData,
                                   m_Quantity * elementNumberOfBytes,
-                                  & m_CompressedDataSize,
-                                  m_CompressionLevel );
+                                  & m_CompressedDataSize );
       }
     else
       {
       compressedElementData = MET_PerformCompression(
                                   (const unsigned char *)_constElementData,
                                   m_Quantity * elementNumberOfBytes,
-                                  & m_CompressedDataSize,
-                                  m_CompressionLevel );
+                                  & m_CompressedDataSize );
       }
     }
 
@@ -1705,7 +1757,7 @@ WriteStream(std::ofstream * _stream,
 
   if(_writeElements)
     {
-    if(m_BinaryData && m_CompressedData && m_ElementDataFileName.find('%') == std::string::npos)
+    if(m_BinaryData && m_CompressedData && !strstr(m_ElementDataFileName, "%"))
       // compressed & !slice/file
       {
       M_WriteElements(m_WriteStream,
@@ -1717,7 +1769,7 @@ WriteStream(std::ofstream * _stream,
       }
     else
       {
-      if(_constElementData == nullptr)
+      if(_constElementData == NULL)
         {
         M_WriteElements(m_WriteStream,
                         m_ElementData,
@@ -1732,10 +1784,10 @@ WriteStream(std::ofstream * _stream,
       }
     }
 
-  m_WriteStream = nullptr;
+  m_WriteStream = NULL;
 
   return true;
-}
+  }
 
 
 /** Write a portion of an image */
@@ -1747,7 +1799,7 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
                           bool _append
                           )
 {
-  if( _headName != nullptr )
+  if( _headName != NULL )
     {
     FileName( _headName );
     }
@@ -1762,26 +1814,26 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     {
     char* elementData = const_cast<char*>(
                             static_cast<const char*>(_constElementData) );
-    if( elementData == nullptr )
+    if( elementData == NULL )
       {
       elementData = (char*)m_ElementData;
       }
-    if( elementData == nullptr )
+    if( elementData == NULL )
       {
-      std::cerr << "Element data is NULL" << std::endl;
+      METAIO_STREAM::cerr << "Element data is NULL" << METAIO_STREAM::endl;
       return false;
       }
 
     // Find the start of the data
-    std::ifstream * readStream = new std::ifstream;
-    readStream->open( m_FileName, std::ios::binary |
-                                  std::ios::in);
+    METAIO_STREAM::ifstream * readStream = new METAIO_STREAM::ifstream;
+    readStream->open( m_FileName, METAIO_STREAM::ios::binary |
+                                  METAIO_STREAM::ios::in);
 
     // File must be readable
     if( !MetaObject::ReadStream( m_NDims, readStream ) )
       {
-      std::cerr << "MetaImage: Read: Cannot parse file"
-                          << std::endl;
+      METAIO_STREAM::cerr << "MetaImage: Read: Cannot parse file"
+                          << METAIO_STREAM::endl;
       delete readStream;
       return false;
       }
@@ -1789,9 +1841,9 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     // File must not be compressed
     if(m_CompressedData)
       {
-      std::cerr
+      METAIO_STREAM::cerr
                << "MetaImage cannot insert ROI into a compressed file."
-               << std::endl;
+               << METAIO_STREAM::endl;
       readStream->close();
       delete readStream;
       return false;
@@ -1802,10 +1854,10 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
                          m_ElementSpacing,
                          m_ElementType,
                          m_ElementNumberOfChannels,
-                         nullptr, false ); // no memory allocation
+                         NULL, false ); // no memory allocation
 
-    std::string  filename = ElementDataFileName();
-    std::streampos dataPos = 0;
+    METAIO_STL::string  filename = ElementDataFileName();
+    METAIO_STL::streampos dataPos = 0;
 
     // local file
     if( filename == "LOCAL" )
@@ -1816,9 +1868,9 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     else if( filename == "LIST"
              || strstr(filename.c_str(), "%") )
       {
-      std::cerr
+      METAIO_STREAM::cerr
                << "MetaImage cannot insert ROI into a list of files."
-               << std::endl;
+               << METAIO_STREAM::endl;
       readStream->close();
       delete readStream;
       return false;
@@ -1830,22 +1882,22 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     // Write the region
     if( !M_FileExists(filename.c_str()) )
       {
-      std::string pathName;
+      char pathName[MAXPATHLENGHT];
       MET_GetFilePath(_headName, pathName);
       filename = pathName+filename;
       }
 
-    std::ofstream * tmpWriteStream = new std::ofstream;
+    METAIO_STREAM::ofstream * tmpWriteStream = new METAIO_STREAM::ofstream;
     tmpWriteStream->open( filename.c_str(),
-                          std::ios::binary |
-                          std::ios::in |
-                          std::ios::out );
+                          METAIO_STREAM::ios::binary |
+                          METAIO_STREAM::ios::in |
+                          METAIO_STREAM::ios::out );
 
     if( !tmpWriteStream->is_open() )
       {
-      std::cerr << "Cannot open ROI file: "
+      METAIO_STREAM::cerr << "Cannot open ROI file: "
                           << filename.c_str()
-                          << std::endl;
+                          << METAIO_STREAM::endl;
       delete tmpWriteStream;
       return false;
       }
@@ -1855,19 +1907,19 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     int elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
     // seek to the end and write one byte to allocate the entire file size
-    std::streamoff seekoff = m_Quantity*elementNumberOfBytes;
-    tmpWriteStream->seekp(0, std::ios::end);
+    METAIO_STL::streamoff seekoff = m_Quantity*elementNumberOfBytes;
+    tmpWriteStream->seekp(0, METAIO_STREAM::ios::end);
     if (tmpWriteStream->tellp() != (dataPos+seekoff))
       {
       seekoff = seekoff - 1;
-      tmpWriteStream->seekp(dataPos+seekoff, std::ios::beg);
+      tmpWriteStream->seekp(dataPos+seekoff, METAIO_STREAM::ios::beg);
       const char zerobyte = 0;
       tmpWriteStream->write(&zerobyte, 1);
       }
 
     if( !elementData )
       {
-      std::cerr << "Element data is NULL" << std::endl;
+      METAIO_STREAM::cerr << "Element data is NULL" << METAIO_STREAM::endl;
       delete tmpWriteStream;
       return false;
       }
@@ -1882,15 +1934,15 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     {
     if(m_CompressedData)
       {
-      std::cerr
+      METAIO_STREAM::cerr
                << "MetaImage cannot write an ROI using compression."
-               << std::endl;
+               << METAIO_STREAM::endl;
       return false;
       }
 
     // Get the data filename right...
     bool userDataFileName = true;
-    if( _dataName == nullptr && m_ElementDataFileName.empty() )
+    if( _dataName == NULL && strlen(m_ElementDataFileName) == 0 )
       {
       userDataFileName = false;
       int sPtr = 0;
@@ -1905,7 +1957,7 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
           {
           MET_SetFileSuffix(m_FileName, "mhd");
           }
-        m_ElementDataFileName = m_FileName;
+        strcpy(m_ElementDataFileName, m_FileName);
         if(m_CompressedData)
           {
           MET_SetFileSuffix(m_ElementDataFileName, "zraw");
@@ -1916,18 +1968,18 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
           }
         }
       }
-    else if(_dataName != nullptr)
+    else if(_dataName != NULL)
       {
       userDataFileName = false;
       ElementDataFileName(_dataName);
       }
 
-    if( m_ElementDataFileName == "LIST"
-        || m_ElementDataFileName.find('%') != std::string::npos)
+    if( !strcmp(m_ElementDataFileName, "LIST")
+        || strstr(m_ElementDataFileName, "%") )
       {
-      std::cerr
+      METAIO_STREAM::cerr
                << "MetaImage cannot insert ROI into a list of files."
-               << std::endl;
+               << METAIO_STREAM::endl;
       return false;
       }
 
@@ -1935,30 +1987,30 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     // existing file via the append bool argument.
     if(!_append)
       {
-      if (m_ElementDataFileName == "LOCAL")
+      if(!strcmp(m_ElementDataFileName, "LOCAL"))
         {
         MET_SetFileSuffix(m_FileName, "mha");
         }
-      else
+       else
         {
         MET_SetFileSuffix(m_FileName, "mhd");
         }
       }
 
-    std::string pathName;
+    char pathName[MAXPATHLENGHT];
     bool usePath = MET_GetFilePath(m_FileName, pathName);
     if(usePath)
       {
-      std::string elementPathName;
+      char elementPathName[MAXPATHLENGHT];
       MET_GetFilePath(m_ElementDataFileName, elementPathName);
-      if (pathName == elementPathName)
+      if(!strcmp(pathName, elementPathName))
         {
-        elementPathName = m_ElementDataFileName.substr(pathName.length());
-        m_ElementDataFileName = elementPathName;
+        strcpy(elementPathName, &m_ElementDataFileName[strlen(pathName)]);
+        strcpy(m_ElementDataFileName, elementPathName);
         }
       }
 
-    std::ofstream * tmpWriteStream = new std::ofstream;
+    METAIO_STREAM::ofstream * tmpWriteStream = new METAIO_STREAM::ofstream;
 
     openWriteStream(*tmpWriteStream, m_FileName, _append);
 
@@ -1975,7 +2027,7 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     // Write the ROI header file
     char* elementData = const_cast<char*>(
                           static_cast<const char*>(_constElementData) );
-    if(elementData == nullptr)
+    if(elementData == NULL)
       {
       elementData = (char*)m_ElementData;
       }
@@ -1984,26 +2036,26 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     M_SetupWriteFields();
     M_Write();
 
-    std::streampos dataPos = m_WriteStream->tellp();
+    METAIO_STL::streampos dataPos = m_WriteStream->tellp();
 
     // If data is in a separate file, set dataPos and point to that file.
     //   ( we've already verified the name isn't LIST and doesn't
     //     contain % )
-    if( m_ElementDataFileName != "LOCAL" )
+    if( strcmp( m_ElementDataFileName, "LOCAL" ) )
       {
-      m_WriteStream = nullptr;
+      m_WriteStream = NULL;
       tmpWriteStream->close();
 
       dataPos = 0;
 
-      std::string dataFileName;
-      if(usePath&& !FileIsFullPath(m_ElementDataFileName.c_str()))
+      char dataFileName[MAXPATHLENGHT];
+      if(usePath&& !FileIsFullPath(m_ElementDataFileName))
         {
-        dataFileName = pathName + m_ElementDataFileName;
+        sprintf(dataFileName, "%s%s", pathName, m_ElementDataFileName);
         }
       else
         {
-        dataFileName = m_ElementDataFileName;
+        strcpy(dataFileName, m_ElementDataFileName);
         }
 
       openWriteStream(*tmpWriteStream, dataFileName, _append);
@@ -2015,16 +2067,16 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
     int elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
     // write the last byte in the file to allocate it
-    std::streamoff seekoff = m_Quantity * elementNumberOfBytes;
+    METAIO_STL::streamoff seekoff = m_Quantity * elementNumberOfBytes;
     seekoff -= 1;
-    m_WriteStream->seekp(seekoff, std::ios::cur);
+    m_WriteStream->seekp(seekoff, METAIO_STREAM::ios::cur);
     const char zerobyte = 0;
     m_WriteStream->write(&zerobyte, 1);
 
     M_WriteElementsROI(m_WriteStream, elementData, dataPos,
                        _indexMin, _indexMax);
 
-    m_WriteStream = nullptr;
+    m_WriteStream = NULL;
 
     if(!userDataFileName)
       {
@@ -2039,9 +2091,9 @@ bool MetaImage::WriteROI( int * _indexMin, int * _indexMax,
 }
 
 bool  MetaImage::
-M_WriteElementsROI(std::ofstream * _fstream,
+M_WriteElementsROI(METAIO_STREAM::ofstream * _fstream,
                    const void * _data,
-                   std::streampos _dataPos,
+                   METAIO_STL::streampos _dataPos,
                    int * _indexMin,
                    int* _indexMax )
 {
@@ -2062,7 +2114,7 @@ M_WriteElementsROI(std::ofstream * _fstream,
   // region shape
   // This calculate the number of continuous bytes in the file
   // which can be written
-  std::streamoff elementsToWrite = 1;
+  METAIO_STL::streamoff elementsToWrite = 1;
   int movingDirection = 0;
   do
     {
@@ -2078,12 +2130,12 @@ M_WriteElementsROI(std::ofstream * _fstream,
   while(!done)
     {
     // Seek to the right position
-    std::streamoff seekoff = _dataPos;
+    METAIO_STL::streamoff seekoff = _dataPos;
     for(int i=0; i<m_NDims; i++)
       {
       seekoff += m_SubQuantity[i] * currentIndex[i] * elementNumberOfBytes;
       }
-    _fstream->seekp( seekoff, std::ios::beg );
+    _fstream->seekp( seekoff, METAIO_STREAM::ios::beg );
 
     M_WriteElementData( _fstream, data, elementsToWrite );
     data += elementsToWrite * elementNumberOfBytes;
@@ -2122,45 +2174,45 @@ M_WriteElementsROI(std::ofstream * _fstream,
 
 bool MetaImage::
 Append(const char *_headName)
-{
+  {
   if(META_DEBUG)
    {
-   std::cout << "MetaImage: Append" << std::endl;
+   METAIO_STREAM::cout << "MetaImage: Append" << METAIO_STREAM::endl;
    }
 
-  return this->Write(_headName, nullptr, true, nullptr, true);
-}
+  return this->Write(_headName, NULL, true, NULL, true);
+  }
 
 void MetaImage::
-M_Destroy()
-{
-  if(m_AutoFreeElementData && m_ElementData != nullptr)
+M_Destroy(void)
+  {
+  if(m_AutoFreeElementData && m_ElementData != NULL)
     {
     delete [] (char *)m_ElementData;
     }
 
-  m_ElementData = nullptr;
+  m_ElementData = NULL;
 
   if(m_CompressionTable && m_CompressionTable->compressedStream)
     {
     inflateEnd(m_CompressionTable->compressedStream);
     delete m_CompressionTable->compressedStream;
     delete [] m_CompressionTable->buffer;
-    m_CompressionTable->buffer = nullptr;
+    m_CompressionTable->buffer = NULL;
     }
   delete m_CompressionTable;
-  m_CompressionTable = nullptr;
+  m_CompressionTable = NULL;
 
   MetaObject::M_Destroy();
-}
+  }
 
 void MetaImage::
-M_SetupReadFields()
-{
+M_SetupReadFields(void)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_SetupReadFields"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_SetupReadFields"
+                        << METAIO_STREAM::endl;
     }
 
   MetaObject::M_SetupReadFields();
@@ -2228,11 +2280,12 @@ M_SetupReadFields()
   mF->required = true;
   mF->terminateRead = true;
   m_Fields.push_back(mF);
-}
+  }
 
 void MetaImage::
-M_SetupWriteFields()
-{
+M_SetupWriteFields(void)
+  {
+  strcpy(m_ObjectTypeName,"Image");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -2241,7 +2294,7 @@ M_SetupWriteFields()
   MET_InitWriteField(mF, "DimSize", MET_INT_ARRAY, m_NDims, m_DimSize);
   m_Fields.push_back(mF);
 
-  char s[22];
+  char s[MAXPATHLENGHT];
   if(m_HeaderSize > 0 || m_HeaderSize == -1)
     {
     mF = new MET_FieldRecordType;
@@ -2332,38 +2385,41 @@ M_SetupWriteFields()
 
   mF = new MET_FieldRecordType;
   MET_InitWriteField(mF, "ElementDataFile", MET_STRING,
-                     m_ElementDataFileName.length(),
-                     m_ElementDataFileName.c_str());
+                     strlen(m_ElementDataFileName),
+                     m_ElementDataFileName);
   mF->terminateRead = true;
   m_Fields.push_back(mF);
-}
+  }
 
+//
+//
+//
 bool MetaImage::
-M_Read()
-{
+M_Read(void)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_Read: Loading Header"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_Read: Loading Header"
+                        << METAIO_STREAM::endl;
     }
   if(!MetaObject::M_Read())
     {
-    std::cerr << "MetaImage: M_Read: Error parsing file"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaImage: M_Read: Error parsing file"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_Read: Parsing Header"
-                        << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_Read: Parsing Header"
+                        << METAIO_STREAM::endl;
     }
   MET_FieldRecordType * mF;
 
   if(META_DEBUG)
     {
-    std::cout << "metaImage: M_Read: elementSpacing[" << 0 << "] = "
-                        << m_ElementSpacing[0] << std::endl;
+    METAIO_STREAM::cout << "metaImage: M_Read: elementSpacing[" << 0 << "] = "
+                        << m_ElementSpacing[0] << METAIO_STREAM::endl;
     }
   mF = MET_GetFieldRecord("DimSize", &m_Fields);
   if(mF && mF->defined)
@@ -2476,49 +2532,52 @@ M_Read()
   mF = MET_GetFieldRecord("ElementDataFile", &m_Fields);
   if(mF && mF->defined)
     {
-    m_ElementDataFileName = (char *)(mF->value);
+    strcpy(m_ElementDataFileName, (char *)(mF->value));
     }
 
   return true;
-}
+  }
 
+//
+//
+//
 bool MetaImage::
-M_ReadElements(std::ifstream * _fstream, void * _data,
-               std::streamoff _dataQuantity)
-{
+M_ReadElements(METAIO_STREAM::ifstream * _fstream, void * _data,
+               METAIO_STL::streamoff _dataQuantity)
+  {
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_ReadElements" << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_ReadElements" << METAIO_STREAM::endl;
     }
 
   if(m_HeaderSize>(int)0)
     {
-    _fstream->seekg(m_HeaderSize, std::ios::beg);
+    _fstream->seekg(m_HeaderSize, METAIO_STREAM::ios::beg);
     if(!_fstream->good())
       {
-      std::cerr << "MetaImage: Read: header not read correctly"
-                          << std::endl;
+      METAIO_STREAM::cerr << "MetaImage: Read: header not read correctly"
+                          << METAIO_STREAM::endl;
       return false;
       }
     }
 
   int elementSize;
   MET_SizeOfType(m_ElementType, &elementSize);
-  std::streamoff readSize = _dataQuantity*m_ElementNumberOfChannels*elementSize;
+  METAIO_STL::streamoff readSize = _dataQuantity*m_ElementNumberOfChannels*elementSize;
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_ReadElements: ReadSize = "
-                        << readSize << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_ReadElements: ReadSize = "
+                        << readSize << METAIO_STREAM::endl;
     }
 
   if(m_HeaderSize == -1)
     {
     if(META_DEBUG)
       {
-      std::cout << "MetaImage: M_ReadElements: Skipping header"
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaImage: M_ReadElements: Skipping header"
+                          << METAIO_STREAM::endl;
       }
-    _fstream->seekg(-readSize, std::ios::end);
+    _fstream->seekg(-readSize, METAIO_STREAM::ios::end);
     }
 
   // If compressed we inflate
@@ -2530,9 +2589,9 @@ M_ReadElements(std::ifstream * _fstream, void * _data,
     if(m_CompressedDataSize==0)
       {
       compressedDataDeterminedFromFile = true;
-      _fstream->seekg(0, std::ios::end);
+      _fstream->seekg(0, METAIO_STREAM::ios::end);
       m_CompressedDataSize = _fstream->tellg();
-      _fstream->seekg(0, std::ios::beg);
+      _fstream->seekg(0, METAIO_STREAM::ios::beg);
       }
 
     unsigned char* compr = new unsigned char[static_cast<size_t>(m_CompressedDataSize)];
@@ -2567,45 +2626,45 @@ M_ReadElements(std::ifstream * _fstream, void * _data,
     }
 
   return true;
-}
+  }
 
 bool MetaImage::
-M_WriteElements(std::ofstream * _fstream,
+M_WriteElements(METAIO_STREAM::ofstream * _fstream,
                 const void * _data,
-                std::streamoff _dataQuantity)
-{
+                METAIO_STL::streamoff _dataQuantity)
+  {
 
-  if (m_ElementDataFileName == "LOCAL")
+  if(!strcmp(m_ElementDataFileName, "LOCAL"))
     {
     MetaImage::M_WriteElementData(_fstream, _data, _dataQuantity);
     }
   else // write the data in a separate file
     {
-    std::string dataFileName;
-    std::string pathName;
+    char dataFileName[MAXPATHLENGHT];
+    char pathName[MAXPATHLENGHT];
     bool usePath = MET_GetFilePath(m_FileName, pathName);
-    if(usePath&& !FileIsFullPath(m_ElementDataFileName.c_str()))
+    if(usePath&& !FileIsFullPath(m_ElementDataFileName))
       {
-      dataFileName = pathName + m_ElementDataFileName;
+      sprintf(dataFileName, "%s%s", pathName, m_ElementDataFileName);
       }
     else
       {
-      dataFileName = m_ElementDataFileName;
+      strcpy(dataFileName, m_ElementDataFileName);
       }
 
-    if(dataFileName.find('%') != std::string::npos) // write slice by slice
+    if(strstr(dataFileName, "%")) // write slice by slice
       {
       int i;
-      std::string fName;
+      char fName[MAXPATHLENGHT];
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
-      std::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
-      std::streamoff sliceNumberOfBytes = m_SubQuantity[m_NDims-1]*elementNumberOfBytes;
+      METAIO_STL::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
+      METAIO_STL::streamoff sliceNumberOfBytes = m_SubQuantity[m_NDims-1]*elementNumberOfBytes;
 
-      std::ofstream* writeStreamTemp = new std::ofstream;
+      METAIO_STREAM::ofstream* writeStreamTemp = new METAIO_STREAM::ofstream;
       for(i=1; i<=m_DimSize[m_NDims-1]; i++)
         {
-        fName = string_format(dataFileName, i);
+        sprintf(fName, dataFileName, i);
 
         openWriteStream(*writeStreamTemp, fName, false);
 
@@ -2619,15 +2678,14 @@ M_WriteElements(std::ofstream * _fstream,
           }
         else
           {
-          unsigned char * compressedData = nullptr;
-          std::streamoff compressedDataSize = 0;
+          unsigned char * compressedData = NULL;
+          METAIO_STL::streamoff compressedDataSize = 0;
 
           // Compress the data slice by slice
           compressedData = MET_PerformCompression(
                   &(((const unsigned char *)_data)[(i-1)*sliceNumberOfBytes]),
                   sliceNumberOfBytes,
-                  & compressedDataSize,
-                  m_CompressionLevel );
+                  & compressedDataSize );
 
           // Write the compressed data
           MetaImage::M_WriteElementData( writeStreamTemp,
@@ -2644,7 +2702,7 @@ M_WriteElements(std::ofstream * _fstream,
       }
     else // write the image in one unique other file
       {
-      std::ofstream* writeStreamTemp = new std::ofstream;
+      METAIO_STREAM::ofstream* writeStreamTemp = new METAIO_STREAM::ofstream;
       openWriteStream(*writeStreamTemp, dataFileName, false);
 
       MetaImage::M_WriteElementData(writeStreamTemp, _data, _dataQuantity);
@@ -2655,24 +2713,24 @@ M_WriteElements(std::ofstream * _fstream,
     }
 
   return true;
-}
+  }
 
 
 bool MetaImage::
-M_WriteElementData(std::ofstream * _fstream,
+M_WriteElementData(METAIO_STREAM::ofstream * _fstream,
                    const void * _data,
-                   std::streamoff _dataQuantity)
-{
+                   METAIO_STL::streamoff _dataQuantity)
+  {
   if(!m_BinaryData)
     {
 
     double tf;
-    for(std::streamoff i=0; i<_dataQuantity; i++)
+    for(METAIO_STL::streamoff i=0; i<_dataQuantity; i++)
       {
       MET_ValueToDouble(m_ElementType, _data, i, &tf);
       if((i+1)/10 == (double)(i+1.0)/10.0)
         {
-        (*_fstream) << tf << std::endl;
+        (*_fstream) << tf << METAIO_STREAM::endl;
         }
       else
         {
@@ -2684,11 +2742,11 @@ M_WriteElementData(std::ofstream * _fstream,
     {
     if(m_CompressedData)
       {
-      // the data is written in writes no bigger then MaxIOChunk
-      std::streamoff bytesRemaining = _dataQuantity;
+      // the data is writen in writes no bigger then MaxIOChunk
+      METAIO_STL::streamoff bytesRemaining = _dataQuantity;
       while ( bytesRemaining )
         {
-        std::streamoff chunkToWrite = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
+        METAIO_STL::streamoff chunkToWrite = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
         _fstream->write( (const char *)_data, (size_t)chunkToWrite );
         _data = (const char *)(_data) + chunkToWrite; // <- Note: data is changed
         bytesRemaining -= chunkToWrite;
@@ -2698,13 +2756,13 @@ M_WriteElementData(std::ofstream * _fstream,
       {
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
-      std::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
+      METAIO_STL::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
-      // the data is written in writes no bigger then MaxIOChunk
-      std::streamoff bytesRemaining = _dataQuantity * elementNumberOfBytes;
+      // the data is writen in writes no bigger then MaxIOChunk
+      METAIO_STL::streamoff bytesRemaining = _dataQuantity * elementNumberOfBytes;
       while ( bytesRemaining )
         {
-        std::streamoff chunkToWrite = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
+        METAIO_STL::streamoff chunkToWrite = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
         _fstream->write( (const char *)_data, (size_t)chunkToWrite );
         _data = (const char *)(_data) + chunkToWrite; // <- Note: _data is changed
         bytesRemaining -= chunkToWrite;
@@ -2712,17 +2770,17 @@ M_WriteElementData(std::ofstream * _fstream,
       }
     }
 
-  // check if the io stream did not fail in the process of writing
+  // check the the io stream did not fail in the process of writing
   if ( _fstream->fail() )
     {
-    std::cerr
+    METAIO_STREAM::cerr
       << "MetaImage: M_WriteElementsData: file stream is fail after write"
-      << std::endl;
+      << METAIO_STREAM::endl;
     return false;
     }
 
   return true;
-}
+  }
 
 /** Streaming related functions */
 bool MetaImage::
@@ -2738,14 +2796,14 @@ ReadROI(int * _indexMin, int * _indexMax,
 
   M_SetupReadFields();
 
-  if(_headerName != nullptr)
+  if(_headerName != NULL)
     {
-    m_FileName = _headerName;
+    strcpy(m_FileName, _headerName);
     }
 
   M_PrepareNewReadStream();
 
-  std::ifstream * tmpReadStream = new std::ifstream;
+  METAIO_STREAM::ifstream * tmpReadStream = new METAIO_STREAM::ifstream;
 
   openReadStream(*tmpReadStream, m_FileName);
 
@@ -2773,28 +2831,28 @@ ReadROI(int * _indexMin, int * _indexMax,
 /** Read the ROI Stream */
 bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
                               int _nDims,
-                              std::ifstream * _stream,
+                              METAIO_STREAM::ifstream * _stream,
                               bool _readElements,
                               void * _buffer,
                               unsigned int subSamplingFactor)
 {
   if(!MetaObject::ReadStream(_nDims, _stream))
     {
-    std::cerr << "MetaImage: Read: Cannot parse file"
-                        << std::endl;
+    METAIO_STREAM::cerr << "MetaImage: Read: Cannot parse file"
+                        << METAIO_STREAM::endl;
     return false;
     }
 
   if(_readElements)
     {
-    if(_buffer == nullptr)
+    if(_buffer == NULL)
       {
       InitializeEssential(m_NDims,
                           m_DimSize,
                           m_ElementSpacing,
                           m_ElementType,
                           m_ElementNumberOfChannels,
-                          nullptr, true);
+                          NULL, true);
       }
     else
       {
@@ -2807,7 +2865,7 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
       }
 
     // Streaming related. We need to update some of the fields
-    std::streamoff quantity = 1;
+    METAIO_STL::streamoff quantity = 1;
     int i;
     size_t j;
     for(i=0; i<m_NDims; i++)
@@ -2816,24 +2874,24 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
       }
 
     bool usePath;
-    std::string pathName;
-    std::string fName;
+    char pathName[MAXPATHLENGHT];
+    char fName[MAXPATHLENGHT];
     usePath = MET_GetFilePath(m_FileName, pathName);
 
-    if("Local" == m_ElementDataFileName ||
-       "LOCAL" == m_ElementDataFileName ||
-       "local" == m_ElementDataFileName)
+    if(!strcmp("Local", m_ElementDataFileName) ||
+       !strcmp("LOCAL", m_ElementDataFileName) ||
+       !strcmp("local", m_ElementDataFileName))
       {
       M_ReadElementsROI(_stream, m_ElementData, quantity,
                         _indexMin, _indexMax, subSamplingFactor,
                         m_Quantity);
       }
-    else if("LIST" == m_ElementDataFileName.substr(0, 4))
+    else if(!strncmp("LIST", m_ElementDataFileName,4))
       {
       int fileImageDim = m_NDims - 1;
       int nWrds;
       char **wrds;
-      MET_StringToWordArray(m_ElementDataFileName.c_str(), &nWrds, &wrds);
+      MET_StringToWordArray(m_ElementDataFileName, &nWrds, &wrds);
       if(nWrds > 1)
         {
         fileImageDim = (int)atof(wrds[1]);
@@ -2850,7 +2908,7 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
         fileImageDim = m_NDims-1;
         }
       char s[1024];
-      std::ifstream* readStreamTemp = new std::ifstream;
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
       elementSize *= m_ElementNumberOfChannels;
@@ -2878,18 +2936,18 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
             }
           if(usePath && !FileIsFullPath(s))
             {
-            fName = pathName + s;
+            sprintf(fName, "%s%s", pathName, s);
             }
           else
             {
-            fName = s;
+            strcpy(fName, s);
             }
 
           openReadStream(*readStreamTemp, fName);
           if(!readStreamTemp->is_open())
             {
-            std::cerr << "MetaImage: Read: cannot open slice"
-                                << std::endl;
+            METAIO_STREAM::cerr << "MetaImage: Read: cannot open slice"
+                                << METAIO_STREAM::endl;
             continue;
             }
 
@@ -2919,7 +2977,7 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
         }
       delete readStreamTemp;
       }
-    else if(m_ElementDataFileName.find('%') != std::string::npos)
+    else if(strstr(m_ElementDataFileName, "%"))
       {
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
@@ -2930,9 +2988,9 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
       int minV = 1;
       int maxV = m_DimSize[m_NDims-1];
       int stepV = 1;
-      std::string s;
-      std::ifstream* readStreamTemp = new std::ifstream;
-      MET_StringToWordArray(m_ElementDataFileName.c_str(), &nWrds, &wrds);
+      char s[MAXPATHLENGHT];
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
+      MET_StringToWordArray(m_ElementDataFileName, &nWrds, &wrds);
       if(nWrds >= 2)
         {
         minV = (int)atof(wrds[1]);
@@ -2960,8 +3018,8 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
           {
             if( !isdigit(wrds[i][j]) )
             {
-              std::cerr << "MetaImage: Read: Last three arguments must be numbers!"
-                  << std::endl;
+              METAIO_STREAM::cerr << "MetaImage: Read: Last three arguments must be numbers!"
+                  << METAIO_STREAM::endl;
               continue;
             }
           }
@@ -2994,22 +3052,22 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
 
       for(i=minV; i<=maxV; i += stepV)
         {
-        s = string_format(wrds[0], i);
-        if(usePath && !FileIsFullPath(s.c_str()))
+        sprintf(s, wrds[0], i);
+        if(usePath && !FileIsFullPath(s))
           {
-          fName = pathName + s;
+          sprintf(fName, "%s%s", pathName, s);
           }
         else
           {
-          fName = s;
+          strcpy(fName, s);
           }
 
 
         openReadStream(*readStreamTemp, fName);
         if(!readStreamTemp->is_open())
           {
-          std::cerr << "MetaImage: Read: cannot construct file"
-                              << std::endl;
+          METAIO_STREAM::cerr << "MetaImage: Read: cannot construct file"
+                              << METAIO_STREAM::endl;
           continue;
           }
 
@@ -3051,21 +3109,21 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
       }
     else
       {
-      if(usePath && !FileIsFullPath(m_ElementDataFileName.c_str()))
+      if(usePath && !FileIsFullPath(m_ElementDataFileName))
         {
-        fName = pathName + m_ElementDataFileName;
+        sprintf(fName, "%s%s", pathName, m_ElementDataFileName);
         }
       else
         {
-        fName = m_ElementDataFileName;
+        strcpy(fName, m_ElementDataFileName);
         }
 
-      std::ifstream* readStreamTemp = new std::ifstream;
+      METAIO_STREAM::ifstream* readStreamTemp = new METAIO_STREAM::ifstream;
 
-      const char *extensions[] = { "", ".gz", ".Z", nullptr };
-      for(unsigned ii = 0; extensions[ii] != nullptr; ii++)
+      const char *extensions[] = { "", ".gz", ".Z", 0 };
+      for(unsigned ii = 0; extensions[ii] != 0; ii++)
         {
-        std::string tempFName(fName);
+        METAIO_STL::string tempFName(fName);
         tempFName += extensions[ii];
         openReadStream(*readStreamTemp,tempFName.c_str());
         if(readStreamTemp->is_open())
@@ -3081,8 +3139,8 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
 
       if(!readStreamTemp->is_open())
         {
-        std::cerr << "MetaImage: ReadROI: Cannot open data file"
-                            << std::endl;
+        METAIO_STREAM::cerr << "MetaImage: ReadROI: Cannot open data file"
+                            << METAIO_STREAM::endl;
         if(m_ReadStream)
           {
           m_ReadStream->close();
@@ -3104,10 +3162,10 @@ bool MetaImage::ReadROIStream(int * _indexMin, int * _indexMax,
 
 /** Read an ROI */
 bool MetaImage::
-M_ReadElementsROI(std::ifstream * _fstream, void * _data,
-                  std::streamoff _dataQuantity,
+M_ReadElementsROI(METAIO_STREAM::ifstream * _fstream, void * _data,
+                  METAIO_STL::streamoff _dataQuantity,
                   int* _indexMin, int* _indexMax,unsigned int subSamplingFactor,
-                  std::streamoff _totalDataQuantity)
+                  METAIO_STL::streamoff _totalDataQuantity)
 {
   if(_totalDataQuantity ==0)
     {
@@ -3123,44 +3181,44 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
 
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_ReadElementsROI" << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_ReadElementsROI" << METAIO_STREAM::endl;
     }
 
   if(m_HeaderSize>(int)0)
     {
-    _fstream->seekg(m_HeaderSize, std::ios::beg);
+    _fstream->seekg(m_HeaderSize, METAIO_STREAM::ios::beg);
     if(!_fstream->good())
       {
-      std::cerr << "MetaImage: M_ReadElementsROI: header not read correctly"
-                          << std::endl;
+      METAIO_STREAM::cerr << "MetaImage: M_ReadElementsROI: header not read correctly"
+                          << METAIO_STREAM::endl;
       return false;
       }
     }
 
   int elementSize;
   MET_SizeOfType(m_ElementType, &elementSize);
-  std::streamoff readSize = _dataQuantity*m_ElementNumberOfChannels*elementSize;
+  METAIO_STL::streamoff readSize = _dataQuantity*m_ElementNumberOfChannels*elementSize;
   int elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
   if(META_DEBUG)
     {
-    std::cout << "MetaImage: M_ReadElementsROI: ReadSize = "
-                        << readSize << std::endl;
+    METAIO_STREAM::cout << "MetaImage: M_ReadElementsROI: ReadSize = "
+                        << readSize << METAIO_STREAM::endl;
     }
 
   if(m_HeaderSize == -1)
     {
     if(META_DEBUG)
       {
-      std::cout << "MetaImage: M_ReadElementsROI: Skipping header"
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaImage: M_ReadElementsROI: Skipping header"
+                          << METAIO_STREAM::endl;
       }
-    std::streamoff headSize = _totalDataQuantity*m_ElementNumberOfChannels*elementSize;
-    _fstream->seekg(-headSize, std::ios::end);
+    METAIO_STL::streamoff headSize = _totalDataQuantity*m_ElementNumberOfChannels*elementSize;
+    _fstream->seekg(-headSize, METAIO_STREAM::ios::end);
     }
 
-  std::streampos dataPos = _fstream->tellg();
-  std::streamoff i;
+  METAIO_STL::streampos dataPos = _fstream->tellg();
+  METAIO_STL::streamoff i;
 
   // If compressed we inflate
   if(m_BinaryData && m_CompressedData)
@@ -3169,9 +3227,9 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
     // file is the size of the compressed data
     if(m_CompressedDataSize==0)
       {
-      _fstream->seekg(0, std::ios::end);
+      _fstream->seekg(0, METAIO_STREAM::ios::end);
       m_CompressedDataSize = _fstream->tellg();
-      _fstream->seekg(0, std::ios::beg);
+      _fstream->seekg(0, METAIO_STREAM::ios::beg);
       }
 
       unsigned char* data = static_cast<unsigned char*>(_data);
@@ -3186,7 +3244,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
       // region shape
       // This calculate the number of continuous bytes in the file
       // which can be read
-      std::streamoff elementsToRead = 1;
+      METAIO_STL::streamoff elementsToRead = 1;
       int movingDirection = 0;
       do
         {
@@ -3198,14 +3256,14 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
             && _indexMin[movingDirection-1] == 0
             && _indexMax[movingDirection-1] == m_DimSize[movingDirection-1]-1);
 
-      std::streamoff bytesToRead = elementsToRead*elementNumberOfBytes;
-      std::streamoff gc = 0;
+      METAIO_STL::streamoff bytesToRead = elementsToRead*elementNumberOfBytes;
+      METAIO_STL::streamoff gc = 0;
 
       bool done = false;
       while(!done)
         {
         // Seek to the right position
-        std::streamoff seekoff = 0;
+        METAIO_STL::streamoff seekoff = 0;
         for(i=0; i<m_NDims; i++)
           {
           seekoff += m_SubQuantity[i]*elementNumberOfBytes*currentIndex[i];
@@ -3215,7 +3273,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
         if(subSamplingFactor > 1)
           {
           unsigned char* subdata = new unsigned char[static_cast<size_t>(bytesToRead)];
-          std::streamoff rOff =
+          METAIO_STL::streamoff rOff =
             MET_UncompressStream(_fstream, seekoff, subdata,
                                  bytesToRead, m_CompressedDataSize,
                                  m_CompressionTable);
@@ -3226,7 +3284,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
             return false;
             }
 
-          for(std::streamoff p=0;
+          for(METAIO_STL::streamoff p=0;
               p<bytesToRead;
               p+=(subSamplingFactor*m_ElementNumberOfChannels*elementSize))
             {
@@ -3241,7 +3299,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
           }
         else
           {
-          std::streamoff rOff =
+          METAIO_STL::streamoff rOff =
             MET_UncompressStream(_fstream, seekoff, data,
                                  bytesToRead, m_CompressedDataSize,
                                  m_CompressionTable);
@@ -3288,11 +3346,11 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
 
       if(gc != readSize)
         {
-        std::cerr
+        METAIO_STREAM::cerr
                   << "MetaImage: M_ReadElementsROI: data not read completely"
-                  << std::endl;
-        std::cerr << "   ideal = " << readSize << " : actual = " << gc
-                  << std::endl;
+                  << METAIO_STREAM::endl;
+        METAIO_STREAM::cerr << "   ideal = " << readSize << " : actual = " << gc
+                  << METAIO_STREAM::endl;
         delete [] currentIndex;
         return false;
         }
@@ -3316,7 +3374,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
     // region shape
     // This calculate the number of continuous bytes in the file
     // which can be read
-    std::streamoff elementsToRead = 1;
+    METAIO_STL::streamoff elementsToRead = 1;
     int movingDirection = 0;
     do
       {
@@ -3329,19 +3387,19 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
           && _indexMax[movingDirection-1] == m_DimSize[movingDirection-1]-1);
 
     //readLine *= m_ElementNumberOfChannels*elementSize;
-    std::streamoff gc = 0;
+    METAIO_STL::streamoff gc = 0;
 
     bool done = false;
     while(!done)
       {
       // Seek to the right position
-      std::streamoff seekoff = 0;
+      METAIO_STL::streamoff seekoff = 0;
       for(i=0;i<m_NDims;i++)
         {
         seekoff += m_SubQuantity[i]*m_ElementNumberOfChannels*elementSize*currentIndex[i];
         }
 
-      _fstream->seekg(dataPos+seekoff, std::ios::beg);
+      _fstream->seekg(dataPos+seekoff, METAIO_STREAM::ios::beg);
 
       // Read a line
       if(subSamplingFactor > 1)
@@ -3365,7 +3423,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
 
           _fstream->read(subdata, size_t(elementsToRead*elementNumberOfBytes));
 
-          for(std::streamoff p=0;
+          for(METAIO_STL::streamoff p=0;
               p<elementsToRead*elementNumberOfBytes;
               p+=(subSamplingFactor*elementNumberOfBytes))
             {
@@ -3386,7 +3444,7 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
           // anyone using ROI reading of ASCII??
           // does this work? what about incrementing data?
           // what about data sizes and random access of file?
-          std::streamoff blockSize = elementsToRead*m_ElementNumberOfChannels*elementSize;
+          METAIO_STL::streamoff blockSize = elementsToRead*m_ElementNumberOfChannels*elementSize;
           M_ReadElementData(  _fstream, data, (size_t)blockSize  );
           gc += blockSize;
 
@@ -3438,11 +3496,11 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
 
     if(gc != readSize)
       {
-      std::cerr
+      METAIO_STREAM::cerr
                 << "MetaImage: M_ReadElementsROI: data not read completely"
-                << std::endl;
-      std::cerr << "   ideal = " << readSize << " : actual = " << gc
-                << std::endl;
+                << METAIO_STREAM::endl;
+      METAIO_STREAM::cerr << "   ideal = " << readSize << " : actual = " << gc
+                << METAIO_STREAM::endl;
       return false;
       }
     }
@@ -3452,12 +3510,12 @@ M_ReadElementsROI(std::ifstream * _fstream, void * _data,
 
 
 bool MetaImage::
-M_ReadElementData(std::ifstream * _fstream,
+M_ReadElementData(METAIO_STREAM::ifstream * _fstream,
                   void * _data,
-                  std::streamoff _dataQuantity)
+                  METAIO_STL::streamoff _dataQuantity)
 {
   // NOTE: this method is different from WriteElementData
-  std::streamoff gc = 0;
+  METAIO_STL::streamoff gc = 0;
 
   if(!m_BinaryData)
     {
@@ -3477,14 +3535,14 @@ M_ReadElementData(std::ifstream * _fstream,
       {
 
       // the data is read with calls no bigger then MaxIOChunk
-      std::streamoff bytesRemaining = _dataQuantity;
+      METAIO_STL::streamoff bytesRemaining = _dataQuantity;
       while ( bytesRemaining )
         {
-        std::streamoff chunkToRead = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
+        METAIO_STL::streamoff chunkToRead = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
         _fstream->read( (char *)_data, (size_t)chunkToRead );
         _data = (char *)(_data) + chunkToRead;
         bytesRemaining -= chunkToRead;
-        std::streamsize numberOfBytesRead = _fstream->gcount();
+        METAIO_STL::streamsize numberOfBytesRead = _fstream->gcount();
         gc += numberOfBytesRead;
         }
 
@@ -3493,17 +3551,17 @@ M_ReadElementData(std::ifstream * _fstream,
       {
       int elementSize;
       MET_SizeOfType(m_ElementType, &elementSize);
-      std::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
+      METAIO_STL::streamoff elementNumberOfBytes = elementSize*m_ElementNumberOfChannels;
 
       // the data is read with calls no bigger than MaxIOChunk
-      std::streamoff bytesRemaining = _dataQuantity * elementNumberOfBytes;
+      METAIO_STL::streamoff bytesRemaining = _dataQuantity * elementNumberOfBytes;
       while ( bytesRemaining )
         {
-        std::streamoff chunkToRead = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
+        METAIO_STL::streamoff chunkToRead = bytesRemaining > MaxIOChunk ? MaxIOChunk : bytesRemaining;
         _fstream->read( (char *)_data, (size_t)chunkToRead );
         _data = (char *)(_data) + chunkToRead;
         bytesRemaining -= chunkToRead;
-        std::streamsize numberOfBytesRead = _fstream->gcount();
+        METAIO_STL::streamsize numberOfBytesRead = _fstream->gcount();
         gc += numberOfBytesRead;
         }
       // convert to number of bytes so that it'll match gc's units
@@ -3514,25 +3572,25 @@ M_ReadElementData(std::ifstream * _fstream,
   // check that we actually read the correct number of bytes
   if( gc != _dataQuantity )
     {
-    std::cerr
+    METAIO_STREAM::cerr
       << "MetaImage: M_ReadElementsData: data not read completely"
-      << std::endl;
-    std::cerr << "   ideal = " << _dataQuantity << " : actual = " << gc
-                        << std::endl;
+      << METAIO_STREAM::endl;
+    METAIO_STREAM::cerr << "   ideal = " << _dataQuantity << " : actual = " << gc
+                        << METAIO_STREAM::endl;
     return false;
     }
 
-  // check if the io stream did not fail in the process of reading
+  // check the the io stream did not fail in the process of reading
   if ( _fstream->fail() )
     {
-    std::cerr
+    METAIO_STREAM::cerr
       << "MetaImage: M_ReadElementsData: file stream is fail after read"
-      << std::endl;
+      << METAIO_STREAM::endl;
     return false;
     }
 
   return true;
-}
+  }
 
 
 #if (METAIO_USE_NAMESPACE)

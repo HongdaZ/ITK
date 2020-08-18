@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,53 +31,53 @@ namespace itk
  *
  * \ingroup ITKGPUAnisotropicSmoothing
  */
-template <typename TInputImage,
-          typename TOutputImage,
-          typename TParentImageFilter = AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>>
-class ITK_TEMPLATE_EXPORT GPUAnisotropicDiffusionImageFilter
-  : public GPUDenseFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>
+template< typename TInputImage, typename TOutputImage, typename TParentImageFilter =
+            AnisotropicDiffusionImageFilter< TInputImage, TOutputImage > >
+class ITK_TEMPLATE_EXPORT GPUAnisotropicDiffusionImageFilter :
+  public GPUDenseFiniteDifferenceImageFilter< TInputImage, TOutputImage, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUAnisotropicDiffusionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = GPUAnisotropicDiffusionImageFilter;
-  using GPUSuperclass = GPUDenseFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>;
-  using CPUSuperclass = AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef GPUAnisotropicDiffusionImageFilter                                                   Self;
+  typedef GPUDenseFiniteDifferenceImageFilter< TInputImage, TOutputImage, TParentImageFilter > GPUSuperclass;
+  typedef AnisotropicDiffusionImageFilter< TInputImage, TOutputImage >                         CPUSuperclass;
+  typedef SmartPointer< Self >                                                                 Pointer;
+  typedef SmartPointer< const Self >                                                           ConstPointer;
 
   /** Run-time type information. */
-  itkTypeMacro(GPUAnisotropicDiffusionImageFilter, GPUDenseFiniteDifferenceImageFilter);
+  itkTypeMacro(GPUAnisotropicDiffusionImageFilter,
+               GPUDenseFiniteDifferenceImageFilter);
 
   /** Capture information from the superclass. */
-  using InputImageType = typename GPUSuperclass::InputImageType;
-  using OutputImageType = typename GPUSuperclass::OutputImageType;
-  using UpdateBufferType = typename GPUSuperclass::UpdateBufferType;
+  typedef typename GPUSuperclass::InputImageType   InputImageType;
+  typedef typename GPUSuperclass::OutputImageType  OutputImageType;
+  typedef typename GPUSuperclass::UpdateBufferType UpdateBufferType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
-  static constexpr unsigned int ImageDimension = GPUSuperclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, GPUSuperclass::ImageDimension);
 
   /** The pixel type of the output image will be used in computations.
    * Inherited from the superclass. */
-  using PixelType = typename GPUSuperclass::PixelType;
-  using TimeStepType = typename GPUSuperclass::TimeStepType;
+  typedef typename GPUSuperclass::PixelType    PixelType;
+  typedef typename GPUSuperclass::TimeStepType TimeStepType;
 
 protected:
-  GPUAnisotropicDiffusionImageFilter() = default;
-  ~GPUAnisotropicDiffusionImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  GPUAnisotropicDiffusionImageFilter() {}
+  ~GPUAnisotropicDiffusionImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Prepare for the iteration process. */
-  void
-  InitializeIteration() override;
+  virtual void InitializeIteration() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUAnisotropicDiffusionImageFilter);
+
 };
-} // namespace itk
+} // end namspace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUAnisotropicDiffusionImageFilter.hxx"
+#include "itkGPUAnisotropicDiffusionImageFilter.hxx"
 #endif
 
 #endif

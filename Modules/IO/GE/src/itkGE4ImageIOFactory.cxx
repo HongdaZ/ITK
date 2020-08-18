@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,20 +21,23 @@
 
 namespace itk
 {
-void
-GE4ImageIOFactory::PrintSelf(std::ostream &, Indent) const
+void GE4ImageIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 GE4ImageIOFactory::GE4ImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkGE4ImageIO", "GE4 Image IO", true, CreateObjectFunction<GE4ImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkGE4ImageIO",
+                          "GE4 Image IO",
+                          1,
+                          CreateObjectFunction< GE4ImageIO >::New() );
 }
 
-GE4ImageIOFactory::~GE4ImageIOFactory() = default;
+GE4ImageIOFactory::~GE4ImageIOFactory()
+{}
 
 const char *
-GE4ImageIOFactory::GetITKSourceVersion() const
+GE4ImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -50,14 +53,13 @@ GE4ImageIOFactory::GetDescription() const
 
 static bool GE4ImageIOFactoryHasBeenRegistered;
 
-void ITKIOGE_EXPORT
-     GE4ImageIOFactoryRegister__Private()
+void ITKIOGE_EXPORT GE4ImageIOFactoryRegister__Private(void)
 {
-  if (!GE4ImageIOFactoryHasBeenRegistered)
-  {
+  if( ! GE4ImageIOFactoryHasBeenRegistered )
+    {
     GE4ImageIOFactoryHasBeenRegistered = true;
     GE4ImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

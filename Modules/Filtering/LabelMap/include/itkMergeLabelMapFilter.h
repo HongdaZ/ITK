@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,55 +19,10 @@
 #define itkMergeLabelMapFilter_h
 
 #include "itkInPlaceLabelMapFilter.h"
-#include "ITKLabelMapExport.h"
 
 namespace itk
 {
-// See https://docs.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/compiler-error-c2059?view=vs-2019
-#ifdef STRICT
-#  define TEMPINPLACELABELMAPSTRICT STRICT
-#  undef STRICT
-#endif
-/**\class MergeLabelMapFilterEnums
- * \brief Contains all enum classes used by MergeLabelMapFilter class.
- * \ingroup ITKLabelMap
- */
-class MergeLabelMapFilterEnums
-{
-public:
-  /**\class ChoiceMethod
-   * \ingroup ITKLabelMap
-   */
-  enum class ChoiceMethod : uint8_t
-  {
-    KEEP = 0,
-    AGGREGATE = 1,
-    PACK = 2,
-    STRICT = 3
-  };
-};
-// Define how to print enumeration
-extern ITKLabelMap_EXPORT std::ostream &
-                          operator<<(std::ostream & out, const MergeLabelMapFilterEnums::ChoiceMethod value);
-
-using ChoiceMethodEnum = MergeLabelMapFilterEnums::ChoiceMethod;
-#if !defined(ITK_LEGACY_REMOVE)
-/** Enables backwards compatibility for enum values */
-using ChoiceMethod = ChoiceMethodEnum;
-// We need to expose the enum values at the class level
-// for backwards compatibility
-static constexpr ChoiceMethodEnum KEEP = ChoiceMethodEnum::KEEP;
-static constexpr ChoiceMethodEnum AGGREGATE = ChoiceMethodEnum::AGGREGATE;
-static constexpr ChoiceMethodEnum PACK = ChoiceMethodEnum::PACK;
-static constexpr ChoiceMethodEnum STRICT = ChoiceMethodEnum::STRICT;
-#endif
-
-#ifdef TEMPINPLACELABELMAPSTRICT
-#  define STRICT TEMPINPLACELABELMAPSTRICT
-#  undef TEMPINPLACELABELMAPSTRICT
-#endif
-/**
- *\class MergeLabelMapFilter
+/** \class MergeLabelMapFilter
  * \brief Merges several Label Maps
  *
  * This filter takes one or more input Label Map and merges them.
@@ -93,45 +48,35 @@ static constexpr ChoiceMethodEnum STRICT = ChoiceMethodEnum::STRICT;
  * \sa ShapeLabelObject, RelabelComponentImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
- *
- * \sphinx
- * \sphinxexample{Filtering/LabelMap/MergeLabelMaps,Merge LabelMaps}
- * \endsphinx
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT MergeLabelMapFilter : public InPlaceLabelMapFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT MergeLabelMapFilter:
+  public InPlaceLabelMapFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MergeLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef MergeLabelMapFilter             Self;
+  typedef InPlaceLabelMapFilter< TImage > Superclass;
+  typedef SmartPointer< Self >            Pointer;
+  typedef SmartPointer< const Self >      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = MergeLabelMapFilter;
-  using Superclass = InPlaceLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
-  using LabelObjectPointer = typename LabelObjectType::Pointer;
+  /** Some convenient typedefs. */
+  typedef TImage                              ImageType;
+  typedef typename ImageType::Pointer         ImagePointer;
+  typedef typename ImageType::ConstPointer    ImageConstPointer;
+  typedef typename ImageType::PixelType       PixelType;
+  typedef typename ImageType::IndexType       IndexType;
+  typedef typename ImageType::LabelObjectType LabelObjectType;
+  typedef typename LabelObjectType::Pointer   LabelObjectPointer;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
   itkTypeMacro(MergeLabelMapFilter, InPlaceLabelMapFilter);
-
-#if !defined(ITK_LEGACY_REMOVE)
-  /** Enables backwards compatibility for enum values */
-  using MethodChoice = ChoiceMethodEnum;
-#endif
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -145,42 +90,44 @@ public:
 #endif
 
 #ifdef STRICT
-#  undef STRICT
+#undef STRICT
 #endif
+  typedef enum {
+    KEEP = 0,
+    AGGREGATE = 1,
+    PACK = 2,
+    STRICT = 3
+    } MethodChoice;
 
   /** Set/Get the method used to merge the label maps */
-  itkSetMacro(Method, ChoiceMethodEnum);
-  itkGetConstReferenceMacro(Method, ChoiceMethodEnum);
+  itkSetMacro(Method, MethodChoice);
+  itkGetConstReferenceMacro(Method, MethodChoice);
 
 protected:
   MergeLabelMapFilter();
-  ~MergeLabelMapFilter() override = default;
+  ~MergeLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  ChoiceMethodEnum m_Method;
+  MethodChoice m_Method;
 
 private:
-  void
-  MergeWithKeep();
+  ITK_DISALLOW_COPY_AND_ASSIGN(MergeLabelMapFilter);
 
-  void
-  MergeWithAggregate();
+  void MergeWithKeep();
 
-  void
-  MergeWithPack();
+  void MergeWithAggregate();
 
-  void
-  MergeWithStrict();
+  void MergeWithPack();
+
+  void MergeWithStrict();
 }; // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMergeLabelMapFilter.hxx"
+#include "itkMergeLabelMapFilter.hxx"
 #endif
 
 #endif

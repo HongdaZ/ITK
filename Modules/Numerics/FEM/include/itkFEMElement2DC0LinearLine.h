@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,12 +35,12 @@ namespace fem
 class ITKFEM_EXPORT Element2DC0LinearLine : public ElementStd<2, 2>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element2DC0LinearLine;
-  using TemplatedParentClass = ElementStd<2, 2>;
-  using Superclass = TemplatedParentClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element2DC0LinearLine    Self;
+  typedef ElementStd<2, 2>         TemplatedParentClass;
+  typedef TemplatedParentClass     Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Element2DC0LinearLine, TemplatedParentClass);
@@ -50,18 +50,16 @@ public:
    * Methods related to numeric integration
    */
 
-  enum
-  {
-    DefaultIntegrationOrder = 1
-  };
+  enum { DefaultIntegrationOrder = 1 };
 
   /** Get the Integration point and weight */
-  void
-  GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order) const override;
+  virtual void GetIntegrationPointAndWeight(unsigned int i,
+                                            VectorType & pt,
+                                            Float & w,
+                                            unsigned int order) const ITK_OVERRIDE;
 
   /** Get the number of integration points */
-  unsigned int
-  GetNumberOfIntegrationPoints(unsigned int order) const override;
+  virtual unsigned int GetNumberOfIntegrationPoints(unsigned int order) const ITK_OVERRIDE;
 
   // ////////////////////////////////////////////////////////////////////////
   /**
@@ -69,20 +67,18 @@ public:
    */
 
   /** Return the shape functions used to interpolate across the element */
-  VectorType
-  ShapeFunctions(const VectorType & pt) const override;
+  virtual VectorType ShapeFunctions(const VectorType & pt) const ITK_OVERRIDE;
 
   /** Return the shape functions derivatives in the shapeD matrix */
-  void
-  ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const override;
+  virtual void ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const ITK_OVERRIDE;
 
   /**
    * Get parametric/local coordinates given global coordinates. The function returns true if the
    * global coordinate is within the element else returns false.
    * For a line, line length*1e-4 is used as the tolerance
    */
-  bool
-  GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const override;
+  virtual bool GetLocalFromGlobalCoordinates(const VectorType & globalPt,
+                                             VectorType & localPt) const ITK_OVERRIDE;
 
   /**
    * We need to provide our own implementation of calculating Jacobian,
@@ -93,30 +89,24 @@ public:
    *
    * Jacobian is a scalar for this element.
    */
-  void
-  Jacobian(const VectorType & pt, MatrixType & J, const MatrixType * pshapeD = nullptr) const override;
+  virtual void Jacobian(const VectorType & pt, MatrixType & J, const MatrixType *pshapeD = ITK_NULLPTR) const ITK_OVERRIDE;
 
   /**
    * Distance of a point to a line.(Used in GetLocalFromGlobalCoordinates ).
    */
-  Float
-  DistanceToLine(const VectorType & x,
-                 const VectorType & p1,
-                 const VectorType & p2,
-                 Float &            t,
-                 VectorType &       closestPoint) const;
+  Float DistanceToLine(const VectorType & x, const VectorType & p1, const VectorType & p2, Float & t,
+                       VectorType & closestPoint) const;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  PopulateEdgeIds() override; // HACK:  Should PopulateEdgeIds
-                              // be const or not in this
-                              // hierarchy. Sometimes it is,
-                              // sometimes it is not.
+  virtual void PopulateEdgeIds(void) ITK_OVERRIDE; // HACK:  Should PopulateEdgeIds
+                                      // be const or not in this
+                                      // hierarchy. Sometimes it is,
+                                      // sometimes it is not.
+
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif // itkFEMElement2DC0LinearLine_h
+#endif  // #ifndef itkFEMElement2DC0LinearLine_h

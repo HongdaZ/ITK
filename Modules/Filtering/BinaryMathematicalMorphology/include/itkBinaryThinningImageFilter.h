@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,12 +24,11 @@
 
 namespace itk
 {
-/**
- *\class BinaryThinningImageFilter
+/** \class BinaryThinningImageFilter
  *
  * \brief This filter computes one-pixel-wide edges of the input image.
  *
- * This class is parameterized over the type of the input image
+ * This class is parametrized over the type of the input image
  * and the type of the output image.
  *
  * The input is assumed to be a binary image.  If the foreground pixels
@@ -53,22 +52,21 @@ namespace itk
  * \ingroup ImageEnhancement MathematicalMorphologyImageFilters
  * \ingroup ITKBinaryMathematicalMorphology
  *
- * \sphinx
- * \sphinxexample{Filtering/BinaryMathematicalMorphology/ThinImage,Thin Image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/BinaryThinningImageFilter,Skeletonize/thin an image}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT BinaryThinningImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT BinaryThinningImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryThinningImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BinaryThinningImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BinaryThinningImageFilter                       Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);
@@ -77,74 +75,80 @@ public:
   itkTypeMacro(BinaryThinningImageFilter, ImageToImageFilter);
 
   /** Type for input image. */
-  using InputImageType = TInputImage;
+  typedef   TInputImage InputImageType;
 
   /** Type for output image: Skelenton of the object.  */
-  using OutputImageType = TOutputImage;
+  typedef   TOutputImage OutputImageType;
 
   /** Type for the region of the input image. */
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::RegionType RegionType;
 
   /** Type for the index of the input image. */
-  using IndexType = typename RegionType::IndexType;
+  typedef typename RegionType::IndexType IndexType;
 
   /** Type for the index of the input image. */
-  using PixelType = typename InputImageType::PixelType;
+  typedef typename InputImageType::PixelType PixelType;
 
   /** Type for the size of the input image. */
-  using SizeType = typename RegionType::SizeType;
+  typedef typename RegionType::SizeType SizeType;
 
   /** Pointer Type for input image. */
-  using InputImagePointer = typename InputImageType::ConstPointer;
+  typedef typename InputImageType::ConstPointer InputImagePointer;
 
   /** Pointer Type for the output image. */
-  using OutputImagePointer = typename OutputImageType::Pointer;
+  typedef typename OutputImageType::Pointer OutputImagePointer;
 
-  /** Superclass type alias. */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImagePixelType OutputImagePixelType;
 
   /** Neighborhood iterator type */
-  using NeighborhoodIteratorType = NeighborhoodIterator<TInputImage>;
+  typedef NeighborhoodIterator< TInputImage > NeighborhoodIteratorType;
 
   /** Get Skelenton by thinning image. */
-  OutputImageType *
-  GetThinning();
+  OutputImageType * GetThinning();
 
   /** ImageDimension enumeration   */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
-  itkConceptMacro(InputAdditiveOperatorsCheck, (Concept::AdditiveOperators<PixelType>));
-  itkConceptMacro(InputConvertibleToIntCheck, (Concept::Convertible<PixelType, int>));
-  itkConceptMacro(IntConvertibleToInputCheck, (Concept::Convertible<int, PixelType>));
-  itkConceptMacro(SameTypeCheck, (Concept::SameType<PixelType, typename TOutputImage::PixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, OutputImageDimension > ) );
+  itkConceptMacro( InputAdditiveOperatorsCheck,
+                   ( Concept::AdditiveOperators< PixelType > ) );
+  itkConceptMacro( InputConvertibleToIntCheck,
+                   ( Concept::Convertible< PixelType, int > ) );
+  itkConceptMacro( IntConvertibleToInputCheck,
+                   ( Concept::Convertible< int, PixelType > ) );
+  itkConceptMacro( SameTypeCheck,
+                   ( Concept::SameType< PixelType, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   BinaryThinningImageFilter();
-  ~BinaryThinningImageFilter() override = default;
+  virtual ~BinaryThinningImageFilter() ITK_OVERRIDE {}
 
   /** Compute thinning Image. */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
   /** Prepare data. */
-  void
-  PrepareData();
+  void PrepareData();
 
   /**  Compute thinning Image. */
-  void
-  ComputeThinImage();
-}; // end of BinaryThinningImageFilter
-   // class
-} // end namespace itk
+  void ComputeThinImage();
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryThinningImageFilter);
+};                                         // end of BinaryThinningImageFilter
+                                           // class
+} //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBinaryThinningImageFilter.hxx"
+#include "itkBinaryThinningImageFilter.hxx"
 #endif
 
 #endif

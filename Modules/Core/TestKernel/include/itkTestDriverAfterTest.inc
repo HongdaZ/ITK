@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright NumFOCUS
+*  Copyright Insight Software Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -28,21 +28,17 @@ if (redirectOutputParameters.redirect)
   redirectStream.close();
   }
 
-std::vector< HashPairType >& hashTestList = GetHashTestList();
-
 // before the image to image compare we first check md5 hashes
-for(auto & li : hashTestList)
+for( size_t li = 0; li < hashTestList.size(); ++li )
   {
-  const char * const testFilename = li.first;
+  const char * const testFilename = hashTestList[li].first;
 
-  const int ret = HashTestImage( testFilename, li.second );
+  const int ret = HashTestImage( testFilename, hashTestList[li].second );
   if ( ret )
     {
     result = EXIT_FAILURE; //Nonzero indicates failure
     }
   }
-
-RegressionTestParameters& regressionTestParameters = GetRegressionTestParameters();
 
 // Make a list of possible baselines
 for ( int ii = 0;
@@ -53,7 +49,7 @@ for ( int ii = 0;
   char * testFilename =     regressionTestParameters.compareList[ii].second;
   std::map< std::string, int > baselines =
     RegressionTestBaselines(baselineFilename);
-  auto baseline = baselines.begin();
+  std::map< std::string, int >::iterator baseline = baselines.begin();
   std::string bestBaseline = baseline->first;
   int  bestBaselineStatus = itk::NumericTraits< int >::max();
   bool oneReferenceImageWasReadable=false;

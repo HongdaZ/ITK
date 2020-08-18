@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,65 +38,68 @@
 namespace itk
 {
 
-template <typename TImage>
-FFTWComplexToComplexFFTImageFilter<TImage>::FFTWComplexToComplexFFTImageFilter()
-#ifndef ITK_USE_CUFFTW
-  : m_PlanRigor(FFTWGlobalConfiguration::GetPlanRigor())
-#endif
+template< typename TImage >
+FFTWComplexToComplexFFTImageFilter< TImage >
+::FFTWComplexToComplexFFTImageFilter():
+  m_PlanRigor( FFTWGlobalConfiguration::GetPlanRigor() )
 {
-  this->DynamicMultiThreadingOn();
 }
 
 
-template <typename TImage>
+template< typename TImage >
 void
-FFTWComplexToComplexFFTImageFilter<TImage>::BeforeThreadedGenerateData()
+FFTWComplexToComplexFFTImageFilter< TImage >
+::BeforeThreadedGenerateData()
 {
   // get pointers to the input and output
-  const InputImageType * input = this->GetInput();
-  OutputImageType *      output = this->GetOutput();
+  const InputImageType * input  = this->GetInput();
+  OutputImageType * output = this->GetOutput();
 
-  if (!input || !output)
-  {
+  if ( !input || !output )
+    {
     return;
-  }
+    }
 
   // we don't have a nice progress to report, but at least this simple line
   // reports the beginning and the end of the process
   ProgressReporter progress(this, 0, 1);
 
   // allocate output buffer memory
-  output->SetBufferedRegion(output->GetRequestedRegion());
+  output->SetBufferedRegion( output->GetRequestedRegion() );
   output->Allocate();
 
   const typename OutputImageType::SizeType & inputSize = input->GetLargestPossibleRegion().GetSize();
 
   int transformDirection = 1;
-  if (this->GetTransformDirection() == Superclass::TransformDirectionEnum::INVERSE)
-  {
+  if ( this->GetTransformDirection() == Superclass::INVERSE )
+    {
     transformDirection = -1;
-  }
+    }
 
   typename FFTWProxyType::PlanType plan;
-  auto *                           in = (typename FFTWProxyType::ComplexType *)input->GetBufferPointer();
-  auto *                           out = (typename FFTWProxyType::ComplexType *)output->GetBufferPointer();
-  int                              flags = m_PlanRigor;
-  if (!m_CanUseDestructiveAlgorithm)
-  {
+  typename FFTWProxyType::ComplexType * in = (typename FFTWProxyType::ComplexType*) input->GetBufferPointer();
+  typename FFTWProxyType::ComplexType * out = (typename FFTWProxyType::ComplexType*) output->GetBufferPointer();
+  int flags = m_PlanRigor;
+  if( !m_CanUseDestructiveAlgorithm )
+    {
     // if the input is about to be destroyed, there is no need to force fftw
     // to use an non destructive algorithm. If it is not released however,
     // we must be careful to not destroy it.
     flags = flags | FFTW_PRESERVE_INPUT;
-  }
+    }
 
   int sizes[ImageDimension];
-  for (unsigned int i = 0; i < ImageDimension; i++)
-  {
+  for(unsigned int i = 0; i < ImageDimension; i++)
+    {
     sizes[(ImageDimension - 1) - i] = inputSize[i];
-  }
+    }
 
-  plan =
-    FFTWProxyType::Plan_dft(ImageDimension, sizes, in, out, transformDirection, flags, this->GetNumberOfWorkUnits());
+  plan = FFTWProxyType::Plan_dft(ImageDimension,sizes,
+                                    in,
+                                    out,
+                                    transformDirection,
+                                    flags,
+                                    this->GetNumberOfThreads());
 
   FFTWProxyType::Execute(plan);
   FFTWProxyType::DestroyPlan(plan);
@@ -105,48 +108,49 @@ FFTWComplexToComplexFFTImageFilter<TImage>::BeforeThreadedGenerateData()
 
 template <typename TImage>
 void
-FFTWComplexToComplexFFTImageFilter<TImage>::DynamicThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread)
+FFTWComplexToComplexFFTImageFilter< TImage >
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
+  //
   // Normalize the output if backward transform
-  if (this->GetTransformDirection() == Superclass::TransformDirectionEnum::INVERSE)
-  {
-    using IteratorType = ImageRegionIterator<OutputImageType>;
-    SizeValueType totalOutputSize = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
-    IteratorType  it(this->GetOutput(), outputRegionForThread);
-    while (!it.IsAtEnd())
+  //
+  if ( this->GetTransformDirection() == Superclass::INVERSE )
     {
+    typedef ImageRegionIterator< OutputImageType >   IteratorType;
+    SizeValueType totalOutputSize = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
+    IteratorType it(this->GetOutput(), outputRegionForThread);
+    while( !it.IsAtEnd() )
+      {
       PixelType val = it.Value();
       val /= totalOutputSize;
       it.Set(val);
       ++it;
+      }
     }
-  }
 }
 
 
-template <typename TImage>
+template< typename TImage >
 void
-FFTWComplexToComplexFFTImageFilter<TImage>::UpdateOutputData(DataObject * output)
+FFTWComplexToComplexFFTImageFilter< TImage >
+::UpdateOutputData(DataObject * output)
 {
   // we need to catch that information now, because it is changed later
   // during the pipeline execution, and thus can't be grabbed in
   // GenerateData().
   m_CanUseDestructiveAlgorithm = this->GetInput()->GetReleaseDataFlag();
-  Superclass::UpdateOutputData(output);
+  Superclass::UpdateOutputData( output );
 }
 
 
-template <typename TImage>
+template< typename TImage >
 void
-FFTWComplexToComplexFFTImageFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) const
+FFTWComplexToComplexFFTImageFilter< TImage >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-#ifndef ITK_USE_CUFFTW
-  os << indent << "PlanRigor: " << FFTWGlobalConfiguration::GetPlanRigorName(m_PlanRigor) << " (" << m_PlanRigor << ")"
-     << std::endl;
-#endif
+  os << indent << "PlanRigor: " << FFTWGlobalConfiguration::GetPlanRigorName(m_PlanRigor) << " (" << m_PlanRigor << ")" << std::endl;
 }
 
 } // end namespace itk

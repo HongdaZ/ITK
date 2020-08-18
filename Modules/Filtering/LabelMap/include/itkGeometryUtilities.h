@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 namespace itk
 {
 
-/**
- *\class GeometryUtilities
+/** \class GeometryUtilities
  * \brief Groups some utility functions related to geometry
  *
  * This implementation was taken from the Insight Journal paper:
@@ -39,24 +38,20 @@ namespace itk
 class ITKLabelMap_EXPORT GeometryUtilities
 {
 public:
-  static long
-  Factorial(const long n);
 
-  static long
-  DoubleFactorial(const long n);
+  static long Factorial(const long n);
 
-  static double
-  GammaN2p1(const long n);
+  static long DoubleFactorial(const long n);
 
-  static double
-  HyperSphereVolume(const int dim, const double radius);
+  static double GammaN2p1(const long n);
 
-  static double
-  HyperSpherePerimeter(const int dim, const double radius);
+  static double HyperSphereVolume(const int dim, const double radius);
 
-  static double
-  HyperSphereRadiusFromVolume(const int dim, const double volume);
+  static double HyperSpherePerimeter(const int dim, const double radius);
+
+  static double HyperSphereRadiusFromVolume(const int dim, const double volume);
+
 };
 
-} // namespace itk
+}
 #endif

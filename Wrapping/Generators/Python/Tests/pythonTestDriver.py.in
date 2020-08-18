@@ -1,4 +1,4 @@
-#!@Python3_EXECUTABLE@
+#!@PYTHON_EXECUTABLE@
 
 # set environment variables
 
@@ -57,7 +57,7 @@ if len(args) < 1:
 
 # call the program, and exit if it fail
 
-command = ["@Python3_EXECUTABLE@"] + args
+command = ["@PYTHON_EXECUTABLE@"] + args
 if options.verbose:
   print(sys.stderr, "+", " ".join(command))
 returnValue = subprocess.call( command )

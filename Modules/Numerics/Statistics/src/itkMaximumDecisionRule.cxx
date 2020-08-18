@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,24 +22,25 @@ namespace itk
 namespace Statistics
 {
 MaximumDecisionRule::ClassIdentifierType
-MaximumDecisionRule ::Evaluate(const MembershipVectorType & discriminantScores) const
+MaximumDecisionRule
+::Evaluate(const MembershipVectorType & discriminantScores) const
 {
   ClassIdentifierType maxIndex = 0;
 
-  if (!discriminantScores.empty())
-  {
-    MembershipValueType max = discriminantScores[0];
+  if (discriminantScores.size() > 0)
+    {
+    MembershipValueType  max = discriminantScores[0];
     ClassIdentifierType i;
 
-    for (i = 1; i < discriminantScores.size(); i++)
-    {
-      if (discriminantScores[i] > max)
+    for ( i = 1; i < discriminantScores.size(); i++ )
       {
+      if ( discriminantScores[i] > max )
+        {
         max = discriminantScores[i];
         maxIndex = i;
+        }
       }
     }
-  }
   return maxIndex;
 }
 } // end of namespace Statistics

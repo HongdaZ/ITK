@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkCosImageFilter_h
 #define itkCosImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,32 +30,28 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class Cos
 {
 public:
-  Cos() = default;
-  ~Cos() = default;
-  bool
-  operator!=(const Cos &) const
+  Cos() {}
+  ~Cos() {}
+  bool operator!=(const Cos &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Cos & other) const
+  bool operator==(const Cos & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(std::cos(static_cast<double>(A)));
+    return static_cast< TOutput >( std::cos( static_cast< double >( A ) ) );
   }
 };
-} // namespace Functor
-
+}
 /** \class CosImageFilter
  * \brief Computes the cosine of each pixel.
  *
@@ -77,40 +73,47 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage, typename TOutputImage>
-class CosImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class CosImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::Cos<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CosImageFilter);
+  /** Standard class typedefs. */
+  typedef CosImageFilter Self;
+  typedef UnaryFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::Cos< typename TInputImage::PixelType,
+                  typename TOutputImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = CosImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::Cos<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CosImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(CosImageFilter,
+               UnaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage::PixelType, double>));
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( InputConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, double > ) );
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  CosImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
-  ~CosImageFilter() override = default;
+  CosImageFilter() {}
+  virtual ~CosImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CosImageFilter);
 };
 } // end namespace itk
 

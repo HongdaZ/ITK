@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,20 +19,24 @@
 
 namespace itk
 {
-KLMSegmentationBorder ::KLMSegmentationBorder()
+KLMSegmentationBorder
+::KLMSegmentationBorder(void)
 {
   m_Lambda = 0.0;
-  m_Region1 = nullptr;
-  m_Region2 = nullptr;
+  m_Region1 = ITK_NULLPTR;
+  m_Region2 = ITK_NULLPTR;
 }
 
-KLMSegmentationBorder ::~KLMSegmentationBorder() = default;
+KLMSegmentationBorder
+::~KLMSegmentationBorder()
+{}
 
 /**
  * PrintSelf
  */
 void
-KLMSegmentationBorder ::PrintSelf(std::ostream & os, Indent indent) const
+KLMSegmentationBorder
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Lambda  = " << m_Lambda << std::endl;
@@ -41,45 +45,51 @@ KLMSegmentationBorder ::PrintSelf(std::ostream & os, Indent indent) const
 } // end PrintSelf
 
 void
-KLMSegmentationBorder ::SetRegion1(KLMSegmentationRegion * Region1)
+KLMSegmentationBorder
+::SetRegion1(KLMSegmentationRegion *Region1)
 {
   m_Region1 = Region1;
 } // end SetRegion1
 
 KLMSegmentationRegion *
-KLMSegmentationBorder ::GetRegion1()
+KLMSegmentationBorder
+::GetRegion1()
 {
   return m_Region1;
 } // end GetRegion2
 
 void
-KLMSegmentationBorder ::SetRegion2(KLMSegmentationRegion * Region2)
+KLMSegmentationBorder
+::SetRegion2(KLMSegmentationRegion *Region2)
 {
   m_Region2 = Region2;
 } // end SetRegion2
 
 KLMSegmentationRegion *
-KLMSegmentationBorder ::GetRegion2()
+KLMSegmentationBorder
+::GetRegion2()
 {
   return m_Region2;
 } // end GetRegion2
 
 void
-KLMSegmentationBorder ::EvaluateLambda()
+KLMSegmentationBorder
+::EvaluateLambda()
 {
   m_Lambda = m_Region1->EnergyFunctional(m_Region2) / this->GetBorderLength();
 } // end EvaluateLambda()
 
 void
-KLMSegmentationBorder ::PrintBorderInfo()
+KLMSegmentationBorder
+::PrintBorderInfo()
 {
   itkDebugMacro(<< "------------------------------");
   itkDebugMacro(<< "Location      : " << this);
   itkDebugMacro(<< "Lambda        : " << m_Lambda);
-  itkDebugMacro(<< "Region1       : " << this->GetRegion1());
-  itkDebugMacro(<< "Region 1 Label: " << (this->GetRegion1()->GetRegionLabel()));
-  itkDebugMacro(<< "Region2       : " << this->GetRegion2());
-  itkDebugMacro(<< "Region 2 Label: " << (this->GetRegion2()->GetRegionLabel()));
+  itkDebugMacro( << "Region1       : " << this->GetRegion1() );
+  itkDebugMacro( << "Region 1 Label: " << ( this->GetRegion1()->GetRegionLabel() ) );
+  itkDebugMacro( << "Region2       : " << this->GetRegion2() );
+  itkDebugMacro( << "Region 2 Label: " << ( this->GetRegion2()->GetRegionLabel() ) );
   itkDebugMacro(<< "++++++++++++++++++++++++++++++");
   itkDebugMacro(<< "------------------------------");
   itkDebugMacro(<< "------------------------------");

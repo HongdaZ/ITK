@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -176,30 +176,27 @@
 //
 #include "itkRescaleIntensityImageFilter.h"
 
-static void
-PrintCommandLineUsage(const int argc, const char * const argv[])
+static void PrintCommandLineUsage( const int argc, const char * const argv[] )
 {
   std::cerr << "Missing Parameters " << std::endl;
   std::cerr << "Usage: " << argv[0];
   std::cerr << " inputImage  outputImage seedX seedY";
   std::cerr << " Sigma SigmoidAlpha SigmoidBeta TimeThreshold StoppingValue";
-  std::cerr << " smoothingOutputImage gradientMagnitudeOutputImage sigmoidOutputImage"
-            << std::endl;
+  std::cerr << " smoothingOutputImage gradientMagnitudeOutputImage sigmoidOutputImage" << std::endl;
 
-  for (int qq = 0; qq < argc; ++qq)
-  {
+  for (int qq=0; qq< argc; ++qq)
+    {
     std::cout << "argv[" << qq << "] = " << argv[qq] << std::endl;
-  }
+    }
 }
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
   if (argc != 13)
-  {
+    {
     PrintCommandLineUsage(argc, argv);
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -210,9 +207,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InternalPixelType = float;
-  constexpr unsigned int Dimension = 2;
-  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
+  typedef   float           InternalPixelType;
+  const     unsigned int    Dimension = 2;
+  typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -223,8 +220,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using OutputPixelType = unsigned char;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef unsigned char                            OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -236,8 +233,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ThresholdingFilterType =
-    itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
+  typedef itk::BinaryThresholdImageFilter< InternalImageType,
+                        OutputImageType    >    ThresholdingFilterType;
   ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -252,14 +249,14 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const InternalPixelType timeThreshold = std::stod(argv[8]);
+  const InternalPixelType  timeThreshold = atof( argv[8] );
 
   // Software Guide : BeginCodeSnippet
-  thresholder->SetLowerThreshold(0.0);
-  thresholder->SetUpperThreshold(timeThreshold);
+  thresholder->SetLowerThreshold(           0.0  );
+  thresholder->SetUpperThreshold( timeThreshold  );
 
-  thresholder->SetOutsideValue(0);
-  thresholder->SetInsideValue(255);
+  thresholder->SetOutsideValue(  0  );
+  thresholder->SetInsideValue(  255 );
   // Software Guide : EndCodeSnippet
 
 
@@ -270,23 +267,24 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InternalImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef  itk::ImageFileReader< InternalImageType > ReaderType;
+  typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
   // Software Guide : EndCodeSnippet
 
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
 
   //  The RescaleIntensityImageFilter type is declared below. This filter will
   //  renormalize image before sending them to writers.
   //
-  using CastFilterType =
-    itk::RescaleIntensityImageFilter<InternalImageType, OutputImageType>;
+  typedef itk::RescaleIntensityImageFilter<
+                               InternalImageType,
+                               OutputImageType >   CastFilterType;
 
   //  Software Guide : BeginLatex
   //
@@ -296,8 +294,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SmoothingFilterType =
-    itk::CurvatureAnisotropicDiffusionImageFilter<InternalImageType, InternalImageType>;
+  typedef   itk::CurvatureAnisotropicDiffusionImageFilter<
+                               InternalImageType,
+                               InternalImageType >  SmoothingFilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -323,11 +322,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using GradientFilterType =
-    itk::GradientMagnitudeRecursiveGaussianImageFilter<InternalImageType,
-                                                       InternalImageType>;
-  using SigmoidFilterType =
-    itk::SigmoidImageFilter<InternalImageType, InternalImageType>;
+  typedef   itk::GradientMagnitudeRecursiveGaussianImageFilter<
+                               InternalImageType,
+                               InternalImageType >  GradientFilterType;
+  typedef   itk::SigmoidImageFilter<
+                               InternalImageType,
+                               InternalImageType >  SigmoidFilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -339,8 +339,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  GradientFilterType::Pointer gradientMagnitude = GradientFilterType::New();
-  SigmoidFilterType::Pointer  sigmoid = SigmoidFilterType::New();
+  GradientFilterType::Pointer  gradientMagnitude = GradientFilterType::New();
+  SigmoidFilterType::Pointer sigmoid = SigmoidFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -357,8 +357,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  sigmoid->SetOutputMinimum(0.0);
-  sigmoid->SetOutputMaximum(1.0);
+  sigmoid->SetOutputMinimum(  0.0  );
+  sigmoid->SetOutputMaximum(  1.0  );
   // Software Guide : EndCodeSnippet
 
 
@@ -369,8 +369,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FastMarchingFilterType =
-    itk::FastMarchingImageFilter<InternalImageType, InternalImageType>;
+  typedef  itk::FastMarchingImageFilter< InternalImageType,
+                              InternalImageType >    FastMarchingFilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -382,7 +382,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  FastMarchingFilterType::Pointer fastMarching = FastMarchingFilterType::New();
+  FastMarchingFilterType::Pointer  fastMarching
+                                              = FastMarchingFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -395,12 +396,12 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  smoothing->SetInput(reader->GetOutput());
-  gradientMagnitude->SetInput(smoothing->GetOutput());
-  sigmoid->SetInput(gradientMagnitude->GetOutput());
-  fastMarching->SetInput(sigmoid->GetOutput());
-  thresholder->SetInput(fastMarching->GetOutput());
-  writer->SetInput(thresholder->GetOutput());
+  smoothing->SetInput( reader->GetOutput() );
+  gradientMagnitude->SetInput( smoothing->GetOutput() );
+  sigmoid->SetInput( gradientMagnitude->GetOutput() );
+  fastMarching->SetInput( sigmoid->GetOutput() );
+  thresholder->SetInput( fastMarching->GetOutput() );
+  writer->SetInput( thresholder->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -415,9 +416,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  smoothing->SetTimeStep(0.125);
-  smoothing->SetNumberOfIterations(5);
-  smoothing->SetConductanceParameter(9.0);
+  smoothing->SetTimeStep( 0.125 );
+  smoothing->SetNumberOfIterations(  5 );
+  smoothing->SetConductanceParameter( 9.0 );
   // Software Guide : EndCodeSnippet
 
 
@@ -433,10 +434,10 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const double sigma = std::stod(argv[5]);
+  const double sigma = atof( argv[5] );
 
   // Software Guide : BeginCodeSnippet
-  gradientMagnitude->SetSigma(sigma);
+  gradientMagnitude->SetSigma(  sigma  );
   // Software Guide : EndCodeSnippet
 
 
@@ -469,13 +470,13 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const double alpha = std::stod(argv[6]);
-  const double beta = std::stod(argv[7]);
+  const double alpha =  atof( argv[6] );
+  const double beta  =  atof( argv[7] );
 
 
   // Software Guide : BeginCodeSnippet
-  sigmoid->SetAlpha(alpha);
-  sigmoid->SetBeta(beta);
+  sigmoid->SetAlpha( alpha );
+  sigmoid->SetBeta(  beta  );
   // Software Guide : EndCodeSnippet
 
 
@@ -511,16 +512,16 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using NodeContainer = FastMarchingFilterType::NodeContainer;
-  using NodeType = FastMarchingFilterType::NodeType;
+  typedef FastMarchingFilterType::NodeContainer           NodeContainer;
+  typedef FastMarchingFilterType::NodeType                NodeType;
   NodeContainer::Pointer seeds = NodeContainer::New();
   //  Software Guide : EndCodeSnippet
 
 
-  InternalImageType::IndexType seedPosition;
+  InternalImageType::IndexType  seedPosition;
 
-  seedPosition[0] = std::stoi(argv[3]);
-  seedPosition[1] = std::stoi(argv[4]);
+  seedPosition[0] = atoi( argv[3] );
+  seedPosition[1] = atoi( argv[4] );
 
 
   //  Software Guide : BeginLatex
@@ -533,11 +534,11 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  NodeType         node;
-  constexpr double seedValue = 0.0;
+  NodeType node;
+  const double seedValue = 0.0;
 
-  node.SetValue(seedValue);
-  node.SetIndex(seedPosition);
+  node.SetValue( seedValue );
+  node.SetIndex( seedPosition );
   // Software Guide : EndCodeSnippet
 
 
@@ -550,7 +551,7 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   seeds->Initialize();
-  seeds->InsertElement(0, node);
+  seeds->InsertElement( 0, node );
   //  Software Guide : EndCodeSnippet
 
 
@@ -564,7 +565,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  fastMarching->SetTrialPoints(seeds);
+  fastMarching->SetTrialPoints(  seeds  );
   // Software Guide : EndCodeSnippet
 
 
@@ -577,58 +578,58 @@ main(int argc, char * argv[])
   //  parameters of filters in the pipeline.
   //
   try
-  {
+    {
     CastFilterType::Pointer caster1 = CastFilterType::New();
-    WriterType::Pointer     writer1 = WriterType::New();
-    caster1->SetInput(smoothing->GetOutput());
-    writer1->SetInput(caster1->GetOutput());
+    WriterType::Pointer writer1 = WriterType::New();
+    caster1->SetInput( smoothing->GetOutput() );
+    writer1->SetInput( caster1->GetOutput() );
     writer1->SetFileName(argv[10]);
-    caster1->SetOutputMinimum(0);
-    caster1->SetOutputMaximum(255);
+    caster1->SetOutputMinimum(   0 );
+    caster1->SetOutputMaximum( 255 );
     writer1->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   try
-  {
+    {
     CastFilterType::Pointer caster2 = CastFilterType::New();
-    WriterType::Pointer     writer2 = WriterType::New();
-    caster2->SetInput(gradientMagnitude->GetOutput());
-    writer2->SetInput(caster2->GetOutput());
+    WriterType::Pointer writer2 = WriterType::New();
+    caster2->SetInput( gradientMagnitude->GetOutput() );
+    writer2->SetInput( caster2->GetOutput() );
     writer2->SetFileName(argv[11]);
-    caster2->SetOutputMinimum(0);
-    caster2->SetOutputMaximum(255);
+    caster2->SetOutputMinimum(   0 );
+    caster2->SetOutputMaximum( 255 );
     writer2->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   try
-  {
+    {
     CastFilterType::Pointer caster3 = CastFilterType::New();
-    WriterType::Pointer     writer3 = WriterType::New();
-    caster3->SetInput(sigmoid->GetOutput());
-    writer3->SetInput(caster3->GetOutput());
+    WriterType::Pointer writer3 = WriterType::New();
+    caster3->SetInput( sigmoid->GetOutput() );
+    writer3->SetInput( caster3->GetOutput() );
     writer3->SetFileName(argv[12]);
-    caster3->SetOutputMinimum(0);
-    caster3->SetOutputMaximum(255);
+    caster3->SetOutputMinimum(   0 );
+    caster3->SetOutputMaximum( 255 );
     writer3->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //  Software Guide : BeginLatex
   //
@@ -642,7 +643,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  fastMarching->SetOutputSize(reader->GetOutput()->GetBufferedRegion().GetSize());
+  fastMarching->SetOutputSize(
+           reader->GetOutput()->GetBufferedRegion().GetSize() );
   // Software Guide : EndCodeSnippet
 
 
@@ -660,10 +662,10 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
 
-  const double stoppingTime = std::stod(argv[9]);
+  const double stoppingTime = atof( argv[9] );
 
   // Software Guide : BeginCodeSnippet
-  fastMarching->SetStoppingValue(stoppingTime);
+  fastMarching->SetStoppingValue(  stoppingTime  );
   // Software Guide : EndCodeSnippet
 
 
@@ -677,34 +679,34 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   try
-  {
+    {
     CastFilterType::Pointer caster4 = CastFilterType::New();
-    WriterType::Pointer     writer4 = WriterType::New();
-    caster4->SetInput(fastMarching->GetOutput());
-    writer4->SetInput(caster4->GetOutput());
+    WriterType::Pointer writer4 = WriterType::New();
+    caster4->SetInput( fastMarching->GetOutput() );
+    writer4->SetInput( caster4->GetOutput() );
     writer4->SetFileName("FastMarchingFilterOutput4.png");
-    caster4->SetOutputMinimum(0);
-    caster4->SetOutputMaximum(255);
+    caster4->SetOutputMinimum(   0 );
+    caster4->SetOutputMaximum( 255 );
     writer4->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   // The following writer type is used to save the output of the
@@ -713,25 +715,24 @@ main(int argc, char * argv[])
   // with a viewer to help determine an appropriate threshold to be used on
   // the output of the \code{fastmarching} filter.
   //
-  using InternalWriterType = itk::ImageFileWriter<InternalImageType>;
+  typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
 
   InternalWriterType::Pointer mapWriter = InternalWriterType::New();
-  mapWriter->SetInput(fastMarching->GetOutput());
+  mapWriter->SetInput( fastMarching->GetOutput() );
   mapWriter->SetFileName("FastMarchingFilterOutput4.mha");
   mapWriter->Update();
 
   InternalWriterType::Pointer speedWriter = InternalWriterType::New();
-  speedWriter->SetInput(sigmoid->GetOutput());
+  speedWriter->SetInput( sigmoid->GetOutput() );
   speedWriter->SetFileName("FastMarchingFilterOutput3.mha");
   speedWriter->Update();
 
   InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
-  gradientWriter->SetInput(gradientMagnitude->GetOutput());
+  gradientWriter->SetInput( gradientMagnitude->GetOutput() );
   gradientWriter->SetFileName("FastMarchingFilterOutput2.mha");
   gradientWriter->Update();
 
 
-  // clang-format off
   //  Software Guide : BeginLatex
   //
   //  Now let's run this example using the input image
@@ -805,6 +806,5 @@ main(int argc, char * argv[])
   // \end{figure}
   //
   //  Software Guide : EndLatex
-  // clang-format on
   return EXIT_SUCCESS;
 }

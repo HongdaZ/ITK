@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,17 +27,16 @@ namespace itk
  * \brief
  * \ingroup ITKQuadEdgeMeshFiltering
  */
-template <typename TInput, typename TOutput, typename TCriterion>
-class ITK_TEMPLATE_EXPORT SquaredEdgeLengthDecimationQuadEdgeMeshFilter
-  : public EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>
+template< typename TInput, typename TOutput, typename TCriterion >
+class ITK_TEMPLATE_EXPORT SquaredEdgeLengthDecimationQuadEdgeMeshFilter:
+  public EdgeDecimationQuadEdgeMeshFilter< TInput, TOutput, TCriterion >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SquaredEdgeLengthDecimationQuadEdgeMeshFilter);
-
-  using Self = SquaredEdgeLengthDecimationQuadEdgeMeshFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>;
+  typedef SquaredEdgeLengthDecimationQuadEdgeMeshFilter Self;
+  typedef SmartPointer< Self >                          Pointer;
+  typedef SmartPointer< const Self >                    ConstPointer;
+  typedef EdgeDecimationQuadEdgeMeshFilter<
+    TInput, TOutput, TCriterion >                       Superclass;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(SquaredEdgeLengthDecimationQuadEdgeMeshFilter, EdgeDecimationQuadEdgeMeshFilter);
@@ -45,34 +44,34 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using InputMeshType = TInput;
-  using InputMeshPointer = typename InputMeshType::Pointer;
+  typedef TInput                          InputMeshType;
+  typedef typename InputMeshType::Pointer InputMeshPointer;
 
-  using OutputMeshType = TOutput;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
-  using OutputPointIdentifier = typename OutputMeshType::PointIdentifier;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputEdgeCellType = typename OutputMeshType::EdgeCellType;
-  using OutputCellsContainerIterator = typename OutputMeshType::CellsContainerIterator;
+  typedef TOutput                                         OutputMeshType;
+  typedef typename OutputMeshType::Pointer                OutputMeshPointer;
+  typedef typename OutputMeshType::PointIdentifier        OutputPointIdentifier;
+  typedef typename OutputMeshType::PointType              OutputPointType;
+  typedef typename OutputMeshType::QEType                 OutputQEType;
+  typedef typename OutputMeshType::EdgeCellType           OutputEdgeCellType;
+  typedef typename OutputMeshType::CellsContainerIterator OutputCellsContainerIterator;
 
-  using CriterionType = TCriterion;
-  using MeasureType = typename CriterionType::MeasureType;
+  typedef TCriterion                          CriterionType;
+  typedef typename CriterionType::MeasureType MeasureType;
 
-  using PriorityType = typename Superclass::PriorityType;
-  using PriorityQueueItemType = typename Superclass::PriorityQueueItemType;
-  using PriorityQueueType = typename Superclass::PriorityQueueType;
-  using PriorityQueuePointer = typename Superclass::PriorityQueuePointer;
+  typedef typename Superclass::PriorityType          PriorityType;
+  typedef typename Superclass::PriorityQueueItemType PriorityQueueItemType;
+  typedef typename Superclass::PriorityQueueType     PriorityQueueType;
+  typedef typename Superclass::PriorityQueuePointer  PriorityQueuePointer;
 
-  using QueueMapType = typename Superclass::QueueMapType;
-  using QueueMapIterator = typename Superclass::QueueMapIterator;
+  typedef typename Superclass::QueueMapType     QueueMapType;
+  typedef typename Superclass::QueueMapIterator QueueMapIterator;
 
-  using OperatorType = typename Superclass::OperatorType;
-  using OperatorPointer = typename Superclass::OperatorPointer;
+  typedef typename Superclass::OperatorType    OperatorType;
+  typedef typename Superclass::OperatorPointer OperatorPointer;
 
 protected:
   SquaredEdgeLengthDecimationQuadEdgeMeshFilter();
-  ~SquaredEdgeLengthDecimationQuadEdgeMeshFilter() override = default;
+  virtual ~SquaredEdgeLengthDecimationQuadEdgeMeshFilter() ITK_OVERRIDE;
 
   // keep the start of this documentation text on very first comment line,
   // it prevents a Doxygen bug
@@ -81,17 +80,16 @@ protected:
    * \param[in] iEdge
    * \return measure value, here the squared edge length
    */
-  MeasureType
-  MeasureEdge(OutputQEType * iEdge) override
-  {
+  MeasureType MeasureEdge(OutputQEType *iEdge) ITK_OVERRIDE
+    {
     OutputPointIdentifier id_org = iEdge->GetOrigin();
     OutputPointIdentifier id_dest = iEdge->GetDestination();
 
     OutputPointType org = this->m_OutputMesh->GetPoint(id_org);
     OutputPointType dest = this->m_OutputMesh->GetPoint(id_dest);
 
-    return static_cast<MeasureType>(org.SquaredEuclideanDistanceTo(dest));
-  }
+    return static_cast< MeasureType >( org.SquaredEuclideanDistanceTo(dest) );
+    }
 
   // keep the start of this documentation text on very first comment line,
   // it prevents a Doxygen bug
@@ -100,10 +98,13 @@ protected:
    * \param[in] iEdge
    * \return the optimal point location
    */
-  OutputPointType
-  Relocate(OutputQEType * iEdge) override;
+  OutputPointType Relocate(OutputQEType *iEdge) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SquaredEdgeLengthDecimationQuadEdgeMeshFilter);
+
 };
-} // namespace itk
+}
 
 #include "itkSquaredEdgeLengthDecimationQuadEdgeMeshFilter.hxx"
 #endif

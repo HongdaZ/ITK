@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,20 +33,24 @@ namespace itk
 {
 VTKImageIOFactory::VTKImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkVTKImageIO", "VTK Image IO", true, CreateObjectFunction<VTKImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkVTKImageIO",
+                          "VTK Image IO",
+                          1,
+                          CreateObjectFunction< VTKImageIO >::New() );
 }
 
-VTKImageIOFactory::~VTKImageIOFactory() = default;
+VTKImageIOFactory::~VTKImageIOFactory()
+{}
 
 const char *
-VTKImageIOFactory::GetITKSourceVersion() const
+VTKImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-VTKImageIOFactory::GetDescription() const
+VTKImageIOFactory::GetDescription(void) const
 {
   return "VTK ImageIO Factory, allows the loading of VTK images into ITK";
 }
@@ -56,14 +60,13 @@ VTKImageIOFactory::GetDescription() const
 
 static bool VTKImageIOFactoryHasBeenRegistered;
 
-void ITKIOVTK_EXPORT
-     VTKImageIOFactoryRegister__Private()
+void ITKIOVTK_EXPORT VTKImageIOFactoryRegister__Private(void)
 {
-  if (!VTKImageIOFactoryHasBeenRegistered)
-  {
+  if( ! VTKImageIOFactoryHasBeenRegistered )
+    {
     VTKImageIOFactoryHasBeenRegistered = true;
     VTKImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

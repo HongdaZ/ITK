@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include <itkCommonEnums.h>
 #include "itkLogicOpsFunctors.h"
 #include "itkBinaryFunctorImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -27,78 +26,62 @@ namespace
 class Bogus
 {
 public:
-  // using Self = Bogus;
-  // using Pointer = SmartPointer<Self>;
+  // typedef Bogus Self;
+  // typedef SmartPointer<Self> Pointer;
   // itkNewMacro(Self);
   //     static Bogus* New() { return new Bogus(); };
   //     void Register() {};
   //     void UnRegister() {};
 
-  float
-  operator()(double d, double)
-  {
-    return (float)d;
-  }
-  void
-  Visit(int, Bogus *)
-  {}
-
-  itk::CellGeometryEnum
-  GetCellTopologyId()
-  {
-    return itk::CellGeometryEnum::HEXAHEDRON_CELL;
-  }
-
-  itk::CellGeometryEnum
-  GetTopologyId()
-  {
-    return itk::CellGeometryEnum::HEXAHEDRON_CELL;
-  }
-
-  Bogus() = default;
-  virtual ~Bogus() = default;
+  float operator() ( double d, double ) { return (float) d; }
+  void Visit ( int, Bogus* ) {}
+  int GetCellTopologyId() { return 1; }
+  int GetTopologyId() { return 1; }
+  Bogus() {}
+  virtual ~Bogus() {}
 };
-} // namespace
+}
 
-int
-itkEqualTest(int, char *[])
+int itkEqualTest(int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 3;
+  const unsigned int myDimension = 3;
 
   // Declare the types of the images
-  using myImageType1 = itk::Image<float, myDimension>;
-  using myImageType2 = itk::Image<float, myDimension>;
-  using myImageType3 = itk::Image<float, myDimension>;
-  using PixelType = myImageType1::PixelType;
+  typedef itk::Image<float, myDimension>  myImageType1;
+  typedef itk::Image<float, myDimension>  myImageType2;
+  typedef itk::Image<float, myDimension>  myImageType3;
+  typedef myImageType1::PixelType         PixelType;
 
   // Declare the type of the index to access images
-  using myIndexType = itk::Index<myDimension>;
+  typedef itk::Index<myDimension>         myIndexType;
 
   // Declare the type of the size
-  using mySizeType = itk::Size<myDimension>;
+  typedef itk::Size<myDimension>          mySizeType;
 
   // Declare the type of the Region
-  using myRegionType = itk::ImageRegion<myDimension>;
+  typedef itk::ImageRegion<myDimension>    myRegionType;
 
-  using myFilterType = itk::BinaryFunctorImageFilter<
+  typedef itk::BinaryFunctorImageFilter<
     myImageType1,
     myImageType2,
     myImageType3,
-    itk::Functor::Equal<myImageType1::PixelType, myImageType2::PixelType, myImageType3::PixelType>>;
+    itk::Functor::Equal<myImageType1::PixelType,
+                        myImageType2::PixelType,
+                        myImageType3::PixelType> > myFilterType;
 
-  // Declare the pointers to images
-  using myImageType1Pointer = myImageType1::Pointer;
-  using myImageType2Pointer = myImageType2::Pointer;
-  using myImageType3Pointer = myImageType3::Pointer;
-  using myFilterTypePointer = myFilterType::Pointer;
+// Declare the pointers to images
+  typedef myImageType1::Pointer   myImageType1Pointer;
+  typedef myImageType2::Pointer   myImageType2Pointer;
+  typedef myImageType3::Pointer   myImageType3Pointer;
+  typedef myFilterType::Pointer   myFilterTypePointer;
 
-  // Create two images
-  myImageType1Pointer inputImageA = myImageType1::New();
-  myImageType2Pointer inputImageB = myImageType2::New();
+// Create two images
+  myImageType1Pointer inputImageA  = myImageType1::New();
+  myImageType2Pointer inputImageB  = myImageType2::New();
 
-  // Define their size, and start index
+// Define their size, and start index
   mySizeType size;
   size[0] = 2;
   size[1] = 2;
@@ -110,155 +93,157 @@ itkEqualTest(int, char *[])
   start[2] = 0;
 
   myRegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
-  // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+// Initialize Image A
+  inputImageA->SetLargestPossibleRegion( region );
+  inputImageA->SetBufferedRegion( region );
+  inputImageA->SetRequestedRegion( region );
   inputImageA->Allocate();
 
-  // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+// Initialize Image B
+  inputImageB->SetLargestPossibleRegion( region );
+  inputImageB->SetBufferedRegion( region );
+  inputImageB->SetRequestedRegion( region );
   inputImageB->Allocate();
 
 
-  // Declare Iterator types apropriated for each image
-  using myIteratorType1 = itk::ImageRegionIteratorWithIndex<myImageType1>;
-  using myIteratorType2 = itk::ImageRegionIteratorWithIndex<myImageType2>;
+// Declare Iterator types apropriated for each image
+  typedef itk::ImageRegionIteratorWithIndex<myImageType1>  myIteratorType1;
+  typedef itk::ImageRegionIteratorWithIndex<myImageType2>  myIteratorType2;
 
-  // Create one iterator for Image A (this is a light object)
-  myIteratorType1 it1(inputImageA, inputImageA->GetBufferedRegion());
+// Create one iterator for Image A (this is a light object)
+  myIteratorType1 it1( inputImageA, inputImageA->GetBufferedRegion() );
 
-  // Initialize the content of Image A
+// Initialize the content of Image A
 
-  it1.Set(3.0);
+  it1.Set( 3.0 );
   ++it1;
-  while (!it1.IsAtEnd())
-  {
-    it1.Set(2.0);
+  while( !it1.IsAtEnd() )
+    {
+    it1.Set( 2.0 );
     ++it1;
-  }
+    }
 
-  // Create one iterator for Image B (this is a light object)
-  myIteratorType2 it2(inputImageB, inputImageB->GetBufferedRegion());
+// Create one iterator for Image B (this is a light object)
+  myIteratorType2 it2( inputImageB, inputImageB->GetBufferedRegion() );
 
-  // Initialize the content of Image B
-  while (!it2.IsAtEnd())
-  {
-    it2.Set(3.0);
+// Initialize the content of Image B
+  while( !it2.IsAtEnd() )
+    {
+    it2.Set( 3.0 );
     ++it2;
-  }
+    }
 
   {
-    // Create a logic Filter
-    myFilterTypePointer filter = myFilterType::New();
-    if (filter.IsNull())
+  // Create a logic Filter
+  myFilterTypePointer filter = myFilterType::New();
+  if(filter.IsNull())
     {
-      return EXIT_FAILURE;
+    return EXIT_FAILURE;
     }
 
-    // Connect the input images
-    filter->SetInput1(inputImageA);
-    filter->SetInput2(inputImageB);
+  // Connect the input images
+  filter->SetInput1( inputImageA );
+  filter->SetInput2( inputImageB );
 
-    filter->SetFunctor(filter->GetFunctor());
+  filter->SetFunctor(filter->GetFunctor());
 
-    // Get the Smart Pointer to the Filter Output
-    myImageType3Pointer outputImage = filter->GetOutput();
+  // Get the Smart Pointer to the Filter Output
+  myImageType3Pointer outputImage = filter->GetOutput();
 
-    // Execute the filter
-    filter->Update();
-    filter->SetFunctor(filter->GetFunctor());
+  // Execute the filter
+  filter->Update();
+  filter->SetFunctor(filter->GetFunctor());
 
-    // check the results
-    PixelType FG = filter->GetFunctor().GetForegroundValue();
-    PixelType BG = filter->GetFunctor().GetBackgroundValue();
+  // check the results
+  PixelType FG = filter->GetFunctor().GetForegroundValue();
+  PixelType BG = filter->GetFunctor().GetBackgroundValue();
 
-    int status1 = checkImOnImRes<myImageType1, myImageType2, myImageType3, std::equal_to<myImageType1::PixelType>>(
-      inputImageA, inputImageB, outputImage, FG, BG);
-    if (status1 == EXIT_FAILURE)
+  int status1 = checkImOnImRes < myImageType1, myImageType2, myImageType3, std::equal_to<myImageType1::PixelType> >
+                             (inputImageA, inputImageB, outputImage, FG, BG);
+  if (status1 == EXIT_FAILURE)
     {
-      return (EXIT_FAILURE);
+    return(EXIT_FAILURE);
     }
-    else
+  else
     {
-      std::cout << "Step 1 passed" << std::endl;
-    }
-  }
-
-  {
-    // Create a logic Filter
-    myFilterTypePointer filter = myFilterType::New();
-
-    // Connect the input images
-    filter->SetInput1(inputImageA);
-
-    filter->SetFunctor(filter->GetFunctor());
-
-    // Get the Smart Pointer to the Filter Output
-    myImageType3Pointer outputImage = filter->GetOutput();
-
-    // Now try testing with constant : Im1 == 2
-    filter->SetConstant(2.0);
-    filter->Update();
-    PixelType FG = filter->GetFunctor().GetForegroundValue();
-    PixelType BG = filter->GetFunctor().GetBackgroundValue();
-    PixelType C = filter->GetConstant2();
-    int       status2 = checkImOnConstRes<myImageType1, PixelType, myImageType3, std::equal_to<PixelType>>(
-      inputImageA, C, outputImage, FG, BG);
-    if (status2 == EXIT_FAILURE)
-    {
-      return (EXIT_FAILURE);
-    }
-    else
-    {
-      std::cout << "Step 2 passed " << std::endl;
-    }
-  }
-  // Now try testing with constant : 3 == Im2
-  {
-    // Create a logic Filter
-    myFilterTypePointer filter = myFilterType::New();
-
-
-    // Connect the input images
-
-    filter->SetFunctor(filter->GetFunctor());
-
-    // Get the Smart Pointer to the Filter Output
-    myImageType3Pointer outputImage = filter->GetOutput();
-    filter->SetConstant1(3.0);
-    filter->SetInput2(inputImageB);
-    filter->Update();
-    PixelType FG = filter->GetFunctor().GetForegroundValue();
-    PixelType BG = filter->GetFunctor().GetBackgroundValue();
-
-    int status3 = checkConstOnImRes<PixelType, myImageType2, myImageType3, std::equal_to<PixelType>>(
-      filter->GetConstant1(), inputImageB, outputImage, FG, BG);
-    if (status3 == EXIT_FAILURE)
-    {
-      return (EXIT_FAILURE);
-    }
-    else
-    {
-      std::cout << "Step 3 passed" << std::endl;
+    std::cout << "Step 1 passed" << std::endl;
     }
   }
 
   {
-    // BinaryImageFilter
-    using iFIB = itk::BinaryFunctorImageFilter<itk::Image<double>, itk::Image<double>, itk::Image<double>, Bogus>;
-    iFIB::Pointer FIB = iFIB::New();
-    if (FIB.IsNull())
+  // Create a logic Filter
+  myFilterTypePointer filter = myFilterType::New();
+
+  // Connect the input images
+  filter->SetInput1( inputImageA );
+
+  filter->SetFunctor(filter->GetFunctor());
+
+  // Get the Smart Pointer to the Filter Output
+  myImageType3Pointer outputImage = filter->GetOutput();
+
+  // Now try testing with constant : Im1 == 2
+  filter->SetConstant(2.0);
+  filter->Update();
+  PixelType FG = filter->GetFunctor().GetForegroundValue();
+  PixelType BG = filter->GetFunctor().GetBackgroundValue();
+  PixelType C = filter->GetConstant2();
+  int status2 = checkImOnConstRes < myImageType1, PixelType, myImageType3, std::equal_to<PixelType> >
+                                (inputImageA, C, outputImage, FG, BG);
+  if (status2 == EXIT_FAILURE)
     {
-      return EXIT_FAILURE;
+    return(EXIT_FAILURE);
+    }
+  else
+    {
+    std::cout << "Step 2 passed " << std::endl;
+    }
+
+  }
+// Now try testing with constant : 3 == Im2
+  {
+  // Create a logic Filter
+  myFilterTypePointer filter = myFilterType::New();
+
+
+  // Connect the input images
+
+  filter->SetFunctor(filter->GetFunctor());
+
+  // Get the Smart Pointer to the Filter Output
+  myImageType3Pointer outputImage = filter->GetOutput();
+  filter->SetConstant1(3.0);
+  filter->SetInput2(inputImageB);
+  filter->Update();
+  PixelType FG = filter->GetFunctor().GetForegroundValue();
+  PixelType BG = filter->GetFunctor().GetBackgroundValue();
+
+  int status3 = checkConstOnImRes < PixelType, myImageType2, myImageType3, std::equal_to<PixelType> >
+                                (filter->GetConstant1(),  inputImageB, outputImage, FG, BG);
+  if (status3 == EXIT_FAILURE)
+    {
+    return(EXIT_FAILURE);
+    }
+  else
+    {
+    std::cout << "Step 3 passed" << std::endl;
+    }
+
+  }
+
+  {
+  // BinaryImageFilter
+  typedef itk::BinaryFunctorImageFilter<itk::Image<double>, itk::Image<double>, itk::Image<double>, Bogus > iFIB;
+  iFIB::Pointer FIB = iFIB::New();
+  if(FIB.IsNull())
+    {
+    return EXIT_FAILURE;
     }
   }
 
-  // All objects should be automatically destroyed at this point
+// All objects should be automatically destroyed at this point
   return EXIT_SUCCESS;
 }

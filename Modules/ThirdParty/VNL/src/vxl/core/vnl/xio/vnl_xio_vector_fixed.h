@@ -23,9 +23,7 @@
 #include <string>
 #include <vsl/vsl_fwd.h>
 #include <vnl/vnl_vector_fixed.h>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 
 //: XML save vnl_vector_fixed to stream.
 // \relatesalso vnl_vector_fixed

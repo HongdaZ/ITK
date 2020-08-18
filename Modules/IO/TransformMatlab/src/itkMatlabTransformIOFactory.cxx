@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,28 +22,28 @@
 
 namespace itk
 {
-void
-MatlabTransformIOFactory::PrintSelf(std::ostream &, Indent) const
+void MatlabTransformIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 MatlabTransformIOFactory::MatlabTransformIOFactory()
 {
-  this->RegisterOverride("itkTransformIOBaseTemplate",
-                         "itkMatlabTransformIO",
-                         "Matlab Transform float IO",
-                         true,
-                         CreateObjectFunction<MatlabTransformIOTemplate<float>>::New());
-  this->RegisterOverride("itkTransformIOBaseTemplate",
-                         "itkMatlabTransformIO",
-                         "Matlab Transform double IO",
-                         true,
-                         CreateObjectFunction<MatlabTransformIOTemplate<double>>::New());
+  this->RegisterOverride( "itkTransformIOBaseTemplate",
+                          "itkMatlabTransformIO",
+                          "Matlab Transform float IO",
+                          1,
+                          CreateObjectFunction< MatlabTransformIOTemplate< float > >::New() );
+  this->RegisterOverride( "itkTransformIOBaseTemplate",
+                          "itkMatlabTransformIO",
+                          "Matlab Transform double IO",
+                          1,
+                          CreateObjectFunction< MatlabTransformIOTemplate< double >  >::New() );
 }
 
-MatlabTransformIOFactory::~MatlabTransformIOFactory() = default;
+MatlabTransformIOFactory::~MatlabTransformIOFactory()
+{}
 
 const char *
-MatlabTransformIOFactory::GetITKSourceVersion() const
+MatlabTransformIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -59,13 +59,12 @@ MatlabTransformIOFactory::GetDescription() const
 // DO NOT CALL DIRECTLY.
 static bool MatlabTransformIOFactoryHasBeenRegistered;
 
-void ITKIOTransformMatlab_EXPORT
-     MatlabTransformIOFactoryRegister__Private()
+void ITKIOTransformMatlab_EXPORT MatlabTransformIOFactoryRegister__Private(void)
 {
-  if (!MatlabTransformIOFactoryHasBeenRegistered)
-  {
+  if( ! MatlabTransformIOFactoryHasBeenRegistered )
+    {
     MatlabTransformIOFactoryHasBeenRegistered = true;
     MatlabTransformIOFactory::RegisterOneFactory();
-  }
+    }
 }
 } // end namespace itk

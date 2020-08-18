@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,191 +24,247 @@
 namespace itk
 {
 /** Constructor */
-template <unsigned int TDimension>
-GaussianSpatialObject<TDimension>::GaussianSpatialObject()
+template< unsigned int TDimension >
+GaussianSpatialObject< TDimension >
+::GaussianSpatialObject()
 {
   this->SetTypeName("GaussianSpatialObject");
-
-  this->Clear();
-
-  this->Update();
-}
-
-template <unsigned int TDimension>
-void
-GaussianSpatialObject<TDimension>::Clear()
-{
-  Superclass::Clear();
-
-  m_CenterInObjectSpace.Fill(0.0);
-  m_RadiusInObjectSpace = 1.0;
-  m_SigmaInObjectSpace = 1.0;
+  this->SetDimension(TDimension);
+  m_Radius = 1.0;
+  m_Sigma = 1.0;
   m_Maximum = 1.0;
-
-  this->Modified();
 }
+
+/** Destructor */
+template< unsigned int TDimension >
+GaussianSpatialObject< TDimension >
+::~GaussianSpatialObject()
+{}
 
 /** The z-score is the root mean square of the z-scores along
  *  each principal axis. */
-template <unsigned int TDimension>
-typename GaussianSpatialObject<TDimension>::ScalarType
-GaussianSpatialObject<TDimension>::SquaredZScoreInObjectSpace(const PointType & point) const
+template< unsigned int TDimension >
+typename GaussianSpatialObject< TDimension >::ScalarType
+GaussianSpatialObject< TDimension >
+::SquaredZScore(const PointType & point) const
 {
+  if ( !this->SetInternalInverseTransformToWorldToIndexTransform() )
+    {
+    return 0;
+    }
+
+  PointType transformedPoint =
+    this->GetInternalInverseTransform()->TransformPoint(point);
+
   ScalarType r = 0;
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    r += point[i] * point[i];
-  }
-  return r / (m_SigmaInObjectSpace * m_SigmaInObjectSpace);
+  for ( unsigned int i = 0; i < TDimension; i++ )
+    {
+    r += transformedPoint[i] * transformedPoint[i];
+    }
+  return r / ( m_Sigma * m_Sigma );
 }
-
-/** The z-score is the root mean square of the z-scores along
- *  each principal axis. */
-template <unsigned int TDimension>
-typename GaussianSpatialObject<TDimension>::ScalarType
-GaussianSpatialObject<TDimension>::SquaredZScoreInWorldSpace(const PointType & point) const
-{
-  PointType transformedPoint = this->GetObjectToWorldTransformInverse()->TransformPoint(point);
-
-  return this->SquaredZScoreInObjectSpace(transformedPoint);
-}
-
 
 /** Test whether a point is inside or outside the object.
  *  For computational speed purposes, it is faster if the method does not
  *  check the name of the class and the current depth. */
-template <unsigned int TDimension>
+template< unsigned int TDimension >
 bool
-GaussianSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point) const
+GaussianSpatialObject< TDimension >
+::IsInside(const PointType & point) const
 {
-  if (m_RadiusInObjectSpace > itk::Math::eps)
-  {
-    if (this->GetMyBoundingBoxInObjectSpace()->IsInside(point))
+  if ( m_Radius < itk::Math::eps )
     {
-      double r = 0;
-      for (unsigned int i = 0; i < TDimension; i++)
-      {
-        r += (point[i] - m_CenterInObjectSpace[i]) * (point[i] - m_CenterInObjectSpace[i]);
-      }
-
-      r /= (m_RadiusInObjectSpace * m_RadiusInObjectSpace);
-
-      if (r <= 1.0)
-      {
-        return true;
-      }
+    return false;
     }
-  }
+
+  this->ComputeLocalBoundingBox();
+  if ( !this->GetBounds()->IsInside(point) )
+    {
+    return false;
+    }
+
+  if ( !this->SetInternalInverseTransformToWorldToIndexTransform() )
+    {
+    return false;
+    }
+
+  PointType transformedPoint =
+    this->GetInternalInverseTransform()->TransformPoint(point);
+
+  double r = 0;
+  for ( unsigned int i = 0; i < TDimension; i++ )
+    {
+    r += transformedPoint[i] * transformedPoint[i];
+    }
+
+  r /= ( m_Radius * m_Radius );
+
+  if ( r < 1.0 )
+    {
+    return true;
+    }
 
   return false;
 }
 
+/** Test if the given point is inside the boundary of the spatial
+ * object. */
+template< unsigned int TDimension >
+bool
+GaussianSpatialObject< TDimension >
+::IsInside(const PointType & point, unsigned int depth, char *name) const
+{
+  itkDebugMacro("Checking the point [" << point
+                                       << "] is inside the GaussianSpatialObject");
+
+  if ( name == ITK_NULLPTR )
+    {
+    if ( IsInside(point) )
+      {
+      return true;
+      }
+    }
+  else if ( strstr(typeid( Self ).name(), name) )
+    {
+    if ( IsInside(point) )
+      {
+      return true;
+      }
+    }
+
+  return Superclass::IsInside(point, depth, name);
+}
+
 /** Compute the bounds of the Gaussian (as determined by the
  *  specified radius). */
-template <unsigned int TDimension>
-void
-GaussianSpatialObject<TDimension>::ComputeMyBoundingBox()
+template< unsigned int TDimension >
+bool
+GaussianSpatialObject< TDimension >
+::ComputeLocalBoundingBox() const
 {
-  itkDebugMacro("Computing Guassian bounding box");
+  if ( this->GetBoundingBoxChildrenName().empty()
+       || strstr( typeid( Self ).name(),
+                  this->GetBoundingBoxChildrenName().c_str() ) )
+    {
+    // we need to set the minimum and maximum of the bounding box
+    // the center is always inside the bounding box.
+    PointType center;
+    center.Fill(0);
+    center = this->GetIndexToWorldTransform()->TransformPoint(center);
+    const_cast< BoundingBoxType * >( this->GetBounds() )->SetMinimum(center);
+    const_cast< BoundingBoxType * >( this->GetBounds() )->SetMaximum(center);
 
-  PointType pnt1;
-  PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    pnt1[i] = m_CenterInObjectSpace[i] - m_RadiusInObjectSpace;
-    pnt2[i] = m_CenterInObjectSpace[i] + m_RadiusInObjectSpace;
-  }
+    // First we compute the bounding box in the index space
+    typename BoundingBoxType::Pointer bb = BoundingBoxType::New();
 
-  this->GetModifiableMyBoundingBoxInObjectSpace()->SetMinimum(pnt1);
-  this->GetModifiableMyBoundingBoxInObjectSpace()->SetMaximum(pnt1);
-  this->GetModifiableMyBoundingBoxInObjectSpace()->ConsiderPoint(pnt2);
-  this->GetModifiableMyBoundingBoxInObjectSpace()->ComputeBoundingBox();
+    PointType    pntMin;
+    PointType    pntMax;
+    unsigned int i;
+    for ( i = 0; i < TDimension; i++ )
+      {
+      pntMin[i] = -m_Radius;
+      pntMax[i] = m_Radius;
+      }
+
+    bb->SetMinimum(pntMin);
+    bb->SetMaximum(pntMax);
+
+    bb->ComputeBoundingBox();
+
+    typedef typename BoundingBoxType::PointsContainer PointsContainer;
+    const PointsContainer *corners = bb->GetCorners();
+    typename BoundingBoxType::PointsContainer::const_iterator
+    it = corners->begin();
+    while ( it != corners->end() )
+      {
+      PointType pnt = this->GetIndexToWorldTransform()->TransformPoint(*it);
+      const_cast< BoundingBoxType * >( this->GetBounds() )->ConsiderPoint(pnt);
+      ++it;
+      }
+    }
+  return true;
+}
+
+/** Returns if the ellipse is evaluable at one point. */
+template< unsigned int TDimension >
+bool
+GaussianSpatialObject< TDimension >
+::IsEvaluableAt(const PointType & point,
+                unsigned int depth, char *name) const
+{
+  itkDebugMacro("Checking if the ellipse is evaluable at " << point);
+  return IsInside(point, depth, name);
 }
 
 /** Returns the value at one point. */
-template <unsigned int TDimension>
+template< unsigned int TDimension >
 bool
-GaussianSpatialObject<TDimension>::ValueAtInObjectSpace(const PointType &   point,
-                                                        double &            value,
-                                                        unsigned int        depth,
-                                                        const std::string & name) const
+GaussianSpatialObject< TDimension >
+::ValueAt(const PointType & point, ScalarType & value, unsigned int depth,
+          char *name) const
 {
   itkDebugMacro("Getting the value of the ellipse at " << point);
-  if (this->GetTypeName().find(name) != std::string::npos)
-  {
-    if (IsInsideInObjectSpace(point))
+  if ( IsInside(point, 0, name) )
     {
-      const double zsq = this->SquaredZScoreInObjectSpace(point);
-      value = m_Maximum * (ScalarType)std::exp(-zsq / 2.0);
-      return true;
+    const double zsq = this->SquaredZScore(point);
+    value = m_Maximum * (ScalarType)std::exp(-zsq / 2.0);
+    return true;
     }
-  }
-
-  if (depth > 0)
-  {
-    if (Superclass::ValueAtChildrenInObjectSpace(point, value, depth - 1, name))
+  else if ( Superclass::IsEvaluableAt(point, depth, name) )
     {
-      return true;
+    Superclass::ValueAt(point, value, depth, name);
+    return true;
     }
-  }
-
   value = this->GetDefaultOutsideValue();
   return false;
 }
 
 /** Returns the sigma=m_Radius level set of the Gaussian function, as an
  * EllipseSpatialObject. */
-template <unsigned int TDimension>
-typename EllipseSpatialObject<TDimension>::Pointer
-GaussianSpatialObject<TDimension>::GetEllipsoid() const
+template< unsigned int TDimension >
+typename EllipseSpatialObject< TDimension >::Pointer
+GaussianSpatialObject< TDimension >
+::GetEllipsoid() const
 {
-  using EllipseType = itk::EllipseSpatialObject<TDimension>;
+  typedef itk::EllipseSpatialObject< TDimension > EllipseType;
   typename EllipseType::Pointer ellipse = EllipseType::New();
 
-  ellipse->SetRadiusInObjectSpace(m_RadiusInObjectSpace);
-  ellipse->SetCenterInObjectSpace(m_CenterInObjectSpace);
+  ellipse->SetRadius(m_Radius);
 
-  ellipse->GetModifiableObjectToWorldTransform()->SetFixedParameters(
-    this->GetObjectToWorldTransform()->GetFixedParameters());
-  ellipse->GetModifiableObjectToWorldTransform()->SetParameters(this->GetObjectToWorldTransform()->GetParameters());
+  ellipse->GetIndexToObjectTransform()->SetCenter(
+    this->GetIndexToObjectTransform()->GetCenter() );
+  ellipse->GetIndexToObjectTransform()->SetMatrix(
+    this->GetIndexToObjectTransform()->GetMatrix() );
+  ellipse->GetIndexToObjectTransform()->SetOffset(
+    this->GetIndexToObjectTransform()->GetOffset() );
 
-  ellipse->Update();
+  ellipse->GetModifiableObjectToWorldTransform()->SetCenter(
+    this->GetObjectToWorldTransform()->GetCenter() );
+  ellipse->GetModifiableObjectToWorldTransform()->SetMatrix(
+    this->GetObjectToWorldTransform()->GetMatrix() );
+  ellipse->GetModifiableObjectToWorldTransform()->SetOffset(
+    this->GetObjectToWorldTransform()->GetOffset() );
+
+  ellipse->GetModifiableIndexToWorldTransform()->SetCenter(
+    this->GetIndexToWorldTransform()->GetCenter() );
+  ellipse->GetModifiableIndexToWorldTransform()->SetMatrix(
+    this->GetIndexToWorldTransform()->GetMatrix() );
+  ellipse->GetModifiableIndexToWorldTransform()->SetOffset(
+    this->GetIndexToWorldTransform()->GetOffset() );
 
   return ellipse;
 }
 
-/** InternalClone */
-template <unsigned int TDimension>
-typename LightObject::Pointer
-GaussianSpatialObject<TDimension>::InternalClone() const
-{
-  // Default implementation just copies the parameters from
-  // this to new transform.
-  typename LightObject::Pointer loPtr = Superclass::InternalClone();
-
-  typename Self::Pointer rval = dynamic_cast<Self *>(loPtr.GetPointer());
-  if (rval.IsNull())
-  {
-    itkExceptionMacro(<< "downcast to type " << this->GetNameOfClass() << " failed.");
-  }
-  rval->SetMaximum(this->GetMaximum());
-  rval->SetRadiusInObjectSpace(this->GetRadiusInObjectSpace());
-  rval->SetSigmaInObjectSpace(this->GetSigmaInObjectSpace());
-  rval->SetCenterInObjectSpace(this->GetCenterInObjectSpace());
-
-  return loPtr;
-}
-
 /** Print Self function. */
-template <unsigned int TDimension>
+template< unsigned int TDimension >
 void
-GaussianSpatialObject<TDimension>::PrintSelf(std::ostream & os, Indent indent) const
+GaussianSpatialObject< TDimension >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << "Maximum: " << m_Maximum << std::endl;
-  os << "Radius: " << m_RadiusInObjectSpace << std::endl;
-  os << "Sigma: " << m_SigmaInObjectSpace << std::endl;
-  os << "Center: " << m_CenterInObjectSpace << std::endl;
+  os << "Radius: " << m_Radius << std::endl;
+  os << "Sigma: " << m_Sigma << std::endl;
 }
 } // end namespace itk
 

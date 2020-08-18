@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ namespace itk
  *
  * For vector-pixel image types, the TOutputType template
  * parameter must be set to a vector of appropriate size, to
- * accommodate a result for each pixel component in each dimension.
+ * accomadate a result for each pixel component in each dimension.
  * The output is packed by pixel component, i.e.
  *
  *  [C0D0, C0D1, ..., C0DN, C1D0, ...]
@@ -70,22 +70,28 @@ namespace itk
  * \ingroup ImageFunctions
  * \ingroup ITKImageFunction
  */
-template <typename TInputImage,
-          typename TCoordRep = float,
-          typename TOutputType = CovariantVector<double, TInputImage::ImageDimension>>
-class ITK_TEMPLATE_EXPORT CentralDifferenceImageFunction : public ImageFunction<TInputImage, TOutputType, TCoordRep>
+template<
+  typename TInputImage,
+  typename TCoordRep = float,
+  typename TOutputType = CovariantVector<double, TInputImage::ImageDimension >
+  >
+class ITK_TEMPLATE_EXPORT CentralDifferenceImageFunction:
+  public ImageFunction< TInputImage,
+                        TOutputType,
+                        TCoordRep >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CentralDifferenceImageFunction);
-
   /** Dimension underlying input image. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-  /** Standard class type aliases. */
-  using Self = CentralDifferenceImageFunction;
-  using Superclass = ImageFunction<TInputImage, TOutputType, TCoordRep>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef CentralDifferenceImageFunction   Self;
+  typedef ImageFunction< TInputImage,
+                         TOutputType,
+                         TCoordRep >       Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CentralDifferenceImageFunction, ImageFunction);
@@ -93,54 +99,52 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
+  /** InputImageType typedef support. */
+  typedef TInputImage InputImageType;
 
-  /** InputPixelType type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
+  /** InputPixelType typedef support */
+  typedef typename InputImageType::PixelType InputPixelType;
 
-  /** InputPixelConvert type alias support */
-  using InputPixelConvertType = DefaultConvertPixelTraits<InputPixelType>;
+  /** InputPixelConvert typedef support */
+  typedef DefaultConvertPixelTraits< InputPixelType > InputPixelConvertType;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  /** Output convert type alias support */
-  using OutputConvertType = DefaultConvertPixelTraits<OutputType>;
+  /** Output convert typedef support */
+  typedef DefaultConvertPixelTraits<OutputType> OutputConvertType;
 
-  /** Output value type alias support */
-  using OutputValueType = typename OutputConvertType::ComponentType;
+  /** Output value typedef support */
+  typedef typename OutputConvertType::ComponentType OutputValueType;
 
-  /** Scalar derivative type alias support */
-  using ScalarDerivativeType = CovariantVector<OutputValueType, Self::ImageDimension>;
+  /** Scalar derivative typedef support */
+  typedef CovariantVector<OutputValueType, itkGetStaticConstMacro(ImageDimension) > ScalarDerivativeType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
-  /** Spacing type alias support */
-  using SpacingType = typename TInputImage::SpacingType;
+  /** Spacing typedef support. */
+  typedef typename TInputImage::SpacingType SpacingType;
 
-  /** Interpolator type alias support */
-  using InterpolatorType = InterpolateImageFunction<TInputImage, TCoordRep>;
-  using InterpolatorPointer = typename InterpolatorType::Pointer;
+  /** Interpolator typedef support. */
+  typedef InterpolateImageFunction< TInputImage, TCoordRep > InterpolatorType;
+  typedef typename InterpolatorType::Pointer                 InterpolatorPointer;
 
   /** Set the input image.  This must be set by the user. */
-  void
-  SetInputImage(const TInputImage * inputData) override;
+  virtual void SetInputImage(const TInputImage *inputData) ITK_OVERRIDE;
 
   /** Set interpolator. The interpolator is used in the methods
    * \c Evaluate and \c EvaluateAtContinuousIndex. */
-  virtual void
-  SetInterpolator(InterpolatorType * interpolator);
+  virtual void SetInterpolator(InterpolatorType *interpolator);
 
   /** Get the interpolator. */
-  itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
+  itkGetModifiableObjectMacro(Interpolator, InterpolatorType );
 
   /** Evalulate the image derivative by central differencing at specified index.
    *
@@ -152,8 +156,7 @@ public:
    *
    *  ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual OutputType EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evalulate the image derivative by central differencing at non-integer
    *  point.
@@ -168,8 +171,7 @@ public:
    *
    *  ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  Evaluate(const PointType & point) const override;
+  virtual OutputType Evaluate(const PointType & point) const ITK_OVERRIDE;
 
   /** Evalulate the image derivative by central differencing at non-integer
    *  index.
@@ -182,8 +184,7 @@ public:
    *
    *  ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override;
+  virtual OutputType EvaluateAtContinuousIndex( const ContinuousIndexType & cindex) const ITK_OVERRIDE;
 
   /** The UseImageDirection flag determines whether image derivatives are
    * computed with respect to the image grid or with respect to the physical
@@ -205,64 +206,50 @@ public:
 
 protected:
   CentralDifferenceImageFunction();
-  ~CentralDifferenceImageFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~CentralDifferenceImageFunction() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CentralDifferenceImageFunction);
+
+
   /** Structure for specialization of Evaulate* methods on OutputType */
-  template <typename T>
+  template<typename T>
   struct OutputTypeSpecializationStructType
   {
-    using Type = T;
+    typedef T Type;
   };
 
   /** Specialized versions of EvaluteAtIndex() method to handle scalar or vector pixel types.*/
-  template <typename Type>
-  inline void
-  EvaluateAtIndexSpecialized(const IndexType & index,
-                             OutputType &      derivative,
-                             OutputTypeSpecializationStructType<OutputType>) const;
-  template <typename Type>
-  inline void
-  EvaluateAtIndexSpecialized(const IndexType & index,
-                             OutputType &      derivative,
-                             OutputTypeSpecializationStructType<Type>) const;
+  template< typename Type >
+  inline void EvaluateAtIndexSpecialized( const IndexType & index, OutputType & derivative, OutputTypeSpecializationStructType<OutputType>) const;
+  template< typename Type >
+  inline void EvaluateAtIndexSpecialized( const IndexType & index, OutputType & derivative, OutputTypeSpecializationStructType<Type>) const;
 
   /** Specialized versions of EvaluteAtContinuousIndex() method to handle scalar or vector pixel types.*/
-  template <typename Type>
-  inline void
-  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & index,
-                                       OutputType &                derivative,
-                                       OutputTypeSpecializationStructType<OutputType>) const;
-  template <typename Type>
-  inline void
-  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & index,
-                                       OutputType &                derivative,
-                                       OutputTypeSpecializationStructType<Type>) const;
+  template< typename Type >
+  inline void EvaluateAtContinuousIndexSpecialized( const ContinuousIndexType & index, OutputType & derivative, OutputTypeSpecializationStructType<OutputType>) const;
+  template< typename Type >
+  inline void EvaluateAtContinuousIndexSpecialized( const ContinuousIndexType & index, OutputType & derivative, OutputTypeSpecializationStructType<Type>) const;
 
   /** Specialized versions of Evalute() method to handle scalar or vector pixel types.*/
   // NOTE: for some unknown reason, making these methods inline (as those above are inlined) makes them run *slower*.
-  template <typename Type>
-  void
-  EvaluateSpecialized(const PointType & point,
-                      OutputType &      derivative,
-                      OutputTypeSpecializationStructType<OutputType>) const;
-  template <typename Type>
-  void
-  EvaluateSpecialized(const PointType & point, OutputType & derivative, OutputTypeSpecializationStructType<Type>) const;
+  template< typename Type >
+  void EvaluateSpecialized( const PointType & point, OutputType & derivative, OutputTypeSpecializationStructType<OutputType>) const;
+  template< typename Type >
+  void EvaluateSpecialized( const PointType & point, OutputType & derivative, OutputTypeSpecializationStructType<Type>) const;
 
   // flag to take or not the image direction into account
   // when computing the derivatives.
   bool m_UseImageDirection;
 
   // interpolator
-  InterpolatorPointer m_Interpolator;
+  InterpolatorPointer   m_Interpolator;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCentralDifferenceImageFunction.hxx"
+#include "itkCentralDifferenceImageFunction.hxx"
 #endif
 
 #endif

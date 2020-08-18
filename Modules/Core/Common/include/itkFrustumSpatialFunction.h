@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,29 +22,6 @@
 
 namespace itk
 {
-
-/** \class FrustumSpatialFunctionEnums
- *
- * \brief enums for FrustumSpatialFunction class.
- *
- * \ingroup ITKCommon
- */
-class FrustumSpatialFunctionEnums
-{
-public:
-  /** \class RotationPlane
-   *  \ingroup ITKCommon
-   */
-  enum class RotationPlane : uint8_t
-  {
-    RotateInXZPlane = 1,
-    RotateInYZPlane
-  };
-};
-extern ITKCommon_EXPORT std::ostream &
-                        operator<<(std::ostream & out, const FrustumSpatialFunctionEnums::RotationPlane value);
-
-
 /**
  * \class FrustumSpatialFunction
  * \brief Spatial function implementation of a truncated pyramid.
@@ -58,19 +35,18 @@ extern ITKCommon_EXPORT std::ostream &
  * \ingroup ITKCommon
  */
 
-template <unsigned int VDimension = 3, typename TInput = Point<double, VDimension>>
-class ITK_TEMPLATE_EXPORT FrustumSpatialFunction : public InteriorExteriorSpatialFunction<VDimension, TInput>
+template< unsigned int VDimension = 3,
+          typename TInput = Point< double, VDimension > >
+class ITK_TEMPLATE_EXPORT FrustumSpatialFunction:
+  public InteriorExteriorSpatialFunction< VDimension, TInput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FrustumSpatialFunction);
 
-  /** Standard class type aliases. */
-  using Self = FrustumSpatialFunction<VDimension, TInput>;
-  using Superclass = InteriorExteriorSpatialFunction<VDimension, TInput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using RotationPlaneEnum = FrustumSpatialFunctionEnums::RotationPlane;
+  /** Standard class typedefs. */
+  typedef FrustumSpatialFunction< VDimension, TInput >          Self;
+  typedef InteriorExteriorSpatialFunction< VDimension, TInput > Superclass;
+  typedef SmartPointer< Self >                                  Pointer;
+  typedef SmartPointer< const Self >                            ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(FrustumSpatialFunction, InteriorExteriorSpatialFunction);
@@ -79,23 +55,19 @@ public:
   itkNewMacro(Self);
 
   /** Input type for the function. */
-  using InputType = typename Superclass::InputType;
+  typedef typename Superclass::InputType InputType;
 
   /** Output type for the function. */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
   /** Rotate the frustum in the XZ or the YZ plane. */
-  using FrustumRotationPlaneType = RotationPlaneEnum;
-#if !defined(ITK_LEGACY_REMOVE)
-  // We need to expose the enum values at the class level
-  // for backwards compatibility
-  static constexpr FrustumRotationPlaneType RotateInXZPlane = RotationPlaneEnum::RotateInXZPlane;
-  static constexpr FrustumRotationPlaneType RotateInYZPlane = RotationPlaneEnum::RotateInYZPlane;
-#endif
+  typedef enum {
+    RotateInXZPlane = 1,
+    RotateInYZPlane
+    } FrustumRotationPlaneType;
 
   /** Evaluates the function at a given position. */
-  OutputType
-  Evaluate(const InputType & position) const override;
+  OutputType Evaluate(const InputType & position) const ITK_OVERRIDE;
 
   /** Set/Get the apex of the pyramid. */
   itkGetConstMacro(Apex, InputType);
@@ -127,24 +99,24 @@ public:
 
 protected:
   FrustumSpatialFunction();
-  ~FrustumSpatialFunction() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~FrustumSpatialFunction() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  InputType                m_Apex;
-  double                   m_AngleZ{ 0.0f };
-  double                   m_ApertureAngleX{ 0.0f };
-  double                   m_ApertureAngleY{ 0.0f };
-  double                   m_TopPlane{ 0.0f };
-  double                   m_BottomPlane{ 0.0f };
-  FrustumRotationPlaneType m_RotationPlane{ RotationPlaneEnum::RotateInXZPlane };
-};
+  ITK_DISALLOW_COPY_AND_ASSIGN(FrustumSpatialFunction);
 
+  InputType                 m_Apex;
+  double                    m_AngleZ;
+  double                    m_ApertureAngleX;
+  double                    m_ApertureAngleY;
+  double                    m_TopPlane;
+  double                    m_BottomPlane;
+  FrustumRotationPlaneType  m_RotationPlane;
+};
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFrustumSpatialFunction.hxx"
+#include "itkFrustumSpatialFunction.hxx"
 #endif
 
 #endif

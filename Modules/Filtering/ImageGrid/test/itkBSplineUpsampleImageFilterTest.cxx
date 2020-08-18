@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,57 +31,55 @@
 #include "itkBSplineUpsampleImageFilter.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkSimpleFilterWatcher.h"
-#include "itkTestingMacros.h"
+#include "itkFilterWatcher.h"
 
-int
-itkBSplineUpsampleImageFilterTest(int argc, char * argv[])
+int itkBSplineUpsampleImageFilterTest( int argc, char * argv [] )
 {
 
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Error: Missing arguments" << std::endl;
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << "inputImage outputImage splineOrder" << std::endl;
+    std::cerr << argv[0] << "inputImage outputImage splineOrder" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using PixelType = unsigned char;
-  constexpr unsigned int Dimension = 3;
+  typedef unsigned char   PixelType;
+  const unsigned int      Dimension = 3;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension >   ImageType;
 
-  using UpsamplerFilterType = itk::BSplineUpsampleImageFilter<ImageType, ImageType>;
+  typedef itk::BSplineUpsampleImageFilter< ImageType, ImageType > UpsamplerFilterType;
 
   UpsamplerFilterType::Pointer filter = UpsamplerFilterType::New();
 
-  itk::SimpleFilterWatcher watcher(filter, "BSplineUpsampleImageFilter");
+  FilterWatcher watcher(filter, "BSplineUpsampleImageFilter");
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
-  const unsigned int splineOrder = std::stoi(argv[3]);
+  const unsigned int splineOrder = atoi( argv[3] );
 
-  filter->SetSplineOrder(splineOrder);
+  filter->SetSplineOrder( splineOrder );
 
-  filter->SetInput(reader->GetOutput());
-  writer->SetInput(filter->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput( filter->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

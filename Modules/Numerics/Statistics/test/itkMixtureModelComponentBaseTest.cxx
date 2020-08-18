@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,61 +20,56 @@
 #include "itkListSample.h"
 #include "itkTestingMacros.h"
 
-namespace itk
-{
-namespace Statistics
-{
+namespace itk {
+namespace Statistics {
 
 template <typename TSample>
 class MixtureModelComponentBaseTestHelper : public MixtureModelComponentBase<TSample>
 {
 public:
-  using Self = MixtureModelComponentBaseTestHelper;
-  using Superclass = MixtureModelComponentBase<TSample>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef MixtureModelComponentBaseTestHelper   Self;
+  typedef MixtureModelComponentBase<TSample>    Superclass;
+  typedef SmartPointer<Self>                    Pointer;
+  typedef SmartPointer<const Self>              ConstPointer;
 
-  itkTypeMacro(MixtureModelComponentBaseTestHelper, MixtureModelComponentBase);
+  itkTypeMacro(MixtureModelComponentBaseTestHelper, MixtureModelComponentBase );
 
   itkNewMacro(Self);
 
-  void
-  RunTests()
-  {
+  void RunTests()
+    {
     std::cout << "Superclass Name " << this->Superclass::GetNameOfClass() << std::endl;
     std::cout << "This class Name " << this->GetNameOfClass() << std::endl;
 
-    this->Superclass::Print(std::cout);
-    this->Print(std::cout);
+    this->Superclass::Print( std::cout );
+    this->Print( std::cout );
 
     std::cout << "Full Parameters = " << this->Superclass::GetFullParameters() << std::endl;
     std::cout << "Minimal change  = " << this->Superclass::GetMinimalParametersChange() << std::endl;
-  }
+    }
 
 protected:
-  void
-  GenerateData() override
-  {
+  virtual void GenerateData() ITK_OVERRIDE
+    {
     std::cout << "Executing GenerateData() " << std::endl;
-  }
+    }
 };
 
-} // namespace Statistics
-} // namespace itk
+}
+}
 
-int
-itkMixtureModelComponentBaseTest(int, char *[])
+int itkMixtureModelComponentBaseTest( int , char* [] )
 {
-  using MeasurementVectorType = itk::Array<double>;
-  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
+  typedef itk::Array< double > MeasurementVectorType;
+  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
 
-  using ComponentType = itk::Statistics::MixtureModelComponentBaseTestHelper<SampleType>;
+  typedef itk::Statistics::MixtureModelComponentBaseTestHelper<SampleType>  ComponentType;
 
   ComponentType::Pointer component = ComponentType::New();
   std::cout << "component->GetWeights(): " << component->GetWeights() << std::endl;
   component->RunTests();
 
-  ITK_TRY_EXPECT_EXCEPTION(component->GetWeight(5));
+  TRY_EXPECT_EXCEPTION( component->GetWeight(5) );
 
   std::cerr << "[PASSED]" << std::endl;
   return EXIT_SUCCESS;

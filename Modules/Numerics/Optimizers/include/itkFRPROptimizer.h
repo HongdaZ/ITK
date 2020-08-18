@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,26 +23,6 @@
 
 namespace itk
 {
-/**\class FRPROptimizerEnums
- * \brief Contains enum classes used by FRPROptimizer class
- * \ingroup ITKOptimizers
- */
-class FRPROptimizerEnums
-{
-public:
-  /**\class Optimization
-   * \ingroup ITKOptimizers
-   * */
-  enum class Optimization : uint8_t
-  {
-    FletchReeves,
-    PolakRibiere
-  };
-};
-// Define how to print enumeration
-extern ITKOptimizers_EXPORT std::ostream &
-                            operator<<(std::ostream & out, const FRPROptimizerEnums::Optimization value);
-
 /** \class FRPROptimizer
  * \brief Implements Fletch-Reeves & Polak-Ribiere optimization using dBrent
  * line search.
@@ -67,17 +47,17 @@ extern ITKOptimizers_EXPORT std::ostream &
  * \ingroup ITKOptimizers
  */
 
-class ITKOptimizers_EXPORT FRPROptimizer : public PowellOptimizer
+class ITKOptimizers_EXPORT FRPROptimizer:
+  public PowellOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FRPROptimizer);
-  /** Standard "Self" type alias. */
-  using Self = FRPROptimizer;
-  using Superclass = PowellOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Self" typedef. */
+  typedef FRPROptimizer              Self;
+  typedef PowellOptimizer            Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using ParametersType = SingleValuedNonLinearOptimizer::ParametersType;
+  typedef SingleValuedNonLinearOptimizer::ParametersType ParametersType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -86,53 +66,50 @@ public:
   itkTypeMacro(FRPROptimizer, PowellOptimizer);
 
   /** Type of the Cost Function   */
-  using CostFunctionType = SingleValuedCostFunction;
-  using CostFunctionPointer = CostFunctionType::Pointer;
+  typedef  SingleValuedCostFunction  CostFunctionType;
+  typedef  CostFunctionType::Pointer CostFunctionPointer;
 
   /** Convert gradient to a unit length vector */
   itkSetMacro(UseUnitLengthGradient, bool);
   itkGetConstMacro(UseUnitLengthGradient, bool);
 
   /** Start optimization. */
-  void
-  StartOptimization() override;
+  virtual void StartOptimization() ITK_OVERRIDE;
 
   /** Set it to the Fletch-Reeves optimizer */
-  void
-  SetToFletchReeves();
+  void SetToFletchReeves();
 
   /** Set it to the Fletch-Reeves optimizer */
-  void
-  SetToPolakRibiere();
+  void SetToPolakRibiere();
 
 protected:
   FRPROptimizer();
-  ~FRPROptimizer() override;
+  virtual ~FRPROptimizer() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Get the value of the n-dimensional cost function at this scalar step
    * distance along the current line direction from the current line origin.
    * Line origin and distances are set via SetLine */
-  virtual void
-  GetValueAndDerivative(ParametersType & p, double * val, ParametersType * xi);
+  virtual void GetValueAndDerivative(ParametersType & p, double *val,
+                                     ParametersType *xi);
 
-  virtual void
-  LineOptimize(ParametersType * p, ParametersType & xi, double * val);
+  virtual void   LineOptimize(ParametersType *p, ParametersType & xi,
+                              double *val);
 
-  virtual void
-  LineOptimize(ParametersType * p, ParametersType & xi, double * val, ParametersType & tempCoord);
+  virtual void   LineOptimize(ParametersType *p, ParametersType & xi,
+                              double *val,
+                              ParametersType & tempCoord);
 
 private:
-  using OptimizationEnum = FRPROptimizerEnums::Optimization;
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr OptimizationEnum FletchReeves = OptimizationEnum::FletchReeves;
-  static constexpr OptimizationEnum PolakRibiere = OptimizationEnum::PolakRibiere;
-#endif
+  FRPROptimizer(const FRPROptimizer &); // not implemented
 
-  OptimizationEnum m_OptimizationType;
+  typedef enum {
+    FletchReeves,
+    PolakRibiere
+    }               OptimizationType;
+
+  OptimizationType m_OptimizationType;
 
   bool m_UseUnitLengthGradient;
 }; // end of class

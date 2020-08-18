@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,63 +19,67 @@
 
 namespace itk
 {
-SingleValuedNonLinearVnlOptimizerv4 ::SingleValuedNonLinearVnlOptimizerv4()
+SingleValuedNonLinearVnlOptimizerv4
+::SingleValuedNonLinearVnlOptimizerv4()
 {
-  this->m_CostFunctionAdaptor = nullptr;
+  this->m_CostFunctionAdaptor = ITK_NULLPTR;
   this->m_Command = CommandType::New();
-  this->m_Command->SetCallbackFunction(this, &SingleValuedNonLinearVnlOptimizerv4::IterationReport);
+  this->m_Command->SetCallbackFunction(this,  &SingleValuedNonLinearVnlOptimizerv4::IterationReport);
 
-  this->m_CachedCurrentPosition.Fill(NumericTraits<DerivativeType::ValueType>::ZeroValue());
-  this->m_CachedDerivative.Fill(NumericTraits<DerivativeType::ValueType>::ZeroValue());
+  this->m_CachedCurrentPosition.Fill( NumericTraits<DerivativeType::ValueType>::ZeroValue() );
+  this->m_CachedDerivative.Fill( NumericTraits<DerivativeType::ValueType>::ZeroValue() );
 }
 
-SingleValuedNonLinearVnlOptimizerv4 ::~SingleValuedNonLinearVnlOptimizerv4()
+SingleValuedNonLinearVnlOptimizerv4
+::~SingleValuedNonLinearVnlOptimizerv4()
 {
-  if (this->m_CostFunctionAdaptor)
-  {
+  if ( this->m_CostFunctionAdaptor )
+    {
     delete this->m_CostFunctionAdaptor;
-    this->m_CostFunctionAdaptor = nullptr;
-  }
+    this->m_CostFunctionAdaptor = ITK_NULLPTR;
+    }
 }
 
 void
-SingleValuedNonLinearVnlOptimizerv4 ::StartOptimization(bool doOnlyInitialization)
+SingleValuedNonLinearVnlOptimizerv4
+::StartOptimization(bool doOnlyInitialization )
 {
   // Perform some verification, check scales.
-  Superclass::StartOptimization(doOnlyInitialization);
+  Superclass::StartOptimization( doOnlyInitialization );
 
   this->m_CurrentIteration = 0;
 
   // Verify adaptor
-  if (this->m_CostFunctionAdaptor == nullptr)
-  {
+  if( this->m_CostFunctionAdaptor == ITK_NULLPTR )
+    {
     itkExceptionMacro("CostFunctionAdaptor has not been set.");
-  }
+    }
 
   // If the user provides the scales and they're not identity, then we set.
   // Otherwise we don't set them for computation speed.
   // These are managed at the optimizer level, but
   // applied at the cost-function adaptor level because that's
   // where the per-iteration results of the vnl optimizer are accessible.
-  if (!this->GetScalesAreIdentity())
-  {
+  if ( ! this->GetScalesAreIdentity() )
+    {
     ScalesType scales = this->GetScales();
     this->GetNonConstCostFunctionAdaptor()->SetScales(scales);
-  }
+    }
 }
 
 void
-SingleValuedNonLinearVnlOptimizerv4 ::SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor)
+SingleValuedNonLinearVnlOptimizerv4
+::SetCostFunctionAdaptor(CostFunctionAdaptorType *adaptor)
 {
-  if (this->m_CostFunctionAdaptor == adaptor)
-  {
+  if ( this->m_CostFunctionAdaptor == adaptor )
+    {
     return;
-  }
+    }
 
-  if (this->m_CostFunctionAdaptor)
-  {
+  if ( this->m_CostFunctionAdaptor )
+    {
     delete this->m_CostFunctionAdaptor;
-  }
+    }
 
   this->m_CostFunctionAdaptor = adaptor;
 
@@ -83,27 +87,31 @@ SingleValuedNonLinearVnlOptimizerv4 ::SetCostFunctionAdaptor(CostFunctionAdaptor
 }
 
 const SingleValuedNonLinearVnlOptimizerv4::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizerv4 ::GetCostFunctionAdaptor() const
+SingleValuedNonLinearVnlOptimizerv4
+::GetCostFunctionAdaptor(void) const
 {
   return this->m_CostFunctionAdaptor;
 }
 
 SingleValuedNonLinearVnlOptimizerv4::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizerv4 ::GetCostFunctionAdaptor()
+SingleValuedNonLinearVnlOptimizerv4
+::GetCostFunctionAdaptor(void)
 {
   return this->m_CostFunctionAdaptor;
 }
 
 SingleValuedNonLinearVnlOptimizerv4::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizerv4 ::GetNonConstCostFunctionAdaptor() const
+SingleValuedNonLinearVnlOptimizerv4
+::GetNonConstCostFunctionAdaptor(void) const
 {
   return this->m_CostFunctionAdaptor;
 }
 
 void
-SingleValuedNonLinearVnlOptimizerv4 ::IterationReport(const EventObject & event)
+SingleValuedNonLinearVnlOptimizerv4
+::IterationReport(const EventObject & event)
 {
-  const CostFunctionAdaptorType * adaptor = this->GetCostFunctionAdaptor();
+  const CostFunctionAdaptorType *adaptor = this->GetCostFunctionAdaptor();
 
   this->m_CurrentMetricValue = adaptor->GetCachedValue();
   this->m_CachedDerivative = adaptor->GetCachedDerivative();
@@ -112,7 +120,8 @@ SingleValuedNonLinearVnlOptimizerv4 ::IterationReport(const EventObject & event)
 }
 
 void
-SingleValuedNonLinearVnlOptimizerv4 ::PrintSelf(std::ostream & os, Indent indent) const
+SingleValuedNonLinearVnlOptimizerv4
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Cached Derivative: " << this->m_CachedDerivative << std::endl;

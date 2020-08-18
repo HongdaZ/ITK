@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@
 
 namespace itk
 {
-/**
- *\class ShiftScaleLabelMapFilter
+/** \class ShiftScaleLabelMapFilter
  * \brief Shifts and scales a label map filter, giving the option to change the background value.
  *
  * This filter takes as input a label map and shift, scale and background values
@@ -40,28 +39,27 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT ShiftScaleLabelMapFilter : public InPlaceLabelMapFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT ShiftScaleLabelMapFilter:
+  public InPlaceLabelMapFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShiftScaleLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef ShiftScaleLabelMapFilter        Self;
+  typedef InPlaceLabelMapFilter< TImage > Superclass;
+  typedef SmartPointer< Self >            Pointer;
+  typedef SmartPointer< const Self >      ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = ShiftScaleLabelMapFilter;
-  using Superclass = InPlaceLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
+  /** Some convenient typedefs. */
+  typedef TImage                                        ImageType;
+  typedef typename ImageType::Pointer                   ImagePointer;
+  typedef typename ImageType::ConstPointer              ImageConstPointer;
+  typedef typename ImageType::PixelType                 PixelType;
+  typedef typename ImageType::IndexType                 IndexType;
+  typedef typename ImageType::LabelObjectType           LabelObjectType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -92,23 +90,24 @@ public:
 
 protected:
   ShiftScaleLabelMapFilter();
-  ~ShiftScaleLabelMapFilter() override = default;
+  ~ShiftScaleLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   double m_Shift;
   double m_Scale;
 
   bool m_ChangeBackgroundValue;
-}; // end of class
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ShiftScaleLabelMapFilter);
+};                                        // end of class
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkShiftScaleLabelMapFilter.hxx"
+#include "itkShiftScaleLabelMapFilter.hxx"
 #endif
 
 #endif

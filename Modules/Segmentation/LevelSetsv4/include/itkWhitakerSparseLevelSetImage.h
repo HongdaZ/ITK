@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,16 +37,15 @@ namespace itk
  *  \tparam VDimension Dimension of the input space
  *  \ingroup ITKLevelSetsv4
  */
-template <typename TOutput, unsigned int VDimension>
-class ITK_TEMPLATE_EXPORT WhitakerSparseLevelSetImage : public LevelSetSparseImage<TOutput, VDimension>
+template< typename TOutput, unsigned int VDimension >
+class ITK_TEMPLATE_EXPORT WhitakerSparseLevelSetImage :
+    public LevelSetSparseImage< TOutput, VDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WhitakerSparseLevelSetImage);
-
-  using Self = WhitakerSparseLevelSetImage;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Superclass = LevelSetSparseImage<TOutput, VDimension>;
+  typedef WhitakerSparseLevelSetImage                 Self;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
+  typedef LevelSetSparseImage< TOutput, VDimension >  Superclass;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,120 +53,93 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(WhitakerSparseLevelSetImage, LevelSetSparseImage);
 
-  static constexpr unsigned int Dimension = VDimension;
+  itkStaticConstMacro ( Dimension, unsigned int, VDimension );
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
-  using OutputRealType = typename Superclass::OutputRealType;
-  using GradientType = typename Superclass::GradientType;
-  using HessianType = typename Superclass::HessianType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  typedef typename Superclass::InputType        InputType;
+  typedef typename Superclass::OutputType       OutputType;
+  typedef typename Superclass::OutputRealType   OutputRealType;
+  typedef typename Superclass::GradientType     GradientType;
+  typedef typename Superclass::HessianType      HessianType;
+  typedef typename Superclass::LevelSetDataType LevelSetDataType;
 
-  using LayerIdType = typename Superclass::LayerIdType;
-  using LabelObjectType = typename Superclass::LabelObjectType;
-  using LabelObjectPointer = typename Superclass::LabelObjectPointer;
-  using LabelObjectLengthType = typename Superclass::LabelObjectLengthType;
-  using LabelObjectLineType = typename Superclass::LabelObjectLineType;
+  typedef typename Superclass::LayerIdType            LayerIdType;
+  typedef typename Superclass::LabelObjectType        LabelObjectType;
+  typedef typename Superclass::LabelObjectPointer     LabelObjectPointer;
+  typedef typename Superclass::LabelObjectLengthType  LabelObjectLengthType;
+  typedef typename Superclass::LabelObjectLineType    LabelObjectLineType;
 
-  using LabelMapType = typename Superclass::LabelMapType;
-  using LabelMapPointer = typename Superclass::LabelMapPointer;
-  using LabelMapConstPointer = typename Superclass::LabelMapConstPointer;
-  using RegionType = typename Superclass::RegionType;
+  typedef typename Superclass::LabelMapType     LabelMapType;
+  typedef typename Superclass::LabelMapPointer  LabelMapPointer;
+  typedef typename Superclass::RegionType       RegionType;
 
-  using LayerType = typename Superclass::LayerType;
-  using LayerIterator = typename Superclass::LayerIterator;
-  using LayerConstIterator = typename Superclass::LayerConstIterator;
+  typedef typename Superclass::LayerType          LayerType;
+  typedef typename Superclass::LayerIterator      LayerIterator;
+  typedef typename Superclass::LayerConstIterator LayerConstIterator;
 
-  using LayerMapType = typename Superclass::LayerMapType;
-  using LayerMapIterator = typename Superclass::LayerMapIterator;
-  using LayerMapConstIterator = typename Superclass::LayerMapConstIterator;
+  typedef typename Superclass::LayerMapType           LayerMapType;
+  typedef typename Superclass::LayerMapIterator       LayerMapIterator;
+  typedef typename Superclass::LayerMapConstIterator  LayerMapConstIterator;
 
   /** Returns the value of the level set function at a given location iP */
   using Superclass::Evaluate;
-  OutputType
-  Evaluate(const InputType & inputIndex) const override;
+  virtual OutputType Evaluate( const InputType& inputIndex ) const ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
 
-  itkConceptMacro(DoubleConvertible, (Concept::Convertible<OutputRealType, OutputType>));
+  itkConceptMacro( DoubleConvertible,
+                    ( Concept::Convertible< OutputRealType, OutputType > ) );
 
   // End concept checking
 #endif // ITK_USE_CONCEPT_CHECKING
 
-  static inline LayerIdType
-  MinusThreeLayer()
-  {
-    return -3;
-  }
-  static inline LayerIdType
-  MinusTwoLayer()
-  {
-    return -2;
-  }
-  static inline LayerIdType
-  MinusOneLayer()
-  {
-    return -1;
-  }
-  static inline LayerIdType
-  ZeroLayer()
-  {
-    return 0;
-  }
-  static inline LayerIdType
-  PlusOneLayer()
-  {
-    return 1;
-  }
-  static inline LayerIdType
-  PlusTwoLayer()
-  {
-    return 2;
-  }
-  static inline LayerIdType
-  PlusThreeLayer()
-  {
-    return 3;
-  }
+  static inline LayerIdType MinusThreeLayer() { return -3; }
+  static inline LayerIdType MinusTwoLayer() { return -2; }
+  static inline LayerIdType MinusOneLayer() { return -1; }
+  static inline LayerIdType ZeroLayer() { return 0; }
+  static inline LayerIdType PlusOneLayer() { return 1; }
+  static inline LayerIdType PlusTwoLayer() { return 2; }
+  static inline LayerIdType PlusThreeLayer() { return 3; }
 
   /** Return the label object pointer with a given id */
-  template <typename TLabel>
-  typename LabelObject<TLabel, Dimension>::Pointer
+  template< typename TLabel >
+  typename LabelObject< TLabel, Dimension >::Pointer
   GetAsLabelObject()
-  {
-    using OutputLabelObjectType = LabelObject<TLabel, Dimension>;
+    {
+    typedef LabelObject< TLabel, Dimension > OutputLabelObjectType;
     typename OutputLabelObjectType::Pointer object = OutputLabelObjectType::New();
 
-    for (LayerIdType status = this->MinusThreeLayer(); status < this->PlusOneLayer(); ++status)
-    {
-      LabelObjectPointer labelObject = this->m_LabelMap->GetLabelObject(status);
-
-      for (SizeValueType i = 0; i < labelObject->GetNumberOfLines(); ++i)
+    for( LayerIdType status = this->MinusThreeLayer(); status < this->PlusOneLayer(); ++status )
       {
-        object->AddLine(labelObject->GetLine(i));
+      LabelObjectPointer labelObject = this->m_LabelMap->GetLabelObject( status );
+
+      for( SizeValueType i = 0; i < labelObject->GetNumberOfLines(); ++i )
+        {
+        object->AddLine( labelObject->GetLine( i ) );
+        }
       }
-    }
     object->Optimize();
 
     return object;
-  }
+    }
 
 protected:
   WhitakerSparseLevelSetImage();
-  ~WhitakerSparseLevelSetImage() override = default;
+  virtual ~WhitakerSparseLevelSetImage() ITK_OVERRIDE;
 
   /** Initialize the sparse field layers */
-  void
-  InitializeLayers() override;
+  virtual void InitializeLayers() ITK_OVERRIDE;
 
-  void
-  InitializeInternalLabelList() override;
+  virtual void InitializeInternalLabelList() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(WhitakerSparseLevelSetImage);
+
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWhitakerSparseLevelSetImage.hxx"
+#include "itkWhitakerSparseLevelSetImage.hxx"
 #endif
 
 #endif // itkWhitakerSparseLevelSetImage_h

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int, char *[])
+int main(int, char *[])
 {
   //  Software Guide : BeginLatex
   //
@@ -46,7 +45,7 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = itk::RGBPixel<float>;
+  typedef itk::RGBPixel< float >    PixelType;
   // Software Guide : EndCodeSnippet
 
 
@@ -58,8 +57,8 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PointSetType = itk::PointSet<PixelType, 3>;
-  PointSetType::Pointer pointSet = PointSetType::New();
+  typedef itk::PointSet< PixelType, 3 > PointSetType;
+  PointSetType::Pointer  pointSet = PointSetType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -75,24 +74,24 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointSetType::PixelType pixel;
-  PointSetType::PointType point;
-  unsigned int            pointId = 0;
-  constexpr double        radius = 3.0;
+  PointSetType::PixelType   pixel;
+  PointSetType::PointType   point;
+  unsigned int pointId =  0;
+  const double radius = 3.0;
 
-  for (unsigned int i = 0; i < 360; i++)
-  {
+  for(unsigned int i=0; i<360; i++)
+    {
     const double angle = i * itk::Math::pi / 180.0;
-    point[0] = radius * std::sin(angle);
-    point[1] = radius * std::cos(angle);
+    point[0] = radius * std::sin( angle );
+    point[1] = radius * std::cos( angle );
     point[2] = 1.0;
-    pixel.SetRed(point[0] * 2.0);
-    pixel.SetGreen(point[1] * 2.0);
-    pixel.SetBlue(point[2] * 2.0);
-    pointSet->SetPoint(pointId, point);
-    pointSet->SetPointData(pointId, pixel);
+    pixel.SetRed(    point[0] * 2.0 );
+    pixel.SetGreen(  point[1] * 2.0 );
+    pixel.SetBlue(   point[2] * 2.0 );
+    pointSet->SetPoint( pointId, point );
+    pointSet->SetPointData( pointId, pixel );
     pointId++;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -107,15 +106,15 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PointIterator = PointSetType::PointsContainer::ConstIterator;
+  typedef  PointSetType::PointsContainer::ConstIterator     PointIterator;
   PointIterator pointIterator = pointSet->GetPoints()->Begin();
-  PointIterator pointEnd = pointSet->GetPoints()->End();
-  while (pointIterator != pointEnd)
-  {
+  PointIterator pointEnd      = pointSet->GetPoints()->End();
+  while( pointIterator != pointEnd )
+    {
     point = pointIterator.Value();
     std::cout << point << std::endl;
     ++pointIterator;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -140,15 +139,15 @@ main(int, char *[])
 
 
   // Software Guide : BeginCodeSnippet
-  using PointDataIterator = PointSetType::PointDataContainer::ConstIterator;
+  typedef  PointSetType::PointDataContainer::ConstIterator PointDataIterator;
   PointDataIterator pixelIterator = pointSet->GetPointData()->Begin();
-  PointDataIterator pixelEnd = pointSet->GetPointData()->End();
-  while (pixelIterator != pixelEnd)
-  {
+  PointDataIterator pixelEnd      = pointSet->GetPointData()->End();
+  while( pixelIterator != pixelEnd )
+    {
     pixel = pixelIterator.Value();
     std::cout << pixel << std::endl;
     ++pixelIterator;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -162,4 +161,5 @@ main(int, char *[])
   //  Software Guide : EndLatex
 
   return EXIT_SUCCESS;
+
 }

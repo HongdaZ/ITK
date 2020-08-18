@@ -9,7 +9,6 @@ set(ITKIODCMTKTests
   itkDCMTKLoggerTest.cxx
   itkDCMTKImageIOSlopeInterceptTest.cxx
   itkDCMTKImageIOMultiFrameImageTest.cxx
-  itkDCMTKImageIONoPreambleTest.cxx
 )
 
 CreateTestDriver(ITKIODCMTK "${ITKIODCMTK-Test_LIBRARIES}" "${ITKIODCMTKTests}")
@@ -62,7 +61,6 @@ itk_add_test(NAME itkDCMTKSeriesStreamReadImageWrite1
 
 itk_add_test(NAME itkDCMTKSeriesImageOrientationWrite1
   COMMAND ITKIODCMTKTestDriver
-  --compareCoordinateTolerance 1e-3
   --compare DATA{${ITK_DATA_ROOT}/Baseline/itkDCMTKSeriesImageOrientationWrite1.mha}
   ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesImageOrientationWrite1.mha
   itkDCMTKSeriesReadImageWrite
@@ -106,13 +104,7 @@ itk_add_test(NAME itkDCMTKImageIOSlopeInterceptTest
   DATA{Input/slopeIntercept.dcm}
   )
 
-# Requires additional logic in DCMTKFileReader::GetSpacing
-#itk_add_test(NAME itkDCMTKImageIOMultiFrameImageTest
-#  COMMAND ITKIODCMTKTestDriver itkDCMTKImageIOMultiFrameImageTest
-#  DATA{Input/MultiFrameDicomTest.dcm}
-#  )
-
-itk_add_test(NAME itkDCMTKImageIONoPreambleTest
-  COMMAND ITKIODCMTKTestDriver itkDCMTKImageIONoPreambleTest
-  DATA{Input/NoPreambleDicomTest.dcm}
+itk_add_test(NAME itkDCMTKImageIOMultiFrameImageTest
+  COMMAND ITKIODCMTKTestDriver itkDCMTKImageIOMultiFrameImageTest
+  DATA{Input/MultiFrameDicomTest.dcm}
   )

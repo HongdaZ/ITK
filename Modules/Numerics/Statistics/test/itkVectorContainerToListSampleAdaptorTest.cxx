@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,22 +18,21 @@
 
 #include "itkVectorContainerToListSampleAdaptor.h"
 
-int
-itkVectorContainerToListSampleAdaptorTest(int, char *[])
+int itkVectorContainerToListSampleAdaptorTest(int, char* [] )
 {
   std::cout << "VectorContainerToListSampleAdaptor Test \n \n";
 
-  using VectorType = itk::Vector<double, 5>;
+  typedef itk::Vector< double, 5 >   VectorType;
 
-  using ContainerType = itk::VectorContainer<unsigned int, VectorType>;
+  typedef itk::VectorContainer< unsigned int, VectorType > ContainerType;
 
-  using AdaptorType = itk::Statistics::VectorContainerToListSampleAdaptor<ContainerType>;
+  typedef itk::Statistics::VectorContainerToListSampleAdaptor< ContainerType > AdaptorType;
 
   AdaptorType::Pointer adaptor = AdaptorType::New();
 
   ContainerType::Pointer container = ContainerType::New();
 
-  adaptor->SetVectorContainer(container);
+  adaptor->SetVectorContainer( container );
 
   return EXIT_SUCCESS;
 }

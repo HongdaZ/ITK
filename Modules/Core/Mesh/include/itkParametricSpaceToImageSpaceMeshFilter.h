@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,25 +43,24 @@ namespace itk
  * \ingroup MeshFilters
  * \ingroup ITKMesh
  */
-template <typename TInputMesh, typename TOutputMesh>
-class ITK_TEMPLATE_EXPORT ParametricSpaceToImageSpaceMeshFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
+template< typename TInputMesh, typename TOutputMesh >
+class ITK_TEMPLATE_EXPORT ParametricSpaceToImageSpaceMeshFilter:
+  public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricSpaceToImageSpaceMeshFilter);
-
-  /** Standard class type aliases. */
-  using Self = ParametricSpaceToImageSpaceMeshFilter;
-  using Superclass = MeshToMeshFilter<TInputMesh, TOutputMesh>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ParametricSpaceToImageSpaceMeshFilter       Self;
+  typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
+  typedef SmartPointer< Self >                        Pointer;
+  typedef SmartPointer< const Self >                  ConstPointer;
 
   /** Type for representing coordinates. */
-  using CoordRepType = typename TInputMesh::CoordRepType;
+  typedef typename TInputMesh::CoordRepType CoordRepType;
 
-  using InputMeshType = TInputMesh;
-  using OutputMeshType = TOutputMesh;
-  using InputMeshPointer = typename InputMeshType::Pointer;
-  using OutputMeshPointer = typename OutputMeshType::Pointer;
+  typedef TInputMesh                       InputMeshType;
+  typedef TOutputMesh                      OutputMeshType;
+  typedef typename InputMeshType::Pointer  InputMeshPointer;
+  typedef typename OutputMeshType::Pointer OutputMeshPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -71,22 +70,22 @@ public:
 
 protected:
   ParametricSpaceToImageSpaceMeshFilter();
-  ~ParametricSpaceToImageSpaceMeshFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~ParametricSpaceToImageSpaceMeshFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Generate requested data. */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Generate additional information in the output  */
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation(void) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricSpaceToImageSpaceMeshFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkParametricSpaceToImageSpaceMeshFilter.hxx"
+#include "itkParametricSpaceToImageSpaceMeshFilter.hxx"
 #endif
 
 #endif

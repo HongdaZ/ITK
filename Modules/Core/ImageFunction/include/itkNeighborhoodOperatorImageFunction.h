@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,52 +33,54 @@ namespace itk
  * \sa ImageFunction
  * \ingroup ITKImageFunction
  *
- * \sphinx
- * \sphinxexample{Core/ImageFunction/MultiplyKernelWithAnImageAtLocation,Multiply Kernel With An Image At Location}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Functions/NeighborhoodOperatorImageFunction,Multiply a kernel with an image at a particular location}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutput>
-class ITK_TEMPLATE_EXPORT NeighborhoodOperatorImageFunction : public ImageFunction<TInputImage, TOutput>
+template< typename TInputImage, typename TOutput >
+class ITK_TEMPLATE_EXPORT NeighborhoodOperatorImageFunction:
+  public ImageFunction< TInputImage, TOutput >
 {
 public:
-  /**Standard "Self" type alias */
-  using Self = NeighborhoodOperatorImageFunction;
 
-  /** Standard "Superclass" type alias */
-  using Superclass = ImageFunction<TInputImage, TOutput>;
+  /**Standard "Self" typedef */
+  typedef NeighborhoodOperatorImageFunction Self;
 
-  /** Smart pointer type alias support */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard "Superclass" typedef */
+  typedef ImageFunction< TInputImage, TOutput > Superclass;
+
+  /** Smart pointer typedef support. */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  /** InputImageType type alias support */
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-  using IndexType = typename Superclass::IndexType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** InputImageType typedef support. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::PixelType       InputPixelType;
+  typedef typename Superclass::IndexType           IndexType;
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(NeighborhoodOperatorImageFunction, ImageFunction);
 
   /** Dimension of the underlying image. */
-  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
 
-  using NeighborhoodType = Neighborhood<TOutput, Self::ImageDimension>;
+  typedef Neighborhood< TOutput, itkGetStaticConstMacro(ImageDimension) > NeighborhoodType;
 
-  /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
 
   /** Set the input image. */
-  // virtual void SetInputImage( InputImageType * ptr );
+  //virtual void SetInputImage( InputImageType * ptr );
 
   /** Sets the operator that is used to filter the image. Note
    * that the operator is stored as an internal COPY (it
    * is not part of the pipeline). */
-  void
-  SetOperator(const NeighborhoodType & p) const
+  void SetOperator(const NeighborhoodType & p) const
   {
     m_Operator = p;
     this->Modified();
@@ -86,8 +88,7 @@ public:
 
   /** Evalutate the  in the given dimension at specified point
    *  Subclasses should override this method. */
-  TOutput
-  Evaluate(const PointType &) const override
+  virtual TOutput Evaluate(const PointType &) const ITK_OVERRIDE
   {
     std::cout << "NeighborhoodOperatorImageFunction::Evaluate(): Not implemented!" << std::endl;
     TOutput out;
@@ -96,13 +97,12 @@ public:
   }
 
   /** Evaluate the function at specified Index position */
-  TOutput
-  EvaluateAtIndex(const IndexType & index) const override;
+  virtual TOutput EvaluateAtIndex(const IndexType & index) const ITK_OVERRIDE;
 
   /** Evaluate the function at specified ContinuousIndex position.
    * Subclasses should override this method. */
-  TOutput
-  EvaluateAtContinuousIndex(const ContinuousIndexType &) const override
+  virtual TOutput EvaluateAtContinuousIndex(
+    const ContinuousIndexType &) const ITK_OVERRIDE
   {
     std::cout << "NeighborhoodOperatorImageFunction::EvaluateAtContinuousIndex():Not implemented!" << std::endl;
     TOutput out;
@@ -111,24 +111,22 @@ public:
   }
 
 protected:
-  NeighborhoodOperatorImageFunction() = default;
-  NeighborhoodOperatorImageFunction(const Self &) {}
+  NeighborhoodOperatorImageFunction();
+  NeighborhoodOperatorImageFunction(const Self &){}
 
-  ~NeighborhoodOperatorImageFunction() override = default;
+  ~NeighborhoodOperatorImageFunction() ITK_OVERRIDE {}
 
-  void
-  operator=(const Self &)
-  {}
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void operator=(const Self &){}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+
   mutable NeighborhoodType m_Operator;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNeighborhoodOperatorImageFunction.hxx"
+#include "itkNeighborhoodOperatorImageFunction.hxx"
 #endif
 
 /*

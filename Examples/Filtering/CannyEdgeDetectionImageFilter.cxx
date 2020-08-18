@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,39 +48,39 @@
 #include "itkCannyEdgeDetectionImageFilter.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " inputImage outputImage"
+    std::cerr << argv[0]
+              << " inputImage outputImage"
               << " [variance upperThreshold lowerThreshold]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  const char * inputFilename = argv[1];
+  const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
   float variance = 2.0;
   float upperThreshold = 0.0;
   float lowerThreshold = 0.0;
 
-  if (argc > 3)
-  {
-    variance = std::stod(argv[3]);
-  }
+  if( argc > 3 )
+    {
+    variance = atof( argv[3] );
+    }
 
-  if (argc > 4)
-  {
-    upperThreshold = std::stod(argv[4]);
-  }
+  if( argc > 4 )
+    {
+    upperThreshold = atof( argv[4] );
+    }
 
-  if (argc > 5)
-  {
-    lowerThreshold = std::stod(argv[5]);
-  }
+  if( argc > 5 )
+    {
+    lowerThreshold = atof( argv[5] );
+    }
 
   std::cout << "Variance = " << variance << std::endl;
   std::cout << "UpperThreshold = " << upperThreshold << std::endl;
@@ -97,17 +97,17 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  constexpr unsigned int Dimension = 2;
-  using CharPixelType = unsigned char; //  IO
-  using RealPixelType = double;        //  Operations
+  const   unsigned int  Dimension = 2;
+  typedef unsigned char CharPixelType;  //  IO
+  typedef double        RealPixelType;  //  Operations
 
-  using CharImageType = itk::Image<CharPixelType, Dimension>;
-  using RealImageType = itk::Image<RealPixelType, Dimension>;
+  typedef itk::Image< CharPixelType, Dimension > CharImageType;
+  typedef itk::Image< RealPixelType, Dimension > RealImageType;
 
   //  Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<CharImageType>;
-  using WriterType = itk::ImageFileWriter<CharImageType>;
+  typedef itk::ImageFileReader< CharImageType > ReaderType;
+  typedef itk::ImageFileWriter< CharImageType > WriterType;
 
   //  Software Guide : BeginLatex
   //
@@ -119,29 +119,30 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  using CastToRealFilterType = itk::CastImageFilter<CharImageType, RealImageType>;
-  using CannyFilterType =
-    itk::CannyEdgeDetectionImageFilter<RealImageType, RealImageType>;
-  using RescaleFilterType =
-    itk::RescaleIntensityImageFilter<RealImageType, CharImageType>;
+  typedef itk::CastImageFilter< CharImageType, RealImageType >
+    CastToRealFilterType;
+  typedef itk::CannyEdgeDetectionImageFilter< RealImageType, RealImageType >
+    CannyFilterType;
+  typedef itk::RescaleIntensityImageFilter< RealImageType, CharImageType >
+    RescaleFilterType;
 
   //  Software Guide : EndCodeSnippet
 
-  // Setting the IO
+  //Setting the IO
 
-  ReaderType::Pointer           reader = ReaderType::New();
-  CastToRealFilterType::Pointer toReal = CastToRealFilterType::New();
+  ReaderType::Pointer           reader      = ReaderType::New();
+  CastToRealFilterType::Pointer toReal      = CastToRealFilterType::New();
   CannyFilterType::Pointer      cannyFilter = CannyFilterType::New();
-  RescaleFilterType::Pointer    rescale = RescaleFilterType::New();
-  WriterType::Pointer           writer = WriterType::New();
+  RescaleFilterType::Pointer    rescale     = RescaleFilterType::New();
+  WriterType::Pointer           writer      = WriterType::New();
 
-  reader->SetFileName(inputFilename);
-  writer->SetFileName(outputFilename);
+  reader->SetFileName( inputFilename  );
+  writer->SetFileName( outputFilename );
 
-  toReal->SetInput(reader->GetOutput());
-  cannyFilter->SetInput(toReal->GetOutput());
-  rescale->SetInput(cannyFilter->GetOutput());
-  writer->SetInput(rescale->GetOutput());
+  toReal->SetInput( reader->GetOutput() );
+  cannyFilter->SetInput( toReal->GetOutput() );
+  rescale->SetInput( cannyFilter->GetOutput() );
+  writer->SetInput( rescale->GetOutput() );
 
   //  Software Guide : BeginLatex
   //
@@ -156,9 +157,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  cannyFilter->SetVariance(variance);
-  cannyFilter->SetUpperThreshold(upperThreshold);
-  cannyFilter->SetLowerThreshold(lowerThreshold);
+  cannyFilter->SetVariance( variance );
+  cannyFilter->SetUpperThreshold( upperThreshold );
+  cannyFilter->SetLowerThreshold( lowerThreshold );
 
   //  Software Guide : EndCodeSnippet
 
@@ -172,17 +173,18 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : EndCodeSnippet
 
   return EXIT_SUCCESS;
+
 }

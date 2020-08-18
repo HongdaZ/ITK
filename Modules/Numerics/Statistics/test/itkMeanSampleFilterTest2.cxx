@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,81 +19,81 @@
 #include "itkMeanSampleFilter.h"
 #include "itkListSample.h"
 
-int
-itkMeanSampleFilterTest2(int, char *[])
+int itkMeanSampleFilterTest2(int, char* [] )
 {
   std::cout << "MeanSampleFilter test \n \n";
-  bool        pass = true;
-  std::string failureMeassage = "";
+  bool pass = true;
+  std::string failureMeassage= "";
 
-  constexpr unsigned int MeasurementVectorSize = 2;
-  constexpr unsigned int numberOfMeasurementVectors = 2;
-  unsigned int           counter;
+  const unsigned int                  MeasurementVectorSize = 2;
+  const unsigned int                  numberOfMeasurementVectors = 2;
+  unsigned int                        counter;
 
-  using MeasurementVectorType = itk::FixedArray<int, MeasurementVectorSize>;
+  typedef itk::FixedArray< int, MeasurementVectorSize >  MeasurementVectorType;
 
-  using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
+  typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
 
   SampleType::Pointer sample = SampleType::New();
 
-  sample->SetMeasurementVectorSize(MeasurementVectorSize);
+  sample->SetMeasurementVectorSize( MeasurementVectorSize );
 
-  MeasurementVectorType measure;
+  MeasurementVectorType               measure;
 
   counter = 0;
 
   std::cout << "Input sample values " << std::endl;
-  while (counter < numberOfMeasurementVectors)
-  {
-    for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+  while ( counter < numberOfMeasurementVectors )
     {
+    for( unsigned int i=0; i<MeasurementVectorSize; i++)
+      {
       measure[i] = counter;
-    }
+      }
     std::cout << counter << " : " << measure << std::endl;
-    sample->PushBack(measure);
+    sample->PushBack( measure );
     counter++;
-  }
+    }
 
-  using FilterType = itk::Statistics::MeanSampleFilter<SampleType>;
+  typedef itk::Statistics::MeanSampleFilter< SampleType > FilterType;
 
   FilterType::Pointer filter = FilterType::New();
 
-  filter->SetInput(sample);
+  filter->SetInput( sample );
 
   try
-  {
+    {
     filter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch ( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception caught: " << excp << std::endl;
-  }
+    }
 
   const FilterType::MeasurementVectorDecoratedType * decorator = filter->GetOutput();
-  FilterType::MeasurementVectorRealType              meanOutput = decorator->Get();
+  FilterType::MeasurementVectorRealType meanOutput  = decorator->Get();
 
   FilterType::MeasurementVectorRealType expectedMean;
 
   expectedMean[0] = 0.5;
   expectedMean[1] = 0.5;
 
-  std::cout << meanOutput[0] << " " << expectedMean[0] << " " << meanOutput[1] << " " << expectedMean[1] << " "
-            << std::endl;
+  std::cout << meanOutput[0] << " " << expectedMean[0] << " "
+            << meanOutput[1] << " " << expectedMean[1] << " " << std::endl;
 
   // FilterType::MeasurementVectorType::ValueType is an int in this case
-  FilterType::MeasurementVectorType::ValueType epsilon = 0;
+  FilterType::MeasurementVectorType::ValueType    epsilon = 0;
 
-  if ((std::fabs(meanOutput[0] - expectedMean[0]) > epsilon) || (std::fabs(meanOutput[1] - expectedMean[1]) > epsilon))
-  {
+  if ( ( std::fabs( meanOutput[0] - expectedMean[0]) > epsilon )  ||
+       ( std::fabs( meanOutput[1] - expectedMean[1]) > epsilon ))
+    {
     pass = false;
     failureMeassage = "The result is not what is expected";
-  }
+    }
 
-  if (!pass)
-  {
+  if( !pass )
+    {
     std::cout << "Test failed." << failureMeassage << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;

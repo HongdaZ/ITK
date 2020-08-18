@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,49 +49,49 @@ itkGPUKernelClassMacro(GPUDenseFiniteDifferenceImageFilterKernel);
  *
  * \ingroup ITKGPUFiniteDifference
  */
-template <typename TInputImage,
-          typename TOutputImage,
-          typename TParentImageFilter = DenseFiniteDifferenceImageFilter<TInputImage, TOutputImage>>
-class ITK_TEMPLATE_EXPORT GPUDenseFiniteDifferenceImageFilter
-  : public GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>
+template< typename TInputImage, typename TOutputImage, typename TParentImageFilter =
+            DenseFiniteDifferenceImageFilter< TInputImage, TOutputImage > >
+class ITK_TEMPLATE_EXPORT GPUDenseFiniteDifferenceImageFilter :
+  public GPUFiniteDifferenceImageFilter< TInputImage, TOutputImage, TParentImageFilter >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDenseFiniteDifferenceImageFilter);
-
-  /** Standard class type aliases */
-  using Self = GPUDenseFiniteDifferenceImageFilter;
-  using GPUSuperclass = GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>;
-  using CPUSuperclass = TParentImageFilter;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef GPUDenseFiniteDifferenceImageFilter                                             Self;
+  typedef GPUFiniteDifferenceImageFilter< TInputImage, TOutputImage, TParentImageFilter > GPUSuperclass;
+  typedef TParentImageFilter                                                              CPUSuperclass;
+  typedef SmartPointer< Self >                                                            Pointer;
+  typedef SmartPointer< const Self >                                                      ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(GPUDenseFiniteDifferenceImageFilter, GPUFiniteDifferenceImageFilter);
 
-  /** Convenient type alias */
-  using InputImageType = typename GPUSuperclass::InputImageType;
-  using OutputImageType = typename GPUSuperclass::OutputImageType;
-  using FiniteDifferenceFunctionType = typename GPUSuperclass::FiniteDifferenceFunctionType;
+  /** Convenient typedefs */
+  typedef typename GPUSuperclass::InputImageType               InputImageType;
+  typedef typename GPUSuperclass::OutputImageType              OutputImageType;
+  typedef typename GPUSuperclass::FiniteDifferenceFunctionType FiniteDifferenceFunctionType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
-  static constexpr unsigned int ImageDimension = GPUSuperclass::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, GPUSuperclass::ImageDimension);
 
   /** The pixel type of the output image will be used in computations.
    * Inherited from the superclass. */
-  using PixelType = typename GPUSuperclass::PixelType;
+  typedef typename GPUSuperclass::PixelType PixelType;
 
   /** The value type of a time step.  Inherited from the superclass. */
-  using TimeStepType = typename GPUSuperclass::TimeStepType;
+  typedef typename GPUSuperclass::TimeStepType TimeStepType;
 
   /** The container type for the update buffer. */
-  using UpdateBufferType = OutputImageType;
+  typedef OutputImageType UpdateBufferType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputTimesDoubleCheck, (Concept::MultiplyOperator<PixelType, double>));
-  itkConceptMacro(OutputAdditiveOperatorsCheck, (Concept::AdditiveOperators<PixelType>));
-  itkConceptMacro(InputConvertibleToOutputCheck, (Concept::Convertible<typename TInputImage::PixelType, PixelType>));
+  itkConceptMacro( OutputTimesDoubleCheck,
+                   ( Concept::MultiplyOperator< PixelType, double > ) );
+  itkConceptMacro( OutputAdditiveOperatorsCheck,
+                   ( Concept::AdditiveOperators< PixelType > ) );
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< typename TInputImage::PixelType, PixelType > ) );
   // End concept checking
 #endif
 
@@ -100,49 +100,45 @@ public:
 
 protected:
   GPUDenseFiniteDifferenceImageFilter();
-  ~GPUDenseFiniteDifferenceImageFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~GPUDenseFiniteDifferenceImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** This method applies changes from the m_UpdateBuffer to the output using
    * the GPU.  "dt" is the time step to use for the update of each pixel. */
-  void
-  ApplyUpdate(const TimeStepType & dt) override;
+  virtual void ApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
-  void
-  GPUApplyUpdate(const TimeStepType & dt) override;
+  virtual void GPUApplyUpdate(const TimeStepType& dt) ITK_OVERRIDE;
 
   /** This method populates an update buffer with changes for each pixel in the
    * output using the GPU. Returns value is a time step to be used for the update. */
-  TimeStepType
-  GPUCalculateChange() override;
+  virtual TimeStepType GPUCalculateChange() ITK_OVERRIDE;
 
   /** A simple method to copy the data from the input to the output.  ( Supports
    * "read-only" image adaptors in the case where the input image type converts
    * to a different output image type. )  */
-  void
-  CopyInputToOutput() override;
+  virtual void CopyInputToOutput() ITK_OVERRIDE;
 
   /** Method to allow subclasses to get direct access to the update
    * buffer */
-  UpdateBufferType *
-  GetUpdateBuffer() override
-  {
+  virtual UpdateBufferType * GetUpdateBuffer() ITK_OVERRIDE {
     return CPUSuperclass::GetUpdateBuffer();
   }
 
   /** This method allocates storage in m_UpdateBuffer.  It is called from
    * Superclass::GenerateData(). */
-  void
-  AllocateUpdateBuffer() override;
+  virtual void AllocateUpdateBuffer() ITK_OVERRIDE;
 
   /* GPU kernel handle for GPUApplyUpdate */
   int m_ApplyUpdateGPUKernelHandle;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDenseFiniteDifferenceImageFilter);
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGPUDenseFiniteDifferenceImageFilter.hxx"
+#include "itkGPUDenseFiniteDifferenceImageFilter.hxx"
 #endif
 
 #endif

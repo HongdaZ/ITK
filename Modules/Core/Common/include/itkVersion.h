@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,9 +33,10 @@
 
 #define ITK_VERSION_TO_STRING(x) ITK_VERSION_TO_STRING0(x)
 #define ITK_VERSION_TO_STRING0(x) #x
-#define ITK_VERSION                                                                                                    \
-  ITK_VERSION_TO_STRING(ITK_VERSION_MAJOR)                                                                             \
-  "." ITK_VERSION_TO_STRING(ITK_VERSION_MINOR) "." ITK_VERSION_TO_STRING(ITK_VERSION_PATCH)
+#define ITK_VERSION                            \
+  ITK_VERSION_TO_STRING(ITK_VERSION_MAJOR) "." \
+  ITK_VERSION_TO_STRING(ITK_VERSION_MINOR) "." \
+  ITK_VERSION_TO_STRING(ITK_VERSION_PATCH)
 #define ITK_SOURCE_VERSION "itk version " ITK_VERSION
 
 namespace itk
@@ -53,16 +54,14 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT Version : public Object
+class ITKCommon_EXPORT Version:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Version);
-
-  /** Standard class type aliases. */
-  using Self = Version;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Version                    Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -71,28 +70,26 @@ public:
   itkTypeMacro(Version, Object);
 
   /** Return the version of itk this object is a part of. */
-  static const char *
-  GetITKVersion();
+  static const char * GetITKVersion();
 
   /** Get the itk major version. */
-  static int
-  GetITKMajorVersion();
+  static int GetITKMajorVersion();
 
   /** Get the itk minor version. */
-  static int
-  GetITKMinorVersion();
+  static int GetITKMinorVersion();
 
   /** Get the itk build version. */
-  static int
-  GetITKBuildVersion();
+  static int GetITKBuildVersion();
 
   /** Get a string with an identifier which timestamps a particular source tree. */
-  static const char *
-  GetITKSourceVersion();
+  static const char * GetITKSourceVersion();
 
 protected:
   Version();
-  ~Version() override;
+  ~Version() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Version);
 };
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,41 +21,40 @@
 
 #include "itkVoxBoCUBImageIOFactory.h"
 
-int
-itkVoxBoCUBImageIOTest(int argc, char * argv[])
+int itkVoxBoCUBImageIOTest( int argc, char * argv [] )
 {
 
-  if (argc < 3)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << argv[0] << " InputImage OutputImage" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using PixelType = unsigned short;
-  using ImageType = itk::Image<PixelType, 3>;
+  typedef unsigned short                      PixelType;
+  typedef itk::Image< PixelType, 3 >          ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileReader< ImageType >   ReaderType;
+  typedef itk::ImageFileWriter< ImageType >   WriterType;
 
   itk::VoxBoCUBImageIOFactory::RegisterOneFactory();
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput( reader->GetOutput() );
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

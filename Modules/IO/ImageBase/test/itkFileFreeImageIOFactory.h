@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,34 +28,25 @@ namespace itk
 class FileFreeImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FileFreeImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = FileFreeImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FileFreeImageIOFactory    Self;
+  typedef ObjectFactoryBase         Superclass;
+  typedef SmartPointer<Self>        Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
-  const char *
-  GetDescription() const override;
+  virtual const char* GetITKSourceVersion() const ITK_OVERRIDE;
+  virtual const char* GetDescription() const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
-  static FileFreeImageIOFactory *
-  FactoryNew()
-  {
-    return new FileFreeImageIOFactory;
-  }
+  static FileFreeImageIOFactory* FactoryNew() { return new FileFreeImageIOFactory;}
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(FileFreeImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     FileFreeImageIOFactory::Pointer fileFreeFactory = FileFreeImageIOFactory::New();
     ObjectFactoryBase::RegisterFactory(fileFreeFactory);
@@ -64,6 +55,10 @@ public:
 protected:
   FileFreeImageIOFactory();
   ~FileFreeImageIOFactory();
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FileFreeImageIOFactory);
+
 };
 
 } // end namespace itk

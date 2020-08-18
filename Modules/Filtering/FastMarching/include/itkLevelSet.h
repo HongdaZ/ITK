@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,36 +36,36 @@ namespace itk
  * \ingroup LevelSetSegmentation
  * \ingroup ITKFastMarching
  */
-template <typename TLevelSet>
+template< typename TLevelSet >
 class LevelSetTypeDefault
 {
 public:
-  /** LevelSetType type alias support */
-  using Self = LevelSetTypeDefault;
-  using LevelSetImageType = TLevelSet;
+  /** LevelSetType typedef support. */
+  typedef LevelSetTypeDefault Self;
+  typedef TLevelSet           LevelSetImageType;
 
   /** SetDimension enumeration. */
-  static constexpr unsigned int SetDimension = TLevelSet::ImageDimension;
+  itkStaticConstMacro(SetDimension, unsigned int, TLevelSet::ImageDimension);
 
-  /** LevelSetPointer type alias support */
-  using LevelSetPointer = typename TLevelSet::Pointer;
-  using LevelSetConstPointer = typename TLevelSet::ConstPointer;
+  /** LevelSetPointer typedef support. */
+  typedef typename TLevelSet::Pointer      LevelSetPointer;
+  typedef typename TLevelSet::ConstPointer LevelSetConstPointer;
 
-  /** PixelType type alias support */
-  using PixelType = typename TLevelSet::PixelType;
+  /** PixelType typedef support. */
+  typedef typename TLevelSet::PixelType PixelType;
 
-  /** Node type alias support. */
-  using NodeType = LevelSetNode<PixelType, Self::SetDimension>;
+  /** Node typdef support. */
+  typedef
+  LevelSetNode< PixelType, itkGetStaticConstMacro(SetDimension) > NodeType;
 
-  /** NodeContainer type alias support */
-  using NodeContainer = VectorContainer<unsigned int, NodeType>;
+  /** NodeContainer typedef support. */
+  typedef VectorContainer< unsigned int, NodeType > NodeContainer;
 
-  /** NodeContainerPointer type alias support */
-  using NodeContainerPointer = typename NodeContainer::Pointer;
+  /** NodeContainerPointer typedef support. */
+  typedef typename NodeContainer::Pointer NodeContainerPointer;
 };
 
-/**
- *\class AuxVarTypeDefault
+/** \class AuxVarTypeDefault
  * \brief Level set auxiliary variables type information.
  *
  * \brief AuxVarTypeDefault is a simple class that holds type information
@@ -81,34 +81,38 @@ public:
  * \ingroup LevelSetSegmentation
  * \ingroup ITKFastMarching
  */
-template <typename TPixel, unsigned int VAuxDimension = 1, unsigned int VSetDimension = 2>
+template<
+  typename TPixel,
+  unsigned int VAuxDimension = 1,
+  unsigned int VSetDimension = 2
+  >
 class AuxVarTypeDefault
 {
 public:
-  /** Standard type alias */
-  using Self = AuxVarTypeDefault;
+  /** Standard typedefs */
+  typedef AuxVarTypeDefault Self;
 
-  /** PixelType type alias support */
-  using AuxValueType = TPixel;
+  /** PixelType typedef support. */
+  typedef TPixel AuxValueType;
 
   /** Auxiliary variable dimension. */
-  static constexpr unsigned int AuxDimension = VAuxDimension;
+  itkStaticConstMacro(AuxDimension, unsigned int, VAuxDimension);
 
   /** Level set dimension. */
-  static constexpr unsigned int SetDimension = VSetDimension;
+  itkStaticConstMacro(SetDimension, unsigned int, VSetDimension);
 
-  /** AuxVector type alias support */
-  using AuxValueVectorType = Vector<TPixel, VAuxDimension>;
+  /** AuxVector typedef support. */
+  typedef Vector< TPixel, VAuxDimension > AuxValueVectorType;
 
   /** AuxContainer typdef support. */
-  using AuxValueContainer = VectorContainer<unsigned int, AuxValueVectorType>;
+  typedef VectorContainer< unsigned int, AuxValueVectorType > AuxValueContainer;
 
   /** AuxImage typdef support. */
-  using AuxImageType = Image<AuxValueType, VSetDimension>;
+  typedef Image< AuxValueType, VSetDimension > AuxImageType;
 
-  /** AuxImagePointer type alias support */
-  using AuxImagePointer = typename AuxImageType::Pointer;
-  using AuxImageConstPointer = typename AuxImageType::ConstPointer;
+  /** AuxImagePointer typedef support. */
+  typedef typename AuxImageType::Pointer      AuxImagePointer;
+  typedef typename AuxImageType::ConstPointer AuxImageConstPointer;
 };
 } // end namespace itk
 

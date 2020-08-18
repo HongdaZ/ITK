@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,76 +21,70 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkRescaleIntensityImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
-#include "itkTestingMacros.h"
+#include "itkFilterWatcher.h"
+
 #include "itkGrayscaleFillholeImageFilter.h"
 
 
-int
-itkGrayscaleFillholeImageFilterTest(int argc, char * argv[])
+int itkGrayscaleFillholeImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 4)
-  {
+  if( argc < 3 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << "  inputImageFile  ";
+    std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile  " << std::endl;
-    std::cerr << " fullyConnected " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //
   //  The following code defines the input and output pixel types and their
   //  associated image types.
   //
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = short;
-  using OutputPixelType = short;
-  using WritePixelType = unsigned char;
+  typedef short           InputPixelType;
+  typedef short           OutputPixelType;
+  typedef unsigned char   WritePixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using WriteImageType = itk::Image<WritePixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::Image< WritePixelType, Dimension >    WriteImageType;
 
 
   // readers/writers
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
-  using RescaleType = itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>;
+  typedef itk::ImageFileReader< InputImageType  > ReaderType;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
+  typedef itk::RescaleIntensityImageFilter<OutputImageType, WriteImageType>
+                                                  RescaleType;
 
   // define the fillhole filter
-  using FillholeFilterType = itk::GrayscaleFillholeImageFilter<InputImageType, OutputImageType>;
+  typedef itk::GrayscaleFillholeImageFilter<
+                            InputImageType,
+                            OutputImageType >  FillholeFilterType;
 
 
   // Creation of Reader and Writer filters
-  ReaderType::Pointer  reader = ReaderType::New();
-  WriterType::Pointer  writer = WriterType::New();
+  ReaderType::Pointer reader = ReaderType::New();
+  WriterType::Pointer writer  = WriterType::New();
   RescaleType::Pointer rescaler = RescaleType::New();
 
   // Create the filter
-  FillholeFilterType::Pointer fillhole = FillholeFilterType::New();
-
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(fillhole, GrayscaleFillholeImageFilter, ImageToImageFilter);
-
-  itk::SimpleFilterWatcher watcher(fillhole, "fillhole");
-  watcher.QuietOn();
-
-  auto fullyConnected = static_cast<bool>(atoi(argv[3]));
-  ITK_TEST_SET_GET_BOOLEAN(fillhole, FullyConnected, fullyConnected);
+  FillholeFilterType::Pointer  fillhole = FillholeFilterType::New();
+  FilterWatcher watcher(fillhole, "fillhole"); watcher.QuietOn();
 
   // Setup the input and output files
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName(  argv[2] );
 
   // Setup the fillhole method
-  fillhole->SetInput(reader->GetOutput());
+  fillhole->SetInput(  reader->GetOutput() );
 
   // Run the filter
-  rescaler->SetInput(fillhole->GetOutput());
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
-  writer->SetInput(rescaler->GetOutput());
+  rescaler->SetInput( fillhole->GetOutput() );
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
+  writer->SetInput( rescaler->GetOutput() );
   writer->Update();
 
   return EXIT_SUCCESS;

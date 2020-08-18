@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,66 +25,65 @@
 #include "itkSimpleFilterWatcher.h"
 
 
-int
-itkLabelMapToBinaryImageFilterTest(int argc, char * argv[])
+int itkLabelMapToBinaryImageFilterTest( int argc, char * argv [] )
 {
 
-  if (argc != 5)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv);
+  if( argc != 5 )
+    {
+    std::cerr << "usage: " << argv[0];
     std::cerr << " inputLabelImage outputBinaryImage";
     std::cerr << " foregroundValue backgroundValue";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using BinaryPixelType = unsigned char;
-  using LabelPixelType = unsigned char;
+  typedef unsigned char BinaryPixelType;
+  typedef unsigned char LabelPixelType;
 
-  using BinaryImageType = itk::Image<BinaryPixelType, Dimension>;
-  using LabelImageType = itk::Image<LabelPixelType, Dimension>;
+  typedef itk::Image< BinaryPixelType, Dimension > BinaryImageType;
+  typedef itk::Image< LabelPixelType, Dimension >  LabelImageType;
 
-  using LabelObjectType = itk::LabelObject<LabelPixelType, Dimension>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::LabelObject< LabelPixelType, Dimension >   LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >                LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<LabelImageType>;
+  typedef itk::ImageFileReader< LabelImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using I2LType = itk::LabelImageToLabelMapFilter<LabelImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< LabelImageType, LabelMapType> I2LType;
   I2LType::Pointer i2l = I2LType::New();
 
-  using L2IType = itk::LabelMapToBinaryImageFilter<LabelMapType, BinaryImageType>;
+  typedef itk::LabelMapToBinaryImageFilter< LabelMapType, BinaryImageType > L2IType;
   L2IType::Pointer l2i = L2IType::New();
 
-  l2i->SetForegroundValue(std::stoi(argv[3]));
-  ITK_TEST_SET_GET_VALUE(std::stoi(argv[3]), l2i->GetForegroundValue());
+  l2i->SetForegroundValue( atoi(argv[3]) );
+  TEST_SET_GET_VALUE( atoi(argv[3]), l2i->GetForegroundValue() );
 
-  l2i->SetBackgroundValue(std::stoi(argv[4]));
-  ITK_TEST_SET_GET_VALUE(std::stoi(argv[4]), l2i->GetBackgroundValue());
+  l2i->SetBackgroundValue( atoi(argv[4]) );
+  TEST_SET_GET_VALUE( atoi(argv[4]), l2i->GetBackgroundValue() );
 
-  itk::SimpleFilterWatcher watcher(l2i);
+  itk::SimpleFilterWatcher watcher( l2i );
 
-  using WriterType = itk::ImageFileWriter<BinaryImageType>;
+  typedef itk::ImageFileWriter< BinaryImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
 
-  writer->SetFileName(argv[2]);
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
 
 
-  i2l->SetInput(reader->GetOutput());
-  l2i->SetInput(i2l->GetOutput());
-  writer->SetInput(l2i->GetOutput());
+  i2l->SetInput( reader->GetOutput() );
+  l2i->SetInput( i2l->GetOutput() );
+  writer->SetInput( l2i->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update())
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() )
 
   i2l->GetOutput()->PrintLabelObjects();
 
   std::cout << l2i->GetNameOfClass() << std::endl;
 
-  l2i->Print(std::cout);
+  l2i->Print( std::cout );
 
   return EXIT_SUCCESS;
 }

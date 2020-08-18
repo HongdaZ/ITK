@@ -28,16 +28,16 @@ class GDCM_EXPORT FindStudyRootQuery : public BaseRootQuery
 public:
   FindStudyRootQuery();
 
-  void InitializeDataSet(const EQueryLevel& inQueryLevel) override;
+  void InitializeDataSet(const EQueryLevel& inQueryLevel);
 
-  std::vector<Tag> GetTagListByLevel(const EQueryLevel& inQueryLevel) override;
+  std::vector<Tag> GetTagListByLevel(const EQueryLevel& inQueryLevel);
 
   /// have to be able to ensure that (0008,0052) is set
   /// that the level is appropriate (ie, not setting PATIENT for a study query
   /// that the tags in the query match the right level (either required, unique, optional)
-  bool ValidateQuery(bool inStrict = true) const override;
+  bool ValidateQuery(bool inStrict = true) const;
 
-  UIDs::TSName GetAbstractSyntaxUID() const override;
+  UIDs::TSName GetAbstractSyntaxUID() const;
 };
 
 } // end namespace gdcm

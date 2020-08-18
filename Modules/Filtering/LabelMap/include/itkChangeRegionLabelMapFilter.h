@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@
 
 namespace itk
 {
-/**
- *\class ChangeRegionLabelMapFilter
+/** \class ChangeRegionLabelMapFilter
  * \brief Change the region of a label map.
  *
  * Change the region of a label map. If the output can't contain some of the objects' lines
@@ -53,17 +52,15 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT ChangeRegionLabelMapFilter : public InPlaceLabelMapFilter<TInputImage>
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT ChangeRegionLabelMapFilter:public InPlaceLabelMapFilter< TInputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeRegionLabelMapFilter);
-
-  /** Standard class type aliases. */
-  using Self = ChangeRegionLabelMapFilter;
-  using Superclass = InPlaceLabelMapFilter<TInputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef ChangeRegionLabelMapFilter           Self;
+  typedef InPlaceLabelMapFilter< TInputImage > Superclass;
+  typedef SmartPointer< Self >                 Pointer;
+  typedef SmartPointer< const Self >           ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ChangeRegionLabelMapFilter, InPlaceImageFilter);
@@ -71,66 +68,62 @@ public:
   /** Standard New method. */
   itkNewMacro(Self);
 
-  /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImageType       OutputImageType;
+  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageConstPointer = typename InputImageType::ConstPointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using LabelObjectType = typename InputImageType::LabelObjectType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename InputImageType::Pointer         InputImagePointer;
+  typedef typename InputImageType::ConstPointer    InputImageConstPointer;
+  typedef typename InputImageType::RegionType      InputImageRegionType;
+  typedef typename InputImageType::PixelType       InputImagePixelType;
+  typedef typename InputImageType::LabelObjectType LabelObjectType;
 
-  using PixelType = typename InputImageType::PixelType;
-  using IndexType = typename InputImageType::IndexType;
-  using IndexValueType = typename InputImageType::IndexValueType;
-  using SizeType = typename InputImageType::SizeType;
-  using RegionType = typename InputImageType::RegionType;
+  typedef typename InputImageType::PixelType      PixelType;
+  typedef typename InputImageType::IndexType      IndexType;
+  typedef typename InputImageType::IndexValueType IndexValueType;
+  typedef typename InputImageType::SizeType       SizeType;
+  typedef typename InputImageType::RegionType     RegionType;
 
-  using TOutputImage = TInputImage;
+  typedef TInputImage TOutputImage;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** The output region to use */
   itkSetMacro(Region, OutputImageRegionType);
   itkGetConstReferenceMacro(Region, OutputImageRegionType);
 
 protected:
-  ChangeRegionLabelMapFilter() = default;
-  ~ChangeRegionLabelMapFilter() override = default;
+  ChangeRegionLabelMapFilter() {}
+  ~ChangeRegionLabelMapFilter() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  ThreadedProcessLabelObject(LabelObjectType * labelObject) override;
+  virtual void ThreadedProcessLabelObject(LabelObjectType *labelObject) ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  EnlargeOutputRequestedRegion(DataObject * itkNotUsed(output)) override;
+  void EnlargeOutputRequestedRegion( DataObject *itkNotUsed(output) ) ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeRegionLabelMapFilter);
+
   OutputImageRegionType m_Region;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkChangeRegionLabelMapFilter.hxx"
+#include "itkChangeRegionLabelMapFilter.hxx"
 #endif
 
 #endif

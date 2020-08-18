@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 
 namespace itk
 {
-/**
- *\class PadImageFilterBase
+/** \class PadImageFilterBase
  * \brief Increase the image size by padding. Superclass for filters that fill
  * in extra pixels.
  *
@@ -44,46 +43,46 @@ namespace itk
  *
  * \ingroup ITKImageGrid
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT PadImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT PadImageFilterBase:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PadImageFilterBase);
-
-  /** Standard class type aliases. */
-  using Self = PadImageFilterBase;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PadImageFilterBase                              Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Typedef to describe the output and input image region types. */
-  using OutputImageRegionType = typename TOutputImage::RegionType;
-  using InputImageRegionType = typename TInputImage::RegionType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  typedef typename TInputImage::RegionType  InputImageRegionType;
 
   /** Typedef to describe the type of pixel. */
-  using OutputImagePixelType = typename TOutputImage::PixelType;
-  using InputImagePixelType = typename TInputImage::PixelType;
+  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef typename TInputImage::PixelType  InputImagePixelType;
 
   /** Typedef to describe the output and input image index and size types. */
-  using OutputImageIndexType = typename TOutputImage::IndexType;
-  using InputImageIndexType = typename TInputImage::IndexType;
-  using OutputImageSizeType = typename TOutputImage::SizeType;
-  using InputImageSizeType = typename TInputImage::SizeType;
-  using SizeType = typename TInputImage::SizeType;
-  using SizeValueType = typename TInputImage::SizeValueType;
+  typedef typename TOutputImage::IndexType    OutputImageIndexType;
+  typedef typename TInputImage::IndexType     InputImageIndexType;
+  typedef typename TOutputImage::SizeType     OutputImageSizeType;
+  typedef typename TInputImage::SizeType      InputImageSizeType;
+  typedef typename TInputImage::SizeType      SizeType;
+  typedef typename TInputImage::SizeValueType SizeValueType;
 
   /** Typedef to describe the boundary condition. */
-  using BoundaryConditionType = ImageBoundaryCondition<TInputImage, TOutputImage>;
-  using BoundaryConditionPointerType = BoundaryConditionType *;
+  typedef ImageBoundaryCondition< TInputImage, TOutputImage > BoundaryConditionType;
+  typedef BoundaryConditionType *                             BoundaryConditionPointerType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PadImageFilterBase, ImageToImageFilter);
 
   /** ImageDimension enumeration. */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
   /** Set/get the boundary condition. */
   itkSetMacro(BoundaryCondition, BoundaryConditionPointerType);
@@ -91,34 +90,32 @@ public:
 
 protected:
   PadImageFilterBase();
-  ~PadImageFilterBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~PadImageFilterBase() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** PadImageFilterBase needs a smaller input requested region than
    * output requested region.  As such, PadImageFilterBase needs to
    * provide an implementation for GenerateInputRequestedRegion() in
    * order to inform the pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion()  */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** This class can be multithreaded. */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
   /** Method for subclasses to set the boundary condition. */
-  void
-  InternalSetBoundaryCondition(const BoundaryConditionPointerType boundaryCondition);
+  void InternalSetBoundaryCondition( const BoundaryConditionPointerType boundaryCondition );
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PadImageFilterBase);
+
   BoundaryConditionPointerType m_BoundaryCondition;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPadImageFilterBase.hxx"
+#include "itkPadImageFilterBase.hxx"
 #endif
 
 #endif

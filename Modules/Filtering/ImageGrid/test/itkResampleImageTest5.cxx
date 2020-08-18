@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,49 +24,52 @@
 #include "itkTimeProbe.h"
 #include "itkTestingMacros.h"
 
-int
-itkResampleImageTest5(int argc, char * argv[])
+int itkResampleImageTest5(int argc, char * argv [] )
 {
 
   // Resample an RGB image
-  constexpr unsigned int NDimensions = 2;
+  const unsigned int NDimensions = 2;
 
-  using PixelType = unsigned char;
-  using RGBPixelType = itk::RGBPixel<unsigned char>;
-  using ImageType = itk::Image<RGBPixelType, 2>;
+  typedef unsigned char                PixelType;
+  typedef itk::RGBPixel<unsigned char> RGBPixelType;
+  typedef itk::Image<RGBPixelType, 2 > ImageType;
 
-  using ImageIndexType = ImageType::IndexType;
-  using ImagePointerType = ImageType::Pointer;
-  using ImageRegionType = ImageType::RegionType;
-  using ImageSizeType = ImageType::SizeType;
+  typedef ImageType::IndexType         ImageIndexType;
+  typedef ImageType::Pointer           ImagePointerType;
+  typedef ImageType::RegionType        ImageRegionType;
+  typedef ImageType::SizeType          ImageSizeType;
 
-  using CoordRepType = double;
+  typedef double                       CoordRepType;
 
-  using AffineTransformType = itk::AffineTransform<CoordRepType, NDimensions>;
-  using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, CoordRepType>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::AffineTransform<CoordRepType,NDimensions>
+                                       AffineTransformType;
+  typedef itk::LinearInterpolateImageFunction<ImageType,CoordRepType>
+                                       InterpolatorType;
+  typedef itk::ImageFileWriter<ImageType>
+                                       WriterType;
 
   if (argc < 2)
-  {
-    std::cout << "Usage: " << argv[0] << " scaling outputFilename" << std::endl;
+    {
+    std::cout << "Usage: " << argv[0]
+              << " scaling outputFilename" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  float scaling = std::stod(argv[1]);
+  float scaling = atof( argv[1] );
 
   // Create and configure an image
   ImagePointerType image = ImageType::New();
-  ImageIndexType   index = { { 0, 0 } };
-  ImageSizeType    size = { { 64, 64 } };
-  ImageRegionType  region;
-  region.SetSize(size);
-  region.SetIndex(index);
-  image->SetLargestPossibleRegion(region);
-  image->SetBufferedRegion(region);
+  ImageIndexType  index = {{0,  0}};
+  ImageSizeType   size  = {{64,64}};
+  ImageRegionType region;
+  region.SetSize ( size );
+  region.SetIndex( index );
+  image->SetLargestPossibleRegion( region );
+  image->SetBufferedRegion( region );
   image->Allocate();
 
-  auto          newDims = static_cast<unsigned int>(64 * scaling);
-  ImageSizeType osize = { { newDims, newDims } };
+  unsigned int newDims = static_cast<unsigned int>( 64*scaling );
+  ImageSizeType osize = {{newDims, newDims}};
 
   ImageType::SpacingType spacing;
   spacing[0] = size[0] / static_cast<double>(osize[0]);
@@ -74,13 +77,13 @@ itkResampleImageTest5(int argc, char * argv[])
 
   // Fill image with a ramp
   itk::ImageRegionIteratorWithIndex<ImageType> iter(image, region);
-  PixelType                                    value;
+  PixelType value;
   for (iter.GoToBegin(); !iter.IsAtEnd(); ++iter)
-  {
+    {
     index = iter.GetIndex();
     value = index[0] + index[1];
     iter.Set(value);
-  }
+    }
 
   // Create an affine transformation
   AffineTransformType::Pointer aff = AffineTransformType::New();
@@ -91,34 +94,34 @@ itkResampleImageTest5(int argc, char * argv[])
   interp->SetInputImage(image);
 
   // Create and configure a resampling filter
-  itk::ResampleImageFilter<ImageType, ImageType>::Pointer resample =
-    itk::ResampleImageFilter<ImageType, ImageType>::New();
+  itk::ResampleImageFilter< ImageType, ImageType >::Pointer resample =
+    itk::ResampleImageFilter< ImageType, ImageType >::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(resample, ResampleImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( resample, ResampleImageFilter, ImageToImageFilter );
 
   resample->SetInput(image);
-  ITK_TEST_SET_GET_VALUE(image, resample->GetInput());
+  TEST_SET_GET_VALUE( image, resample->GetInput() );
 
   resample->SetSize(osize);
-  ITK_TEST_SET_GET_VALUE(osize, resample->GetSize());
+  TEST_SET_GET_VALUE( osize, resample->GetSize() );
 
   resample->SetTransform(aff);
-  ITK_TEST_SET_GET_VALUE(aff, resample->GetTransform());
+  TEST_SET_GET_VALUE( aff, resample->GetTransform() );
 
   resample->SetInterpolator(interp);
-  ITK_TEST_SET_GET_VALUE(interp, resample->GetInterpolator());
+  TEST_SET_GET_VALUE( interp, resample->GetInterpolator() );
 
-  index.Fill(0);
-  resample->SetOutputStartIndex(index);
-  ITK_TEST_SET_GET_VALUE(index, resample->GetOutputStartIndex());
+  index.Fill( 0 );
+  resample->SetOutputStartIndex( index );
+  TEST_SET_GET_VALUE( index, resample->GetOutputStartIndex() );
 
   ImageType::PointType origin;
-  origin.Fill(0.0);
-  resample->SetOutputOrigin(origin);
-  ITK_TEST_SET_GET_VALUE(origin, resample->GetOutputOrigin());
+  origin.Fill( 0.0 );
+  resample->SetOutputOrigin( origin );
+  TEST_SET_GET_VALUE( origin, resample->GetOutputOrigin() );
 
-  resample->SetOutputSpacing(spacing);
-  ITK_TEST_SET_GET_VALUE(spacing, resample->GetOutputSpacing());
+  resample->SetOutputSpacing( spacing );
+  TEST_SET_GET_VALUE( spacing, resample->GetOutputSpacing() );
 
   // Run the resampling filter
   itk::TimeProbe clock;
@@ -126,7 +129,9 @@ itkResampleImageTest5(int argc, char * argv[])
   resample->Update();
   clock.Stop();
 
-  std::cout << "Resampling from " << size << " to " << osize << " took " << clock.GetMean() << " s" << std::endl;
+  std::cout << "Resampling from " << size
+            << " to " << osize
+            << " took " << clock.GetMean() << " s" << std::endl;
 
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(resample->GetOutput());
@@ -135,4 +140,5 @@ itkResampleImageTest5(int argc, char * argv[])
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;
+
 }

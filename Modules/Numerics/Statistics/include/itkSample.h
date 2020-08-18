@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**
- *\class Sample
+/** \class Sample
  *  \brief A collection of measurements for statistical analysis
  *
  * Sample represents a set of measurements for statistical
@@ -58,44 +57,42 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TMeasurementVector>
-class Sample : public DataObject
+template< typename TMeasurementVector >
+class Sample:public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Sample);
-
-  /** Standard class type aliases */
-  using Self = Sample;
-  using Superclass = DataObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef Sample                     Self;
+  typedef DataObject                 Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods) */
   itkTypeMacro(Sample, DataObject);
 
-  /** MeasurementVector type alias support */
-  using MeasurementVectorType = TMeasurementVector;
+  /** MeasurementVector typedef support */
+  typedef TMeasurementVector MeasurementVectorType;
 
   /** ValueType of a measurement (ValueType of a component of the
    * MeasurementVector */
-  using MeasurementType = typename MeasurementVectorTraitsTypes<MeasurementVectorType>::ValueType;
+  typedef typename MeasurementVectorTraitsTypes<
+    MeasurementVectorType >::ValueType MeasurementType;
 
   /** Frequency value type */
-  using AbsoluteFrequencyType = MeasurementVectorTraits::AbsoluteFrequencyType;
+  typedef MeasurementVectorTraits::AbsoluteFrequencyType AbsoluteFrequencyType;
 
   /** Total frequency type */
-  using TotalAbsoluteFrequencyType = NumericTraits<AbsoluteFrequencyType>::AccumulateType;
+  typedef NumericTraits< AbsoluteFrequencyType >::AccumulateType TotalAbsoluteFrequencyType;
 
-  /** InstanceIdentifier type alias. This identifier is a unique
+  /** InstanceIdentifier typedef. This identifier is a unique
    * sequential id for each measurement vector in a Sample subclass. */
-  using InstanceIdentifier = typename MeasurementVectorTraits::InstanceIdentifier;
+  typedef typename MeasurementVectorTraits::InstanceIdentifier InstanceIdentifier;
 
   /** Type of the length of each measurement vector */
-  using MeasurementVectorSizeType = unsigned int;
+  typedef unsigned int MeasurementVectorSizeType;
 
   /** Get the size of the sample (number of measurements) */
-  virtual InstanceIdentifier
-  Size() const = 0;
+  virtual InstanceIdentifier Size() const = 0;
 
   /** Get the measurement associated with a particular
    * InstanceIdentifier. */
@@ -104,91 +101,95 @@ public:
 
   /** Get the frequency of a measurement specified by instance
    * identifier. */
-  virtual AbsoluteFrequencyType
-  GetFrequency(InstanceIdentifier id) const = 0;
+  virtual AbsoluteFrequencyType GetFrequency(InstanceIdentifier id) const = 0;
 
   /** Get the total frequency of the sample. */
-  virtual TotalAbsoluteFrequencyType
-  GetTotalFrequency() const = 0;
+  virtual TotalAbsoluteFrequencyType GetTotalFrequency() const = 0;
 
   /** Set method for the length of the measurement vector */
-  virtual void
-  SetMeasurementVectorSize(MeasurementVectorSizeType s)
+  virtual void SetMeasurementVectorSize(MeasurementVectorSizeType s)
   {
     // Test whether the vector type is resizable or not
     MeasurementVectorType m;
 
-    if (MeasurementVectorTraits::IsResizable(m))
-    {
+    if ( MeasurementVectorTraits::IsResizable(m) )
+      {
       // then this is a resizable vector type
       //
       // if the new size is the same as the previou size, just return
-      if (s == this->m_MeasurementVectorSize)
-      {
+      if ( s == this->m_MeasurementVectorSize )
+        {
         return;
-      }
+        }
       else
-      {
+        {
         // If the new size is different from the current size, then
         // only change the measurement vector size if the container is empty.
-        if (this->Size())
-        {
+        if ( this->Size() )
+          {
           itkExceptionMacro("Attempting to change the measurement \
           vector size of a non-empty Sample");
-        }
+          }
         else
-        {
+          {
           this->m_MeasurementVectorSize = s;
           this->Modified();
+          }
         }
       }
-    }
     else
-    {
+      {
       // If this is a non-resizable vector type
       MeasurementVectorType     m3;
-      MeasurementVectorSizeType defaultLength = NumericTraits<MeasurementVectorType>::GetLength(m3);
+      MeasurementVectorSizeType defaultLength =
+        NumericTraits<MeasurementVectorType>::GetLength(m3);
       // and the new length is different from the default one, then throw an
       // exception
-      if (defaultLength != s)
-      {
-        itkExceptionMacro("Attempting to change the measurement \
-                           vector size of a non-resizable vector type");
+      if ( defaultLength != s )
+        {
+        itkExceptionMacro(
+          "Attempting to change the measurement \
+                           vector size of a non-resizable vector type"                                                  );
+        }
       }
-    }
   }
 
   /** Get method for the length of the measurement vector */
   itkGetConstMacro(MeasurementVectorSize, MeasurementVectorSizeType);
 
   /** Method to graft another sample */
-  void
-  Graft(const DataObject * thatObject) override
+  virtual void Graft(const DataObject *thatObject) ITK_OVERRIDE
   {
     this->Superclass::Graft(thatObject);
 
-    const auto * thatConst = dynamic_cast<const Self *>(thatObject);
-    if (thatConst)
-    {
-      this->SetMeasurementVectorSize(thatConst->GetMeasurementVectorSize());
-    }
+    const Self *thatConst = dynamic_cast< const Self * >( thatObject );
+    if ( thatConst )
+      {
+      this->SetMeasurementVectorSize( thatConst->GetMeasurementVectorSize() );
+      }
   }
 
 protected:
-  Sample() { m_MeasurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength(MeasurementVectorType()); }
+  Sample()
+  {
+    m_MeasurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength(
+      MeasurementVectorType() );
+  }
 
-  ~Sample() override = default;
+  virtual ~Sample() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE
   {
     Superclass::PrintSelf(os, indent);
-    os << indent << "Length of measurement vectors in the sample: " << m_MeasurementVectorSize << std::endl;
+    os << indent << "Length of measurement vectors in the sample: "
+       << m_MeasurementVectorSize << std::endl;
   }
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Sample);
+
   MeasurementVectorSizeType m_MeasurementVectorSize;
-}; // end of class
+};  // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 

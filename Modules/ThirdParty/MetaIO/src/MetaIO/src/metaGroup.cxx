@@ -15,8 +15,8 @@
 #pragma warning(disable:4702)
 #endif
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -30,7 +30,7 @@ MetaGroup::
 MetaGroup()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaGroup()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaGroup()" << METAIO_STREAM::endl;
   Clear();
 
 }
@@ -40,7 +40,7 @@ MetaGroup::
 MetaGroup(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaGroup()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaGroup()" << METAIO_STREAM::endl;
   Clear();
   Read(_headerName);
 }
@@ -50,7 +50,7 @@ MetaGroup::
 MetaGroup(const MetaGroup *_group)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaGroup()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaGroup()" << METAIO_STREAM::endl;
   Clear();
   CopyInfo(_group);
 }
@@ -59,7 +59,7 @@ MetaGroup::
 MetaGroup(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaGroup()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaGroup()" << METAIO_STREAM::endl;
   Clear();
 }
 
@@ -85,27 +85,24 @@ CopyInfo(const MetaObject * _object)
 
 /** Clear group information */
 void MetaGroup::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaGroup: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaGroup: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Group");
 }
 
 /** Destroy group information */
 void MetaGroup::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaGroup::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaGroup: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaGroup: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -119,8 +116,9 @@ M_SetupReadFields()
 }
 
 void MetaGroup::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Group");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF = new MET_FieldRecordType;
@@ -130,22 +128,22 @@ M_SetupWriteFields()
 
 
 bool MetaGroup::
-M_Read()
+M_Read(void)
 {
   if(META_DEBUG)
     {
-    std::cout << "MetaGroup: M_Read: Loading Header" << std::endl;
+    METAIO_STREAM::cout << "MetaGroup: M_Read: Loading Header" << METAIO_STREAM::endl;
     }
 
   if(!MetaObject::M_Read())
     {
-    std::cout << "MetaGroup: M_Read: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaGroup: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
   if(META_DEBUG)
     {
-    std::cout << "MetaGroup: M_Read: Parsing Header" << std::endl;
+    METAIO_STREAM::cout << "MetaGroup: M_Read: Parsing Header" << METAIO_STREAM::endl;
     }
 
   return true;

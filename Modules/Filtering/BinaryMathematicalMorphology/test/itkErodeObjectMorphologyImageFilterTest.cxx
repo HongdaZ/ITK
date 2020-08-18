@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,35 +18,34 @@
 
 #include "itkErodeObjectMorphologyImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 
-int
-itkErodeObjectMorphologyImageFilterTest(int, char *[])
+int itkErodeObjectMorphologyImageFilterTest(int, char* [] )
 {
   unsigned int i;
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 2;
+  const unsigned int myDimension = 2;
 
   // Define the values of the input images
-  constexpr unsigned short fgValue = 25;
-  constexpr unsigned short bgValue = 0;
-  constexpr unsigned short randomValue = 10;
+  const unsigned short fgValue = 25;
+  const unsigned short bgValue = 0;
+  const unsigned short randomValue = 10;
 
   // Declare the types of the images
-  using myImageType = itk::Image<unsigned short, myDimension>;
+  typedef itk::Image<unsigned short, myDimension>  myImageType;
 
   // Declare the type of the index to access images
-  using myIndexType = itk::Index<myDimension>;
+  typedef itk::Index<myDimension>         myIndexType;
 
   // Declare the type of the size
-  using mySizeType = itk::Size<myDimension>;
+  typedef itk::Size<myDimension>          mySizeType;
 
   // Declare the type of the Region
-  using myRegionType = itk::ImageRegion<myDimension>;
+  typedef itk::ImageRegion<myDimension>        myRegionType;
 
   // Create an image
-  myImageType::Pointer inputImage = myImageType::New();
+  myImageType::Pointer inputImage  = myImageType::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -58,18 +57,18 @@ itkErodeObjectMorphologyImageFilterTest(int, char *[])
   start[1] = 0;
 
   myRegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image
-  inputImage->SetRegions(region);
+  inputImage->SetRegions( region );
   inputImage->Allocate();
 
   // Declare Iterator types apropriated for each image
-  using myIteratorType = itk::ImageRegionIterator<myImageType>;
+  typedef itk::ImageRegionIterator<myImageType>  myIteratorType;
 
   // Create one iterator for image (this is a light object)
-  myIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  myIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image
   std::cout << "Input image " << std::endl;
@@ -106,29 +105,31 @@ itkErodeObjectMorphologyImageFilterTest(int, char *[])
 
   i = 0;
   it.GoToBegin();
-  while (!it.IsAtEnd())
-  {
+  while ( !it.IsAtEnd() )
+    {
     std::cout << it.Get() << "  ";
     ++it;
 
     if (++i % 20 == 0)
-    {
+      {
       std::cout << std::endl;
+      }
     }
-  }
 
   // Declare the type for the structuring element
-  using myKernelType = itk::BinaryBallStructuringElement<unsigned short, myDimension>;
+  typedef itk::BinaryBallStructuringElement<unsigned short, myDimension>
+    myKernelType;
 
   // Declare the type for the morphology Filter
-  using myFilterType = itk::ErodeObjectMorphologyImageFilter<myImageType, myImageType, myKernelType>;
+  typedef itk::ErodeObjectMorphologyImageFilter<myImageType, myImageType, myKernelType>
+    myFilterType;
 
   // Create the filter
-  myFilterType::Pointer    filter = myFilterType::New();
-  itk::SimpleFilterWatcher watcher(filter, "filter");
+  myFilterType::Pointer filter = myFilterType::New();
+  FilterWatcher watcher(filter, "filter");
 
   // Create the structuring element
-  myKernelType           ball;
+  myKernelType ball;
   myKernelType::SizeType ballSize;
   ballSize[0] = 2;
   ballSize[1] = 4;
@@ -136,18 +137,18 @@ itkErodeObjectMorphologyImageFilterTest(int, char *[])
   ball.CreateStructuringElement();
 
   // Connect the input image
-  filter->SetInput(inputImage);
-  filter->SetKernel(ball);
-  filter->SetErodeValue(fgValue);
+  filter->SetInput( inputImage );
+  filter->SetKernel( ball );
+  filter->SetErodeValue( fgValue );
   filter->SetBackgroundValue(5);
 
-  // Exercise Set/Get methods for Background Value
-  const unsigned short backGround = filter->GetBackgroundValue();
-  if (backGround != 5)
-  {
+  //Exercise Set/Get methods for Background Value
+  const unsigned short backGround = filter->GetBackgroundValue( );
+  if ( backGround != 5 )
+    {
     std::cerr << "Set/Get Background value problem." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Get the Smart Pointer to the Filter Output
   myImageType::Pointer outputImage = filter->GetOutput();
@@ -159,33 +160,34 @@ itkErodeObjectMorphologyImageFilterTest(int, char *[])
 
   // Execute the filter
   try
-  {
+    {
     filter->Update();
     // Create an iterator for going through the image output
     myIteratorType it2(outputImage, outputImage->GetBufferedRegion());
 
     //  Print the content of the result image
     std::cout << "Result " << std::endl;
-    i = 0;
-    while (!it2.IsAtEnd())
-    {
+    i=0;
+    while( !it2.IsAtEnd() )
+      {
       std::cout << it2.Get() << "  ";
       ++it2;
 
       if (++i % 20 == 0)
-      {
+        {
         std::cout << std::endl;
+        }
       }
-    }
-  }
+   }
 
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught during filter Update\n" << e;
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception caught during filter Update\n"  << e;
     return -1;
-  }
+    }
 
   // All objects should be automatically destroyed at this point
 
   return EXIT_SUCCESS;
+
 }

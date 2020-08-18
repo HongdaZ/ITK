@@ -27,12 +27,12 @@ class GDCM_EXPORT SegmentedPaletteColorLookupTable : public LookupTable
 {
 public:
   SegmentedPaletteColorLookupTable();
-  ~SegmentedPaletteColorLookupTable() override;
-  void Print(std::ostream &) const override {}
+  ~SegmentedPaletteColorLookupTable();
+  void Print(std::ostream &) const {}
 
   /// Initialize a SegmentedPaletteColorLookupTable
   void SetLUT(LookupTableType type, const unsigned char *array,
-    unsigned int length) override;
+    unsigned int length);
 
 };
 

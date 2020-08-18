@@ -167,7 +167,7 @@ GetCommand(unsigned long tag)
       return (*i)->m_Command;
       }
     }
-  return nullptr;
+  return 0;
 }
 
 bool

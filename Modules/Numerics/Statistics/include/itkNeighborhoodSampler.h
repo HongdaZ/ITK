@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,17 +40,15 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TSample>
-class ITK_TEMPLATE_EXPORT NeighborhoodSampler : public SampleToSubsampleFilter<TSample>
+template< typename TSample >
+class ITK_TEMPLATE_EXPORT NeighborhoodSampler:public SampleToSubsampleFilter< TSample >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodSampler);
-
-  /** Standard class type aliases. */
-  using Self = NeighborhoodSampler;
-  using Superclass = SampleToSubsampleFilter<TSample>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef NeighborhoodSampler                Self;
+  typedef SampleToSubsampleFilter< TSample > Superclass;
+  typedef SmartPointer< Self >               Pointer;
+  typedef SmartPointer< const Self >         ConstPointer;
 
   /** Standard macros */
   itkTypeMacro(NeighborhoodSampler, SampleToSubsampleFilter);
@@ -58,36 +56,37 @@ public:
 
   /** Typedefs for Measurement vector, measurement, Instance Identifier,
    * frequency, size, size element value from the template argument TSample */
-  using SampleType = typename Superclass::SampleType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
-  using SubsampleType = typename Superclass::SubsampleType;
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::SampleType             SampleType;
+  typedef typename Superclass::MeasurementVectorType  MeasurementVectorType;
+  typedef typename Superclass::MeasurementType        MeasurementType;
+  typedef typename Superclass::InstanceIdentifier     InstanceIdentifier;
+  typedef typename Superclass::SubsampleType          SubsampleType;
+  typedef typename Superclass::OutputType             OutputType;
 
   /** Type of the distance radius. */
-  using RadiusType = double;
+  typedef double RadiusType;
 
   /** Type of DataObjects to use for distance radius input. */
-  using InputRadiusObjectType = SimpleDataObjectDecorator<RadiusType>;
+  typedef SimpleDataObjectDecorator< RadiusType > InputRadiusObjectType;
 
   /** Method to set the input value of the Radius */
   itkSetGetDecoratedInputMacro(Radius, RadiusType);
 
 protected:
-  NeighborhoodSampler() = default;
-  ~NeighborhoodSampler() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  NeighborhoodSampler();
+  virtual ~NeighborhoodSampler() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
-}; // end of class
+  void GenerateData() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodSampler);
+};                                   // end of class
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkNeighborhoodSampler.hxx"
+#include "itkNeighborhoodSampler.hxx"
 #endif
 
 #endif

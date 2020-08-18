@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,22 +35,20 @@ namespace itk
  * \ingroup Operators
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/FindMaxAndMinInImage,Find Max And Min In Image}
- * \sphinxexample{Developer/OilPaintingImageFilter,Multi-threaded oil painting image filter}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/MinimumMaximumImageCalculator,Find the minimum and maximum value (and the position of the value) in an image}
+ * \wikiexample{Developer/OilPaintingImageFilter,Multi-threaded oil painting image filter}
+ * \endwiki
  */
-template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT MinimumMaximumImageCalculator : public Object
+template< typename TInputImage >
+class ITK_TEMPLATE_EXPORT MinimumMaximumImageCalculator:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MinimumMaximumImageCalculator);
-
-  /** Standard class type aliases. */
-  using Self = MinimumMaximumImageCalculator;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MinimumMaximumImageCalculator Self;
+  typedef Object                        Superclass;
+  typedef SmartPointer< Self >          Pointer;
+  typedef SmartPointer< const Self >    ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,37 +57,34 @@ public:
   itkTypeMacro(MinimumMaximumImageCalculator, Object);
 
   /** Type definition for the input image. */
-  using ImageType = TInputImage;
+  typedef TInputImage ImageType;
 
   /** Pointer type for the image. */
-  using ImagePointer = typename TInputImage::Pointer;
+  typedef typename TInputImage::Pointer ImagePointer;
 
   /** Const Pointer type for the image. */
-  using ImageConstPointer = typename TInputImage::ConstPointer;
+  typedef typename TInputImage::ConstPointer ImageConstPointer;
 
   /** Type definition for the input image pixel type. */
-  using PixelType = typename TInputImage::PixelType;
+  typedef typename TInputImage::PixelType PixelType;
 
   /** Type definition for the input image index type. */
-  using IndexType = typename TInputImage::IndexType;
+  typedef typename TInputImage::IndexType IndexType;
 
   /** Type definition for the input image region type. */
-  using RegionType = typename TInputImage::RegionType;
+  typedef typename TInputImage::RegionType RegionType;
 
   /** Set the input image. */
   itkSetConstObjectMacro(Image, ImageType);
 
   /** Compute the minimum value of intensity of the input image. */
-  void
-  ComputeMinimum();
+  void ComputeMinimum();
 
   /** Compute the maximum value of intensity of the input image. */
-  void
-  ComputeMaximum();
+  void ComputeMaximum();
 
   /** Compute the minimum and maximum values of intensity of the input image. */
-  void
-  Compute();
+  void Compute();
 
   /** Return the minimum intensity value. */
   itkGetConstMacro(Minimum, PixelType);
@@ -104,16 +99,16 @@ public:
   itkGetConstReferenceMacro(IndexOfMaximum, IndexType);
 
   /** Set the region over which the values will be computed */
-  void
-  SetRegion(const RegionType & region);
+  void SetRegion(const RegionType & region);
 
 protected:
   MinimumMaximumImageCalculator();
-  ~MinimumMaximumImageCalculator() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MinimumMaximumImageCalculator() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MinimumMaximumImageCalculator);
+
   PixelType         m_Minimum;
   PixelType         m_Maximum;
   ImageConstPointer m_Image;
@@ -127,7 +122,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMinimumMaximumImageCalculator.hxx"
+#include "itkMinimumMaximumImageCalculator.hxx"
 #endif
 
 #endif /* itkMinimumMaximumImageCalculator_h */

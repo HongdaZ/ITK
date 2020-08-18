@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,80 +20,75 @@
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkConstNeighborhoodIterator.h"
 
-template <typename TImage>
-bool
-ImageBoundaryFaceCalculatorTest(TImage *                          image,
-                                typename TImage::RegionType &     region,
-                                const typename TImage::SizeType & radius)
+template<typename TImage>
+bool ImageBoundaryFaceCalculatorTest(TImage * image, typename TImage::RegionType & region, const typename TImage::SizeType & radius)
 {
-  using FaceCalculatorType = itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<TImage>;
-  using FaceListType = typename FaceCalculatorType::FaceListType;
+  typedef itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<TImage> FaceCalculatorType;
+  typedef typename FaceCalculatorType::FaceListType FaceListType;
   FaceCalculatorType faceCalculator;
-  FaceListType       faceList;
+  FaceListType faceList;
 
   faceList = faceCalculator(image, region, radius);
-  for (auto fit = faceList.begin(); fit != faceList.end(); ++fit)
-  {
-    std::cout << "Number of pixels : " << fit->GetNumberOfPixels() << std::endl;
-    std::cout << *fit << std::endl;
-    if (!region.IsInside(*fit) && (*fit).GetNumberOfPixels() > 0)
+  for(typename FaceListType::iterator fit = faceList.begin(); fit != faceList.end(); ++fit)
     {
-      std::cerr << "face region is outside of requestToProcessRegion " << std::endl;
+    std::cout<<"Number of pixels : "<<fit->GetNumberOfPixels()<<std::endl;
+    std::cout<<*fit<<std::endl;
+    if( !region.IsInside( *fit ) && (*fit).GetNumberOfPixels() > 0 )
+      {
+      std::cerr<<"face region is outside of requestToProcessRegion "<<std::endl;
       return false;
+      }
     }
-  }
 
-  if (faceList.empty())
+  if( !faceList.size() )
     return true;
 
   image->FillBuffer(0);
-  for (auto fit = faceList.begin(); fit != faceList.end(); ++fit)
-  {
-    if (fit == faceList.begin())
+  for(typename FaceListType::iterator fit = faceList.begin(); fit != faceList.end(); ++fit)
     {
-      using NeighborhoodIteratorType = itk::ConstNeighborhoodIterator<TImage>;
-      NeighborhoodIteratorType nIt(radius, image, *fit);
-      // a neighborhood iterator with radius and the first region should never overlap the boundary of the image
-      if (!nIt.InBounds() && fit->GetNumberOfPixels() > 0)
+      if (fit == faceList.begin())
       {
-        std::cerr << "Error!  Violation of the constraint that a neighborhood iterator of radius " << radius
-                  << " constructed from the first region (\n"
-                  << *fit
-                  << ") returned by the boundary face calculator should never overlap the boundary of the image.\n";
-        image->Print(std::cerr);
-        return false;
+        typedef itk::ConstNeighborhoodIterator<TImage> NeighborhoodIteratorType;
+        NeighborhoodIteratorType nIt(radius, image, *fit);
+        // a neighborhood iterator with radius and the first region should never overlap the boundary of the image
+        if (!nIt.InBounds() && fit->GetNumberOfPixels() > 0)
+        {
+          std::cerr << "Error!  Violation of the constraint that a neighborhood iterator of radius "
+                    << radius << " constructed from the first region (\n" << *fit
+                    << ") returned by the boundary face calculator should never overlap the boundary of the image.\n";
+          image->Print(std::cerr);
+          return false;
+        }
+      }
+    itk::ImageRegionIterator<TImage> it(image, *fit);
+    for(it.GoToBegin(); !it.IsAtEnd(); ++it)
+      {
+      it.Value()++;
       }
     }
-    itk::ImageRegionIterator<TImage> it(image, *fit);
-    for (it.GoToBegin(); !it.IsAtEnd(); ++it)
-    {
-      it.Value()++;
-    }
-  }
 
-  // to test the case that region is outside of bufferedRegion
+  //to test the case that region is outside of bufferedRegion
   region.Crop(image->GetBufferedRegion());
 
   itk::ImageRegionIterator<TImage> iter1(image, region);
-  for (iter1.GoToBegin(); !iter1.IsAtEnd(); ++iter1)
-  {
-    if (iter1.Get() != 1)
+  for(iter1.GoToBegin(); !iter1.IsAtEnd(); ++iter1)
     {
-      std::cerr << "pixel at Duplication or empty region found, pixel = " << iter1.Get() << std::endl;
+    if(iter1.Get() != 1)
+      {
+        std::cerr<<"pixel at Duplication or empty region found, pixel = "<<iter1.Get()<<std::endl;
       return false;
+      }
     }
-  }
-  return true;
+    return true;
 }
 
-template <typename TPixel, unsigned int VDimension>
-bool
-NeighborhoodAlgorithmTest()
+template<typename TPixel, unsigned int VDimension>
+bool NeighborhoodAlgorithmTest()
 {
-  using ImageType = itk::Image<TPixel, VDimension>;
-  using RegionType = typename ImageType::RegionType;
-  using IndexType = typename ImageType::IndexType;
-  using SizeType = typename ImageType::SizeType;
+  typedef itk::Image<TPixel, VDimension>      ImageType;
+  typedef typename ImageType::RegionType      RegionType;
+  typedef typename ImageType::IndexType       IndexType;
+  typedef typename ImageType::SizeType        SizeType;
 
   IndexType ind;
   ind.Fill(0);
@@ -110,8 +105,8 @@ NeighborhoodAlgorithmTest()
   image->SetRegions(region);
   image->Allocate();
 
-  // test 1: requestToProcessRegion match the bufferedRegion
-  if (!ImageBoundaryFaceCalculatorTest(image.GetPointer(), region, radius))
+  //test 1: requestToProcessRegion match the bufferedRegion
+  if ( !ImageBoundaryFaceCalculatorTest( image.GetPointer(), region, radius ))
     return false;
 
   ind.Fill(1);
@@ -119,8 +114,8 @@ NeighborhoodAlgorithmTest()
   region.SetIndex(ind);
   region.SetSize(size);
 
-  // test 2: requestToProcessRegion is part of bufferedRegion
-  if (!ImageBoundaryFaceCalculatorTest(image.GetPointer(), region, radius))
+  //test 2: requestToProcessRegion is part of bufferedRegion
+  if ( !ImageBoundaryFaceCalculatorTest( image.GetPointer(), region, radius ))
     return false;
 
   ind.Fill(0);
@@ -129,15 +124,15 @@ NeighborhoodAlgorithmTest()
   size.Fill(5);
   if (VDimension > 1)
   {
-    size[VDimension - 1] = 1;
+    size[VDimension-1] = 1;
   }
   region.SetSize(size);
   image->Initialize();
   image->SetRegions(region);
   image->Allocate();
 
-  // test 3: requestToProcessRegion match the bufferedRegion, but all the bufferedRegion is inside the boundary
-  if (!ImageBoundaryFaceCalculatorTest(image.GetPointer(), region, radius))
+  //test 3: requestToProcessRegion match the bufferedRegion, but all the bufferedRegion is inside the boundary
+  if ( !ImageBoundaryFaceCalculatorTest( image.GetPointer(), region, radius ))
     return false;
 
   size.Fill(5);
@@ -151,8 +146,8 @@ NeighborhoodAlgorithmTest()
   region.SetIndex(ind);
   region.SetSize(size);
 
-  // test 4: bufferedRegion is part of the requestToProcessRegion
-  if (!ImageBoundaryFaceCalculatorTest(image.GetPointer(), region, radius))
+  //test 4: bufferedRegion is part of the requestToProcessRegion
+  if ( !ImageBoundaryFaceCalculatorTest( image.GetPointer(), region, radius ))
     return false;
 
   ind.Fill(0);
@@ -168,8 +163,8 @@ NeighborhoodAlgorithmTest()
   size.Fill(2);
   region.SetIndex(ind);
   region.SetSize(size);
-  // test 5: requestToProcessRegion is part of boundary of bufferedRegion
-  if (!ImageBoundaryFaceCalculatorTest(image.GetPointer(), region, radius))
+  //test 5: requestToProcessRegion is part of boundary of bufferedRegion
+  if ( !ImageBoundaryFaceCalculatorTest( image.GetPointer(), region, radius ))
     return false;
 
   if (VDimension == 2)
@@ -198,20 +193,19 @@ NeighborhoodAlgorithmTest()
   return true;
 }
 
-int
-itkNeighborhoodAlgorithmTest(int, char *[])
+int itkNeighborhoodAlgorithmTest(int, char * [] )
 {
-  if (!NeighborhoodAlgorithmTest<int, 1>())
-    return EXIT_FAILURE;
+  if( !NeighborhoodAlgorithmTest<int, 1>( ) )
+      return EXIT_FAILURE;
 
-  if (!NeighborhoodAlgorithmTest<int, 2>())
-    return EXIT_FAILURE;
+  if( !NeighborhoodAlgorithmTest<int, 2>( ) )
+      return EXIT_FAILURE;
 
-  if (!NeighborhoodAlgorithmTest<int, 3>())
-    return EXIT_FAILURE;
+  if( !NeighborhoodAlgorithmTest<int, 3>( ) )
+      return EXIT_FAILURE;
 
-  if (!NeighborhoodAlgorithmTest<int, 4>())
-    return EXIT_FAILURE;
+  if( !NeighborhoodAlgorithmTest<int, 4>( ) )
+      return EXIT_FAILURE;
 
   return EXIT_SUCCESS;
 }

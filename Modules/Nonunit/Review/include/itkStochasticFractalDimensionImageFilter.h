@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,31 +49,30 @@ namespace itk
  *
  * \ingroup ITKReview
  */
-template <typename TInputImage,
-          typename TMaskImage = Image<unsigned char, TInputImage::ImageDimension>,
-          class TOutputImage = TInputImage>
-class ITK_TEMPLATE_EXPORT StochasticFractalDimensionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TMaskImage = Image< unsigned char,
+                                                       TInputImage::ImageDimension >,
+          class TOutputImage = TInputImage >
+class ITK_TEMPLATE_EXPORT StochasticFractalDimensionImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StochasticFractalDimensionImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = StochasticFractalDimensionImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef StochasticFractalDimensionImageFilter           Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
-  /** Some convenient type alias. */
-  using RealType = float;
-  using InputImageType = TInputImage;
-  using MaskImageType = TMaskImage;
-  using OutputImageType = TOutputImage;
+  /** Some convenient typedefs. */
+  typedef float        RealType;
+  typedef TInputImage  InputImageType;
+  typedef TMaskImage   MaskImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Runtime information support. */
   itkTypeMacro(StochasticFractalDimensionImageFilter, ImageToImageFilter);
@@ -81,16 +80,14 @@ public:
   /** Set/Get the input mask image that will constraint the computation of the
    * fractal dimension to pixels that are on in the mask. This is intended to
    * reduce the computation time. */
-  void
-  SetMaskImage(const MaskImageType * mask);
+  void SetMaskImage(const MaskImageType *mask);
 
-  const MaskImageType *
-  GetMaskImage() const;
+  const MaskImageType * GetMaskImage() const;
 
   /** Type of the neighborhood iterator used to evaluate similarity between the
    * image pixels. */
-  using ConstNeighborhoodIteratorType = ConstNeighborhoodIterator<InputImageType>;
-  using RadiusType = typename ConstNeighborhoodIteratorType::RadiusType;
+  typedef ConstNeighborhoodIterator< InputImageType >        ConstNeighborhoodIteratorType;
+  typedef typename ConstNeighborhoodIteratorType::RadiusType RadiusType;
 
   /** Manhattan radius used for evaluating the fractal dimension. */
   itkSetMacro(NeighborhoodRadius, RadiusType);
@@ -98,15 +95,15 @@ public:
 
 protected:
   StochasticFractalDimensionImageFilter();
-  ~StochasticFractalDimensionImageFilter() override;
+  ~StochasticFractalDimensionImageFilter();
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(StochasticFractalDimensionImageFilter);
+
   RadiusType m_NeighborhoodRadius;
 
   typename MaskImageType::Pointer m_MaskImage;
@@ -114,7 +111,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkStochasticFractalDimensionImageFilter.hxx"
+#include "itkStochasticFractalDimensionImageFilter.hxx"
 #endif
 
 #endif

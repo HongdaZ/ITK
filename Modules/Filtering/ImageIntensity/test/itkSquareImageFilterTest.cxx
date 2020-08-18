@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,35 +20,36 @@
 #include "itkMath.h"
 #include "itkTestingMacros.h"
 
-int
-itkSquareImageFilterTest(int, char *[])
+int itkSquareImageFilterTest( int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int ImageDimension = 3;
+  const unsigned int ImageDimension = 3;
 
   // Declare the types of the images
-  using InputPixelType = float;
-  using OutputPixelType = float;
+  typedef float       InputPixelType;
+  typedef float       OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, ImageDimension>;
-  using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
+  typedef itk::Image<InputPixelType,  ImageDimension>  InputImageType;
+  typedef itk::Image<OutputPixelType, ImageDimension>  OutputImageType;
 
   // Declare Iterator types apropriated for each image
-  using InputIteratorType = itk::ImageRegionIteratorWithIndex<InputImageType>;
-  using OutputIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  InputImageType>  InputIteratorType;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  OutputImageType> OutputIteratorType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<ImageDimension>;
+  typedef itk::Index<ImageDimension>         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<ImageDimension>;
+  typedef itk::Size<ImageDimension>          SizeType;
 
   // Declare the type of the Region
-  using RegionType = itk::ImageRegion<ImageDimension>;
+  typedef itk::ImageRegion<ImageDimension>   RegionType;
 
   // Create two images
-  InputImageType::Pointer inputImage = InputImageType::New();
+  InputImageType::Pointer inputImage  = InputImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -62,39 +63,40 @@ itkSquareImageFilterTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetLargestPossibleRegion( region );
+  inputImage->SetBufferedRegion( region );
+  inputImage->SetRequestedRegion( region );
   inputImage->Allocate();
   // Create one iterator for the Input Image (this is a light object)
-  InputIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  InputIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image A
-  constexpr double value = 30;
+  const double value = 30;
   std::cout << "Content of the Input " << std::endl;
   it.GoToBegin();
-  while (!it.IsAtEnd())
+  while( !it.IsAtEnd() )
   {
-    it.Set(value);
+    it.Set( value );
     std::cout << it.Get() << std::endl;
     ++it;
   }
 
   // Declare the type for the Square filter
-  using FilterType = itk::SquareImageFilter<InputImageType, OutputImageType>;
+  typedef itk::SquareImageFilter< InputImageType, OutputImageType > FilterType;
 
   // Create a Filter
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SquareImageFilter, UnaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, SquareImageFilter, UnaryFunctorImageFilter );
 
   // Connect the input images
-  filter->SetInput(inputImage);
+  filter->SetInput( inputImage );
 
+  filter->SetFunctor( filter->GetFunctor() );
 
   // Execute the filter
   filter->Update();
@@ -110,25 +112,26 @@ itkSquareImageFilterTest(int, char *[])
   const OutputImageType::PixelType epsilon = 1e-6;
   ot.GoToBegin();
   it.GoToBegin();
-  while (!ot.IsAtEnd())
-  {
-    const InputImageType::PixelType  input = it.Get();
-    const OutputImageType::PixelType output = ot.Get();
-    const double                     x1 = input;
-    const double                     x2 = x1 * x1;
-    const auto                       square = static_cast<OutputImageType::PixelType>(x2);
-    if (!itk::Math::FloatAlmostEqual(square, output, 10, epsilon))
+  while( !ot.IsAtEnd() )
     {
-      std::cerr.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
+    const InputImageType::PixelType  input  = it.Get();
+    const OutputImageType::PixelType output = ot.Get();
+    const double x1 = input;
+    const double x2 = x1 * x1;
+    const OutputImageType::PixelType square =
+            static_cast<OutputImageType::PixelType>( x2 );
+    if( !itk::Math::FloatAlmostEqual( square, output, 10, epsilon ) )
+      {
+      std::cerr.precision( unsigned( itk::Math::abs( std::log10( epsilon ) ) ) );
       std::cerr << "Error in itkSquareImageFilterTest " << std::endl;
       std::cerr << " square( " << input << ") = " << square << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++ot;
     ++it;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

@@ -336,10 +336,9 @@ static char const * const gni_history[] =
   "   - fixed znzread/write, noting example by M Adler\n"
   "   - changed nifti_swap_* routines/calls to take size_t (6)\n"
   "1.43 07 Jul 2010 [rickr]: fixed znzR/W to again return nmembers\n",
-  "1.44 19 Jul 2013 [rickr]: ITK compatibility updates from H Johnson\n",
   "----------------------------------------------------------------------\n"
 };
-static const char gni_version[] = "nifti library version 1.44 (19 July, 2013)";
+static const char gni_version[] = "nifti library version 1.39 (23 June, 2009)";
 
 /*! global nifti options structure - init with defaults */
 static nifti_global_options g_opts = {
@@ -435,7 +434,7 @@ static int   is_uppercase      (const char * str);
 static int   make_lowercase    (char * str);
 static int   make_uppercase    (char * str);
 static int   need_nhdr_swap    (short dim0, int hdrsize);
-static int   print_hex_vals    (const char * data, size_t nbytes, FILE * fp);
+static int   print_hex_vals    (const char * data, int nbytes, FILE * fp);
 static int   unescape_string   (char *str);  /* string utility functions */
 static char *escapize_string   (const char *str);
 
@@ -2139,7 +2138,7 @@ void nifti_mat44_to_orientation( mat44 R , int *icod, int *jcod, int *kcod )
 *//*--------------------------------------------------------------------*/
 void nifti_swap_2bytes( size_t n , void *ar )    /* 2 bytes at a time */
 {
-   size_t ii ;
+   register size_t ii ;
    unsigned char * cp1 = (unsigned char *)ar, * cp2 ;
    unsigned char   tval;
 
@@ -2156,9 +2155,9 @@ void nifti_swap_2bytes( size_t n , void *ar )    /* 2 bytes at a time */
 *//*--------------------------------------------------------------------*/
 void nifti_swap_4bytes( size_t n , void *ar )    /* 4 bytes at a time */
 {
-   size_t ii ;
+   register size_t ii ;
    unsigned char * cp0 = (unsigned char *)ar, * cp1, * cp2 ;
-   unsigned char tval ;
+   register unsigned char tval ;
 
    for( ii=0 ; ii < n ; ii++ ){
        cp1 = cp0; cp2 = cp0+3;
@@ -2177,9 +2176,9 @@ void nifti_swap_4bytes( size_t n , void *ar )    /* 4 bytes at a time */
 *//*--------------------------------------------------------------------*/
 void nifti_swap_8bytes( size_t n , void *ar )    /* 8 bytes at a time */
 {
-   size_t ii ;
+   register size_t ii ;
    unsigned char * cp0 = (unsigned char *)ar, * cp1, * cp2 ;
-   unsigned char tval ;
+   register unsigned char tval ;
 
    for( ii=0 ; ii < n ; ii++ ){
        cp1 = cp0;  cp2 = cp0+7;
@@ -2198,9 +2197,9 @@ void nifti_swap_8bytes( size_t n , void *ar )    /* 8 bytes at a time */
 *//*--------------------------------------------------------------------*/
 void nifti_swap_16bytes( size_t n , void *ar )    /* 16 bytes at a time */
 {
-   size_t ii ;
+   register size_t ii ;
    unsigned char * cp0 = (unsigned char *)ar, * cp1, * cp2 ;
-   unsigned char tval ;
+   register unsigned char tval ;
 
    for( ii=0 ; ii < n ; ii++ ){
        cp1 = cp0;  cp2 = cp0+15;
@@ -2221,9 +2220,9 @@ void nifti_swap_16bytes( size_t n , void *ar )    /* 16 bytes at a time */
 *//*--------------------------------------------------------------------*/
 void nifti_swap_bytes( size_t n , int siz , void *ar )
 {
-   size_t ii ;
+   register size_t ii ;
    unsigned char * cp0 = (unsigned char *)ar, * cp1, * cp2 ;
-   unsigned char tval ;
+   register unsigned char tval ;
 
    for( ii=0 ; ii < n ; ii++ ){
        cp1 = cp0;  cp2 = cp0+(siz-1);
@@ -2581,13 +2580,15 @@ int nifti_validfilename(const char* fname)
 
     \return a pointer to the extension substring within the original
             function input parameter name, or NULL if not found.
-    \caution Note that if the input parameter is is immutabale
-             (i.e. a const char *) then this function performs an
-             implicit casting away of the mutability constraint and
-             the return parameter will appear as a mutable
-             even though it is part of the immuttable string.
 *//*--------------------------------------------------------------------*/
-char * nifti_find_file_extension( const char * name )
+const char * nifti_find_file_extension( const char * name )
+/* Note that in ITK, the function nifti_find_file_extension
+ * is const-correct (i.e. preserve the mutability status
+ * of the name variable through the function call.
+ * This deviation is due to a difference of opion regarding
+ * the benifits/detrement of using const judiciously to
+ * avoid compiler warnings.
+ */
 {
    const char * ext;
    char extcopy[8];
@@ -2619,7 +2620,7 @@ char * nifti_find_file_extension( const char * name )
          fprintf(stderr,"** mixed case extension '%s' is not valid\n", ext);
          return NULL;
       }
-      else return (char *)ext; /* Cast away the constness of the input parameter */
+      else return ext;
    }
 
 #ifdef HAVE_ZLIB
@@ -2639,7 +2640,7 @@ char * nifti_find_file_extension( const char * name )
          fprintf(stderr,"** mixed case extension '%s' is not valid\n", ext);
          return NULL;
       }
-      else return (char *)ext; /* Cast away the constness of the input parameter */
+      else return ext;
    }
 
 #endif
@@ -3501,9 +3502,9 @@ int is_nifti_file( const char *hname )
    return -1 ;                          /* not good */
 }
 
-static int print_hex_vals( const char * data, size_t nbytes, FILE * fp )
+static int print_hex_vals( const char * data, int nbytes, FILE * fp )
 {
-   size_t c;
+   int c;
 
    if ( !data || nbytes < 1 || !fp ) return -1;
 
@@ -3662,7 +3663,8 @@ nifti_image* nifti_convert_nhdr2nim(struct nifti_1_header nhdr,
 
    if ( g_opts.debug > 2 ) disp_nifti_1_header("-d nhdr2nim : ", &nhdr);
 
-   if( nhdr.datatype == DT_BINARY || nhdr.datatype == DT_UNKNOWN  )
+   if( nhdr.datatype == DT_BINARY ||
+       nhdr.datatype == DT_UNKNOWN  )
    {
      free(nim);
      ERREX("bad datatype") ;
@@ -3927,7 +3929,7 @@ nifti_image* nifti_convert_nhdr2nim(struct nifti_1_header nhdr,
         <br>NULL if something fails badly.
     \sa nifti_image_load, nifti_image_free
  */
-znzFile nifti_image_open(const char * hname, const char * opts, nifti_image ** nim)
+znzFile nifti_image_open(const char * hname, char * opts, nifti_image ** nim)
 {
   znzFile fptr=NULL;
   /* open the hdr and reading it in, but do not load the data  */
@@ -4570,8 +4572,8 @@ static int nifti_fill_extension( nifti1_extension *ext, const char * data,
               (void *)ext, data, len);
       return -1;
    } else if( ! nifti_is_valid_ecode(ecode) ){
-      fprintf(stderr,"** warning: writing unknown ecode %d\n", ecode);
-      /* should not be fatal    29 Apr 2015 [rickr] */
+      fprintf(stderr,"** fill_ext: invalid ecode %d\n", ecode);
+      return -1;
    }
 
    /* compute esize, first : len+8, and take ceiling up to a mult of 16 */
@@ -4701,8 +4703,8 @@ int valid_nifti_extensions(const nifti_image * nim)
    for ( c = 0; c < nim->num_ext; c++ ){
       if( ! nifti_is_valid_ecode(ext->ecode) ) {
          if( g_opts.debug > 1 )
-            fprintf(stderr,"-d ext %d, unknown code %d\n", c, ext->ecode);
-         /* should not be fatal    29 Apr 2015 [rickr] */
+            fprintf(stderr,"-d ext %d, invalid code %d\n", c, ext->ecode);
+         errs++;
       }
 
       if( ext->esize <= 0 ){
@@ -4761,7 +4763,7 @@ static int nifti_check_extension(nifti_image *nim, int size, int code, int rem)
    if( ! nifti_is_valid_ecode(code) ) {
       if( g_opts.debug > 2 )
          fprintf(stderr,"-d invalid extension code %d\n",code);
-      /* should not be fatal    29 Apr 2015 [rickr] */
+      return 0;
    }
 
    if( size < 16 ){
@@ -4998,7 +5000,7 @@ size_t nifti_read_buffer(znzFile fp, void* dataptr, size_t ntot,
 
     case NIFTI_TYPE_FLOAT32:
     case NIFTI_TYPE_COMPLEX64:{
-        float *far = (float *)dataptr ; size_t jj,nj ;
+        register float *far = (float *)dataptr ; register size_t jj,nj ;
         nj = ntot / sizeof(float) ;
         for( jj=0 ; jj < nj ; jj++ )   /* count fixes 30 Nov 2004 [rickr] */
            if( !IS_GOOD_FLOAT(far[jj]) ){
@@ -5010,7 +5012,7 @@ size_t nifti_read_buffer(znzFile fp, void* dataptr, size_t ntot,
 
     case NIFTI_TYPE_FLOAT64:
     case NIFTI_TYPE_COMPLEX128:{
-        double *far = (double *)dataptr ; size_t jj,nj ;
+        register double *far = (double *)dataptr ; register size_t jj,nj ;
         nj = ntot / sizeof(double) ;
         for( jj=0 ; jj < nj ; jj++ )   /* count fixes 30 Nov 2004 [rickr] */
            if( !IS_GOOD_FLOAT(far[jj]) ){
@@ -6387,14 +6389,14 @@ int nifti_short_order(void)   /* determine this CPU's byte order */
 nifti_image *nifti_image_from_ascii( const char *str, int * bytes_read )
 {
    char lhs[1024] , rhs[1024] ;
-   int ii , spos, nn ;
+   int ii , spos, nn , slen ;
    nifti_image *nim ;              /* will be output */
 
    if( str == NULL || *str == '\0' ) return NULL ;  /* bad input!? */
 
    /* scan for opening string */
 
-   spos = 0 ;
+   spos = 0 ; slen = (int)strlen(str) ;
    ii = sscanf( str+spos , "%1023s%n" , lhs , &nn ) ; spos += nn ;
    if( ii == 0 || strcmp(lhs,"<nifti_image") != 0 ) return NULL ;
 
@@ -7037,6 +7039,7 @@ int nifti_read_subregion_image( nifti_image * nim,
       }
     }
   }
+  znzclose(fp);
   return bytes;
 }
 
@@ -7531,3 +7534,5 @@ int nifti_disp_type_list( int which )
 
     return 0;
 }
+
+

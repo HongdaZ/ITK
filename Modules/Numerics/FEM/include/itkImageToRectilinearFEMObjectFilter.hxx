@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,23 +31,26 @@ namespace fem
  * Default constructor for Filter
  */
 template <typename TInputImage>
-ImageToRectilinearFEMObjectFilter<TInputImage>::ImageToRectilinearFEMObjectFilter()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::ImageToRectilinearFEMObjectFilter()
 {
-  this->m_NumberOfElements.set_size(NDimensions);
-  this->m_NumberOfElements.fill(0);
-  this->m_PixelsPerElement.set_size(NDimensions);
-  this->m_PixelsPerElement.fill(1);
-  this->m_Material = nullptr;
-  this->m_Element = nullptr;
-  this->ProcessObject::SetNthOutput(0, this->MakeOutput(0));
+  this->m_NumberOfElements.set_size( NDimensions );
+  this->m_NumberOfElements.fill( 0 );
+  this->m_PixelsPerElement.set_size( NDimensions );
+  this->m_PixelsPerElement.fill( 1 );
+  this->m_Material = ITK_NULLPTR;
+  this->m_Element = ITK_NULLPTR;
+  this->ProcessObject::SetNthOutput(0, this->MakeOutput(0) );
 }
 
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::SetInput(InputImageType * image)
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::SetInput(InputImageType *image)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(0, const_cast<InputImageType *>(image));
+  this->ProcessObject::SetNthInput(0,
+                                   const_cast<InputImageType *>( image ) );
 }
 
 /**
@@ -55,10 +58,12 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::SetInput(InputImageType * image)
  */
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::SetInput(unsigned int index, InputImageType * image)
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::SetInput( unsigned int index, InputImageType * image )
 {
   // Process object is not const-correct so the const_cast is required here
-  this->ProcessObject::SetNthInput(index, const_cast<InputImageType *>(image));
+  this->ProcessObject::SetNthInput(index,
+                                   const_cast<InputImageType *>( image ) );
 }
 
 /**
@@ -66,14 +71,15 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::SetInput(unsigned int index, Inp
  */
 template <typename TInputImage>
 typename ImageToRectilinearFEMObjectFilter<TInputImage>::InputImageType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::GetInput(void)
 {
-  if (this->GetNumberOfInputs() < 1)
-  {
-    return nullptr;
-  }
+  if( this->GetNumberOfInputs() < 1 )
+    {
+    return ITK_NULLPTR;
+    }
 
-  return itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(0));
+  return itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(0) );
 }
 
 /**
@@ -81,9 +87,10 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput()
  */
 template <typename TInputImage>
 typename ImageToRectilinearFEMObjectFilter<TInputImage>::InputImageType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput(unsigned int idx)
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::GetInput(unsigned int idx)
 {
-  return itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(idx));
+  return itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(idx) );
 }
 
 /**
@@ -91,7 +98,8 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput(unsigned int idx)
  */
 template <typename TInputImage>
 typename ImageToRectilinearFEMObjectFilter<TInputImage>::DataObjectPointer
-ImageToRectilinearFEMObjectFilter<TInputImage>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
 {
   return FEMObjectType::New().GetPointer();
 }
@@ -101,14 +109,15 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::MakeOutput(DataObjectPointerArra
  */
 template <typename TInputImage>
 typename ImageToRectilinearFEMObjectFilter<TInputImage>::FEMObjectType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::GetOutput()
 {
-  if (this->GetNumberOfOutputs() < 1)
-  {
-    return nullptr;
-  }
+  if( this->GetNumberOfOutputs() < 1 )
+    {
+    return ITK_NULLPTR;
+    }
 
-  return itkDynamicCastInDebugMode<FEMObjectType *>(this->ProcessObject::GetOutput(0));
+  return itkDynamicCastInDebugMode<FEMObjectType *>(this->ProcessObject::GetOutput(0) );
 }
 
 /**
@@ -116,35 +125,38 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput()
  */
 template <typename TInputImage>
 typename ImageToRectilinearFEMObjectFilter<TInputImage>::FEMObjectType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput(unsigned int idx)
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::GetOutput(unsigned int idx)
 {
-  auto * out = dynamic_cast<FEMObjectType *>(this->ProcessObject::GetOutput(idx));
+  FEMObjectType* out = dynamic_cast<FEMObjectType *>
+    (this->ProcessObject::GetOutput(idx) );
 
-  if (out == nullptr)
-  {
-    itkWarningMacro(<< "dynamic_cast to output type failed");
-  }
+  if( out == ITK_NULLPTR )
+    {
+    itkWarningMacro( << "dynamic_cast to output type failed" );
+    }
   return out;
 }
 
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::GenerateData()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::GenerateData()
 {
 
-  if (this->GetNumberOfInputs() < 1)
-  {
-    itkWarningMacro(<< "GenerateData() found no input objects");
-  }
+  if( this->GetNumberOfInputs() < 1 )
+    {
+    itkWarningMacro( << "GenerateData() found no input objects" );
+    }
 
-  if (NDimensions == 2)
-  {
+  if( NDimensions == 2 )
+    {
     Generate2DRectilinearMesh();
-  }
+    }
   else
-  {
+    {
     Generate3DRectilinearMesh();
-  }
+    }
 }
 
 /**
@@ -152,11 +164,12 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GenerateData()
  */
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::Generate2DRectilinearMesh()
 {
   ImageConstPointer image = this->GetInput();
   ImageRegionType   region = image->GetLargestPossibleRegion();
-  ImageSizeType     size = region.GetSize();
+  ImageSizeType     size  = region.GetSize();
 
   this->m_NumberOfElements[0] = size[0] / m_PixelsPerElement[0];
   this->m_NumberOfElements[1] = size[1] / m_PixelsPerElement[1];
@@ -167,55 +180,54 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
   femObject->GetModifiableNodeContainer()->Initialize();
 
   // Create nodes
-  Element::Node::Pointer n;
-  ImageIndexType         nodeIndex;
-  ImagePointType         nodePoint;
+  Element::Node::Pointer  n;
+  ImageIndexType nodeIndex;
+  ImagePointType nodePoint;
 
-  if (this->m_Material)
-  {
-    femObject->AddNextMaterial(this->m_Material);
-  }
+  if ( this->m_Material )
+    {
+                femObject->AddNextMaterial( this->m_Material );
+                }
 
   int gn = 0; // number of node
-  for (typename ImageSizeType::SizeValueType j = 0; j <= m_NumberOfElements[1]; j++)
-  {
-    nodeIndex[1] = j * m_PixelsPerElement[1];
-    for (typename ImageSizeType::SizeValueType i = 0; i <= m_NumberOfElements[0]; i++)
+  for( typename ImageSizeType::SizeValueType j = 0; j <= m_NumberOfElements[1]; j++ )
     {
+    nodeIndex[1] = j * m_PixelsPerElement[1];
+    for( typename ImageSizeType::SizeValueType i = 0; i <= m_NumberOfElements[0]; i++ )
+      {
       nodeIndex[0] = i * m_PixelsPerElement[0];
       image->TransformIndexToPhysicalPoint(nodeIndex, nodePoint);
       Element::VectorType pt(2);
-      pt[0] = nodePoint[0];
-      pt[1] = nodePoint[1];
-      n = Element::Node::New();
+      pt[0] = nodePoint[0]; pt[1] = nodePoint[1];
+      n =  Element::Node::New();
       n->SetCoordinates(pt);
       n->SetGlobalNumber(gn);
       gn++;
       femObject->AddNextNode(n);
+      }
     }
-  }
 
   // Create elements
   gn = 0; // global number of the element
   Element2DC0LinearQuadrilateral::Pointer e;
-  for (unsigned int j = 0; j < m_NumberOfElements[1]; j++)
-  {
-    for (unsigned int i = 0; i < m_NumberOfElements[0]; i++)
+  for( unsigned int j = 0; j < m_NumberOfElements[1]; j++ )
     {
-      e = dynamic_cast<Element2DC0LinearQuadrilateral *>(m_Element->CreateAnother().GetPointer());
-      e->SetNode(0, femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * j)));
-      e->SetNode(1, femObject->GetNode((unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * j)));
-      e->SetNode(2, femObject->GetNode((unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1))));
-      e->SetNode(3, femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + 1))));
-      e->SetGlobalNumber(gn);
-      if (this->m_Material)
+    for( unsigned int i = 0; i < m_NumberOfElements[0]; i++ )
       {
-        e->SetMaterial(dynamic_cast<itk::fem::MaterialLinearElasticity *>(femObject->GetMaterial(0).GetPointer()));
-      }
+      e = dynamic_cast<Element2DC0LinearQuadrilateral *>( m_Element->CreateAnother().GetPointer() );
+      e->SetNode( 0, femObject->GetNode( (unsigned int)( i +  ( m_NumberOfElements[0] + 1 ) * j ) ) );
+      e->SetNode( 1, femObject->GetNode( (unsigned int)( i + 1 + ( m_NumberOfElements[0] + 1 ) * j ) ) );
+      e->SetNode( 2, femObject->GetNode( (unsigned int)( i + 1 + ( m_NumberOfElements[0] + 1 ) * ( j + 1 ) ) ) );
+      e->SetNode( 3, femObject->GetNode( (unsigned int)( i +  ( m_NumberOfElements[0] + 1 ) * ( j + 1 ) ) ) );
+      e->SetGlobalNumber(gn);
+      if ( this->m_Material )
+        {
+        e->SetMaterial( dynamic_cast<itk::fem::MaterialLinearElasticity *>( femObject->GetMaterial(0).GetPointer() ) );
+        }
       gn++;
-      femObject->AddNextElement(e);
+      femObject->AddNextElement(e.GetPointer());
+      }
     }
-  }
 }
 
 /**
@@ -223,11 +235,12 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
  */
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::Generate3DRectilinearMesh()
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::Generate3DRectilinearMesh()
 {
   ImageConstPointer image = this->GetInput();
   ImageRegionType   region = image->GetLargestPossibleRegion();
-  ImageSizeType     size = region.GetSize();
+  ImageSizeType     size  = region.GetSize();
 
   this->m_NumberOfElements[0] = size[0] / m_PixelsPerElement[0];
   this->m_NumberOfElements[1] = size[1] / m_PixelsPerElement[1];
@@ -238,84 +251,84 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate3DRectilinearMesh()
   femObject->GetModifiableElementContainer()->Initialize();
   femObject->GetModifiableNodeContainer()->Initialize();
 
-  if (this->m_Material)
-  {
-    femObject->AddNextMaterial(this->m_Material);
-  }
+  if ( this->m_Material )
+    {
+                femObject->AddNextMaterial( this->m_Material );
+                }
 
   // Create nodes
-  Element::Node::Pointer n;
-  ImageIndexType         nodeIndex;
-  ImagePointType         nodePoint;
-  int                    gn = 0; // number of node
-  for (unsigned int k = 0; k <= m_NumberOfElements[2]; ++k)
-  {
-    nodeIndex[2] = k * m_PixelsPerElement[2];
-    for (unsigned int j = 0; j <= m_NumberOfElements[1]; ++j)
+  Element::Node::Pointer  n;
+  ImageIndexType nodeIndex;
+  ImagePointType nodePoint;
+  int            gn = 0; // number of node
+  for( unsigned int k = 0; k <= m_NumberOfElements[2]; ++k )
     {
-      nodeIndex[1] = j * m_PixelsPerElement[1];
-      for (unsigned int i = 0; i <= m_NumberOfElements[0]; ++i)
+    nodeIndex[2] = k * m_PixelsPerElement[2];
+    for( unsigned int j = 0; j <= m_NumberOfElements[1]; ++j )
       {
+      nodeIndex[1] = j * m_PixelsPerElement[1];
+      for( unsigned int i = 0; i <= m_NumberOfElements[0]; ++i )
+        {
         nodeIndex[0] = i * m_PixelsPerElement[0];
         image->TransformIndexToPhysicalPoint(nodeIndex, nodePoint);
         Element::VectorType pt(3);
-        pt[0] = nodePoint[0];
-        pt[1] = nodePoint[1];
-        pt[2] = nodePoint[2];
-        n = Element::Node::New();
+        pt[0] = nodePoint[0]; pt[1] = nodePoint[1]; pt[2] = nodePoint[2];
+        n =  Element::Node::New();
         n->SetCoordinates(pt);
         n->SetGlobalNumber(gn);
         gn++;
         femObject->AddNextNode(n);
+        }
       }
     }
-  }
 
   // Create elements
   gn = 0; // global number of the element
   itk::fem::Element3DC0LinearHexahedron::Pointer e;
-  for (unsigned int k = 0; k < m_NumberOfElements[2]; k++)
-  {
-    for (unsigned int j = 0; j < m_NumberOfElements[1]; j++)
+  for( unsigned int k = 0; k < m_NumberOfElements[2]; k++ )
     {
-      for (unsigned int i = 0; i < m_NumberOfElements[0]; i++)
+    for( unsigned int j = 0; j < m_NumberOfElements[1]; j++ )
       {
-        e = dynamic_cast<Element3DC0LinearHexahedron *>(m_Element->CreateAnother().GetPointer());
-        e->SetNode(
-          0,
-          femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * k))));
-        e->SetNode(1,
-                   femObject->GetNode(
-                     (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * k))));
-        e->SetNode(2,
-                   femObject->GetNode(
-                     (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * k))));
-        e->SetNode(3,
-                   femObject->GetNode(
-                     (unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * k))));
-        e->SetNode(4,
-                   femObject->GetNode(
-                     (unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * (k + 1)))));
-        e->SetNode(5,
-                   femObject->GetNode((
-                     unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * (k + 1)))));
-        e->SetNode(
-          6,
-          femObject->GetNode(
-            (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
-        e->SetNode(7,
-                   femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) *
-                                                           (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
-        e->SetGlobalNumber(gn);
-        if (this->m_Material)
+      for( unsigned int i = 0; i < m_NumberOfElements[0]; i++ )
         {
-          e->SetMaterial(dynamic_cast<itk::fem::MaterialLinearElasticity *>(femObject->GetMaterial(0).GetPointer()));
-        }
+        e = dynamic_cast<Element3DC0LinearHexahedron *>( m_Element->CreateAnother().GetPointer() );
+        e->SetNode( 0,
+                    femObject->GetNode( (unsigned int)( i +  ( m_NumberOfElements[0]
+                                                               + 1 ) * ( j  + ( m_NumberOfElements[1] + 1 ) * k ) ) ) );
+        e->SetNode( 1,
+                    femObject->GetNode( (unsigned int)( i + 1 + ( m_NumberOfElements[0]
+                                                                  + 1 ) * ( j  + ( m_NumberOfElements[1] + 1 ) * k ) ) ) );
+        e->SetNode( 2,
+                    femObject->GetNode( (unsigned int)( i + 1 + ( m_NumberOfElements[0]
+                                                                  + 1 ) * ( j + 1 + ( m_NumberOfElements[1] + 1 ) * k ) ) ) );
+        e->SetNode( 3,
+                    femObject->GetNode( (unsigned int)( i + ( m_NumberOfElements[0]
+                                                              + 1 ) * ( j + 1 + ( m_NumberOfElements[1] + 1 ) * k ) ) ) );
+        e->SetNode( 4,
+                    femObject->GetNode( (unsigned int)( i + ( m_NumberOfElements[0]
+                                                              + 1 ) * ( j  + ( m_NumberOfElements[1] + 1 ) * ( k + 1 ) ) ) ) );
+        e->SetNode( 5,
+                    femObject->GetNode( (unsigned int)( i + 1
+                                                          + ( m_NumberOfElements[0]
+                                                              + 1 ) * ( j  + ( m_NumberOfElements[1] + 1 ) * ( k + 1 ) ) ) ) );
+        e->SetNode( 6,
+                    femObject->GetNode( (unsigned int)( i + 1
+                                                          + ( m_NumberOfElements[0]
+                                                              + 1 ) * ( j + 1 + ( m_NumberOfElements[1] + 1 ) * ( k + 1 ) ) ) ) );
+        e->SetNode( 7,
+                    femObject->GetNode( (unsigned int)( i
+                                                        + ( m_NumberOfElements[0]
+                                                            + 1 ) * ( j + 1 + ( m_NumberOfElements[1] + 1 ) * ( k + 1 ) ) ) ) );
+        e->SetGlobalNumber(gn);
+        if ( this->m_Material )
+          {
+          e->SetMaterial( dynamic_cast<itk::fem::MaterialLinearElasticity *>( femObject->GetMaterial(0).GetPointer() ) );
+          }
         gn++;
-        femObject->AddNextElement(e);
+        femObject->AddNextElement(e.GetPointer());
+        }
       }
     }
-  }
 }
 
 /**
@@ -323,15 +336,16 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate3DRectilinearMesh()
  */
 template <typename TInputImage>
 void
-ImageToRectilinearFEMObjectFilter<TInputImage>::PrintSelf(std::ostream & os, Indent indent) const
+ImageToRectilinearFEMObjectFilter<TInputImage>
+::PrintSelf(std::ostream& os, Indent indent) const
 {
-  Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf( os, indent );
   os << indent << "Number of Elements: " << m_NumberOfElements << std::endl;
   os << indent << "Pixels Per Element: " << m_PixelsPerElement << std::endl;
   os << indent << "Material: " << m_Material << std::endl;
   os << indent << "Element: " << m_Element << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 #endif // itkImageToRectilinearFEMObjectFilter_hxx

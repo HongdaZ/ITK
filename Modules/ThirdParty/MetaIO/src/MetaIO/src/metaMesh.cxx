@@ -16,8 +16,8 @@
 
 #include "metaMesh.h"
 
-#include <cctype>
-#include <cstdio>
+#include <stdio.h>
+#include <ctype.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
@@ -80,12 +80,12 @@ MetaMesh::
 MetaMesh()
 :MetaObject()
 {
-  if(META_DEBUG) std::cout << "MetaMesh()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh()" << METAIO_STREAM::endl;
   m_NPoints = 0;
 
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
 }
@@ -95,12 +95,12 @@ MetaMesh::
 MetaMesh(const char *_headerName)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaMesh()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaMesh()" << METAIO_STREAM::endl;
   m_NPoints = 0;
 
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
   Read(_headerName);
@@ -111,11 +111,11 @@ MetaMesh::
 MetaMesh(const MetaMesh *_mesh)
 :MetaObject()
 {
-  if(META_DEBUG)  std::cout << "MetaMesh()" << std::endl;
+  if(META_DEBUG)  METAIO_STREAM::cout << "MetaMesh()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
   CopyInfo(_mesh);
@@ -128,11 +128,11 @@ MetaMesh::
 MetaMesh(unsigned int dim)
 :MetaObject(dim)
 {
-  if(META_DEBUG) std::cout << "MetaMesh()" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh()" << METAIO_STREAM::endl;
   m_NPoints = 0;
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
   Clear();
 }
@@ -145,7 +145,7 @@ MetaMesh::
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
     {
     delete m_CellListArray[i];
-    m_CellListArray[i] = nullptr;
+    m_CellListArray[i] = NULL;
     }
 
   M_Destroy();
@@ -156,15 +156,15 @@ void MetaMesh::
 PrintInfo() const
 {
   MetaObject::PrintInfo();
-  std::cout << "PointDim = " << m_PointDim << std::endl;
-  std::cout << "NPoints = " << m_NPoints << std::endl;
+  METAIO_STREAM::cout << "PointDim = " << m_PointDim << METAIO_STREAM::endl;
+  METAIO_STREAM::cout << "NPoints = " << m_NPoints << METAIO_STREAM::endl;
   char str[255];
   MET_TypeToString(m_PointType, str);
-  std::cout << "PointType = " << str << std::endl;
+  METAIO_STREAM::cout << "PointType = " << str << METAIO_STREAM::endl;
   MET_TypeToString(m_PointDataType, str);
-  std::cout << "PointDataType = " << str << std::endl;
+  METAIO_STREAM::cout << "PointDataType = " << str << METAIO_STREAM::endl;
   MET_TypeToString(m_CellDataType, str);
-  std::cout << "CellDataType = " << str << std::endl;
+  METAIO_STREAM::cout << "CellDataType = " << str << METAIO_STREAM::endl;
 }
 
 void MetaMesh::
@@ -174,70 +174,66 @@ CopyInfo(const MetaObject * _object)
 }
 
 int MetaMesh::
-NPoints() const
+NPoints(void) const
 {
   return m_NPoints;
 }
 
 int MetaMesh::
-NCells() const
+NCells(void) const
 {
   return m_NCells;
 }
 
 int MetaMesh::
-NCellLinks() const
+NCellLinks(void) const
 {
   return m_NCellLinks;
 }
 
 /** Clear tube information */
 void MetaMesh::
-Clear()
+Clear(void)
 {
-  if(META_DEBUG) std::cout << "MetaMesh: Clear" << std::endl;
-
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: Clear" << METAIO_STREAM::endl;
   MetaObject::Clear();
-
-  strcpy(m_ObjectTypeName,"Mesh");
-
-  if(META_DEBUG) std::cout << "MetaMesh: Clear: m_NPoints" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: Clear: m_NPoints" << METAIO_STREAM::endl;
 
   // Delete the list of pointers to points.
   PointListType::iterator it_pnt = m_PointList.begin();
   while(it_pnt != m_PointList.end())
-{
+  {
     MeshPoint* pnt = *it_pnt;
     ++it_pnt;
     delete pnt;
-}
+  }
 
   // Delete the list of pointers to celllinks
   CellLinkListType::iterator it_celllinks = m_CellLinks.begin();
   while(it_celllinks != m_CellLinks.end())
-{
+  {
     MeshCellLink* link = *it_celllinks;
     ++it_celllinks;
     delete link;
-}
+  }
 
   // Delete the list of pointers to pointdata
   PointDataListType::iterator it_pointdata = m_PointData.begin();
   while(it_pointdata != m_PointData.end())
-{
+  {
     MeshDataBase* data = *it_pointdata;
     ++it_pointdata;
     delete data;
-}
+  }
 
   // Delete the list of pointers to celldata
   CellDataListType::iterator it_celldata = m_CellData.begin();
   while(it_celldata != m_CellData.end())
-{
+  {
     MeshDataBase* data = *it_celldata;
     ++it_celldata;
     delete data;
-}
+  }
 
   // Initialize the new array
   for(unsigned int i=0;i<MET_NUM_CELL_TYPES;i++)
@@ -274,16 +270,16 @@ Clear()
 
 /** Destroy tube information */
 void MetaMesh::
-M_Destroy()
+M_Destroy(void)
 {
   MetaObject::M_Destroy();
 }
 
 /** Set Read fields */
 void MetaMesh::
-M_SetupReadFields()
+M_SetupReadFields(void)
 {
-  if(META_DEBUG) std::cout << "MetaMesh: M_SetupReadFields" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: M_SetupReadFields" << METAIO_STREAM::endl;
 
   MetaObject::M_SetupReadFields();
 
@@ -322,8 +318,9 @@ M_SetupReadFields()
 }
 
 void MetaMesh::
-M_SetupWriteFields()
+M_SetupWriteFields(void)
 {
+  strcpy(m_ObjectTypeName,"Mesh");
   MetaObject::M_SetupWriteFields();
 
   MET_FieldRecordType * mF;
@@ -335,7 +332,7 @@ M_SetupWriteFields()
   m_Fields.push_back(mF);
 
   // Find the pointDataType
-  if(!m_PointData.empty())
+  if(m_PointData.size()>0)
     {
     m_PointDataType = (*m_PointData.begin())->GetMetaType();
     }
@@ -368,12 +365,12 @@ M_SetupWriteFields()
     }
 
   if(strlen(m_PointDim)>0)
-{
+  {
     mF = new MET_FieldRecordType;
     MET_InitWriteField(mF, "PointDim", MET_STRING,
                            strlen(m_PointDim),m_PointDim);
     m_Fields.push_back(mF);
-}
+  }
 
   m_NPoints = (int)m_PointList.size();
   mF = new MET_FieldRecordType;
@@ -388,60 +385,60 @@ M_SetupWriteFields()
 
 
 bool MetaMesh::
-M_Read()
+M_Read(void)
 {
 
-  if(META_DEBUG) std::cout << "MetaMesh: M_Read: Loading Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: M_Read: Loading Header" << METAIO_STREAM::endl;
 
   if(!MetaObject::M_Read())
-{
-    std::cout << "MetaMesh: M_Read: Error parsing file" << std::endl;
+  {
+    METAIO_STREAM::cout << "MetaMesh: M_Read: Error parsing file" << METAIO_STREAM::endl;
     return false;
-}
+  }
 
-  if(META_DEBUG) std::cout << "MetaMesh: M_Read: Parsing Header" << std::endl;
+  if(META_DEBUG) METAIO_STREAM::cout << "MetaMesh: M_Read: Parsing Header" << METAIO_STREAM::endl;
 
   MET_FieldRecordType * mF;
 
   unsigned int numberOfCellTypes =0;
   mF = MET_GetFieldRecord("NCellTypes", &m_Fields);
   if(mF->defined)
-{
+  {
     numberOfCellTypes= (int)mF->value[0];
-}
+  }
 
   mF = MET_GetFieldRecord("NPoints", &m_Fields);
   if(mF->defined)
-{
+  {
     m_NPoints= (int)mF->value[0];
-}
+  }
 
   mF = MET_GetFieldRecord("PointType", &m_Fields);
   if(mF->defined)
-{
+  {
     MET_StringToType((char *)(mF->value), &m_PointType);
-}
+  }
 
   mF = MET_GetFieldRecord("PointDataType", &m_Fields);
   if(mF->defined)
-{
+  {
     MET_StringToType((char *)(mF->value), &m_PointDataType);
-}
+  }
 
   mF = MET_GetFieldRecord("CellDataType", &m_Fields);
   if(mF->defined)
-{
+  {
     MET_StringToType((char *)(mF->value), &m_CellDataType);
-}
+  }
 
   mF = MET_GetFieldRecord("PointDim", &m_Fields);
   if(mF->defined)
-{
+  {
     strcpy(m_PointDim,(char *)(mF->value));
-}
+  }
 
   if(m_BinaryData)
-{
+  {
     int elementSize;
     MET_SizeOfType(m_PointType, &elementSize);
     int readSize = m_NPoints*(m_NDims)*elementSize+m_NPoints*sizeof(int);
@@ -452,10 +449,10 @@ M_Read()
     int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
     {
-      std::cout << "MetaMesh: m_Read: Points not read completely"
-                          << std::endl;
-      std::cout << "   ideal = " << readSize
-                          << " : actual = " << gc << std::endl;
+      METAIO_STREAM::cout << "MetaMesh: m_Read: Points not read completely"
+                          << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize
+                          << " : actual = " << gc << METAIO_STREAM::endl;
       delete [] _data;
       return false;
     }
@@ -595,8 +592,8 @@ M_Read()
 
    if(!MET_Read(*m_ReadStream, & m_Fields))
       {
-      std::cout << "MetaObject: Read: MET_Read Failed"
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed"
+                          << METAIO_STREAM::endl;
       return false;
       }
 
@@ -631,10 +628,10 @@ M_Read()
       int gc = static_cast<int>(m_ReadStream->gcount());
       if(gc != readSize)
         {
-        std::cout << "MetaMesh: m_Read: Cells not read completely"
-                            << std::endl;
-        std::cout << "   ideal = " << readSize << " : actual = " << gc
-                            << std::endl;
+        METAIO_STREAM::cout << "MetaMesh: m_Read: Cells not read completely"
+                            << METAIO_STREAM::endl;
+        METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc
+                            << METAIO_STREAM::endl;
         delete [] _data;
         return false;
         }
@@ -703,7 +700,7 @@ M_Read()
     }
     }
 
-  std::streampos pos = m_ReadStream->tellg();
+  METAIO_STL::streampos pos = m_ReadStream->tellg();
 
   // Now reading the cell links
   MetaObject::ClearFields();
@@ -723,7 +720,7 @@ M_Read()
 
   if(!MET_Read(*m_ReadStream, & m_Fields,'=',false,false))
     {
-    std::cout << "MetaObject: Read: MET_Read Failed" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -753,9 +750,9 @@ M_Read()
     int gc = static_cast<int>(m_ReadStream->gcount());
     if(gc != readSize)
       {
-      std::cout << "MetaMesh: m_Read: Cell Link not read completely"
-        << std::endl;
-      std::cout << "   ideal = " << readSize << " : actual = " << gc << std::endl;
+      METAIO_STREAM::cout << "MetaMesh: m_Read: Cell Link not read completely"
+        << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc << METAIO_STREAM::endl;
       delete [] _data;
       return false;
       }
@@ -841,7 +838,7 @@ M_Read()
   if(m_NCellLinks == 0)
     {
     m_ReadStream->clear();
-    m_ReadStream->seekg(pos,std::ios::beg);
+    m_ReadStream->seekg(pos,METAIO_STREAM::ios::beg);
     }
   pos = m_ReadStream->tellg();
 
@@ -863,7 +860,7 @@ M_Read()
 
   if(!MET_Read(*m_ReadStream, & m_Fields,'=',false,false))
     {
-    std::cout << "MetaObject: Read: MET_Read Failed" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -886,9 +883,9 @@ M_Read()
   unsigned int gc = static_cast<unsigned int>(m_ReadStream->gcount());
   if(gc != pointDataSize)
     {
-    std::cout << "MetaMesh: m_Read: PointData not read completely"
-              << std::endl;
-    std::cout << "   ideal = " << pointDataSize << " : actual = " << gc << std::endl;
+    METAIO_STREAM::cout << "MetaMesh: m_Read: PointData not read completely"
+              << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "   ideal = " << pointDataSize << " : actual = " << gc << METAIO_STREAM::endl;
     delete [] _data;
     return false;
     }
@@ -990,8 +987,8 @@ M_Read()
       }
     else  // assume double
       {
-      std::cerr << "Warning: Mesh point data type not known - assuming double"
-                << std::endl;
+      METAIO_STREAM::cerr << "Warning: Mesh point data type not known - assuming double"
+                << METAIO_STREAM::endl;
       double val = alignedBuffer.doublefloatingpoint;
       pd = new MeshData<double>();
       MET_SwapByteIfSystemMSB(&val,MET_DOUBLE);
@@ -1001,13 +998,12 @@ M_Read()
     m_PointData.push_back(pd);
     }
   delete [] _data;
-  _data = nullptr;
 
   // If no point data, reset the pointer to the stream to the previous position
   if(m_NPointData == 0)
     {
     m_ReadStream->clear();
-    m_ReadStream->seekg(pos,std::ios::beg);
+    m_ReadStream->seekg(pos,METAIO_STREAM::ios::beg);
     }
   pos = m_ReadStream->tellg();
 
@@ -1029,7 +1025,7 @@ M_Read()
 
   if(!MET_Read(*m_ReadStream, & m_Fields,'=',false,false))
     {
-    std::cout << "MetaObject: Read: MET_Read Failed" << std::endl;
+    METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -1053,9 +1049,9 @@ M_Read()
   unsigned int gcCell = static_cast<unsigned int>(m_ReadStream->gcount());
   if(gcCell != cellDataSize)
     {
-    std::cout << "MetaMesh: m_Read: data not read completely"
-              << std::endl;
-    std::cout << "   ideal = " << cellDataSize << " : actual = " << gcCell << std::endl;
+    METAIO_STREAM::cout << "MetaMesh: m_Read: data not read completely"
+              << METAIO_STREAM::endl;
+    METAIO_STREAM::cout << "   ideal = " << cellDataSize << " : actual = " << gcCell << METAIO_STREAM::endl;
     delete [] _data;
     delete [] _celldata;
     return false;
@@ -1156,8 +1152,8 @@ M_Read()
       }
     else
       {
-      std::cerr << "Warning: Mesh point data type not known - assuming double"
-        << std::endl;
+      METAIO_STREAM::cerr << "Warning: Mesh point data type not known - assuming double"
+        << METAIO_STREAM::endl;
       double val = alignedBuffer.doublefloatingpoint;
       cd = new MeshData<double>();
       MET_SwapByteIfSystemMSB(&val,MET_DOUBLE);
@@ -1173,18 +1169,18 @@ M_Read()
   if(m_NCellData == 0)
     {
     m_ReadStream->clear();
-    m_ReadStream->seekg(pos,std::ios::beg);
+    m_ReadStream->seekg(pos,METAIO_STREAM::ios::beg);
     }
 
   return true;
 }
 
 bool MetaMesh::
-M_Write()
+M_Write(void)
 {
   if(!MetaObject::M_Write())
     {
-    std::cout << "MetaMesh: M_Write: Error parsing file" << std::endl;
+    METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" << METAIO_STREAM::endl;
     return false;
     }
 
@@ -1229,7 +1225,7 @@ M_Write()
         {
         *m_WriteStream << (*it)->m_X[d] << " ";
         }
-      *m_WriteStream << std::endl;
+      *m_WriteStream << METAIO_STREAM::endl;
       ++it;
       }
     }
@@ -1262,7 +1258,7 @@ M_Write()
 
       if(!MetaObject::M_Write())
         {
-        std::cout << "MetaMesh: M_Write: Error parsing file" << std::endl;
+        METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" << METAIO_STREAM::endl;
         return false;
         }
 
@@ -1307,15 +1303,15 @@ M_Write()
             *m_WriteStream << (*it)->m_PointsId[d] << " ";
             }
 
-          *m_WriteStream << std::endl;
+          *m_WriteStream << METAIO_STREAM::endl;
           ++it;
           }
         }
     }
-}
+  }
 
   // Now write the cell links
-  if(!m_CellLinks.empty())
+  if(m_CellLinks.size()>0)
     {
     MetaObject::ClearFields();
     m_NCellLinks = static_cast<int>(m_CellLinks.size());
@@ -1347,7 +1343,7 @@ M_Write()
 
     if(!MetaObject::M_Write())
       {
-      std::cout << "MetaMesh: M_Write: Error parsing file" << std::endl;
+      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" << METAIO_STREAM::endl;
       return false;
       }
 
@@ -1368,8 +1364,8 @@ M_Write()
         MET_SwapByteIfSystemMSB(&linkSize,MET_INT);
         MET_DoubleToValue((double)linkSize,MET_INT,data,j++);
 
-        std::list<int>::const_iterator it2 = (*it)->m_Links.begin();
-        std::list<int>::const_iterator it2End = (*it)->m_Links.end();
+        METAIO_STL::list<int>::const_iterator it2 = (*it)->m_Links.begin();
+        METAIO_STL::list<int>::const_iterator it2End = (*it)->m_Links.end();
         while(it2 != it2End)
           {
           int links = (*it2);
@@ -1392,14 +1388,14 @@ M_Write()
         {
         *m_WriteStream << (*it)->m_Id << " ";
         *m_WriteStream << (*it)->m_Links.size() << " ";
-        std::list<int>::const_iterator it2 = (*it)->m_Links.begin();
-        std::list<int>::const_iterator it2End = (*it)->m_Links.end();
+        METAIO_STL::list<int>::const_iterator it2 = (*it)->m_Links.begin();
+        METAIO_STL::list<int>::const_iterator it2End = (*it)->m_Links.end();
         while(it2 != it2End)
           {
           *m_WriteStream << (*it2) << " ";
           ++it2;
           }
-        *m_WriteStream << std::endl;
+        *m_WriteStream << METAIO_STREAM::endl;
         ++it;
         }
       }
@@ -1407,7 +1403,7 @@ M_Write()
 
   // Now write the point data
   // Point Data type is the same for the whole mesh
-  if(!m_PointData.empty())
+  if(m_PointData.size()>0)
     {
     MetaObject::ClearFields();
     m_NPointData = static_cast<int>(m_PointData.size());
@@ -1435,8 +1431,8 @@ M_Write()
 
     if(!MetaObject::M_Write())
       {
-      std::cout << "MetaMesh: M_Write: Error parsing file"
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file"
+                          << METAIO_STREAM::endl;
       return false;
       }
 
@@ -1455,7 +1451,7 @@ M_Write()
 
   // Now write the cell data
   // Cell Data type is the same for the whole mesh
-  if(!m_CellData.empty())
+  if(m_CellData.size()>0)
     {
     MetaObject::ClearFields();
     m_NCellData = static_cast<int>(m_CellData.size());
@@ -1484,8 +1480,8 @@ M_Write()
 
     if(!MetaObject::M_Write())
       {
-      std::cout << "MetaMesh: M_Write: Error parsing file"
-                          << std::endl;
+      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file"
+                          << METAIO_STREAM::endl;
       return false;
       }
 

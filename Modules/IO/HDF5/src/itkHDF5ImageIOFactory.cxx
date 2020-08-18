@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,20 +21,23 @@
 
 namespace itk
 {
-void
-HDF5ImageIOFactory::PrintSelf(std::ostream &, Indent) const
+void HDF5ImageIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
 HDF5ImageIOFactory::HDF5ImageIOFactory()
 {
-  this->RegisterOverride(
-    "itkImageIOBase", "itkHDF5ImageIO", "HDF5 Image IO", true, CreateObjectFunction<HDF5ImageIO>::New());
+  this->RegisterOverride( "itkImageIOBase",
+                          "itkHDF5ImageIO",
+                          "HDF5 Image IO",
+                          1,
+                          CreateObjectFunction< HDF5ImageIO >::New() );
 }
 
-HDF5ImageIOFactory::~HDF5ImageIOFactory() = default;
+HDF5ImageIOFactory::~HDF5ImageIOFactory()
+{}
 
 const char *
-HDF5ImageIOFactory::GetITKSourceVersion() const
+HDF5ImageIOFactory::GetITKSourceVersion(void) const
 {
   return ITK_SOURCE_VERSION;
 }
@@ -50,14 +53,13 @@ HDF5ImageIOFactory::GetDescription() const
 
 static bool HDF5ImageIOFactoryHasBeenRegistered;
 
-void ITKIOHDF5_EXPORT
-     HDF5ImageIOFactoryRegister__Private()
+void ITKIOHDF5_EXPORT HDF5ImageIOFactoryRegister__Private(void)
 {
-  if (!HDF5ImageIOFactoryHasBeenRegistered)
-  {
+  if( ! HDF5ImageIOFactoryHasBeenRegistered )
+    {
     HDF5ImageIOFactoryHasBeenRegistered = true;
     HDF5ImageIOFactory::RegisterOneFactory();
-  }
+    }
 }
 
 } // end namespace itk

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,17 +38,18 @@ namespace fem
 class ITKFEM_EXPORT Solution
 {
 public:
-  /** Standard "Self" type alias. */
-  using Self = Solution;
-  /** Standard "Superclass" type alias. */
-  using Superclass = Solution;
+
+  /** Standard "Self" typedef. */
+  typedef Solution Self;
+  /** Standard "Superclass" typedef. */
+  typedef Solution Superclass;
   /**  Pointer to an object. */
-  using Pointer = Self *;
+  typedef Self *Pointer;
   /**  Const pointer to an object. */
-  using ConstPointer = const Self *;
+  typedef const Self *ConstPointer;
 
   /** Floating point storage type used within a class */
-  using Float = double;
+  typedef double Float;
 
   /**
    * Returns value of i-th element in a solution vector. This value
@@ -63,8 +64,7 @@ public:
    * \note If the solution vector doesn't exist (problem was not yet solved),
    *       or the index i is out of range, the function returns 0.0.
    */
-  virtual Float
-  GetSolutionValue(unsigned int i, unsigned int solutionIndex = 0) const = 0;
+  virtual Float GetSolutionValue(unsigned int i, unsigned int solutionIndex = 0) const = 0;
 
   /**
    * Virtual destructor should properly destroy the object and clean up any
@@ -72,7 +72,7 @@ public:
    */
   virtual ~Solution();
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif // itkFEMSolution_h
+#endif // #ifndef itkFEMSolution_h

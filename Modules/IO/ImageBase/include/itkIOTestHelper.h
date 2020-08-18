@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,165 +30,153 @@ class IOTestHelper
 {
 public:
   template <typename TImage>
-  static typename TImage::Pointer
-  ReadImage(const std::string &           fileName,
-            const bool                    zeroOrigin = false,
-            typename ImageIOBase::Pointer imageio = nullptr)
-  {
-    using ReaderType = itk::ImageFileReader<TImage>;
-
-    typename ReaderType::Pointer reader = ReaderType::New();
+  static typename TImage::Pointer ReadImage( const std::string &fileName,
+                                             const bool zeroOrigin = false )
     {
-      if (imageio)
+      typedef itk::ImageFileReader<TImage> ReaderType;
+
+      typename ReaderType::Pointer reader = ReaderType::New();
       {
-        reader->SetImageIO(imageio);
-      }
-      reader->SetFileName(fileName.c_str());
+      reader->SetFileName( fileName.c_str() );
       try
-      {
+        {
         reader->Update();
-      }
-      catch (const itk::ExceptionObject & err)
-      {
+        }
+      catch( itk::ExceptionObject & err )
+        {
         std::cout << "Caught an exception: " << std::endl;
         std::cout << err << " " << __FILE__ << " " << __LINE__ << std::endl;
         throw err;
-      }
-      catch (...)
-      {
+        }
+      catch(...)
+        {
         std::cout << "Error while reading in image for patient " << fileName << std::endl;
         throw;
+        }
       }
+      typename TImage::Pointer image = reader->GetOutput();
+      if(zeroOrigin)
+        {
+        double origin[TImage::ImageDimension];
+        for(unsigned int i = 0; i < TImage::ImageDimension; i++)
+          {
+          origin[i]=0;
+          }
+        image->SetOrigin(origin);
+        }
+      return image;
     }
-    typename TImage::Pointer image = reader->GetOutput();
-    if (zeroOrigin)
-    {
-      double origin[TImage::ImageDimension];
-      for (unsigned int i = 0; i < TImage::ImageDimension; i++)
-      {
-        origin[i] = 0;
-      }
-      image->SetOrigin(origin);
-    }
-    return image;
-  }
 
-  template <typename ImageType, typename ImageIOType>
+  template <typename ImageType,typename ImageIOType>
   static void
-  WriteImage(typename ImageType::Pointer & image,
-             const std::string &           filename,
-             typename ImageIOType::Pointer imageio = nullptr)
-  {
-
-    using WriterType = itk::ImageFileWriter<ImageType>;
-    typename WriterType::Pointer writer = WriterType::New();
-
-    if (imageio.IsNull())
+  WriteImage(typename ImageType::Pointer &image ,
+             const std::string &filename)
     {
-      imageio = ImageIOType::New();
-    }
 
-    writer->SetImageIO(imageio);
+      typedef itk::ImageFileWriter< ImageType > WriterType;
+      typename  WriterType::Pointer writer = WriterType::New();
 
-    writer->SetFileName(filename.c_str());
+      typename ImageIOType::Pointer imageio(ImageIOType::New());
 
-    writer->SetInput(image);
+      writer->SetImageIO(imageio);
 
-    try
-    {
-      writer->Update();
-    }
-    catch (const itk::ExceptionObject & err)
-    {
-      std::cerr << "Exception Object caught: " << std::endl << err << std::endl;
+      writer->SetFileName(filename.c_str());
+
+      writer->SetInput(image);
+
+      try
+        {
+        writer->Update();
+        }
+      catch (itk::ExceptionObject &err) {
+      std::cerr << "Exception Object caught: " << std::endl
+                << err << std::endl;
       throw;
+      }
     }
-  }
 
-  //
-  // generate random pixels of various types
+//
+// generate random pixels of various types
   static void
-  RandomPix(vnl_random & randgen, itk::RGBPixel<unsigned char> & pix)
-  {
-    for (unsigned int i = 0; i < 3; i++)
+  RandomPix(vnl_random &randgen,itk::RGBPixel<unsigned char> &pix)
     {
-      pix[i] = randgen.lrand32(itk::NumericTraits<unsigned char>::max());
+      for(unsigned int i = 0; i < 3; i++)
+        {
+        pix[i] = randgen.lrand32(itk::NumericTraits<unsigned char>::max());
+        }
     }
-  }
 
   template <typename TPixel>
   static void
-  RandomPix(vnl_random & randgen, TPixel & pix)
-  {
-    pix = randgen.lrand32(itk::NumericTraits<TPixel>::max());
-  }
+  RandomPix(vnl_random &randgen, TPixel &pix)
+    {
+      pix = randgen.lrand32(itk::NumericTraits<TPixel>::max());
+    }
 
   static void
-  RandomPix(vnl_random & randgen, long long & pix)
-  {
-    pix = randgen.lrand32(itk::NumericTraits<int>::max());
-    pix = (pix << 32) | randgen.lrand32();
-  }
+  RandomPix(vnl_random &randgen, long long &pix)
+    {
+      pix = randgen.lrand32(itk::NumericTraits<int>::max());
+      pix = (pix << 32) | randgen.lrand32();
+    }
 
   static void
-  RandomPix(vnl_random & randgen, unsigned long long & pix)
-  {
-    pix = randgen.lrand32();
-    pix = (pix << 32) | randgen.lrand32();
-  }
+  RandomPix(vnl_random &randgen, unsigned long long &pix)
+    {
+      pix = randgen.lrand32();
+      pix = (pix << 32) | randgen.lrand32();
+    }
 
   static void
-  RandomPix(vnl_random & randgen, double & pix)
-  {
-    pix = randgen.drand64(itk::NumericTraits<double>::max());
-  }
+  RandomPix(vnl_random &randgen, double &pix)
+    {
+      pix = randgen.drand64(itk::NumericTraits<double>::max());
+    }
 
   static void
-  RandomPix(vnl_random & randgen, float & pix)
-  {
-    pix = randgen.drand64(itk::NumericTraits<float>::max());
-  }
+  RandomPix(vnl_random &randgen, float &pix)
+    {
+      pix = randgen.drand64(itk::NumericTraits<float>::max());
+    }
 
-  static int
-  Remove(const char * fname)
-  {
-    return itksys::SystemTools::RemoveFile(fname);
-  }
+  static int Remove(const char *fname)
+    {
+      return itksys::SystemTools::RemoveFile(fname);
+    }
 
   template <typename ImageType>
-  static void
-  SetIdentityDirection(typename ImageType::Pointer & im)
-  {
-    typename ImageType::DirectionType dir;
-    dir.SetIdentity();
-    im->SetDirection(dir);
-  }
+  static void SetIdentityDirection(typename ImageType::Pointer &im)
+    {
+      typename ImageType::DirectionType dir;
+      dir.SetIdentity();
+      im->SetDirection(dir);
+    }
 
   template <typename ImageType>
   static typename ImageType::Pointer
-  AllocateImageFromRegionAndSpacing(const typename ImageType::RegionType &  region,
-                                    const typename ImageType::SpacingType & spacing)
-  {
-    typename ImageType::Pointer rval = ImageType::New();
-    SetIdentityDirection<ImageType>(rval);
-    rval->SetSpacing(spacing);
-    rval->SetRegions(region);
-    rval->Allocate();
-    return rval;
-  }
+  AllocateImageFromRegionAndSpacing(const typename ImageType::RegionType &region,
+                                    const typename ImageType::SpacingType &spacing)
+    {
+      typename ImageType::Pointer rval = ImageType::New();
+      SetIdentityDirection<ImageType>(rval);
+      rval->SetSpacing(spacing);
+      rval->SetRegions(region);
+      rval->Allocate();
+      return rval;
+    }
   template <typename ImageType>
   static typename ImageType::Pointer
-  AllocateImageFromRegionAndSpacing(const typename ImageType::RegionType &  region,
-                                    const typename ImageType::SpacingType & spacing,
-                                    int                                     vecLength)
-  {
-    typename ImageType::Pointer rval = ImageType::New();
-    rval->SetSpacing(spacing);
-    rval->SetRegions(region);
-    rval->SetVectorLength(vecLength);
-    rval->Allocate();
-    return rval;
-  }
+  AllocateImageFromRegionAndSpacing(const typename ImageType::RegionType &region,
+                                    const typename ImageType::SpacingType &spacing,
+                                    int vecLength)
+    {
+      typename ImageType::Pointer rval = ImageType::New();
+      rval->SetSpacing(spacing);
+      rval->SetRegions(region);
+      rval->SetVectorLength(vecLength);
+      rval->Allocate();
+      return rval;
+    }
 };
-} // namespace itk
+}
 #endif // itkIOTestHelper_h

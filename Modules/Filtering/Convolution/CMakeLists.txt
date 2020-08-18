@@ -1,3 +1,3 @@
-project(ITKConvolution)
-set(ITKConvolution_LIBRARIES ITKConvolution)
+project(ITK-Convolution)
+
 itk_module_impl()

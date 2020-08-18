@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,49 +35,40 @@ class TkImageViewer2D : public ProcessObject
 {
 public:
   /** Standard ITK class members.  */
-  using Self = TkImageViewer2D;
-  using Pointer = SmartPointer<Self>;
-  using Superclass = ProcessObject;
+  typedef TkImageViewer2D    Self;
+  typedef SmartPointer<Self> Pointer;
+  typedef ProcessObject      Superclass;
   itkTypeMacro(TkImageViewer2D, ProcessObject);
 
   /** Method for creation through the object factory.  */
   itkNewMacro(Self);
 
   /** The type of the input image.  */
-  using InputImageType = Image<unsigned short, 2>;
+  typedef Image<unsigned short, 2> InputImageType;
 
   /** Set/Get the Tcl interpreter.  */
-  void
-  SetInterpreter(Tcl_Interp * interp);
-  Tcl_Interp *
-  GetInterpreter() const;
+  void SetInterpreter(Tcl_Interp* interp);
+  Tcl_Interp* GetInterpreter() const;
 
   /** Set/Get the name of the Tk image.  */
-  void
-  SetImageName(const char * name);
-  const char *
-  GetImageName() const;
+  void SetImageName(const char* name);
+  const char* GetImageName() const;
 
   /** Set/Get the name of the Tk canvas.  */
-  void
-  SetCanvasName(const char * name);
-  const char *
-  GetCanvasName() const;
+  void SetCanvasName(const char* name);
+  const char* GetCanvasName() const;
 
-  void
-  SetInput(InputImageType * input);
-  InputImageType *
-  GetInput();
+  void SetInput(InputImageType* input);
+  InputImageType* GetInput();
 
-  void
-  Draw();
+  void Draw();
 
 protected:
   TkImageViewer2D();
   ~TkImageViewer2D();
 
   // The Tcl interpreter associated with the Tk window.
-  Tcl_Interp * m_Interpreter;
+  Tcl_Interp* m_Interpreter;
 
   // The name of the Tk image.
   std::string m_ImageName;
@@ -86,17 +77,18 @@ protected:
   std::string m_CanvasName;
 
   // The filter to flip the Y-axis.
-  using FlipFilter = FlipImageFilter<InputImageType>;
+  typedef FlipImageFilter<InputImageType> FlipFilter;
   FlipFilter::Pointer m_FlipFilter;
 
   // The filter to scale the image to 256 shades of gray.
-  using RescaleFilter = RescaleIntensityImageFilter<FlipFilter::OutputImageType, itk::Image<unsigned char, 2>>;
+  typedef RescaleIntensityImageFilter<FlipFilter::OutputImageType,
+                                      itk::Image<unsigned char, 2> >
+          RescaleFilter;
   RescaleFilter::Pointer m_RescaleFilter;
 
 private:
-  TkImageViewer2D(const Self &); // Not implemented.
-  void
-  operator=(const Self &); // Not implemented.
+  TkImageViewer2D(const Self&);     // Not implemented.
+  void operator=(const Self&); // Not implemented.
 };
 
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,17 +40,17 @@ namespace fem
 class ITKFEM_EXPORT Load : public FEMLightObject
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Load;
-  using Superclass = FEMLightObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Load                     Self;
+  typedef FEMLightObject           Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Load, FEMLightObject);
 
   /** Array class that holds special pointers to the load objects */
-  using ArrayType = FEMPArray<Self>;
+  typedef FEMPArray<Self> ArrayType;
 
   /**
    * Sets the pointer to solution vector. This function is automatically
@@ -59,49 +59,45 @@ public:
    * Some types of external Loads may need access to previous values of
    * solution vector. If a derived class needs that, it should implement
    * this function, and store the passed pointer accordingly. If the result
-   * vector is not required, the function should be left unimplemented,
+   * vector is not required, the functionn should be left unimplemented,
    * so that only the dummy implementation in base class is called.
    *
    * param ptr Pointer to the object of Solution class.
    */
-  virtual void
-  SetSolution(Solution::ConstPointer itkNotUsed(ptr))
-  {}
-  virtual Solution::ConstPointer
-  GetSolution()
+  virtual void SetSolution(Solution::ConstPointer itkNotUsed(ptr)) { }
+  virtual Solution::ConstPointer GetSolution()
   {
-    return nullptr;
+    return ITK_NULLPTR;
   }
   /**
-   * Get the element containing the degree of freedom
-   * on which the force is being applied.
-   */
-  const Element *
-  GetElement() const
-  {
+  * Get the element containing the degree of freedom
+  * on which the force is being applied.
+  */
+  const Element * GetElement() const
+    {
     return m_Element;
-  }
+    }
 
   /**
    * Get the element containing the degree of freedom
    * on which the force is being applied.
    */
-  void
-  SetElement(const Element * el)
-  {
+  void SetElement( const Element * el)
+    {
     this->m_Element = el;
-  }
+    }
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
   /**
    * Pointer to an element in a system that contains the DOF
    * on which the external force is applied.
    */
   Element::ConstPointer m_Element;
-};
-} // end namespace fem
-} // end namespace itk
 
-#endif // itkFEMLoadBase_h
+
+};
+}
+}  // end namespace itk::fem
+
+#endif // #ifndef itkFEMLoadBase_h

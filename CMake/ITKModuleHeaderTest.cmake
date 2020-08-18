@@ -4,6 +4,10 @@
 # primary purpose of this test is to make sure there are not missing module
 # dependencies.
 
+# This does not force the developer to install python to be able to build ITK.
+# The tests will simply not be run if python is unavailable.
+find_package(PythonInterp)
+
 # Improve performance of MSVC GUI, by reducing number of header tests.
 set( MAXIMUM_NUMBER_OF_HEADERS_default 35 )
 if( MSVC )
@@ -25,7 +29,8 @@ endif()
 macro( itk_module_headertest _name )
   if( NOT ${_name}_THIRD_PARTY
       AND EXISTS ${${_name}_SOURCE_DIR}/include
-      AND Python3_EXECUTABLE
+      AND PYTHON_EXECUTABLE
+      AND NOT (PYTHON_VERSION_STRING VERSION_LESS 2.6)
       AND NOT (${_name} STREQUAL ITKTestKernel)
       AND NOT (CMAKE_GENERATOR MATCHES "^Visual Studio 10.*"))
 
@@ -77,7 +82,7 @@ macro( itk_module_headertest _name )
       get_filename_component( _test_name ${_header_test_src} NAME_WE )
       add_custom_command(
         OUTPUT ${_header_test_src}
-        COMMAND ${Python3_EXECUTABLE} ${ITK_CMAKE_DIR}/../Utilities/Maintenance/BuildHeaderTest.py
+        COMMAND ${PYTHON_EXECUTABLE} ${ITK_CMAKE_DIR}/../Utilities/Maintenance/BuildHeaderTest.py
         ${_name}
         ${${_name}_SOURCE_DIR}
         ${${_name}_BINARY_DIR}

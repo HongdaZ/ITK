@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ namespace itk
 {
 // Forward declaration of ImageBase so it can be declared a friend
 // (needed for PrintSelf mechanism)
-template <unsigned int VImageDimension>
+template< unsigned int VImageDimension >
 class ITK_TEMPLATE_EXPORT ImageBase;
 
 /** \class ImageRegion
@@ -58,202 +58,156 @@ class ITK_TEMPLATE_EXPORT ImageBase;
  * \ingroup ImageObjects
  * \ingroup ITKCommon
  *
- * \sphinx
- * \sphinxexample{Core/Common/CreateAnImageRegion,An object which holds the index (start) and size of a region of an
- * image} \sphinxexample{Core/Common/ImageRegionIntersection,Determine image region intersection}
- * \sphinxexample{Core/Common/IsPixelInsideRegion,Determine if a pixel is inside of a region}
- * \sphinxexample{Core/Common/RegionOverlap,Determine the overlap of two regions}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Images/ImageRegion,An object which holds the index (start) and size of a region of an image}
+ * \wikiexample{SimpleOperations/RegionIntersection,Determine if one region is fully inside another region}
+ * \wikiexample{SimpleOperations/PixelInsideRegion,Determine if a pixel is inside of a region}
+ * \wikiexample{SimpleOperations/RegionOverlap,Determine the overlap of two regions}
+ * \endwiki
  */
-template <unsigned int VImageDimension>
-class ITK_TEMPLATE_EXPORT ImageRegion final : public Region
+template< unsigned int VImageDimension >
+class ITK_TEMPLATE_EXPORT ImageRegion:public Region
 {
 public:
-  /** Standard class type aliases. */
-  using Self = ImageRegion;
-  using Superclass = Region;
+  /** Standard class typedefs. */
+  typedef ImageRegion Self;
+  typedef Region      Superclass;
 
   /** Standard part of all itk objects. */
   itkTypeMacro(ImageRegion, Region);
 
   /** Dimension of the image available at compile time. */
-  static constexpr unsigned int ImageDimension = VImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
 
   /** Dimension one lower than the image unless the image is one dimensional
       in which case the SliceDimension is also one dimensional. */
-  static constexpr unsigned int SliceDimension = ImageDimension - (ImageDimension > 1);
+  itkStaticConstMacro( SliceDimension, unsigned int,
+                       ( ImageDimension - ( ImageDimension > 1 ) ) );
 
   /** Dimension of the image available at run time. */
-  static unsigned int
-  GetImageDimension()
-  {
-    return ImageDimension;
-  }
+  static unsigned int GetImageDimension()
+  { return ImageDimension; }
 
-  /** Index type alias support An index is used to access pixel values. */
-  using IndexType = Index<Self::ImageDimension>;
-  using IndexValueType = typename IndexType::IndexValueType;
-  using OffsetType = typename IndexType::OffsetType;
-  using OffsetValueType = typename OffsetType::OffsetValueType;
-  using IndexValueArrayType = IndexValueType[ImageDimension];
-  using OffsetTableType = OffsetValueType[ImageDimension + 1];
+  /** Index typedef support. An index is used to access pixel values. */
+  typedef Index< itkGetStaticConstMacro(ImageDimension) > IndexType;
+  typedef typename IndexType::IndexValueType              IndexValueType;
+  typedef IndexValueType                                  IndexValueArrayType[ImageDimension];
+  typedef typename IndexType::OffsetType                  OffsetType;
+  typedef typename OffsetType::OffsetValueType            OffsetValueType;
+  typedef OffsetValueType                                 OffsetTableType[ImageDimension+1];
 
-  /** Size type alias support A size is used to define region bounds. */
-  using SizeType = Size<Self::ImageDimension>;
-  using SizeValueType = typename SizeType::SizeValueType;
+  /** Size typedef support. A size is used to define region bounds. */
+  typedef Size< itkGetStaticConstMacro(ImageDimension) > SizeType;
+  typedef typename SizeType::SizeValueType               SizeValueType;
 
-  /** Slice region type alias. SliceRegion is one dimension less than Self. */
-  using SliceRegion = ImageRegion<Self::SliceDimension>;
+  /** Slice region typedef. SliceRegion is one dimension less than Self. */
+  typedef ImageRegion< itkGetStaticConstMacro(SliceDimension) > SliceRegion;
 
   /** Return the region type. Images are described with structured regions. */
-  Superclass::RegionEnum
-  GetRegionType() const override
-  {
-    return Superclass::RegionEnum::ITK_STRUCTURED_REGION;
-  }
+  virtual typename Superclass::RegionType GetRegionType() const ITK_OVERRIDE
+  { return Superclass::ITK_STRUCTURED_REGION; }
 
   /** Constructor. ImageRegion is a lightweight object that is not reference
-   * counted, so the constructor is public. Its two data members are filled
-   * with zeros (using C++11 default member initializers). */
-  ImageRegion() ITK_NOEXCEPT = default;
+   * counted, so the constructor is public. */
+  ImageRegion();
 
   /** Destructor. ImageRegion is a lightweight object that is not reference
    * counted, so the destructor is public. */
-  ~ImageRegion() override = default;
+  virtual ~ImageRegion() ITK_OVERRIDE;
 
   /** Copy constructor. ImageRegion is a lightweight object that is not
    * reference counted, so the copy constructor is public. */
-  ImageRegion(const Self &) ITK_NOEXCEPT = default;
+  ImageRegion(const Self & region):Region(region), m_Index(region.m_Index), m_Size(region.m_Size) {}
 
   /** Constructor that takes an index and size. ImageRegion is a lightweight
    * object that is not reference counted, so this constructor is public. */
-  ImageRegion(const IndexType & index, const SizeType & size) ITK_NOEXCEPT
-    :
-    // Note: Use parentheses instead of curly braces to initialize data members,
-    // to avoid AppleClang 6.0.0.6000056 compile errors, "no viable conversion..."
-    m_Index(index)
-    , m_Size(size)
-  {}
+  ImageRegion(const IndexType & index, const SizeType & size)
+  { m_Index = index; m_Size = size; }
 
   /** Constructor that takes a size and assumes an index of zeros. ImageRegion
    * is lightweight object that is not reference counted so this constructor
    * is public. */
-  ImageRegion(const SizeType & size) ITK_NOEXCEPT : m_Size(size)
-  {
-    // Note: m_Index is initialized by its C++11 default member initializer.
-  }
+  ImageRegion(const SizeType & size)
+  { m_Size = size; m_Index.Fill(0); }
 
   /** operator=. ImageRegion is a lightweight object that is not reference
    * counted, so operator= is public. */
-  Self &
-  operator=(const Self &) ITK_NOEXCEPT = default;
+  void operator=(const Self & region)
+    { m_Index = region.m_Index;m_Size = region.m_Size; }
 
   /** Set the index defining the corner of the region. */
-  void
-  SetIndex(const IndexType & index)
-  {
-    m_Index = index;
-  }
+  void SetIndex(const IndexType & index)
+  { m_Index = index; }
 
   /** Get index defining the corner of the region. */
-  const IndexType &
-  GetIndex() const
-  {
-    return m_Index;
-  }
-  IndexType &
-  GetModifiableIndex()
-  {
-    return m_Index;
-  }
+  const IndexType & GetIndex() const { return m_Index; }
+  IndexType & GetModifiableIndex() { return m_Index; }
 
   /** Set the size of the region. This plus the index determines the
    * rectangular shape, or extent, of the region. */
-  void
-  SetSize(const SizeType & size)
-  {
-    m_Size = size;
-  }
+  void SetSize(const SizeType & size)
+  { m_Size = size; }
 
   /** Get the size of the region. */
-  const SizeType &
-  GetSize() const
-  {
-    return m_Size;
-  }
-  SizeType &
-  GetModifiableSize()
-  {
-    return m_Size;
-  }
+  const SizeType & GetSize() const { return m_Size; }
+  SizeType & GetModifiableSize() { return m_Size; }
 
   /** Convenience methods to get and set the size of the particular dimension i.
-   */
-  void
-  SetSize(unsigned int i, SizeValueType sze)
-  {
-    m_Size[i] = sze;
-  }
-  SizeValueType
-  GetSize(unsigned int i) const
-  {
-    return m_Size[i];
-  }
+    */
+  void SetSize(unsigned int i, SizeValueType sze)
+  { m_Size[i] = sze; }
+  SizeValueType GetSize(unsigned int i) const
+  { return m_Size[i]; }
 
   /** Convenience methods to get and set the index of the particular dimension
     i. */
-  void
-  SetIndex(unsigned int i, IndexValueType sze)
-  {
-    m_Index[i] = sze;
-  }
-  IndexValueType
-  GetIndex(unsigned int i) const
-  {
-    return m_Index[i];
-  }
+  void SetIndex(unsigned int i, IndexValueType sze)
+  { m_Index[i] = sze; }
+  IndexValueType GetIndex(unsigned int i) const
+  { return m_Index[i]; }
 
   /** Get index defining the upper corner of the region. */
-  IndexType
-  GetUpperIndex() const;
+  IndexType GetUpperIndex() const;
 
   /** Modify the Size of the ImageRegion so that the provided index will be the upper corner index. */
-  void
-  SetUpperIndex(const IndexType & idx);
+  void SetUpperIndex( const IndexType & idx );
 
   /** Compute an offset table based on the Size. */
-  void
-  ComputeOffsetTable(OffsetTableType offsetTable) const;
+  void ComputeOffsetTable(OffsetTableType offsetTable) const;
 
   /** Compare two regions. */
   bool
-  operator==(const Self & region) const ITK_NOEXCEPT
+  operator==(const Self & region) const
   {
-    return (m_Index == region.m_Index) && (m_Size == region.m_Size);
+    bool same = ( m_Index == region.m_Index );
+    same = same && ( m_Size == region.m_Size );
+    return same;
   }
 
   /** Compare two regions. */
   bool
-  operator!=(const Self & region) const ITK_NOEXCEPT
+  operator!=(const Self & region) const
   {
-    return !(*this == region);
+    bool same = ( m_Index == region.m_Index );
+    same = same && ( m_Size == region.m_Size );
+    return !same;
   }
 
   /** Test if an index is inside */
   bool
   IsInside(const IndexType & index) const
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
-    {
-      if (index[i] < m_Index[i])
+    for ( unsigned int i = 0; i < ImageDimension; i++ )
       {
+      if ( index[i] < m_Index[i] )
+        {
         return false;
-      }
-      if (index[i] >= (m_Index[i] + static_cast<IndexValueType>(m_Size[i])))
-      {
+        }
+      if ( index[i] >= ( m_Index[i] + static_cast< IndexValueType >( m_Size[i] ) ) )
+        {
         return false;
+        }
       }
-    }
     return true;
   }
 
@@ -261,18 +215,19 @@ public:
    * We take into account the fact that each voxel has its
    * center at the integer coordinate and extends half way
    * to the next integer coordinate. */
-  template <typename TCoordRepType>
+  template< typename TCoordRepType >
   bool
-  IsInside(const ContinuousIndex<TCoordRepType, VImageDimension> & index) const
+  IsInside(const ContinuousIndex< TCoordRepType, VImageDimension > & index) const
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
-    {
-      if (Math::RoundHalfIntegerUp<IndexValueType>(index[i]) < static_cast<IndexValueType>(m_Index[i]))
+    for ( unsigned int i = 0; i < ImageDimension; i++ )
       {
+      if ( Math::RoundHalfIntegerUp< IndexValueType >(index[i]) < static_cast< IndexValueType >( m_Index[i] ) )
+        {
         return false;
-      }
+        }
       // bound is the last valid pixel location
-      const auto bound = static_cast<TCoordRepType>(m_Index[i] + m_Size[i] - 0.5);
+      const TCoordRepType bound = static_cast< TCoordRepType >(
+        m_Index[i] + m_Size[i] - 0.5 );
 
       /* Note for NaN: test using negation of a positive test in order
        * to always evaluate to true (and thus return false) when index[i]
@@ -280,11 +235,11 @@ public:
        * NaN into a platform-dependent value (large negative, -1 or large
        * positive, empirically). Thus this test here is relied on
        * to 'catch' NaN's. */
-      if (!(index[i] <= bound))
-      {
+      if ( ! (index[i] <= bound) )
+        {
         return false;
+        }
       }
-    }
     return true;
   }
 
@@ -297,89 +252,78 @@ public:
   {
     IndexType beginCorner = region.GetIndex();
 
-    if (!this->IsInside(beginCorner))
-    {
+    if ( !this->IsInside(beginCorner) )
+      {
       return false;
-    }
-    IndexType        endCorner;
+      }
+    IndexType endCorner;
     const SizeType & size = region.GetSize();
-    for (unsigned int i = 0; i < ImageDimension; i++)
-    {
-      endCorner[i] = beginCorner[i] + static_cast<OffsetValueType>(size[i]) - 1;
-    }
-    if (!this->IsInside(endCorner))
-    {
+    for ( unsigned int i = 0; i < ImageDimension; i++ )
+      {
+      endCorner[i] = beginCorner[i] + static_cast< OffsetValueType >( size[i] ) - 1;
+      }
+    if ( !this->IsInside(endCorner) )
+      {
       return false;
-    }
+      }
     return true;
   }
 
   /** Get the number of pixels contained in this region. This just
    * multiplies the size components. */
-  SizeValueType
-  GetNumberOfPixels() const;
+  SizeValueType GetNumberOfPixels() const;
 
   /** Pad an image region by the specified radius. Region can be padded
    * uniformly in all dimensions or can be padded by different amounts
    * in each dimension. */
-  void
-  PadByRadius(OffsetValueType radius);
+  void PadByRadius(OffsetValueType radius);
 
-  void
-  PadByRadius(const IndexValueArrayType radius);
+  void PadByRadius(const IndexValueArrayType radius);
 
-  void
-  PadByRadius(const SizeType & radius);
+  void PadByRadius(const SizeType & radius);
 
   /** Shrink an image region by the specified radius.  The region can be shrunk
-   * uniformly in all dimension or can be shrink by different amounts in each
-   * direction.  If the shrink operation fails because the radius is too large,
+   * uniformly in all dimension or can be shink by different amounts in each
+   * direction.  If the shink operation fails because the radius is too large,
    * this method returns false. */
-  bool
-  ShrinkByRadius(OffsetValueType radius);
+  bool ShrinkByRadius(OffsetValueType radius);
 
-  bool
-  ShrinkByRadius(const IndexValueArrayType radius);
+  bool ShrinkByRadius(const IndexValueArrayType radius);
 
-  bool
-  ShrinkByRadius(const SizeType & radius);
+  bool ShrinkByRadius(const SizeType & radius);
 
   /** Crop a region by another region. If this region is outside of the
    * crop, this method returns false and does not modify the
    * region. Otherwise, this method returns true and the region is
    * modified to reflect the crop. */
-  bool
-  Crop(const Self & region);
+  bool Crop(const Self & region);
 
   /** Slice a region, producing a region that is one dimension lower
    * than the current region. Parameter "dim" specifies which dimension
    * to remove. */
-  SliceRegion
-  Slice(const unsigned int dim) const;
+  SliceRegion Slice(const unsigned int dim) const;
 
 protected:
   /** Methods invoked by Print() to print information about the object
    * including superclasses. Typically not called by the user (use Print()
    * instead) but used in the hierarchical print process to combine the
    * output of several classes.  */
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  IndexType m_Index = { { 0 } };
-  SizeType  m_Size = { { 0 } };
+  IndexType m_Index;
+  SizeType  m_Size;
 
   /** Friends of ImageRegion */
-  friend class ImageBase<VImageDimension>;
+  friend class ImageBase< VImageDimension >;
 };
 
-template <unsigned int VImageDimension>
-std::ostream &
-operator<<(std::ostream & os, const ImageRegion<VImageDimension> & region);
+template< unsigned int VImageDimension >
+std::ostream & operator<<(std::ostream & os, const ImageRegion< VImageDimension > & region);
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkImageRegion.hxx"
+#include "itkImageRegion.hxx"
 #endif
 
 #endif

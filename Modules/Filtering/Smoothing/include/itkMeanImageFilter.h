@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,14 +21,10 @@
 #include "itkBoxImageFilter.h"
 #include "itkImage.h"
 #include "itkNumericTraits.h"
-#include "itkVariableLengthVector.h"
-
-#include <vector>
 
 namespace itk
 {
-/**
- *\class MeanImageFilter
+/** \class MeanImageFilter
  * \brief Applies an averaging filter to an image
  *
  * Computes an image where a given pixel is the mean value of the
@@ -44,29 +40,30 @@ namespace itk
  * \ingroup IntensityImageFilters
  * \ingroup ITKSmoothing
  *
- * \sphinx
- * \sphinxexample{Filtering/Smoothing/ApplyMeanFilter,Mean filter an image}
- * \endsphinx
+ * \wiki
+ * \wikiexample{Smoothing/MeanImageFilter,Mean filter an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT MeanImageFilter : public BoxImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT MeanImageFilter:
+  public BoxImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanImageFilter);
-
   /** Extract dimension from input and output image. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Convenient type alias for simplifying declarations. */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
-  /** Standard class type aliases. */
-  using Self = MeanImageFilter;
-  using Superclass = BoxImageFilter<InputImageType, OutputImageType>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MeanImageFilter                                   Self;
+  typedef BoxImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef SmartPointer< Self >                              Pointer;
+  typedef SmartPointer< const Self >                        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -74,25 +71,26 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MeanImageFilter, BoxImageFilter);
 
-  /** Image type alias support */
-  using InputPixelType = typename InputImageType::PixelType;
-  using OutputPixelType = typename OutputImageType::PixelType;
-  using InputRealType = typename NumericTraits<InputPixelType>::RealType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType                 InputPixelType;
+  typedef typename OutputImageType::PixelType                OutputPixelType;
+  typedef typename NumericTraits< InputPixelType >::RealType InputRealType;
 
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
-  using InputSizeType = typename InputImageType::SizeType;
+  typedef typename InputImageType::SizeType InputSizeType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   MeanImageFilter();
-  ~MeanImageFilter() override = default;
+  virtual ~MeanImageFilter() ITK_OVERRIDE {}
 
   /** MeanImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData()
@@ -104,30 +102,16 @@ protected:
    *
    * \sa BoxImageFilter::ThreadedGenerateData(),
    *     BoxImageFilter::GenerateData() */
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                            ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
-  template <typename TPixelAccessPolicy, typename TPixelType>
-  static void
-  GenerateDataInSubregion(const TInputImage &                              inputImage,
-                          TOutputImage &                                   outputImage,
-                          const ImageRegion<InputImageDimension> &         imageRegion,
-                          const std::vector<Offset<InputImageDimension>> & neighborhoodOffsets,
-                          const TPixelType *);
-
-  template <typename TPixelAccessPolicy, typename TValue>
-  static void
-  GenerateDataInSubregion(const TInputImage &                              inputImage,
-                          TOutputImage &                                   outputImage,
-                          const ImageRegion<InputImageDimension> &         imageRegion,
-                          const std::vector<Offset<InputImageDimension>> & neighborhoodOffsets,
-                          const VariableLengthVector<TValue> *);
+  ITK_DISALLOW_COPY_AND_ASSIGN(MeanImageFilter);
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMeanImageFilter.hxx"
+#include "itkMeanImageFilter.hxx"
 #endif
 
 #endif

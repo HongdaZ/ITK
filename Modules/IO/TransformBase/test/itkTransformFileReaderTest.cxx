@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,46 +18,47 @@
 
 
 #include "itkTransformFileReader.h"
-#include "itkTestingMacros.h"
 
-int
-itkTransformFileReaderTest(int argc, char * argv[])
+int itkTransformFileReaderTest( int argc, char *argv[] )
 {
-  if (argc < 1)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+  if( argc < 1 )
+    {
+    std::cerr << "Usage:" <<argv[0];
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using TransformReaderType = itk::TransformFileReader;
+  typedef itk::TransformFileReader        TransformReaderType;
 
   TransformReaderType::Pointer transformReader = TransformReaderType::New();
 
-  std::cout << "Reader class = " << transformReader->GetNameOfClass() << "Reader base = "
+  std::cout << "Reader class = "
+            << transformReader->GetNameOfClass()
+            << "Reader base = "
             << dynamic_cast<TransformReaderType::Superclass *>(transformReader.GetPointer())->GetNameOfClass()
             << std::endl;
 
   try
-  {
-    // trigger empty read exception
+    {
+    //trigger empty read exception
     transformReader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Expected exception (no filename)" << std::endl << excp << std::endl;
-  }
+    }
+  catch(itk::ExceptionObject &excp)
+    {
+    std::cerr << "Expected exception (no filename)" << std::endl
+              << excp << std::endl;
+    }
   transformReader->SetFileName("transform.garbage");
   try
-  {
+    {
     // trigger exception for transformio not found
     transformReader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch(itk::ExceptionObject &excp)
+    {
     std::cerr << "Expected exception (no transformio that can read garbage and no transformio should be registered)"
               << excp << std::endl;
-  }
+    }
 
   std::cout << "Test PASSED!" << std::endl;
 

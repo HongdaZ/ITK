@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,34 +40,34 @@ namespace itk
  *
  * \ingroup ITKCommon
  */
-template <typename TInput, typename TOutput>
-class ITK_TEMPLATE_EXPORT FunctionBase : public Object
+template< typename TInput, typename TOutput >
+class ITK_TEMPLATE_EXPORT FunctionBase:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FunctionBase);
-
-  /** Standard class type aliases. */
-  using Self = FunctionBase;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef FunctionBase               Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(FunctionBase, Object);
 
   /** Input type */
-  using InputType = TInput;
+  typedef TInput InputType;
 
   /** Output type */
-  using OutputType = TOutput;
+  typedef TOutput OutputType;
 
   /** Evaluate at the specified input position */
-  virtual OutputType
-  Evaluate(const InputType & input) const = 0;
+  virtual OutputType Evaluate(const InputType & input) const = 0;
 
 protected:
-  FunctionBase() = default;
-  ~FunctionBase() override = default;
+  FunctionBase(){}
+  ~FunctionBase() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FunctionBase);
 };
 } // end namespace itk
 

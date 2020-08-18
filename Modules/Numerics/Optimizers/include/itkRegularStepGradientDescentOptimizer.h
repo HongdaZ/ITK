@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,38 +30,42 @@ namespace itk
  *
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT RegularStepGradientDescentOptimizer : public RegularStepGradientDescentBaseOptimizer
+class ITKOptimizers_EXPORT RegularStepGradientDescentOptimizer:
+  public RegularStepGradientDescentBaseOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegularStepGradientDescentOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = RegularStepGradientDescentOptimizer;
-  using Superclass = RegularStepGradientDescentBaseOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef RegularStepGradientDescentOptimizer     Self;
+  typedef RegularStepGradientDescentBaseOptimizer Superclass;
+  typedef SmartPointer< Self >                    Pointer;
+  typedef SmartPointer< const Self >              ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RegularStepGradientDescentOptimizer, RegularStepGradientDescentBaseOptimizer);
+  itkTypeMacro(RegularStepGradientDescentOptimizer,
+               RegularStepGradientDescentBaseOptimizer);
 
-  /** Cost function type alias. */
-  using CostFunctionType = Superclass::CostFunctionType;
-  using CostFunctionPointer = CostFunctionType::Pointer;
+  /** Cost function typedefs. */
+  typedef Superclass::CostFunctionType CostFunctionType;
+  typedef CostFunctionType::Pointer    CostFunctionPointer;
 
 protected:
-  RegularStepGradientDescentOptimizer() = default;
-  ~RegularStepGradientDescentOptimizer() override = default;
+  RegularStepGradientDescentOptimizer() {}
+  virtual ~RegularStepGradientDescentOptimizer() ITK_OVERRIDE {}
 
   /** Advance one step along the corrected gradient taking into
    * account the steplength represented by factor.
    * This method is invoked by AdvanceOneStep. It is expected
-   * to be overridden by optimization methods in non-vector spaces
+   * to be overrided by optimization methods in non-vector spaces
    * \sa AdvanceOneStep */
-  void
-  StepAlongGradient(double factor, const DerivativeType & transformedGradient) override;
+  virtual void StepAlongGradient(
+    double factor,
+    const DerivativeType & transformedGradient) ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegularStepGradientDescentOptimizer);
 };
 } // end namespace itk
 

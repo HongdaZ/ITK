@@ -40,9 +40,7 @@ public:
   /// - hostname = localhost
   /// - port = 104
   ServiceClassUser();
-  ~ServiceClassUser() override;
-  ServiceClassUser(const ServiceClassUser&) = delete;
-  void operator=(const ServiceClassUser &) = delete;
+  ~ServiceClassUser();
 
   /// Set the name of the called hostname (hostname or IP address)
   void SetHostname( const char *hostname );
@@ -112,6 +110,10 @@ private:
     network::ULConnectionCallback* inCallback, const bool& startWaiting);
   network::EStateID RunMoveEventLoop(network::ULEvent& inEvent,
     network::ULConnectionCallback* inCallback);
+
+private:
+  ServiceClassUser(const ServiceClassUser&);
+  void operator=(const ServiceClassUser &);
 
 private:
   ServiceClassUserInternals *Internals;

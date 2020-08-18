@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,19 +22,21 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType>
-LaplacianSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>::
-  LaplacianSegmentationLevelSetImageFilter()
+template< typename TInputImage, typename TFeatureImage, typename TOutputPixelType >
+LaplacianSegmentationLevelSetImageFilter< TInputImage, TFeatureImage,
+                                          TOutputPixelType >
+::LaplacianSegmentationLevelSetImageFilter()
 {
   m_LaplacianFunction = LaplacianFunctionType::New();
 
   this->SetSegmentationFunction(m_LaplacianFunction);
 }
 
-template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType>
+template< typename TInputImage, typename TFeatureImage, typename TOutputPixelType >
 void
-LaplacianSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>::PrintSelf(std::ostream &,
-                                                                                                  Indent) const
+LaplacianSegmentationLevelSetImageFilter< TInputImage, TFeatureImage,
+                                          TOutputPixelType >
+::PrintSelf(std::ostream &, Indent) const
 {
   //   Superclass::PrintSelf(os, indent);
 }

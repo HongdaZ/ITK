@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,63 +45,64 @@ namespace itk
 
 namespace Functor
 {
-template <typename TInputPixel, typename TAccumulate>
+template< typename TInputPixel, typename TAccumulate >
 class MeanAccumulator
 {
 public:
-  using RealType = typename NumericTraits<TInputPixel>::RealType;
+  typedef typename NumericTraits< TInputPixel >::RealType       RealType;
 
-  MeanAccumulator(SizeValueType size) { m_Size = size; }
-
-  ~MeanAccumulator() { m_Size = NumericTraits<SizeValueType>::ZeroValue(); }
-
-  inline void
-  Initialize()
+  MeanAccumulator( SizeValueType size )
   {
-    m_Sum = NumericTraits<TAccumulate>::ZeroValue();
+    m_Size = size;
   }
 
-  inline void
-  operator()(const TInputPixel & input)
+  ~MeanAccumulator()
+  {
+    m_Size = NumericTraits< SizeValueType >::ZeroValue();
+  }
+
+  inline void Initialize()
+  {
+    m_Sum = NumericTraits< TAccumulate >::ZeroValue();
+  }
+
+  inline void operator()(const TInputPixel & input)
   {
     m_Sum = m_Sum + input;
   }
 
-  inline RealType
-  GetValue()
+  inline RealType GetValue()
   {
-    return ((RealType)m_Sum) / m_Size;
+    return ( (RealType)m_Sum ) / m_Size;
   }
 
   TAccumulate   m_Sum;
   SizeValueType m_Size;
 };
-} // namespace Functor
+} // end namespace Function
 
-template <typename TInputImage,
-          typename TOutputImage,
-          typename TAccumulate = typename NumericTraits<typename TOutputImage::PixelType>::AccumulateType>
-class MeanProjectionImageFilter
-  : public ProjectionImageFilter<TInputImage,
-                                 TOutputImage,
-                                 Functor::MeanAccumulator<typename TInputImage::PixelType, TAccumulate>>
+template< typename TInputImage, typename TOutputImage,
+          typename TAccumulate =
+            typename NumericTraits<
+              typename TOutputImage::PixelType >::AccumulateType >
+class MeanProjectionImageFilter:public
+  ProjectionImageFilter< TInputImage, TOutputImage,
+                         Functor::MeanAccumulator< typename TInputImage::PixelType, TAccumulate > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanProjectionImageFilter);
+  typedef MeanProjectionImageFilter Self;
+  typedef ProjectionImageFilter< TInputImage, TOutputImage,
+                                 Functor::MeanAccumulator<
+                                   typename TInputImage::PixelType, TAccumulate > > Superclass;
 
-  using Self = MeanProjectionImageFilter;
-  using Superclass = ProjectionImageFilter<TInputImage,
-                                           TOutputImage,
-                                           Functor::MeanAccumulator<typename TInputImage::PixelType, TAccumulate>>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef TInputImage                        InputImageType;
+  typedef typename InputImageType::PixelType InputPixelType;
 
-  using InputImageType = TInputImage;
-  using InputPixelType = typename InputImageType::PixelType;
-
-  using OutputImageType = TOutputImage;
-  using OutputPixelType = typename OutputImageType::PixelType;
+  typedef TOutputImage                        OutputImageType;
+  typedef typename OutputImageType::PixelType OutputPixelType;
 
   /** Runtime information support. */
   itkTypeMacro(MeanProjectionImageFilter, ProjectionImageFilter);
@@ -111,17 +112,23 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputPixelToOutputPixelTypeGreaterAdditiveOperatorCheck,
-                  (Concept::AdditiveOperators<OutputPixelType, InputPixelType, OutputPixelType>));
+  itkConceptMacro( InputPixelToOutputPixelTypeGreaterAdditiveOperatorCheck,
+                   ( Concept::AdditiveOperators< OutputPixelType,
+                                                 InputPixelType,
+                                                 OutputPixelType > ) );
 
-  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro( InputHasNumericTraitsCheck,
+                   ( Concept::HasNumericTraits< InputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  MeanProjectionImageFilter() = default;
-  ~MeanProjectionImageFilter() override = default;
-}; // end MeanProjectionImageFilter
-} // end namespace itk
+  MeanProjectionImageFilter() {}
+  virtual ~MeanProjectionImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MeanProjectionImageFilter);
+};                                         // end MeanProjectionImageFilter
+} //end namespace itk
 
 #endif

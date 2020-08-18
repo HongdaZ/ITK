@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,152 +29,157 @@
 
 #include <fstream>
 
-int
-itkBSplineTransformInitializerTest1(int argc, char * argv[])
+int itkBSplineTransformInitializerTest1( int argc, char * argv[] )
 {
 
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " coefficientsFile fixedImage";
     std::cerr << " movingImage deformedMovingImage" << std::endl;
     std::cerr << " [deformationField]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int ImageDimension = 2;
+  const   unsigned int ImageDimension = 2;
 
-  using PixelType = unsigned char;
-  using FixedImageType = itk::Image<PixelType, ImageDimension>;
-  using MovingImageType = itk::Image<PixelType, ImageDimension>;
+  typedef unsigned char                         PixelType;
+  typedef itk::Image<PixelType, ImageDimension> FixedImageType;
+  typedef itk::Image<PixelType, ImageDimension> MovingImageType;
 
-  using FixedReaderType = itk::ImageFileReader<FixedImageType>;
-  using MovingReaderType = itk::ImageFileReader<MovingImageType>;
+  typedef itk::ImageFileReader<FixedImageType>  FixedReaderType;
+  typedef itk::ImageFileReader<MovingImageType> MovingReaderType;
 
-  using MovingWriterType = itk::ImageFileWriter<MovingImageType>;
+  typedef itk::ImageFileWriter<MovingImageType> MovingWriterType;
 
   FixedReaderType::Pointer fixedReader = FixedReaderType::New();
-  fixedReader->SetFileName(argv[2]);
+  fixedReader->SetFileName( argv[2] );
 
   try
-  {
+    {
     fixedReader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   MovingReaderType::Pointer movingReader = MovingReaderType::New();
   MovingWriterType::Pointer movingWriter = MovingWriterType::New();
 
-  movingReader->SetFileName(argv[3]);
-  movingWriter->SetFileName(argv[4]);
+  movingReader->SetFileName( argv[3] );
+  movingWriter->SetFileName( argv[4] );
 
   FixedImageType::ConstPointer fixedImage = fixedReader->GetOutput();
 
-  using FilterType = itk::ResampleImageFilter<MovingImageType, FixedImageType>;
+  typedef itk::ResampleImageFilter< MovingImageType, FixedImageType >
+    FilterType;
 
   FilterType::Pointer resampler = FilterType::New();
 
-  using InterpolatorType = itk::LinearInterpolateImageFunction<MovingImageType, double>;
+  typedef itk::LinearInterpolateImageFunction<
+    MovingImageType, double>  InterpolatorType;
 
   InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
-  resampler->SetInterpolator(interpolator);
+  resampler->SetInterpolator( interpolator );
 
-  FixedImageType::SpacingType   fixedSpacing = fixedImage->GetSpacing();
-  FixedImageType::PointType     fixedOrigin = fixedImage->GetOrigin();
+  FixedImageType::SpacingType   fixedSpacing   = fixedImage->GetSpacing();
+  FixedImageType::PointType     fixedOrigin    = fixedImage->GetOrigin();
   FixedImageType::DirectionType fixedDirection = fixedImage->GetDirection();
 
-  resampler->SetOutputSpacing(fixedSpacing);
-  resampler->SetOutputOrigin(fixedOrigin);
-  resampler->SetOutputDirection(fixedDirection);
+  resampler->SetOutputSpacing( fixedSpacing );
+  resampler->SetOutputOrigin( fixedOrigin );
+  resampler->SetOutputDirection( fixedDirection );
 
   FixedImageType::RegionType fixedRegion = fixedImage->GetBufferedRegion();
-  FixedImageType::SizeType   fixedSize = fixedRegion.GetSize();
-  resampler->SetSize(fixedSize);
-  resampler->SetOutputStartIndex(fixedRegion.GetIndex());
+  FixedImageType::SizeType   fixedSize   = fixedRegion.GetSize();
+  resampler->SetSize( fixedSize );
+  resampler->SetOutputStartIndex(  fixedRegion.GetIndex() );
 
-  resampler->SetInput(movingReader->GetOutput());
+  resampler->SetInput( movingReader->GetOutput() );
 
-  movingWriter->SetInput(resampler->GetOutput());
+  movingWriter->SetInput( resampler->GetOutput() );
 
-  const unsigned int     SpaceDimension = ImageDimension;
-  constexpr unsigned int SplineOrder = 3;
-  using CoordinateRepType = double;
+  const unsigned int SpaceDimension = ImageDimension;
+  const unsigned int SplineOrder = 3;
+  typedef double CoordinateRepType;
 
-  using TransformType = itk::BSplineTransform<CoordinateRepType, SpaceDimension, SplineOrder>;
+  typedef itk::BSplineTransform< CoordinateRepType, SpaceDimension,
+    SplineOrder > TransformType;
 
   TransformType::Pointer bsplineTransform = TransformType::New();
 
-  using InitializerType = itk::BSplineTransformInitializer<TransformType, FixedImageType>;
+  typedef itk::BSplineTransformInitializer< TransformType, FixedImageType >
+    InitializerType;
   InitializerType::Pointer transformInitializer = InitializerType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(transformInitializer, BSplineTransformInitializer, Object);
+  EXERCISE_BASIC_OBJECT_METHODS( transformInitializer, BSplineTransformInitializer,
+    Object );
 
   TransformType::MeshSizeType meshSize;
-  meshSize.Fill(4);
+  meshSize.Fill( 4 );
 
-  transformInitializer->SetTransform(bsplineTransform);
-  ITK_TEST_SET_GET_VALUE(bsplineTransform, transformInitializer->GetTransform());
+  transformInitializer->SetTransform( bsplineTransform );
+  TEST_SET_GET_VALUE( bsplineTransform, transformInitializer->GetTransform() );
 
-  transformInitializer->SetImage(fixedImage);
-  ITK_TEST_SET_GET_VALUE(fixedImage, transformInitializer->GetImage());
+  transformInitializer->SetImage( fixedImage );
+  TEST_SET_GET_VALUE( fixedImage, transformInitializer->GetImage() );
 
-  transformInitializer->SetTransformDomainMeshSize(meshSize);
-  ITK_TEST_SET_GET_VALUE(meshSize, transformInitializer->GetTransformDomainMeshSize());
+  transformInitializer->SetTransformDomainMeshSize( meshSize );
+  TEST_SET_GET_VALUE( meshSize, transformInitializer->GetTransformDomainMeshSize() );
 
   transformInitializer->InitializeTransform();
 
-  using ParametersType = TransformType::ParametersType;
+  typedef TransformType::ParametersType ParametersType;
 
-  const unsigned int numberOfParameters = bsplineTransform->GetNumberOfParameters();
+  const unsigned int numberOfParameters =
+    bsplineTransform->GetNumberOfParameters();
 
   const unsigned int numberOfNodes = numberOfParameters / SpaceDimension;
 
-  ParametersType parameters(numberOfParameters);
+  ParametersType parameters( numberOfParameters );
 
   std::ifstream infile;
 
-  infile.open(argv[1]);
-  for (unsigned int n = 0; n < numberOfNodes; ++n)
-  {
+  infile.open( argv[1] );
+  for( unsigned int n = 0; n < numberOfNodes; ++n )
+    {
     infile >> parameters[n];
     infile >> parameters[n + numberOfNodes];
-  }
+    }
   infile.close();
 
-  bsplineTransform->SetParameters(parameters);
+  bsplineTransform->SetParameters( parameters );
 
-  resampler->SetTransform(bsplineTransform);
+  resampler->SetTransform( bsplineTransform );
 
   try
-  {
+    {
     movingWriter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Exception thrown " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  using VectorType = itk::Vector<float, ImageDimension>;
-  using DeformationFieldType = itk::Image<VectorType, ImageDimension>;
+  typedef itk::Vector<float, ImageDimension>     VectorType;
+  typedef itk::Image<VectorType, ImageDimension> DeformationFieldType;
 
   DeformationFieldType::Pointer field = DeformationFieldType::New();
-  field->SetRegions(fixedRegion);
-  field->SetOrigin(fixedOrigin);
-  field->SetSpacing(fixedSpacing);
-  field->SetDirection(fixedDirection);
+  field->SetRegions( fixedRegion );
+  field->SetOrigin( fixedOrigin );
+  field->SetSpacing( fixedSpacing );
+  field->SetDirection( fixedDirection );
   field->Allocate();
 
-  using FieldIterator = itk::ImageRegionIterator<DeformationFieldType>;
-  FieldIterator fi(field, fixedRegion);
+  typedef itk::ImageRegionIterator<DeformationFieldType> FieldIterator;
+  FieldIterator fi( field, fixedRegion );
 
   fi.GoToBegin();
 
@@ -185,36 +190,36 @@ itkBSplineTransformInitializerTest1(int argc, char * argv[])
 
   VectorType displacement;
 
-  while (!fi.IsAtEnd())
-  {
+  while( !fi.IsAtEnd() )
+    {
     index = fi.GetIndex();
-    field->TransformIndexToPhysicalPoint(index, fixedPoint);
-    movingPoint = bsplineTransform->TransformPoint(fixedPoint);
-    bsplineTransform->ComputeJacobianWithRespectToParameters(fixedPoint, jacobian);
+    field->TransformIndexToPhysicalPoint( index, fixedPoint );
+    movingPoint = bsplineTransform->TransformPoint( fixedPoint );
+    bsplineTransform->ComputeJacobianWithRespectToParameters( fixedPoint, jacobian );
     displacement = movingPoint - fixedPoint;
-    fi.Set(displacement);
+    fi.Set( displacement );
     ++fi;
-  }
+    }
 
-  using FieldWriterType = itk::ImageFileWriter<DeformationFieldType>;
+  typedef itk::ImageFileWriter<DeformationFieldType> FieldWriterType;
   FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
 
-  fieldWriter->SetInput(field);
+  fieldWriter->SetInput( field );
 
-  if (argc >= 6)
-  {
-    fieldWriter->SetFileName(argv[5]);
+  if( argc >= 6 )
+    {
+    fieldWriter->SetFileName( argv[5] );
     try
-    {
+      {
       fieldWriter->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
+      }
+    catch( itk::ExceptionObject & excp )
+      {
       std::cerr << "Exception thrown " << std::endl;
       std::cerr << excp << std::endl;
       return EXIT_FAILURE;
+      }
     }
-  }
 
   return EXIT_SUCCESS;
 }

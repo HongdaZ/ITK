@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,82 +27,100 @@
 
 namespace itk
 {
+/** Constructor */
+template< unsigned int NDimensions, typename PixelType, typename TMeshTraits >
+MetaMeshConverter< NDimensions, PixelType, TMeshTraits >
+::MetaMeshConverter()
+{}
 
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectType *
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::CreateMetaObject()
+template < unsigned int NDimensions, typename PixelType, typename TMeshTraits >
+typename MetaMeshConverter< NDimensions, PixelType, TMeshTraits >::MetaObjectType *
+MetaMeshConverter< NDimensions, PixelType, TMeshTraits >
+::CreateMetaObject()
 {
   return dynamic_cast<MetaObjectType *>(new MeshMetaObjectType);
 }
 
 /** Convert a metaMesh into an Mesh SpatialObject  */
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectPointer
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObject(const MetaObjectType * mo)
+template< unsigned int NDimensions, typename PixelType, typename TMeshTraits >
+typename MetaMeshConverter< NDimensions, PixelType, TMeshTraits >::SpatialObjectPointer
+MetaMeshConverter< NDimensions, PixelType, TMeshTraits >
+::MetaObjectToSpatialObject(const MetaObjectType *mo)
 {
-  const auto * _mesh = dynamic_cast<const MeshMetaObjectType *>(mo);
-  if (_mesh == nullptr)
-  {
+  const MeshMetaObjectType *_mesh =
+    dynamic_cast<const MeshMetaObjectType *>(mo);
+  if(_mesh == ITK_NULLPTR)
+    {
     itkExceptionMacro(<< "Can't convert MetaObject to MetaMesh");
-  }
+    }
 
   typename MeshSpatialObjectType::Pointer meshSO = MeshSpatialObjectType::New();
 
-  meshSO->GetProperty().SetName(_mesh->Name());
-  meshSO->SetId(_mesh->ID());
-  meshSO->SetParentId(_mesh->ParentID());
-  meshSO->GetProperty().SetRed(_mesh->Color()[0]);
-  meshSO->GetProperty().SetGreen(_mesh->Color()[1]);
-  meshSO->GetProperty().SetBlue(_mesh->Color()[2]);
-  meshSO->GetProperty().SetAlpha(_mesh->Color()[3]);
+  double spacing[NDimensions];
+
+  unsigned int ndims = _mesh->NDims();
+  for ( unsigned int i = 0; i < ndims; i++ )
+    {
+    spacing[i] = _mesh->ElementSpacing()[i];
+    }
+  meshSO->GetIndexToObjectTransform()->SetScaleComponent(spacing);
+  meshSO->GetProperty()->SetName( _mesh->Name() );
+  meshSO->SetId( _mesh->ID() );
+  meshSO->SetParentId( _mesh->ParentID() );
+  meshSO->GetProperty()->SetRed(_mesh->Color()[0]);
+  meshSO->GetProperty()->SetGreen(_mesh->Color()[1]);
+  meshSO->GetProperty()->SetBlue(_mesh->Color()[2]);
+  meshSO->GetProperty()->SetAlpha(_mesh->Color()[3]);
 
   // Create a new Mesh
   typename MeshType::Pointer mesh = MeshType::New();
 
   // Add Points
-  using PointListType = typename MeshMetaObjectType::PointListType;
+  typedef typename MeshMetaObjectType::PointListType PointListType;
   const PointListType points = _mesh->GetPoints();
-  auto                it_points = points.begin();
+  typename PointListType::const_iterator it_points = points.begin();
 
-  while (it_points != points.end())
-  {
-    typename MeshType::PointType pt;
-    for (unsigned int i = 0; i < NDimensions; i++)
+  while ( it_points != points.end() )
     {
-      pt[i] = ((*it_points)->m_X)[i] * _mesh->ElementSpacing(i);
-    }
-    mesh->SetPoint((*it_points)->m_Id, pt);
+    typename MeshType::PointType pt;
+    for ( unsigned int i = 0; i < NDimensions; i++ )
+      {
+      pt[i] = ( ( *it_points )->m_X )[i];
+      }
+    mesh->SetPoint( ( *it_points )->m_Id, pt );
     it_points++;
-  }
+    }
 
   // Add Cells
-  using CellType = typename MeshType::CellType;
-  using CellAutoPointer = typename CellType::CellAutoPointer;
-  mesh->SetCellsAllocationMethod(MeshEnums::MeshClassCellsAllocationMethod::CellsAllocatedDynamicallyCellByCell);
+  typedef typename MeshType::CellType        CellType;
+  typedef typename CellType::CellAutoPointer CellAutoPointer;
+  mesh->SetCellsAllocationMethod(
+    MeshType::CellsAllocatedDynamicallyCellByCell);
 
-  for (unsigned int celltype = 0; celltype < MET_NUM_CELL_TYPES; celltype++)
-  {
-    using CellListType = typename MetaMesh::CellListType;
-    const CellListType cells = _mesh->GetCells((MET_CellGeometry)celltype);
-    auto               it_cells = cells.begin();
-
-    using CellInterfaceType = typename MeshType::CellType;
-    using VertexCellType = itk::VertexCell<CellInterfaceType>;
-    using LineCellType = itk::LineCell<CellInterfaceType>;
-    using TriangleCellType = itk::TriangleCell<CellInterfaceType>;
-    using QuadrilateralCellType = itk::QuadrilateralCell<CellInterfaceType>;
-    using PolygonCellType = itk::PolygonCell<CellInterfaceType>;
-    using TetraCellType = itk::TetrahedronCell<CellInterfaceType>;
-    using HexahedronCellType = itk::HexahedronCell<CellInterfaceType>;
-    using QuadraticEdgeCellType = itk::QuadraticEdgeCell<CellInterfaceType>;
-    using QuadraticTriangleCellType = itk::QuadraticTriangleCell<CellInterfaceType>;
-
-    while (it_cells != cells.end())
+  for ( unsigned int celltype = 0; celltype < MET_NUM_CELL_TYPES; celltype++ )
     {
+    typedef typename MetaMesh::CellListType CellListType;
+    const CellListType cells = _mesh->GetCells( (MET_CellGeometry)celltype );
+    typename CellListType::const_iterator it_cells = cells.begin();
+
+    typedef typename MeshType::CellType                 CellInterfaceType;
+    typedef itk::VertexCell< CellInterfaceType >        VertexCellType;
+    typedef itk::LineCell< CellInterfaceType >          LineCellType;
+    typedef itk::TriangleCell< CellInterfaceType >      TriangleCellType;
+    typedef itk::QuadrilateralCell< CellInterfaceType > QuadrilateralCellType;
+    typedef itk::PolygonCell< CellInterfaceType >       PolygonCellType;
+    typedef itk::TetrahedronCell< CellInterfaceType >   TetraCellType;
+    typedef itk::HexahedronCell< CellInterfaceType >    HexahedronCellType;
+    typedef itk::QuadraticEdgeCell< CellInterfaceType > QuadraticEdgeCellType;
+    typedef itk::QuadraticTriangleCell< CellInterfaceType >
+    QuadraticTriangleCellType;
+
+    while ( it_cells != cells.end() )
+      {
       CellAutoPointer cell;
 
-      switch ((MET_CellGeometry)celltype)
-      {
+      switch ( (MET_CellGeometry)celltype )
+        {
         case MET_VERTEX_CELL:
           cell.TakeOwnership(new VertexCellType);
           break;
@@ -132,66 +150,71 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
           break;
         default:
           cell.TakeOwnership(new VertexCellType);
-      }
+        }
 
-      for (unsigned int i = 0; i < MET_CellSize[celltype]; i++)
-      {
-        cell->SetPointId(i, (*it_cells)->m_PointsId[i]);
-      }
+      for ( unsigned int i = 0; i < MET_CellSize[celltype]; i++ )
+        {
+        cell->SetPointId(i, ( *it_cells )->m_PointsId[i]);
+        }
 
-      mesh->SetCell((*it_cells)->m_Id, cell);
+      mesh->SetCell( ( *it_cells )->m_Id, cell );
       it_cells++;
+      }
     }
-  }
 
   // Add cell links
-  using CellLinkListType = typename MetaMesh::CellLinkListType;
+  typedef typename MetaMesh::CellLinkListType CellLinkListType;
   const CellLinkListType links = _mesh->GetCellLinks();
-  auto                   it_links = links.begin();
+  typename CellLinkListType::const_iterator it_links = links.begin();
 
-  using CellLinksContainerType = typename MeshType::CellLinksContainer;
-  typename CellLinksContainerType::Pointer linkContainer = CellLinksContainerType::New();
+  typedef typename MeshType::CellLinksContainer CellLinksContainerType;
+  typename CellLinksContainerType::Pointer linkContainer =
+    CellLinksContainerType::New();
 
-  while (it_links != links.end())
-  {
+  while ( it_links != links.end() )
+    {
     typename MeshType::PointCellLinksContainer pcl;
 
-    std::list<int>::const_iterator it_link = (*it_links)->m_Links.begin();
-    while (it_link != (*it_links)->m_Links.end())
-    {
+    std::list< int >::const_iterator it_link = ( *it_links )->m_Links.begin();
+    while ( it_link != ( *it_links )->m_Links.end() )
+      {
       pcl.insert(*it_link);
       it_link++;
-    }
-    linkContainer->InsertElement((*it_links)->m_Id, pcl);
+      }
+    linkContainer->InsertElement( ( *it_links )->m_Id, pcl );
     it_links++;
-  }
+    }
 
   mesh->SetCellLinks(linkContainer);
 
   // Add point data
-  using PointDataContainer = typename MeshType::PointDataContainer;
+  typedef typename MeshType::PointDataContainer PointDataContainer;
   typename PointDataContainer::Pointer pointData = PointDataContainer::New();
 
-  auto it_pd = _mesh->GetPointData().begin();
+  typedef MetaMesh::PointDataListType PointDataListType;
+  PointDataListType::const_iterator it_pd = _mesh->GetPointData().begin();
 
-  while (it_pd != _mesh->GetPointData().end())
-  {
-    pointData->InsertElement((*it_pd)->m_Id, static_cast<MeshData<PixelType> *>(*it_pd)->m_Data);
+  while ( it_pd != _mesh->GetPointData().end() )
+    {
+    pointData->InsertElement( ( *it_pd )->m_Id,
+                              static_cast< MeshData< PixelType > * >( *it_pd )->m_Data );
     it_pd++;
-  }
+    }
   mesh->SetPointData(pointData);
 
   // Add cell data
-  using CellDataContainer = typename MeshType::CellDataContainer;
+  typedef typename MeshType::CellDataContainer CellDataContainer;
   typename CellDataContainer::Pointer cellData = CellDataContainer::New();
 
-  auto it_cd = _mesh->GetCellData().begin();
-  while (it_cd != _mesh->GetCellData().end())
-  {
-    using CellPixelType = typename MeshType::CellPixelType;
-    cellData->InsertElement((*it_cd)->m_Id, static_cast<MeshData<CellPixelType> *>(*it_cd)->m_Data);
+  typedef MetaMesh::CellDataListType CellDataListType;
+  CellDataListType::const_iterator it_cd = _mesh->GetCellData().begin();
+  while ( it_cd != _mesh->GetCellData().end() )
+    {
+    typedef typename MeshType::CellPixelType CellPixelType;
+    cellData->InsertElement( ( *it_cd )->m_Id,
+                             static_cast< MeshData< CellPixelType > * >( *it_cd )->m_Data );
     it_cd++;
-  }
+    }
 
   mesh->SetCellData(cellData);
 
@@ -201,163 +224,171 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
 }
 
 /** Convert a Mesh SpatialObject into a metaMesh */
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectType *
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObject(const SpatialObjectType * so)
+template< unsigned int NDimensions, typename PixelType, typename TMeshTraits >
+typename MetaMeshConverter< NDimensions, PixelType, TMeshTraits >::MetaObjectType *
+MetaMeshConverter< NDimensions, PixelType, TMeshTraits >
+::SpatialObjectToMetaObject(const SpatialObjectType *so)
 {
-  const MeshSpatialObjectConstPointer meshSO = dynamic_cast<const MeshSpatialObjectType *>(so);
+  const MeshSpatialObjectConstPointer meshSO =
+    dynamic_cast<const MeshSpatialObjectType *>(so);
 
-  if (meshSO.IsNull())
-  {
+  if(meshSO.IsNull())
+    {
     itkExceptionMacro(<< "Can't downcast SpatialObject to MeshSpatialObject");
-  }
-  auto * metamesh = new MeshMetaObjectType(NDimensions);
+    }
+  MeshMetaObjectType *metamesh = new MeshMetaObjectType(NDimensions);
 
   typename MeshType::ConstPointer mesh = meshSO->GetMesh();
 
-  if (!mesh)
-  {
-    std::cout << "MetaMeshConverter : GetMesh() returned a nullptr Pointer" << std::endl;
-    return nullptr;
-  }
+  if ( !mesh )
+    {
+    std::cout << "MetaMeshConverter : GetMesh() returned a ITK_NULLPTR Pointer"
+              << std::endl;
+    return ITK_NULLPTR;
+    }
 
   // fill in the Mesh information
-  metamesh->ID(meshSO->GetId());
+  metamesh->ID( meshSO->GetId() );
 
   // Add Points
-  using PointsContainer = typename MeshType::PointsContainer;
-  const PointsContainer *                           points = mesh->GetPoints();
+  typedef typename MeshType::PointsContainer PointsContainer;
+  const PointsContainer *points = mesh->GetPoints();
   typename MeshType::PointsContainer::ConstIterator it_points = points->Begin();
 
-  while (it_points != points->End())
-  {
-    auto * pnt = new MeshPoint(NDimensions);
-    for (unsigned int i = 0; i < NDimensions; i++)
+  while ( it_points != points->End() )
     {
-      pnt->m_X[i] = (*it_points)->Value()[i];
-    }
-    pnt->m_Id = (*it_points)->Index();
+    MeshPoint *pnt = new MeshPoint(NDimensions);
+    for ( unsigned int i = 0; i < NDimensions; i++ )
+      {
+      pnt->m_X[i] = ( *it_points )->Value()[i];
+      }
+    pnt->m_Id = ( *it_points )->Index();
     metamesh->GetPoints().push_back(pnt);
-    ++it_points;
-  }
+    it_points++;
+    }
 
   // Add Cells
-  using CellsContainer = typename MeshType::CellsContainer;
-  const CellsContainer *                           cells = mesh->GetCells();
+  typedef typename MeshType::CellsContainer CellsContainer;
+  const CellsContainer *cells = mesh->GetCells();
   typename MeshType::CellsContainer::ConstIterator it_cells = cells->Begin();
 
-  while (it_cells != cells->End())
-  {
-    unsigned int celldim = (*it_cells)->Value()->GetNumberOfPoints();
-    auto *       cell = new MeshCell(celldim);
-
-    typename MeshType::CellTraits::PointIdConstIterator itptids = (*it_cells)->Value()->GetPointIds();
-    unsigned int                                        i = 0;
-    while (itptids != (*it_cells)->Value()->PointIdsEnd())
+  while ( it_cells != cells->End() )
     {
+    unsigned int celldim = ( *it_cells )->Value()->GetNumberOfPoints();
+    MeshCell *   cell = new MeshCell(celldim);
+
+    typename MeshType::CellTraits::PointIdConstIterator
+    itptids = ( *it_cells )->Value()->GetPointIds();
+    unsigned int i = 0;
+    while ( itptids != ( *it_cells )->Value()->PointIdsEnd() )
+      {
       cell->m_PointsId[i++] = *itptids;
       itptids++;
-    }
-    cell->m_Id = (*it_cells)->Index();
+      }
+    cell->m_Id = ( *it_cells )->Index();
 
-    CellGeometryEnum geom = (*it_cells)->Value()->GetType();
+    typename MeshType::MeshTraits::CellType::CellGeometry
+    geom = ( *it_cells )->Value()->GetType();
+    typedef typename MeshType::MeshTraits::CellType CellType;
 
-    switch (geom)
-    {
-      case CellGeometryEnum::VERTEX_CELL:
+    switch ( geom )
+      {
+      case CellType::VERTEX_CELL:
         metamesh->GetCells(MET_VERTEX_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::LINE_CELL:
+      case CellType::LINE_CELL:
         metamesh->GetCells(MET_LINE_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::TRIANGLE_CELL:
+      case CellType::TRIANGLE_CELL:
         metamesh->GetCells(MET_TRIANGLE_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::QUADRILATERAL_CELL:
+      case CellType::QUADRILATERAL_CELL:
         metamesh->GetCells(MET_QUADRILATERAL_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::POLYGON_CELL:
+      case CellType::POLYGON_CELL:
         metamesh->GetCells(MET_POLYGON_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::TETRAHEDRON_CELL:
+      case CellType::TETRAHEDRON_CELL:
         metamesh->GetCells(MET_TETRAHEDRON_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::HEXAHEDRON_CELL:
+      case CellType::HEXAHEDRON_CELL:
         metamesh->GetCells(MET_HEXAHEDRON_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::QUADRATIC_EDGE_CELL:
+      case CellType::QUADRATIC_EDGE_CELL:
         metamesh->GetCells(MET_QUADRATIC_EDGE_CELL).push_back(cell);
         break;
-      case CellGeometryEnum::QUADRATIC_TRIANGLE_CELL:
+      case CellType::QUADRATIC_TRIANGLE_CELL:
         metamesh->GetCells(MET_QUADRATIC_TRIANGLE_CELL).push_back(cell);
         break;
       default:
         metamesh->GetCells(MET_VERTEX_CELL).push_back(cell);
+      }
+    it_cells++;
     }
-    ++it_cells;
-  }
 
   // Add cell links
-  using CellLinksContainer = typename MeshType::CellLinksContainer;
-  const CellLinksContainer * links = mesh->GetCellLinks();
+  typedef typename MeshType::CellLinksContainer CellLinksContainer;
+  const CellLinksContainer *links = mesh->GetCellLinks();
 
-  if (links)
-  {
-    typename MeshType::CellLinksContainer::ConstIterator it_celllinks = links->Begin();
-
-    while (it_celllinks != links->End())
+  if ( links )
     {
-      auto * link = new MeshCellLink();
-      link->m_Id = (*it_celllinks)->Index();
+    typename MeshType::CellLinksContainer::ConstIterator
+    it_celllinks = links->Begin();
 
-      auto it = (*it_celllinks)->Value().begin();
-      while (it != (*it_celllinks)->Value().end())
+    while ( it_celllinks != links->End() )
       {
+      MeshCellLink *link = new MeshCellLink();
+      link->m_Id = ( *it_celllinks )->Index();
+
+      typename MeshType::PointCellLinksContainer::const_iterator
+      it = ( *it_celllinks )->Value().begin();
+      while ( it != ( *it_celllinks )->Value().end() )
+        {
         link->m_Links.push_back(*it);
         it++;
-      }
+        }
       metamesh->GetCellLinks().push_back(link);
-      ++it_celllinks;
+      it_celllinks++;
+      }
     }
-  }
 
   // Add point data
-  metamesh->PointDataType(MET_GetPixelType(typeid(PixelType)));
+  metamesh->PointDataType( MET_GetPixelType( typeid( PixelType ) ) );
 
-  using PointDataContainer = typename MeshType::PointDataContainer;
-  const PointDataContainer * pd = mesh->GetPointData();
-  if (pd)
-  {
-    typename MeshType::PointDataContainer::ConstIterator it_pd = pd->Begin();
-    while (it_pd != pd->End())
+  typedef typename MeshType::PointDataContainer PointDataContainer;
+  const PointDataContainer *pd = mesh->GetPointData();
+  if ( pd )
     {
-      auto * data = new MeshData<PixelType>();
-      data->m_Id = (*it_pd)->Index();
-      data->m_Data = (*it_pd)->Value();
+    typename MeshType::PointDataContainer::ConstIterator it_pd = pd->Begin();
+    while ( it_pd != pd->End() )
+      {
+      MeshData< PixelType > *data = new MeshData< PixelType >();
+      data->m_Id = ( *it_pd )->Index();
+      data->m_Data = ( *it_pd )->Value();
       metamesh->GetPointData().push_back(data);
-      ++it_pd;
+      it_pd++;
+      }
     }
-  }
 
   // Add cell data
-  using CellPixelType = typename TMeshTraits::CellPixelType;
-  metamesh->CellDataType(MET_GetPixelType(typeid(CellPixelType)));
+  typedef typename TMeshTraits::CellPixelType CellPixelType;
+  metamesh->CellDataType( MET_GetPixelType( typeid( CellPixelType ) ) );
 
-  using CellDataContainer = typename MeshType::CellDataContainer;
-  const CellDataContainer * cd = mesh->GetCellData();
-  if (cd)
-  {
+  typedef typename MeshType::CellDataContainer CellDataContainer;
+  const CellDataContainer *cd = mesh->GetCellData();
+  if ( cd )
+    {
     typename MeshType::CellDataContainer::ConstIterator it_cd = cd->Begin();
 
-    while (it_cd != cd->End())
-    {
-      auto * data = new MeshData<CellPixelType>();
-      data->m_Id = (*it_cd)->Index();
-      data->m_Data = (*it_cd)->Value();
+    while ( it_cd != cd->End() )
+      {
+      MeshData< CellPixelType > *data = new MeshData< CellPixelType >();
+      data->m_Id = ( *it_cd )->Index();
+      data->m_Data = ( *it_cd )->Value();
       metamesh->GetCellData().push_back(data);
-      ++it_cd;
+      it_cd++;
+      }
     }
-  }
   return metamesh;
 }
 

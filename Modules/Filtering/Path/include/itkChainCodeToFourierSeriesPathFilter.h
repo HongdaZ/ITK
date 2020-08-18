@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@
 
 #include "itkPathToPathFilter.h"
 #include "itkOffset.h"
-// Templates require interfaces conforming to itkPath.h and itkChainCodePath.h
+//Templates require interfaces conforming to itkPath.h and itkChainCodePath.h
 
 namespace itk
 {
-/**
- *\class ChainCodeToFourierSeriesPathFilter
+/** \class ChainCodeToFourierSeriesPathFilter
  * \brief Filter that produces a Fourier series version of a chain code path
  *
  * ChainCodeToFourierSeriesPathFilter produces a Fourier series representation
@@ -38,19 +37,18 @@ namespace itk
  * \ingroup PathFilters
  * \ingroup ITKPath
  */
-template <typename TInputChainCodePath, typename TOutputFourierSeriesPath>
-class ITK_TEMPLATE_EXPORT ChainCodeToFourierSeriesPathFilter
-  : public PathToPathFilter<TInputChainCodePath, TOutputFourierSeriesPath>
+template< typename TInputChainCodePath, typename TOutputFourierSeriesPath >
+class ITK_TEMPLATE_EXPORT ChainCodeToFourierSeriesPathFilter:public
+  PathToPathFilter< TInputChainCodePath, TOutputFourierSeriesPath >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChainCodeToFourierSeriesPathFilter);
+  /** Standard class typedefs. */
+  typedef ChainCodeToFourierSeriesPathFilter Self;
+  typedef PathToPathFilter< TInputChainCodePath,
+                            TOutputFourierSeriesPath >  Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ChainCodeToFourierSeriesPathFilter;
-  using Superclass = PathToPathFilter<TInputChainCodePath, TOutputFourierSeriesPath>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,16 +56,16 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ChainCodeToFourierSeriesPathFilter, PathToPathFilter);
 
-  /** Some convenient type alias. */
-  using InputPathType = TInputChainCodePath;
-  using InputPathPointer = typename InputPathType::Pointer;
-  using InputPathInputType = typename InputPathType::InputType;
-  using OutputPathType = TOutputFourierSeriesPath;
-  using OutputPathPointer = typename OutputPathType::Pointer;
-  using OutputPathInputType = typename OutputPathType::InputType;
-  using IndexType = typename InputPathType::IndexType;
-  using OffsetType = typename InputPathType::OffsetType;
-  using VectorType = typename OutputPathType::VectorType;
+  /** Some convenient typedefs. */
+  typedef TInputChainCodePath                 InputPathType;
+  typedef typename InputPathType::Pointer     InputPathPointer;
+  typedef typename InputPathType::InputType   InputPathInputType;
+  typedef TOutputFourierSeriesPath            OutputPathType;
+  typedef typename OutputPathType::Pointer    OutputPathPointer;
+  typedef typename OutputPathType::InputType  OutputPathInputType;
+  typedef typename InputPathType::IndexType   IndexType;
+  typedef typename InputPathType::OffsetType  OffsetType;
+  typedef typename OutputPathType::VectorType VectorType;
 
   /** Set the number of harmonics to try to compute.  By default, the first 8
    * harmonics (frequency coefficients, which include the "DC" term) are
@@ -78,21 +76,22 @@ public:
    * harmonics will always be calculated.*/
   itkSetMacro(NumberOfHarmonics, unsigned int)
 
-    protected : ChainCodeToFourierSeriesPathFilter();
-  ~ChainCodeToFourierSeriesPathFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+protected:
+  ChainCodeToFourierSeriesPathFilter();
+  virtual ~ChainCodeToFourierSeriesPathFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void GenerateData(void) ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ChainCodeToFourierSeriesPathFilter);
+
   unsigned int m_NumberOfHarmonics;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkChainCodeToFourierSeriesPathFilter.hxx"
+#include "itkChainCodeToFourierSeriesPathFilter.hxx"
 #endif
 
 #endif

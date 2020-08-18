@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,74 +64,73 @@ namespace itk
  * \ingroup PathObjects
  * \ingroup ITKPath
  */
-template <typename TImage, typename TPath>
-class ITK_TEMPLATE_EXPORT PathIterator : public PathConstIterator<TImage, TPath>
+template< typename TImage, typename TPath >
+class ITK_TEMPLATE_EXPORT PathIterator:public PathConstIterator< TImage, TPath >
 {
 public:
-  /** Standard class type aliases. */
-  using Self = PathIterator;
+  /** Standard class typedefs. */
+  typedef PathIterator Self;
 
   /** Dimension of the image the iterator walks.  This constant is needed so
    * that functions that are templated over image iterator type (as opposed to
    * being templated over pixel type and dimension) can have compile time
    * access to the dimension of the image that the iterator walks. */
-  static constexpr unsigned int ImageIteratorDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageIteratorDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Define the superclass */
-  using Superclass = PathConstIterator<TImage, TPath>;
+  typedef PathConstIterator< TImage, TPath > Superclass;
 
   /** Inherit types from the superclass */
-  using IndexType = typename Superclass::IndexType;
-  using OffsetType = typename Superclass::OffsetType;
-  using SizeType = typename Superclass::SizeType;
-  using ImageType = typename Superclass::ImageType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using PixelType = typename Superclass::PixelType;
-  using AccessorType = typename Superclass::AccessorType;
-  using PathType = typename Superclass::PathType;
-  using PathInputType = typename Superclass::PathInputType;
-  using PathOutputType = typename Superclass::PathOutputType;
+  typedef typename Superclass::IndexType             IndexType;
+  typedef typename Superclass::OffsetType            OffsetType;
+  typedef typename Superclass::SizeType              SizeType;
+  typedef typename Superclass::ImageType             ImageType;
+  typedef typename Superclass::PixelContainer        PixelContainer;
+  typedef typename Superclass::PixelContainerPointer PixelContainerPointer;
+  typedef typename Superclass::InternalPixelType     InternalPixelType;
+  typedef typename Superclass::PixelType             PixelType;
+  typedef typename Superclass::AccessorType          AccessorType;
+  typedef typename Superclass::PathType              PathType;
+  typedef typename Superclass::PathInputType         PathInputType;
+  typedef typename Superclass::PathOutputType        PathOutputType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PathIterator, PathConstIterator);
 
   /** Set the pixel value */
-  void
-  Set(const PixelType & value)
+  void Set(const PixelType & value)
   {
     // Normally, this would just be the following:
     //   m_Image->SetPixel(m_CurrentImageIndex,value);
     // However, we don't want a warning about m_Image being a ConstPointer
     // in the Superclass.
-    const_cast<ImageType *>(this->m_Image.GetPointer())->SetPixel(this->m_CurrentImageIndex, value);
+    const_cast< ImageType * >( this->m_Image.GetPointer() )->
+    SetPixel(this->m_CurrentImageIndex, value);
   }
 
   /** Return a reference to the pixel
    * This method will provide the fastest access to pixel
    * data, but it will NOT support ImageAdaptors. */
-  PixelType &
-  Value()
+  PixelType & Value(void)
   {
     return this->GetImage()->GetPixel(this->m_ImageIndex);
   }
 
   /** operator= is provided to make sure the handles to the image and path are
    * properly reference counted. */
-  Self &
-  operator=(const Self & it);
+  Self & operator=(const Self & it);
 
   /** Constructor establishes an iterator to walk along a path */
-  PathIterator(ImageType * imagePtr, const PathType * pathPtr);
+  PathIterator(ImageType *imagePtr, const PathType  *pathPtr);
 
   /** Default Destructor. */
-  ~PathIterator() override = default;
+  virtual ~PathIterator() ITK_OVERRIDE {}
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPathIterator.hxx"
+#include "itkPathIterator.hxx"
 #endif
 
 #endif

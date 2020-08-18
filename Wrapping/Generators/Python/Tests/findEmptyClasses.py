@@ -1,6 +1,6 @@
 #==========================================================================
 #
-#   Copyright NumFOCUS
+#   Copyright Insight Software Consortium
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,75 +16,113 @@
 #
 #==========================================================================*/
 
+from __future__ import print_function
+
 import itk
+import re
 import sys
+# itk.auto_progress(True)
+
 from itkTemplate import itkTemplate
 
-itk.auto_progress(2)
+# sets are not in builtin with python older than 2.4
+import sets
+set = sets.Set
 
-itk.force_load()
-
-def isEmpty(o):
-    for i in dir(o):
-        if i[0].isupper():
-            return False
-        return True
+# dirty but easier: a global var to count the empty classes
+empty = set()
 
 
-exclude = ["AuthalicMatrixCoefficients",
-           "MatrixCoefficients",
-           "OnesMatrixCoefficients",
-           "IntrinsicMatrixCoefficients",
-           "HarmonicMatrixCoefficients",
-           "ConformalMatrixCoefficients",
-           "InverseEuclideanDistanceMatrixCoefficients",
-           "BandNode",
-           "NormalBandNode",
-           "CellTraitsInfo",
-           "DefaultDynamicMeshTraits",
-           "DefaultStaticMeshTraits",
-           "ParallelSparseFieldLevelSetNode",
-           "SparseFieldLevelSetNode",
-           "QuadEdgeMeshCellTraitsInfo",
-           "QuadEdgeMeshTraits",
-           "complex",
-           "list",
-           "map",
-           "numeric_limits",
-           "set",
-           "vector",
-           "vnl_c_vector",
-           "vnl_diag_matrix",
-           "vnl_matrix",
-           "vnl_matrix_fixed",
-           "vnl_matrix_fixed_ref",
-           "vnl_matrix_fixed_ref_const",
-           "vnl_matrix_ref",
-           "vnl_vector",
-           "vnl_vector_ref",
-           "vnl_file_matrix",
-           "vnl_file_vector",
-           "vnl_fortran_copy",
-           "CosineWindowFunction",
-           "HammingWindowFunction",
-           "LanczosWindowFunction",
-           "WelchWindowFunction",
-           ]
+def exploreTpl(tpl):
+    for cl in tpl.itervalues():
+        print(cl)
+        exploreMethods(cl)
+        # try to instanciate the class
+        try:
+            obj = cl.New()
+            exploreMethods(obj)
+        except:
+            pass
+        try:
+            exploreMethods(cl())
+        except:
+            pass
 
-total = 0
-empty = 0
 
-for t in dir(itk):
-    if t not in exclude:
-        T = itk.__dict__[t]
-        if isinstance(T, itkTemplate):
-            for I in T.values():
-                total += 1
-                if isEmpty(I):
-                    empty += 1
-                    print("%s: empty class" % I)
+def exploreMethods(obj):
+    global count
+    excludeList = ['this', 'thisown']
+    attrNameList = [i for i in dir(
+        obj) if isinstance(i, str) and i[0].isupper() and i not in excludeList]
+    if attrNameList == []:
+        empty.add(obj)
 
-print("%s classes checked." % total)
-if empty:
-    print("%s empty classes found" % empty, file=sys.stderr)
-    sys.exit(1)
+
+excluded = set([
+    "PeriodicBoundaryCondition",
+    "BandNode",
+    "DefaultDynamicMeshTraits",
+    "DefaultStaticMeshTraits",
+    "NormalBandNode",
+    "ZeroFluxNeumannBoundaryCondition",
+    "SparseFieldLevelSetNode",
+    "ParallelSparseFieldLevelSetNode",
+    "PySwigIterator",
+    "SwigPyIterator",
+    "COLORS",
+    "VECTOR_REALS",
+    "SCALARS",
+    "ALL_TYPES",
+    "COMPLEX_REALS",
+    "RGBS",
+    "RGBAS",
+    "REALS",
+    "USIGN_INTS",
+    "DIMS",
+    "SIGN_INTS",
+    "VECTORS",
+    "INTS",
+    "COV_VECTOR_REALS",
+    "FFTComplexToComplexImageFilter",
+    "QuadEdgeMeshCellTraitsInfo",
+    "QuadEdgeMeshTraits",
+    "OnesMatrixCoefficients",
+    "ConformalMatrixCoefficients",
+    "InverseEuclideanDistanceMatrixCoefficients",
+    "AuthalicMatrixCoefficients",
+    "IntrinsicMatrixCoefficients",
+    "InverseEuclideanDistanceMatrixCoefficients",
+    "OnesMatrixCoefficients",
+    "ConformalMatrixCoefficients",
+    "AuthalicMatrixCoefficients",
+    "MatrixCoefficients",
+])
+
+
+attrNameList = set(
+    [i for i in dir(itk) if i[0].isupper() and len(i) > 2]) - excluded
+
+for name in attrNameList:
+    # use it because of lazy loading
+    exec "attr = itk." + name
+    print("-----------", name, "-----------")
+    if isinstance(attr, itkTemplate):
+        exploreTpl(attr)
+    else:
+        exploreMethods(attr)
+        try:
+            exploreMethods(cl.New())
+        except:
+            pass
+        try:
+            exploreMethods(cl())
+        except:
+            pass
+
+print()
+print()
+print(len(empty), "empty classes found")
+for c in empty:
+    print(c)
+
+sys.exit(len(empty))

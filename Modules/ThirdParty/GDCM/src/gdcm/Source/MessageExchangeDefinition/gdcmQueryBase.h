@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ namespace gdcm
 class GDCM_EXPORT QueryBase
 {
   public:
-    virtual ~QueryBase() = default;
+    virtual ~QueryBase() {}
 
     virtual std::vector<Tag> GetRequiredTags(const ERootType& inRootType) const = 0;
     virtual std::vector<Tag> GetUniqueTags(const ERootType& inRootType) const = 0;

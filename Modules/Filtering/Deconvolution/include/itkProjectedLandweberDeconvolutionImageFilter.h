@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class ProjectedLandweberDeconvolutionImageFilter
+/** \class ProjectedLandweberDeconvolutionImageFilter
  * \brief Deconvolve an image using the projected Landweber
  * deconvolution algorithm.
  *
@@ -49,43 +48,45 @@ namespace itk
  * \sa RichardsonLucyDeconvolutionImageFilter
  * \sa LandweberDeconvolutionImageFilter
  */
-template <typename TInputImage,
-          typename TKernelImage = TInputImage,
-          typename TOutputImage = TInputImage,
-          typename TInternalPrecision = double>
-class ITK_TEMPLATE_EXPORT ProjectedLandweberDeconvolutionImageFilter
-  : public ProjectedIterativeDeconvolutionImageFilter<
-      LandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>>
+template< typename TInputImage, typename TKernelImage=TInputImage, typename TOutputImage=TInputImage, typename TInternalPrecision=double >
+class ITK_TEMPLATE_EXPORT ProjectedLandweberDeconvolutionImageFilter :
+    public ProjectedIterativeDeconvolutionImageFilter< LandweberDeconvolutionImageFilter< TInputImage, TKernelImage, TOutputImage, TInternalPrecision > >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectedLandweberDeconvolutionImageFilter);
+    /** Standard typedefs. */
+  typedef ProjectedLandweberDeconvolutionImageFilter                  Self;
+  typedef ProjectedIterativeDeconvolutionImageFilter<
+            LandweberDeconvolutionImageFilter< TInputImage,
+                                               TKernelImage,
+                                               TOutputImage,
+                                               TInternalPrecision > > Superclass;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
 
-  /** Standard type alias. */
-  using Self = ProjectedLandweberDeconvolutionImageFilter;
-  using Superclass = ProjectedIterativeDeconvolutionImageFilter<
-    LandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Other useful type alias. */
-  using InputImageType = TInputImage;
-  using KernelImageType = TKernelImage;
-  using OutputImageType = TOutputImage;
+  /** Other useful typedefs. */
+  typedef TInputImage  InputImageType;
+  typedef TKernelImage KernelImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ProjectedLandweberDeconvolutionImageFilter, ProjectedIterativeDeconvolutionImageFilter);
+  itkTypeMacro(ProjectedLandweberDeconvolutionImageFilter,
+               ProjectedIterativeDeconvolutionImageFilter);
 
 protected:
   ProjectedLandweberDeconvolutionImageFilter();
-  ~ProjectedLandweberDeconvolutionImageFilter() override;
+  virtual ~ProjectedLandweberDeconvolutionImageFilter() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectedLandweberDeconvolutionImageFilter);
+
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkProjectedLandweberDeconvolutionImageFilter.hxx"
+#include "itkProjectedLandweberDeconvolutionImageFilter.hxx"
 #endif
 
 

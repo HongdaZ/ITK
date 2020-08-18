@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@
 namespace itk
 {
 
-/**
- *\class GenerateImageSource
+/** \class GenerateImageSource
  * \brief a Base class for image sources which need to have image
  * size, and other meta-data set.
  *
@@ -37,35 +36,34 @@ namespace itk
  * \ingroup DataSources
  * \ingroup ITKImageSources
  */
-template <typename TOutputImage>
-class ITK_TEMPLATE_EXPORT GenerateImageSource : public ImageSource<TOutputImage>
+template< typename TOutputImage >
+class ITK_TEMPLATE_EXPORT GenerateImageSource
+  : public ImageSource< TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GenerateImageSource);
+  typedef GenerateImageSource         Self;
+  typedef ImageSource< TOutputImage > Superclass;
+  typedef SmartPointer< Self >        Pointer;
+  typedef SmartPointer< const Self>   ConstPointer;
 
-  using Self = GenerateImageSource;
-  using Superclass = ImageSource<TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  /** Output image type alias */
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using PixelType = typename OutputImageType::PixelType;
-  using RegionType = typename OutputImageType::RegionType;
-  using SpacingType = typename OutputImageType::SpacingType;
-  using PointType = typename OutputImageType::PointType;
-  using DirectionType = typename OutputImageType::DirectionType;
-  using IndexType = typename OutputImageType::IndexType;
+  /** Output image typedefs */
+  typedef TOutputImage                            OutputImageType;
+  typedef typename OutputImageType::Pointer       OutputImagePointer;
+  typedef typename OutputImageType::PixelType     PixelType;
+  typedef typename OutputImageType::RegionType    RegionType;
+  typedef typename OutputImageType::SpacingType   SpacingType;
+  typedef typename OutputImageType::PointType     PointType;
+  typedef typename OutputImageType::DirectionType DirectionType;
+  typedef typename OutputImageType::IndexType     IndexType;
 
   /** Typedef the reference image type to be the ImageBase of the OutputImageType */
-  using ReferenceImageBaseType = ImageBase<TOutputImage::ImageDimension>;
+  typedef ImageBase<TOutputImage::ImageDimension> ReferenceImageBaseType;
 
-  using SizeType = typename TOutputImage::SizeType;
-  using SizeValueType = typename TOutputImage::SizeValueType;
+  typedef typename TOutputImage::SizeType      SizeType;
+  typedef typename TOutputImage::SizeValueType SizeValueType;
 
   /** Dimensionality of the output image */
-  static constexpr unsigned int NDimensions = TOutputImage::ImageDimension;
+  itkStaticConstMacro(NDimensions, unsigned int, TOutputImage::ImageDimension);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GenerateImageSource, ImageSource);
@@ -111,11 +109,10 @@ public:
   itkGetConstReferenceMacro(StartIndex, IndexType);
 
   /** Helper method to set the output parameters based on an image. */
-  void
-  SetOutputParametersFromImage(const ReferenceImageBaseType * image);
+  void SetOutputParametersFromImage(const ReferenceImageBaseType *image);
 
   /** Set a reference image to use to define the output information.
-   *  By default, output information is specified through the
+   *  By default, output information is specificed through the
    *  SetOutputSpacing, Origin, and Direction methods.  Alternatively,
    *  this method can be used to specify an image from which to
    *  copy the information. UseReferenceImageOn must be set to utilize the
@@ -126,26 +123,27 @@ public:
 
 protected:
   GenerateImageSource();
-  ~GenerateImageSource() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  // virtual ~GenerateImageSource() default implementation ok
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
-  SizeType      m_Size; // size of the output image
+  ITK_DISALLOW_COPY_AND_ASSIGN(GenerateImageSource);
+
+  SizeType      m_Size;          //size of the output image
   SpacingType   m_Spacing;
   PointType     m_Origin;
   DirectionType m_Direction;
   IndexType     m_StartIndex;
-  bool          m_UseReferenceImage{ false };
+  bool          m_UseReferenceImage;
+
 };
 
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkGenerateImageSource.hxx"
+#include "itkGenerateImageSource.hxx"
 #endif
 
-#endif // itkGenerateImageSource_h
+#endif //itkGenerateImageSource_h

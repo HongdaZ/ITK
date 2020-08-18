@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ namespace gdcm {
     class ULActionAA1 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Stop ARTIM timer if running.  Close transport connection.
@@ -44,7 +44,7 @@ namespace gdcm {
     class ULActionAA2 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //If (service-user initiated abort)
@@ -55,7 +55,7 @@ namespace gdcm {
     class ULActionAA3 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Issue A-P-ABORT indication primitive
@@ -63,7 +63,7 @@ namespace gdcm {
     class ULActionAA4 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Stop ARTIM timer
@@ -71,7 +71,7 @@ namespace gdcm {
     class ULActionAA5 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Ignore PDU
@@ -79,7 +79,7 @@ namespace gdcm {
     class ULActionAA6 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Send A-ABORT PDU
@@ -87,7 +87,7 @@ namespace gdcm {
     class ULActionAA7 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
 
     //Send A-ABORT PDU (service-provider source), issue an A-P-ABORT indication, and start ARTIM timer
@@ -95,7 +95,7 @@ namespace gdcm {
     class ULActionAA8 : public ULAction {
     public:
       EStateID PerformAction(Subject *s, ULEvent& inEvent, ULConnection& inConnection,
-        bool& outWaitingForEvent, EEventID& outRaisedEvent) override;
+        bool& outWaitingForEvent, EEventID& outRaisedEvent);
     };
   }
 }

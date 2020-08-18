@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,33 +22,32 @@
 #include <fstream>
 
 template <unsigned int TDimension>
-void
-TestTransform()
+void TestTransform()
 {
-  using ImageType = itk::Image<float, TDimension>;
+  typedef itk::Image<float,TDimension>         ImageType;
 
-  typename ImageType::Pointer image = ImageType::New();
+  typename ImageType::Pointer image =         ImageType::New();
   typename ImageType::Pointer orientedImage = ImageType::New();
 
   typename ImageType::PointType origin;
 
-  for (unsigned int i = 0; i < TDimension; i++)
-  {
-    origin[i] = static_cast<double>(i * 100);
-  }
+  for (unsigned int i=0; i < TDimension; i++)
+    {
+    origin[i] = static_cast<double>(i*100);
+    }
   image->SetOrigin(origin);
   orientedImage->SetOrigin(origin);
 
-  using RegionType = itk::ImageRegion<TDimension>;
-  using IndexType = typename RegionType::IndexType;
-  using SizeType = typename RegionType::SizeType;
+  typedef itk::ImageRegion< TDimension > RegionType;
+  typedef typename RegionType::IndexType IndexType;
+  typedef typename RegionType::SizeType  SizeType;
 
   typename ImageType::PointType point;
-  RegionType                    region;
+  RegionType region;
 
   SizeType size;
   size.Fill(10);
-  region.SetSize(size);
+  region.SetSize( size );
 
   IndexType index;
   index.Fill(5);
@@ -68,8 +67,7 @@ TestTransform()
   std::cout << "    Image:         " << point << " -> " << index << std::endl;
 }
 
-int
-itkImageTransformTest(int, char *[])
+int itkImageTransformTest(int, char* [] )
 {
   TestTransform<8>();
   TestTransform<3>();
@@ -77,4 +75,5 @@ itkImageTransformTest(int, char *[])
   TestTransform<1>();
 
   return EXIT_SUCCESS;
+
 }

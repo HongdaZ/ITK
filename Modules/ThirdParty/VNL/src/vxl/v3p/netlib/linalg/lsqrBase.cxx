@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ lsqrBase::lsqrBase()
   this->btol = 1e-6;
   this->conlim = 1.0 / ( 10 * sqrt( this->eps ) );
   this->itnlim = 10;
-  this->nout = nullptr;
+  this->nout = NULL;
   this->istop = 0;
   this->itn = 0;
   this->Anorm = 0.0;
@@ -40,13 +40,15 @@ lsqrBase::lsqrBase()
   this->dxmax = 0.0;
   this->maxdx = 0;
   this->wantse = false;
-  this->se = nullptr;
+  this->se = NULL;
   this->damp = 0.0;
   this->damped = false;
 }
 
 
-lsqrBase::~lsqrBase() = default;
+lsqrBase::~lsqrBase()
+{
+}
 
 
 unsigned int
@@ -281,9 +283,9 @@ Solve( unsigned int m, unsigned int n, const double * b, double * x )
   double sn2 = zero;
   double z = zero;
 
-  auto * u = new double[m];
-  auto * v = new double[n];
-  auto * w = new double[n];
+  double * u = new double[m];
+  double * v = new double[n];
+  double * w = new double[n];
 
   //-------------------------------------------------------------------
   //  Set up the first vectors u and v for the bidiagonalization.

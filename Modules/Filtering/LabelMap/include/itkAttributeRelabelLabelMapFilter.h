@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,10 +21,8 @@
 #include "itkInPlaceLabelMapFilter.h"
 #include "itkAttributeLabelObject.h"
 
-namespace itk
-{
-/**
- *\class AttributeRelabelLabelMapFilter
+namespace itk {
+/** \class AttributeRelabelLabelMapFilter
  * \brief relabel objects according to their shape attributes
  *
  * AttributeRelabelLabelMapFilter relabel a label map according to the
@@ -41,48 +39,48 @@ namespace itk
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
-template <typename TImage,
-          typename TAttributeAccessor =
-            typename Functor::AttributeLabelObjectAccessor<typename TImage::LabelObjectType>>
-class ITK_TEMPLATE_EXPORT AttributeRelabelLabelMapFilter : public InPlaceLabelMapFilter<TImage>
+template<typename TImage, typename TAttributeAccessor=
+    typename Functor::AttributeLabelObjectAccessor< typename TImage::LabelObjectType > >
+class ITK_TEMPLATE_EXPORT AttributeRelabelLabelMapFilter :
+    public InPlaceLabelMapFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AttributeRelabelLabelMapFilter);
+  /** Standard class typedefs. */
+  typedef AttributeRelabelLabelMapFilter Self;
+  typedef InPlaceLabelMapFilter<TImage>  Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = AttributeRelabelLabelMapFilter;
-  using Superclass = InPlaceLabelMapFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Some convenient typedefs. */
+  typedef TImage                                       ImageType;
+  typedef typename ImageType::Pointer                  ImagePointer;
+  typedef typename ImageType::ConstPointer             ImageConstPointer;
+  typedef typename ImageType::PixelType                PixelType;
+  typedef typename ImageType::IndexType                IndexType;
+  typedef typename ImageType::LabelObjectType          LabelObjectType;
 
-  /** Some convenient type alias. */
-  using ImageType = TImage;
-  using ImagePointer = typename ImageType::Pointer;
-  using ImageConstPointer = typename ImageType::ConstPointer;
-  using PixelType = typename ImageType::PixelType;
-  using IndexType = typename ImageType::IndexType;
-  using LabelObjectType = typename ImageType::LabelObjectType;
-
-  using AttributeAccessorType = TAttributeAccessor;
-  using AttributeValueType = typename AttributeAccessorType::AttributeValueType;
+  typedef TAttributeAccessor                                 AttributeAccessorType;
+  typedef typename AttributeAccessorType::AttributeValueType AttributeValueType;
 
   /** ImageDimension constants */
-  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(AttributeRelabelLabelMapFilter, InPlaceLabelMapFilter);
+  itkTypeMacro(AttributeRelabelLabelMapFilter,
+               InPlaceLabelMapFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  /*  itkConceptMacro(InputEqualityComparableCheck,
-      (Concept::EqualityComparable<InputImagePixelType>));
-    itkConceptMacro(IntConvertibleToInputCheck,
-      (Concept::Convertible<int, InputImagePixelType>));
-    itkConceptMacro(InputOStreamWritableCheck,
-      (Concept::OStreamWritable<InputImagePixelType>));*/
+/*  itkConceptMacro(InputEqualityComparableCheck,
+    (Concept::EqualityComparable<InputImagePixelType>));
+  itkConceptMacro(IntConvertibleToInputCheck,
+    (Concept::Convertible<int, InputImagePixelType>));
+  itkConceptMacro(InputOStreamWritableCheck,
+    (Concept::OStreamWritable<InputImagePixelType>));*/
   // End concept checking
 #endif
 
@@ -91,53 +89,45 @@ public:
    * the highest attribute values are labeled first. Set ReverseOrdering to true
    * make the one with the smallest attributes be labeled first.
    */
-  itkSetMacro(ReverseOrdering, bool);
-  itkGetConstReferenceMacro(ReverseOrdering, bool);
-  itkBooleanMacro(ReverseOrdering);
+  itkSetMacro( ReverseOrdering, bool );
+  itkGetConstReferenceMacro( ReverseOrdering, bool );
+  itkBooleanMacro( ReverseOrdering );
 
 protected:
   AttributeRelabelLabelMapFilter();
-  ~AttributeRelabelLabelMapFilter() override = default;
+  ~AttributeRelabelLabelMapFilter() ITK_OVERRIDE {};
 
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   class ReverseComparator
-  {
-  public:
-    bool
-    operator()(const typename LabelObjectType::Pointer & a, const typename LabelObjectType::Pointer & b)
     {
-      return m_Accessor(a) < m_Accessor(b);
-    }
-    ReverseComparator()
-      : m_Accessor()
-    {}
-
-  private:
-    AttributeAccessorType m_Accessor;
-  };
+    public:
+    bool operator()( const typename LabelObjectType::Pointer & a, const typename LabelObjectType::Pointer & b )
+      {
+      return m_Accessor( a ) < m_Accessor( b );
+      }
+    ReverseComparator(): m_Accessor() {}
+    private:
+     AttributeAccessorType m_Accessor;
+    };
 
   class Comparator
-  {
-  public:
-    bool
-    operator()(const typename LabelObjectType::Pointer & a, const typename LabelObjectType::Pointer & b)
     {
-      return m_Accessor(a) > m_Accessor(b);
-    }
-    Comparator()
-      : m_Accessor()
-    {}
-
+  public:
+    bool operator()( const typename LabelObjectType::Pointer & a, const typename LabelObjectType::Pointer & b )
+      {
+      return m_Accessor( a ) > m_Accessor( b );
+      }
+    Comparator(): m_Accessor() {}
   private:
     AttributeAccessorType m_Accessor;
-  };
+    };
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AttributeRelabelLabelMapFilter);
+
   bool m_ReverseOrdering;
 
 }; // end of class
@@ -145,7 +135,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkAttributeRelabelLabelMapFilter.hxx"
+#include "itkAttributeRelabelLabelMapFilter.hxx"
 #endif
 
 #endif

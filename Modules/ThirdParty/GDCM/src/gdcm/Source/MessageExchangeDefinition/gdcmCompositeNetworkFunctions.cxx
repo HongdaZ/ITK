@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ BaseRootQuery* CompositeNetworkFunctions::ConstructQuery( ERootType inRootType,
 BaseRootQuery* CompositeNetworkFunctions::ConstructQuery( ERootType inRootType,
   EQueryLevel inQueryLevel, const DataSet& ds, EQueryType queryType /*= eFind*/ )
 {
-  BaseRootQuery* outQuery = nullptr;
+  BaseRootQuery* outQuery = NULL;
   if( queryType == eMove )
     outQuery = QueryFactory::ProduceQuery(inRootType, eMove, inQueryLevel);
   else if( queryType == eFind )
@@ -135,7 +135,7 @@ BaseRootQuery* CompositeNetworkFunctions::ConstructQuery( ERootType inRootType,
   if (!outQuery)
     {
     gdcmErrorMacro( "Specify the query" );
-    return nullptr;
+    return NULL;
     }
   outQuery->AddQueryDataSet(ds);
 
@@ -323,20 +323,20 @@ class MyWatcher : public SimpleSubjectWatcher
   double refprogress;
 public:
   MyWatcher(Subject * s, const char *comment = "", size_t n = 1):SimpleSubjectWatcher(s,comment),nfiles(n),progress(0),index(0),refprogress(0){}
-  void ShowIteration() override
+  void ShowIteration()
     {
     index++;
     assert( index <= nfiles );
     refprogress = progress;
     }
-  void ShowProgress(Subject *caller, const Event &evt) override
+  void ShowProgress(Subject *caller, const Event &evt)
     {
     const ProgressEvent &pe = dynamic_cast<const ProgressEvent&>(evt);
     (void)caller;
     progress = refprogress + (1. / (double)nfiles ) * pe.GetProgress();
 //    std::cout << "Progress: " << progress << " " << pe.GetProgress() << std::endl;
     }
-  void ShowDataSet(Subject *, const Event &) override {}
+  virtual void ShowDataSet(Subject *, const Event &) {}
 };
 
 bool CompositeNetworkFunctions::CStore( const char *remote, uint16_t portno,

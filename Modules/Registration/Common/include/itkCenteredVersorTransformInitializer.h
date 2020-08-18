@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,19 +36,22 @@ namespace itk
  * \ingroup ITKRegistrationCommon
  * \ingroup ITKTransform
  */
-template <typename TFixedImage, typename TMovingImage>
-class ITK_TEMPLATE_EXPORT CenteredVersorTransformInitializer
-  : public CenteredTransformInitializer<VersorRigid3DTransform<double>, TFixedImage, TMovingImage>
+template< typename TFixedImage,
+          typename TMovingImage >
+class ITK_TEMPLATE_EXPORT CenteredVersorTransformInitializer:
+  public CenteredTransformInitializer<
+    VersorRigid3DTransform< double >,
+    TFixedImage, TMovingImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredVersorTransformInitializer);
+  /** Standard class typedefs. */
+  typedef CenteredVersorTransformInitializer Self;
+  typedef CenteredTransformInitializer<
+    VersorRigid3DTransform< double >,
+    TFixedImage, TMovingImage >          Superclass;
 
-  /** Standard class type aliases. */
-  using Self = CenteredVersorTransformInitializer;
-  using Superclass = CenteredTransformInitializer<VersorRigid3DTransform<double>, TFixedImage, TMovingImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** New macro for creation of through a Smart Pointer. */
   itkNewMacro(Self);
@@ -57,32 +60,33 @@ public:
   itkTypeMacro(CenteredVersorTransformInitializer, Object);
 
   /** Type of the transform to initialize */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
+  typedef typename Superclass::TransformType    TransformType;
+  typedef typename Superclass::TransformPointer TransformPointer;
 
   /** Dimension of parameters. */
-  static constexpr unsigned int InputSpaceDimension = Superclass::InputSpaceDimension;
-  static constexpr unsigned int OutputSpaceDimension = Superclass::OutputSpaceDimension;
+  itkStaticConstMacro(InputSpaceDimension, unsigned int,
+                      Superclass::InputSpaceDimension);
+  itkStaticConstMacro(OutputSpaceDimension, unsigned int,
+                      Superclass::OutputSpaceDimension);
 
   /** Image Types to use in the initialization of the transform */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
+  typedef   typename Superclass::FixedImageType  FixedImageType;
+  typedef   typename Superclass::MovingImageType MovingImageType;
 
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  typedef   typename Superclass::FixedImagePointer  FixedImagePointer;
+  typedef   typename Superclass::MovingImagePointer MovingImagePointer;
 
   /** Offset type. */
-  using OffsetType = typename Superclass::OffsetType;
+  typedef typename Superclass::OffsetType OffsetType;
 
   /** Point type. */
-  using InputPointType = typename Superclass::InputPointType;
+  typedef typename Superclass::InputPointType InputPointType;
 
   /** Vector type. */
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  typedef typename Superclass::OutputVectorType OutputVectorType;
 
   /** Initialize the transform using data from the images */
-  void
-  InitializeTransform() override;
+  void InitializeTransform() ITK_OVERRIDE;
 
   /** Enable the use of the principal axes of each image to compute an
    * initial rotation that will align them. */
@@ -92,18 +96,19 @@ public:
 
 protected:
   CenteredVersorTransformInitializer();
-  ~CenteredVersorTransformInitializer() override = default;
+  ~CenteredVersorTransformInitializer() ITK_OVERRIDE {}
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredVersorTransformInitializer);
+
   bool m_ComputeRotation;
-}; // class CenteredVersorTransformInitializer
-} // namespace itk
+}; //class CenteredVersorTransformInitializer
+}  // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCenteredVersorTransformInitializer.hxx"
+#include "itkCenteredVersorTransformInitializer.hxx"
 #endif
 
 #endif /* itkCenteredVersorTransformInitializer_h */

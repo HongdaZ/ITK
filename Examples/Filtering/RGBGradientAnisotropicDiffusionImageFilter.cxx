@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@
 //  \code{float} representation. However for input and output purposes
 //  \code{unsigned char} RGB components are commonly used. It is necessary to
 //  cast the type of color components along the pipeline before writing them
-//  to a file. The \doxygen{CastImageFilter} is used to achieve this
+//  to a file. The \doxygen{VectorCastImageFilter} is used to achieve this
 //  goal.
 //
 //  Software Guide : EndLatex
@@ -74,20 +74,19 @@
 // Software Guide : BeginCodeSnippet
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkCastImageFilter.h"
+#include "itkVectorCastImageFilter.h"
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputRGBImageFile  outputRGBImageFile ";
     std::cerr << "numberOfIterations  timeStep  " << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -97,8 +96,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = itk::RGBPixel<float>;
-  using InputImageType = itk::Image<InputPixelType, 2>;
+  typedef itk::RGBPixel< float >          InputPixelType;
+  typedef itk::Image< InputPixelType, 2 > InputImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -114,8 +113,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FilterType =
-    itk::VectorGradientAnisotropicDiffusionImageFilter<InputImageType, InputImageType>;
+  typedef itk::VectorGradientAnisotropicDiffusionImageFilter<
+                       InputImageType, InputImageType >  FilterType;
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -128,15 +127,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType >  ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
-  filter->SetInput(reader->GetOutput());
+  reader->SetFileName( argv[1] );
+  filter->SetInput( reader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
-  const unsigned int numberOfIterations = std::stoi(argv[3]);
-  const double       timeStep = std::stod(argv[4]);
+  const unsigned int numberOfIterations = atoi( argv[3] );
+  const double       timeStep = atof( argv[4] );
 
 
   //  Software Guide : BeginLatex
@@ -156,8 +155,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetNumberOfIterations(numberOfIterations);
-  filter->SetTimeStep(timeStep);
+  filter->SetNumberOfIterations( numberOfIterations );
+  filter->SetTimeStep( timeStep );
   filter->SetConductanceParameter(1.0);
   filter->Update();
   // Software Guide : EndCodeSnippet
@@ -165,18 +164,19 @@ main(int argc, char * argv[])
   //  Software Guide : BeginLatex
   //
   //  The filter output is now cast to \code{unsigned char} RGB components by
-  //  using the \doxygen{CastImageFilter}.
+  //  using the \doxygen{VectorCastImageFilter}.
   //
-  //  \index{itk::CastImageFilter!instantiation}
-  //  \index{itk::CastImageFilter!New()}
-  //  \index{itk::CastImageFilter!Pointer}
+  //  \index{itk::VectorCastImageFilter!instantiation}
+  //  \index{itk::VectorCastImageFilter!New()}
+  //  \index{itk::VectorCastImageFilter!Pointer}
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WritePixelType = itk::RGBPixel<unsigned char>;
-  using WriteImageType = itk::Image<WritePixelType, 2>;
-  using CasterType = itk::CastImageFilter<InputImageType, WriteImageType>;
+  typedef itk::RGBPixel< unsigned char >   WritePixelType;
+  typedef itk::Image< WritePixelType, 2 >  WriteImageType;
+  typedef itk::VectorCastImageFilter<
+                InputImageType, WriteImageType >  CasterType;
   CasterType::Pointer caster = CasterType::New();
   // Software Guide : EndCodeSnippet
 
@@ -190,11 +190,11 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  typedef itk::ImageFileWriter< WriteImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
-  caster->SetInput(filter->GetOutput());
-  writer->SetInput(caster->GetOutput());
-  writer->SetFileName(argv[2]);
+  caster->SetInput( filter->GetOutput() );
+  writer->SetInput( caster->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->Update();
   // Software Guide : EndCodeSnippet
 

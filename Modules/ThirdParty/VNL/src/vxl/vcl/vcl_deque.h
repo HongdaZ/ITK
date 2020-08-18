@@ -2,8 +2,6 @@
 #define vcl_deque_h_
 
 #include <deque>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include "vcl_compiler.h"
 
 #endif // vcl_deque_h_

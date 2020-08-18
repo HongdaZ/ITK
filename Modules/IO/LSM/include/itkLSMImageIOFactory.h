@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,28 +34,23 @@
 
 namespace itk
 {
-/**
- *\class LSMImageIOFactory
+/** \class LSMImageIOFactory
  * \brief Create instances of LSMImageIO objects using an object factory.
  * \ingroup ITKIOLSM
  */
-class ITKIOLSM_EXPORT LSMImageIOFactory : public ObjectFactoryBase
+class ITKIOLSM_EXPORT LSMImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = LSMImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LSMImageIOFactory          Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class Methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion() const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription() const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -64,8 +59,7 @@ public:
   itkTypeMacro(LSMImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory()
   {
     LSMImageIOFactory::Pointer lsmFactory = LSMImageIOFactory::New();
 
@@ -74,7 +68,10 @@ public:
 
 protected:
   LSMImageIOFactory();
-  ~LSMImageIOFactory() override;
+  ~LSMImageIOFactory() ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIOFactory);
 };
 } // end namespace itk
 

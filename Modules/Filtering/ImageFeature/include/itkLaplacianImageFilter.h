@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ namespace itk
 {
 /**
  * \class LaplacianImageFilter
- * \brief This filter computes the Laplacian of a scalar-valued image.
  *
- * The Laplacian
+ * This filter computes the Laplacian of a scalar-valued image. The Laplacian
  * is an isotropic measure of the 2nd spatial derivative of an image. The
  * Laplacian of an image highlights regions of rapid intensity change and is
  * therefore often used for edge detection.  Often, the Laplacian is applied to
@@ -55,37 +54,38 @@ namespace itk
  * \ingroup ImageFeatureExtraction
  * \ingroup ITKImageFeature
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageFeature/ComputeLaplacian,Compute Laplacian}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/LaplacianImageFilter,Compute the Laplacian of an image}
+ * \endwiki
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT LaplacianImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianImageFilter);
-
-  /** Standard "Self" & Superclass type alias.   */
-  using Self = LaplacianImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
+  /** Standard "Self" & Superclass typedef.   */
+  typedef LaplacianImageFilter                            Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
-  using InputPixelType = typename TInputImage::PixelType;
-  using InputInternalPixelType = typename TInputImage::InternalPixelType;
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
+  typedef typename TOutputImage::PixelType         OutputPixelType;
+  typedef typename TOutputImage::InternalPixelType OutputInternalPixelType;
+  typedef typename TInputImage::PixelType          InputPixelType;
+  typedef typename TInputImage::InternalPixelType  InputInternalPixelType;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
-  /** Image type alias support */
-  using InputImageType = TInputImage;
-  using OutputImageType = TOutputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
+  /** Image typedef support. */
+  typedef TInputImage                      InputImageType;
+  typedef TOutputImage                     OutputImageType;
+  typedef typename InputImageType::Pointer InputImagePointer;
 
-  /** Smart pointer type alias support   */
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Smart pointer typedef support.   */
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods)  */
   itkTypeMacro(LaplacianImageFilter, ImageToImageFilter);
@@ -100,13 +100,12 @@ public:
    * inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion()  */
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  /** Enable/Disable using the image spacing information in
+ /** Enable/Disable using the image spacing information in
    *  calculations. Use this option if you  want derivatives in
    *  physical space. Default  is UseImageSpacingOn. */
-  itkBooleanMacro(UseImageSpacing);
+  itkBooleanMacro( UseImageSpacing );
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -115,35 +114,41 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(SameDimensionCheck, (Concept::SameDimension<InputImageDimension, ImageDimension>));
-  itkConceptMacro(InputPixelTypeIsFloatingPointCheck, (Concept::IsFloatingPoint<InputPixelType>));
-  itkConceptMacro(OutputPixelTypeIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputPixelType>));
+  itkConceptMacro( SameDimensionCheck,
+                   ( Concept::SameDimension< InputImageDimension, ImageDimension > ) );
+  itkConceptMacro( InputPixelTypeIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< InputPixelType > ) );
+  itkConceptMacro( OutputPixelTypeIsFloatingPointCheck,
+                   ( Concept::IsFloatingPoint< OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  LaplacianImageFilter() { m_UseImageSpacing = true; }
+  LaplacianImageFilter()
+  {
+    m_UseImageSpacing = true;
+  }
 
-  ~LaplacianImageFilter() override = default;
+  virtual ~LaplacianImageFilter() ITK_OVERRIDE {}
 
   /** Standard pipeline method. While this class does not implement a
    * ThreadedGenerateData(), its GenerateData() delegates all
    * calculations to an NeighborhoodOperatorImageFilter.  Since the
    * NeighborhoodOperatorImageFilter is multithreaded, this filter is
    * multithreaded by default.   */
-  void
-  GenerateData() override;
+  void GenerateData() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream &, Indent) const override;
+  void PrintSelf(std::ostream &, Indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianImageFilter);
+
   bool m_UseImageSpacing;
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLaplacianImageFilter.hxx"
+#include "itkLaplacianImageFilter.hxx"
 #endif
 
 #endif

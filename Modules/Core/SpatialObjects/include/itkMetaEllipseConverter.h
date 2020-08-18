@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,24 +24,22 @@
 
 namespace itk
 {
-/**
- *\class MetaEllipseConverter
+/** \class MetaEllipseConverter
  *  \brief converts between MetaObject<->SpatialObject.
  *
  *  \sa MetaConverterBase
  *  \ingroup ITKSpatialObjects
  */
-template <unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT MetaEllipseConverter : public MetaConverterBase<NDimensions>
+template< unsigned int NDimensions = 3 >
+class ITK_TEMPLATE_EXPORT MetaEllipseConverter :
+    public MetaConverterBase< NDimensions >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaEllipseConverter);
-
-  /** Standard class type aliases */
-  using Self = MetaEllipseConverter;
-  using Superclass = MetaConverterBase<NDimensions>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs */
+  typedef MetaEllipseConverter             Self;
+  typedef MetaConverterBase< NDimensions > Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -49,37 +47,38 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MetaEllipseConverter, MetaConverterBase);
 
-  using SpatialObjectType = typename Superclass::SpatialObjectType;
-  using SpatialObjectPointer = typename SpatialObjectType::Pointer;
-  using MetaObjectType = typename Superclass::MetaObjectType;
+  typedef typename Superclass::SpatialObjectType SpatialObjectType;
+  typedef typename SpatialObjectType::Pointer    SpatialObjectPointer;
+  typedef typename Superclass::MetaObjectType    MetaObjectType;
 
   /** Specific class types for conversion */
-  using EllipseSpatialObjectType = EllipseSpatialObject<NDimensions>;
-  using EllipseSpatialObjectPointer = typename EllipseSpatialObjectType::Pointer;
-  using EllipseSpatialObjectConstPointer = typename EllipseSpatialObjectType::ConstPointer;
-  using EllipseMetaObjectType = MetaEllipse;
+  typedef EllipseSpatialObject<NDimensions>               EllipseSpatialObjectType;
+  typedef typename EllipseSpatialObjectType::Pointer      EllipseSpatialObjectPointer;
+  typedef typename EllipseSpatialObjectType::ConstPointer EllipseSpatialObjectConstPointer;
+  typedef MetaEllipse                                     EllipseMetaObjectType;
 
   /** Convert the MetaObject to Spatial Object */
-  SpatialObjectPointer
-  MetaObjectToSpatialObject(const MetaObjectType * mo) override;
+  virtual SpatialObjectPointer MetaObjectToSpatialObject(const MetaObjectType *mo) ITK_OVERRIDE;
 
   /** Convert the SpatialObject to MetaObject */
-  MetaObjectType *
-  SpatialObjectToMetaObject(const SpatialObjectType * spatialObject) override;
+  virtual MetaObjectType *SpatialObjectToMetaObject(const SpatialObjectType *spatialObject) ITK_OVERRIDE;
 
 protected:
   /** Create the specific MetaObject for this class */
-  MetaObjectType *
-  CreateMetaObject() override;
+  virtual MetaObjectType *CreateMetaObject() ITK_OVERRIDE;
 
-  MetaEllipseConverter() = default;
-  ~MetaEllipseConverter() override = default;
+  MetaEllipseConverter();
+  ~MetaEllipseConverter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MetaEllipseConverter);
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkMetaEllipseConverter.hxx"
+  #include "itkMetaEllipseConverter.hxx"
 #endif
 
 #endif

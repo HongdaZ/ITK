@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkNeighborhoodAlgorithm.h"
-#include <cmath>
+#include <math.h>
 
 // Software Guide : BeginLatex
 //
@@ -45,17 +45,17 @@
 #include "itkImageRegionIterator.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int argc, char ** argv)
+int main( int argc, char ** argv )
 {
-  if (argc < 4)
-  {
+  if ( argc < 4 )
+    {
     std::cerr << "Missing parameters. " << std::endl;
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " inputImageFile outputImageFile element_radius"
+    std::cerr << argv[0]
+              << " inputImageFile outputImageFile element_radius"
               << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -66,29 +66,30 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, 2>;
+  typedef unsigned char               PixelType;
+  typedef itk::Image< PixelType, 2 >  ImageType;
 
-  using ShapedNeighborhoodIteratorType =
-    itk::ConstShapedNeighborhoodIterator<ImageType>;
+  typedef itk::ConstShapedNeighborhoodIterator<
+                                          ImageType
+                                            > ShapedNeighborhoodIteratorType;
 
-  using IteratorType = itk::ImageRegionIterator<ImageType>;
+  typedef itk::ImageRegionIterator< ImageType> IteratorType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch ( itk::ExceptionObject &err)
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   ImageType::Pointer output = ImageType::New();
   output->SetRegions(reader->GetOutput()->GetRequestedRegion());
@@ -109,7 +110,7 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  unsigned int                               element_radius = ::std::stoi(argv[3]);
+  unsigned int element_radius = ::atoi( argv[3] );
   ShapedNeighborhoodIteratorType::RadiusType radius;
   radius.Fill(element_radius);
   // Software Guide : EndCodeSnippet
@@ -122,14 +123,16 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FaceCalculatorType =
-    itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<ImageType>;
+  typedef itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<
+                                                ImageType > FaceCalculatorType;
 
-  FaceCalculatorType                         faceCalculator;
-  FaceCalculatorType::FaceListType           faceList;
+  FaceCalculatorType faceCalculator;
+  FaceCalculatorType::FaceListType faceList;
   FaceCalculatorType::FaceListType::iterator fit;
 
-  faceList = faceCalculator(reader->GetOutput(), output->GetRequestedRegion(), radius);
+  faceList = faceCalculator( reader->GetOutput(),
+                             output->GetRequestedRegion(),
+                             radius );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -142,9 +145,9 @@ main(int argc, char ** argv)
   // Software Guide : BeginCodeSnippet
   IteratorType out;
 
-  constexpr PixelType background_value = 0;
-  constexpr PixelType foreground_value = 255;
-  const auto          rad = static_cast<float>(element_radius);
+  const PixelType background_value = 0;
+  const PixelType foreground_value = 255;
+  const float rad = static_cast<float>(element_radius);
   // Software Guide : EndCodeSnippet
 
 
@@ -164,29 +167,29 @@ main(int argc, char ** argv)
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  for (fit = faceList.begin(); fit != faceList.end(); ++fit)
-  {
-    ShapedNeighborhoodIteratorType it(radius, reader->GetOutput(), *fit);
-    out = IteratorType(output, *fit);
+  for ( fit=faceList.begin(); fit != faceList.end(); ++fit)
+    {
+    ShapedNeighborhoodIteratorType it( radius, reader->GetOutput(), *fit );
+    out = IteratorType( output, *fit );
 
     // Creates a circular structuring element by activating all the pixels less
     // than radius distance from the center of the neighborhood.
 
     for (float y = -rad; y <= rad; y++)
-    {
-      for (float x = -rad; x <= rad; x++)
       {
+      for (float x = -rad; x <= rad; x++)
+        {
         ShapedNeighborhoodIteratorType::OffsetType off;
 
-        float dis = std::sqrt(x * x + y * y);
+        float dis = std::sqrt( x*x + y*y );
         if (dis <= rad)
-        {
+          {
           off[0] = static_cast<int>(x);
           off[1] = static_cast<int>(y);
           it.ActivateOffset(off);
+          }
         }
       }
-    }
     // Software Guide : EndCodeSnippet
 
     // Software Guide : BeginLatex
@@ -204,45 +207,45 @@ main(int argc, char ** argv)
 
     // Implements erosion
     for (it.GoToBegin(), out.GoToBegin(); !it.IsAtEnd(); ++it, ++out)
-    {
+      {
       ShapedNeighborhoodIteratorType::ConstIterator ci;
 
       bool flag = true;
       for (ci = it.Begin(); ci != it.End(); ci++)
-      {
-        if (ci.Get() == background_value)
         {
+        if (ci.Get() == background_value)
+          {
           flag = false;
           break;
+          }
+        }
+      if (flag == true)
+        {
+        out.Set(foreground_value);
+        }
+      else
+        {
+        out.Set(background_value);
         }
       }
-      if (flag == true)
-      {
-        out.Set(foreground_value);
-      }
-      else
-      {
-        out.Set(background_value);
-      }
     }
-  }
   // Software Guide : EndCodeSnippet
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
-  writer->SetInput(output);
+  writer->SetFileName( argv[2] );
+  writer->SetInput( output );
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
+    }
+  catch ( itk::ExceptionObject &err)
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

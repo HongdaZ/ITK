@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,28 +26,27 @@
 
 #include <iostream>
 
-int
-itkPolylineMaskImageFilterTest(int argc, char * argv[])
+int itkPolylineMaskImageFilterTest( int argc, char * argv[] )
 {
 
-  if (argc < 2)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+  if ( argc < 2 )
+    {
+    std::cerr << "Usage: " << argv[0];
     std::cerr << " outputFilename" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Define the dimension of the images
-  constexpr unsigned int iDimension = 3;
+  const unsigned int iDimension = 3;
 
-  // Define the dimension of the polyline
-  constexpr unsigned int pDimension = 2;
+  //Define the dimension of the polyline
+  const unsigned int pDimension = 2;
 
   // Declare the types of the images
-  using inputImageType = itk::Image<unsigned short, iDimension>;
-  using outputImageType = itk::Image<unsigned short, iDimension>;
-  using inputVectorType = itk::Vector<double, iDimension>;
-  using inputPolylineType = itk::PolyLineParametricPath<pDimension>;
+  typedef itk::Image<unsigned short, iDimension>     inputImageType;
+  typedef itk::Image<unsigned short, iDimension>     outputImageType;
+  typedef itk::Vector<double, iDimension>            inputVectorType;
+  typedef itk::PolyLineParametricPath<pDimension>    inputPolylineType;
 
   // Create up and viewing direction vectors
   inputVectorType inputUpVector, inputViewVector;
@@ -57,20 +56,20 @@ itkPolylineMaskImageFilterTest(int argc, char * argv[])
   std::cout << "Generating the synthetic object..." << std::endl;
 
   // Generate a synthetic ellipse image
-  using EllipseType = itk::EllipseSpatialObject<2>;
-  EllipseType::Pointer   ellipse = EllipseType::New();
-  EllipseType::PointType center;
-  center.Fill(20);
-  ellipse->SetCenterInObjectSpace(center);
-  ellipse->SetRadiusInObjectSpace(10);
-  ellipse->Update();
+  typedef itk::EllipseSpatialObject<2> EllipseType;
+  EllipseType::Pointer ellipse = EllipseType::New();
+  EllipseType::TransformType::OffsetType offset;
+  offset.Fill(20);
+  ellipse->GetObjectToParentTransform()->SetOffset(offset);
+  ellipse->ComputeObjectToWorldTransform();
+  ellipse->SetRadius(10);
 
   std::cout << "Generating the image of the object..." << std::endl;
 
-  using SpatialObjectToImageFilterType = itk::SpatialObjectToImageFilter<EllipseType, inputImageType>;
+  typedef itk::SpatialObjectToImageFilter<EllipseType,inputImageType> SpatialObjectToImageFilterType;
   SpatialObjectToImageFilterType::Pointer imageGenerationFilter = SpatialObjectToImageFilterType::New();
 
-  inputImageType::SizeType  size;
+  inputImageType::SizeType size;
   inputImageType::PointType origin;
 
   origin[0] = 0.0;
@@ -89,7 +88,7 @@ itkPolylineMaskImageFilterTest(int argc, char * argv[])
   imageGenerationFilter->Update();
 
   // Write out the input image
-  /*using SpatialObjectImageWriterType = itk::ImageFileWriter< inputImageType >;
+  /*typedef itk::ImageFileWriter< inputImageType > SpatialObjectImageWriterType;
   SpatialObjectImageWriterType::Pointer spatialObjectImageWriter =
     SpatialObjectImageWriterType::New();
   spatialObjectImageWriter->SetFileName( argv[1] );
@@ -97,8 +96,8 @@ itkPolylineMaskImageFilterTest(int argc, char * argv[])
   spatialObjectImageWriter->Update(); */
 
   std::cout << "Generating the polyline contour..." << std::endl;
-  // Initialize the polyline
-  using VertexType = inputPolylineType::VertexType;
+  //Initialize the polyline
+  typedef inputPolylineType::VertexType VertexType;
 
   // Add vertices to the polyline
   VertexType v;
@@ -131,34 +130,37 @@ itkPolylineMaskImageFilterTest(int argc, char * argv[])
   inputUpVector[2] = 0;
 
   // Declare the type for the polyline mask image filter
-  using PolylineMaskImageFilterType =
-    itk::PolylineMaskImageFilter<inputImageType, inputPolylineType, inputVectorType, outputImageType>;
+  typedef itk::PolylineMaskImageFilter<
+                           inputImageType, inputPolylineType,
+                           inputVectorType,
+                           outputImageType > PolylineMaskImageFilterType;
 
-  using PointType = PolylineMaskImageFilterType::PointType;
-  using ProjPlanePointType = PolylineMaskImageFilterType::ProjPlanePointType;
+  typedef PolylineMaskImageFilterType::PointType          PointType;
+  typedef PolylineMaskImageFilterType::ProjPlanePointType ProjPlanePointType;
 
   std::cout << "Generating the filter..." << std::endl;
 
   // Create the mask filter
-  PolylineMaskImageFilterType::Pointer polylineMaskFilter = PolylineMaskImageFilterType::New();
+  PolylineMaskImageFilterType::Pointer polylineMaskFilter =
+    PolylineMaskImageFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(polylineMaskFilter, PolylineMaskImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( polylineMaskFilter, PolylineMaskImageFilter, ImageToImageFilter );
 
   // Set the input image
-  polylineMaskFilter->SetInput1(imageGenerationFilter->GetOutput());
+  polylineMaskFilter->SetInput1( imageGenerationFilter->GetOutput() );
 
   // Set the input the polyline
-  polylineMaskFilter->SetInput2(inputPolyline);
+  polylineMaskFilter->SetInput2( inputPolyline );
 
   // Set the viewing direction vector
-  polylineMaskFilter->SetViewVector(inputViewVector);
+  polylineMaskFilter->SetViewVector( inputViewVector );
 
-  ITK_TEST_SET_GET_VALUE(inputViewVector, polylineMaskFilter->GetViewVector());
+  TEST_SET_GET_VALUE( inputViewVector, polylineMaskFilter->GetViewVector() );
 
   // Set the up direction vector
-  polylineMaskFilter->SetUpVector(inputUpVector);
+  polylineMaskFilter->SetUpVector( inputUpVector );
 
-  ITK_TEST_SET_GET_VALUE(inputUpVector, polylineMaskFilter->GetUpVector());
+  TEST_SET_GET_VALUE( inputUpVector, polylineMaskFilter->GetUpVector() );
 
   // Camera center point
   PointType cameraCenterPoint;
@@ -167,31 +169,31 @@ itkPolylineMaskImageFilterTest(int argc, char * argv[])
   cameraCenterPoint[1] = 20;
   cameraCenterPoint[2] = 60;
 
-  polylineMaskFilter->SetCameraCenterPoint(cameraCenterPoint);
+  polylineMaskFilter->SetCameraCenterPoint( cameraCenterPoint );
 
-  ITK_TEST_SET_GET_VALUE(cameraCenterPoint, polylineMaskFilter->GetCameraCenterPoint());
+  TEST_SET_GET_VALUE( cameraCenterPoint, polylineMaskFilter->GetCameraCenterPoint() );
 
   // Set the camera focal distance
   double focalDistance = 30.0;
-  polylineMaskFilter->SetFocalDistance(focalDistance);
+  polylineMaskFilter->SetFocalDistance( focalDistance );
 
-  ITK_TEST_SET_GET_VALUE(focalDistance, polylineMaskFilter->GetFocalDistance());
+  TEST_SET_GET_VALUE( focalDistance, polylineMaskFilter->GetFocalDistance() );
 
   // Set the camera focal point in the projection plane
   ProjPlanePointType focalpoint;
   focalpoint[0] = 20.0;
   focalpoint[1] = 20.0;
-  polylineMaskFilter->SetFocalPoint(focalpoint);
+  polylineMaskFilter->SetFocalPoint( focalpoint );
 
-  ITK_TEST_SET_GET_VALUE(focalpoint, polylineMaskFilter->GetFocalPoint());
+  TEST_SET_GET_VALUE( focalpoint, polylineMaskFilter->GetFocalPoint() );
 
   polylineMaskFilter->Update();
 
   // Write out the output image
-  using OutputWriterType = itk::ImageFileWriter<outputImageType>;
+  typedef itk::ImageFileWriter< outputImageType > OutputWriterType;
   OutputWriterType::Pointer outputWriter = OutputWriterType::New();
-  outputWriter->SetFileName(argv[1]);
-  outputWriter->SetInput(polylineMaskFilter->GetOutput());
+  outputWriter->SetFileName( argv[1] );
+  outputWriter->SetInput( polylineMaskFilter->GetOutput() );
   outputWriter->Update();
 
   return EXIT_SUCCESS;

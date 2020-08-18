@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@
 #include "itkRGBPixel.h"
 // Software Guide : EndCodeSnippet
 
-int
-main(int, char * argv[])
+int main( int , char * argv[] )
 {
   // Software Guide : BeginLatex
   //
@@ -56,7 +55,7 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = itk::RGBPixel<unsigned char>;
+  typedef itk::RGBPixel< unsigned char >    PixelType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -66,7 +65,7 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ImageType = itk::Image<PixelType, 3>;
+  typedef itk::Image< PixelType, 3 >   ImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -80,16 +79,16 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType >  ReaderType;
   // Software Guide : EndCodeSnippet
 
   ReaderType::Pointer reader = ReaderType::New();
-  const char * const  filename = argv[1];
-  reader->SetFileName(filename);
+  const char * const filename = argv[1];
+  reader->SetFileName( filename );
   reader->Update();
 
-  ImageType::Pointer         image = reader->GetOutput();
-  const ImageType::IndexType pixelIndex = { { 25, 35, 0 } };
+  ImageType::Pointer image = reader->GetOutput();
+  const ImageType::IndexType pixelIndex = {{25,35,0}};
 
   // Software Guide : BeginLatex
   //
@@ -104,19 +103,22 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PixelType onePixel = image->GetPixel(pixelIndex);
+  PixelType onePixel = image->GetPixel( pixelIndex );
 
-  PixelType::ValueType red = onePixel.GetRed();
+  PixelType::ValueType red   = onePixel.GetRed();
   PixelType::ValueType green = onePixel.GetGreen();
-  PixelType::ValueType blue = onePixel.GetBlue();
+  PixelType::ValueType blue  = onePixel.GetBlue();
   // Software Guide : EndCodeSnippet
 
   std::cout << "Pixel values from GetRed,GetGreen,GetBlue:" << std::endl;
-  std::cout << "Red = " << itk::NumericTraits<PixelType::ValueType>::PrintType(red)
+  std::cout << "Red = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(red)
             << std::endl;
-  std::cout << "Green = " << itk::NumericTraits<PixelType::ValueType>::PrintType(green)
+  std::cout << "Green = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(green)
             << std::endl;
-  std::cout << "Blue = " << itk::NumericTraits<PixelType::ValueType>::PrintType(blue)
+  std::cout << "Blue = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(blue)
             << std::endl;
 
   // Software Guide : BeginLatex
@@ -127,16 +129,19 @@ main(int, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  red = onePixel[0];   // extract Red   component
-  green = onePixel[1]; // extract Green component
-  blue = onePixel[2];  // extract Blue  component
+  red   = onePixel[0];  // extract Red   component
+  green = onePixel[1];  // extract Green component
+  blue  = onePixel[2];  // extract Blue  component
 
   std::cout << "Pixel values:" << std::endl;
-  std::cout << "Red = " << itk::NumericTraits<PixelType::ValueType>::PrintType(red)
+  std::cout << "Red = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(red)
             << std::endl;
-  std::cout << "Green = " << itk::NumericTraits<PixelType::ValueType>::PrintType(green)
+  std::cout << "Green = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(green)
             << std::endl;
-  std::cout << "Blue = " << itk::NumericTraits<PixelType::ValueType>::PrintType(blue)
+  std::cout << "Blue = "
+            << itk::NumericTraits<PixelType::ValueType>::PrintType(blue)
             << std::endl;
 
   // Software Guide : EndCodeSnippet

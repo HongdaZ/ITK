@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,161 +19,168 @@
 #define itkRGBAPixel_hxx
 #include "itkRGBAPixel.h"
 #include "itkNumericTraits.h"
-#include <algorithm>
 
 namespace itk
 {
-
-template <typename T>
-RGBAPixel<T> &
-RGBAPixel<T>::operator=(const ComponentType r[4])
+/**
+ * Assignment Operator
+ */
+template< typename T >
+RGBAPixel< T > &
+RGBAPixel< T >
+::operator=(const Self & r)
 {
   BaseArray::operator=(r);
   return *this;
 }
 
-template <typename T>
-RGBAPixel<T>
-RGBAPixel<T>::operator+(const Self & r) const
+/**
+ * Assigment from a plain array
+ */
+template< typename T >
+RGBAPixel< T > &
+RGBAPixel< T >
+::operator=(const ComponentType r[4])
 {
-  Self result;
-
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    result[i] = (*this)[i] + r[i];
-  }
-  return result;
-}
-
-template <typename T>
-RGBAPixel<T>
-RGBAPixel<T>::operator-(const Self & r) const
-{
-  Self result;
-
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    result[i] = (*this)[i] - r[i];
-  }
-  return result;
-}
-
-template <typename T>
-const RGBAPixel<T> &
-RGBAPixel<T>::operator+=(const Self & r)
-{
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    (*this)[i] += r[i];
-  }
+  BaseArray::operator=(r);
   return *this;
 }
 
-template <typename T>
-const RGBAPixel<T> &
-RGBAPixel<T>::operator-=(const Self & r)
-{
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    (*this)[i] -= r[i];
-  }
-  return *this;
-}
-
-template <typename T>
-const RGBAPixel<T> &
-RGBAPixel<T>::operator*=(const ComponentType & r)
-{
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    (*this)[i] *= r;
-  }
-  return *this;
-}
-
-
-template <typename T>
-const RGBAPixel<T> &
-RGBAPixel<T>::operator/=(const ComponentType & r)
-{
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    (*this)[i] /= r;
-  }
-  return *this;
-}
-
-template <typename T>
-RGBAPixel<T> RGBAPixel<T>::operator*(const ComponentType & r) const
+/**
+ * Returns a temporary copy of a vector
+ */
+template< typename T >
+RGBAPixel< T >
+RGBAPixel< T >
+::operator+(const Self & r) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    result[i] = (*this)[i] * r;
-  }
-  return result;
-}
-
-template <typename T>
-RGBAPixel<T>
-RGBAPixel<T>::operator/(const ComponentType & r) const
-{
-  Self result;
-
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    result[i] = (*this)[i] / r;
-  }
-  return result;
-}
-
-template <typename T>
-bool
-RGBAPixel<T>::operator==(const Self & r) const
-{
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    if ((*this)[i] != r[i])
+  for ( unsigned int i = 0; i < 4; i++ )
     {
-      return false;
+    result[i] = ( *this )[i] + r[i];
     }
-  }
+  return result;
+}
+
+/**
+ * Returns a temporary copy of a vector
+ */
+template< typename T >
+RGBAPixel< T >
+RGBAPixel< T >
+::operator-(const Self & r) const
+{
+  Self result;
+
+  for ( unsigned int i = 0; i < 4; i++ )
+    {
+    result[i] = ( *this )[i] - r[i];
+    }
+  return result;
+}
+
+/**
+ * Returns a temporary copy of a vector
+ */
+template< typename T >
+const RGBAPixel< T > &
+RGBAPixel< T >
+::operator+=(const Self & r)
+{
+  for ( unsigned int i = 0; i < 4; i++ )
+    {
+    ( *this )[i] += r[i];
+    }
+  return *this;
+}
+
+/**
+ * Returns a temporary copy of a vector
+ */
+template< typename T >
+const RGBAPixel< T > &
+RGBAPixel< T >
+::operator-=(const Self & r)
+{
+  for ( unsigned int i = 0; i < 4; i++ )
+    {
+    ( *this )[i] -= r[i];
+    }
+  return *this;
+}
+
+/**
+ * Returns a temporary copy of a vector
+ */
+template< typename T >
+RGBAPixel< T >
+RGBAPixel< T >
+::operator*(const ComponentType & r) const
+{
+  Self result;
+
+  for ( unsigned int i = 0; i < 4; i++ )
+    {
+    result[i] = ( *this )[i] * r;
+    }
+  return result;
+}
+
+/**
+ * Returns the results from a test for equality (all components must be equal)
+ */
+template< typename T >
+bool
+RGBAPixel< T >
+::operator==(const Self & r) const
+{
+  for ( unsigned int i = 0; i < 4; i++ )
+    {
+    if ( ( *this )[i] != r[i] )
+      {
+      return false;
+      }
+    }
   return true;
 }
 
-template <typename T>
-bool
-RGBAPixel<T>::operator<(const Self & r) const
+/**
+ * Compute luminance
+ */
+template< typename T >
+typename RGBAPixel< T >::LuminanceType
+RGBAPixel< T >
+::GetLuminance() const
 {
-  return std::lexicographical_compare(this->Begin(), this->End(), r.Begin(), r.End());
-}
-
-template <typename T>
-typename RGBAPixel<T>::LuminanceType
-RGBAPixel<T>::GetLuminance() const
-{
-  const LuminanceType luminance = 0.30 * static_cast<LuminanceType>(this->GetRed()) +
-                                  0.59 * static_cast<LuminanceType>(this->GetGreen()) +
-                                  0.11 * static_cast<LuminanceType>(this->GetBlue());
+  const LuminanceType luminance =
+    0.30  * static_cast< LuminanceType >( this->GetRed() )
+    + 0.59  * static_cast< LuminanceType >( this->GetGreen() )
+    + 0.11  * static_cast< LuminanceType >( this->GetBlue() );
 
   return luminance;
 }
 
-template <typename TComponent>
+/**
+ * Print content to an ostream
+ */
+template< typename TComponent >
 std::ostream &
-operator<<(std::ostream & os, const RGBAPixel<TComponent> & c)
+operator<<(std::ostream & os, const RGBAPixel< TComponent > & c)
 {
-  os << static_cast<typename NumericTraits<TComponent>::PrintType>(c[0]) << "  ";
-  os << static_cast<typename NumericTraits<TComponent>::PrintType>(c[1]) << "  ";
-  os << static_cast<typename NumericTraits<TComponent>::PrintType>(c[2]) << "  ";
-  os << static_cast<typename NumericTraits<TComponent>::PrintType>(c[3]);
+  os <<  static_cast< typename NumericTraits< TComponent >::PrintType >( c[0] )  << "  ";
+  os <<  static_cast< typename NumericTraits< TComponent >::PrintType >( c[1] )  << "  ";
+  os <<  static_cast< typename NumericTraits< TComponent >::PrintType >( c[2] )  << "  ";
+  os <<  static_cast< typename NumericTraits< TComponent >::PrintType >( c[3] );
   return os;
 }
 
-template <typename TComponent>
+/**
+ * Read content from an istream
+ */
+template< typename TComponent >
 std::istream &
-operator>>(std::istream & is, RGBAPixel<TComponent> & c)
+operator>>(std::istream & is, RGBAPixel< TComponent > & c)
 {
   TComponent red;
   TComponent green;

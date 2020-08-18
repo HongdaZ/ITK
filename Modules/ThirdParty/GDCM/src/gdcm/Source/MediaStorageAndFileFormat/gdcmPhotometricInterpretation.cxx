@@ -57,7 +57,7 @@ static const char *PIStrings[] = {
   "YBR_PARTIAL_420 ",
   "YBR_ICT ",
   "YBR_RCT ",
-  nullptr
+  0
 };
 
 const char *PhotometricInterpretation::GetPIString(PIType pi)
@@ -74,7 +74,7 @@ PhotometricInterpretation::PIType PhotometricInterpretation::GetPIType(const cha
   CodeString codestring = inputpi;
   CSComp cs = codestring.GetAsString();
   const char *pi = cs.c_str();
-  for( unsigned int i = 1; PIStrings[i] != nullptr; ++i )
+  for( unsigned int i = 1; PIStrings[i] != 0; ++i )
     {
     if( strcmp(pi, PIStrings[i]) == 0 )
       {

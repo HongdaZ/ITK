@@ -44,7 +44,8 @@ double Image::GetSpacing(unsigned int idx) const
 void Image::SetSpacing(const double *spacing)
 {
   assert( NumberOfDimensions );
-  Spacing.assign(spacing, spacing+NumberOfDimensions);
+  Spacing = std::vector<double>(spacing,
+    spacing+NumberOfDimensions);
 }
 
 void Image::SetSpacing(unsigned int idx, double spacing)
@@ -59,7 +60,7 @@ const double *Image::GetOrigin() const
   assert( NumberOfDimensions );
   if( !Origin.empty() )
     return &Origin[0];
-  return nullptr;
+  return 0;
 }
 
 double Image::GetOrigin(unsigned int idx) const
@@ -85,7 +86,8 @@ void Image::SetOrigin(const float *ori)
 void Image::SetOrigin(const double *ori)
 {
   assert( NumberOfDimensions );
-  Origin.assign(ori, ori+NumberOfDimensions);
+  Origin = std::vector<double>(ori,
+    ori+NumberOfDimensions);
 }
 
 void Image::SetOrigin(unsigned int idx, double ori)
@@ -99,7 +101,7 @@ const double *Image::GetDirectionCosines() const
   assert( NumberOfDimensions );
   if( !DirectionCosines.empty() )
     return &DirectionCosines[0];
-  return nullptr;
+  return 0;
 }
 double Image::GetDirectionCosines(unsigned int idx) const
 {
@@ -124,7 +126,8 @@ void Image::SetDirectionCosines(const float *dircos)
 void Image::SetDirectionCosines(const double *dircos)
 {
   assert( NumberOfDimensions );
-  DirectionCosines.assign(dircos, dircos+6);
+  DirectionCosines = std::vector<double>(dircos,
+    dircos+6);
 }
 
 void Image::SetDirectionCosines(unsigned int idx, double dircos)

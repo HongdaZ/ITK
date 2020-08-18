@@ -16,9 +16,9 @@
 namespace gdcm
 {
 
-Spacing::Spacing() = default;
+Spacing::Spacing() {}
 
-Spacing::~Spacing() = default;
+Spacing::~Spacing() {}
 
 /*
  * http://www.ics.uci.edu/~eppstein/numth/frap.c

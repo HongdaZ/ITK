@@ -26,7 +26,7 @@ namespace METAIO_NAMESPACE {
 #endif
 
 class METAIO_EXPORT MetaForm
-{
+  {
   public:
 
     MetaForm(void);
@@ -44,6 +44,9 @@ class METAIO_EXPORT MetaForm
 
     bool  InitializeEssential();
 
+    //
+    //
+    //
     const char  * FileName(void) const;
     void          FileName(const char *_fileName);
 
@@ -65,12 +68,18 @@ class METAIO_EXPORT MetaForm
     const char  * Name(void) const;
     void          Name(const char *_Name);
 
+    //
+    //
+    //
     bool          BinaryData(void) const;
     void          BinaryData(bool _binaryData);
 
     bool          BinaryDataByteOrderMSB(void) const;
     void          BinaryDataByteOrderMSB(bool _binaryDataByteOrderMSB);
 
+    //
+    //
+    //
     bool          CompressedData(void) const;
     void          CompressedData(bool _compressedData);
 
@@ -85,6 +94,9 @@ class METAIO_EXPORT MetaForm
     void          SetDoublePrecision(unsigned int _doublePrecision)
                      { this->DoublePrecision(_doublePrecision); }
 
+    //
+    //
+    //
     MetaEvent *   Event(void);
     MetaEvent *   GetEvent(void)
                      { return Event(); }
@@ -92,7 +104,9 @@ class METAIO_EXPORT MetaForm
     void          Event(MetaEvent * _event);
     void          SetEvent(MetaEvent * _event)
                      { Event(_event); }
-
+    //
+    //
+    //
     void   ClearUserFields();
 
     void * GetUserField(const char* _name);
@@ -117,17 +131,20 @@ class METAIO_EXPORT MetaForm
             return true;
             }
 
-    bool  CanRead(const char * _fileName=nullptr) const;
+    //
+    //
+    //
+    bool  CanRead(const char * _fileName=NULL) const;
 
-    bool  Read(const char * _fileName=nullptr);
+    bool  Read(const char * _fileName=NULL);
 
-    bool  CanReadStream(std::ifstream * _stream) const;
+    bool  CanReadStream(METAIO_STREAM::ifstream * _stream) const;
 
-    bool  ReadStream(std::ifstream * _stream);
+    bool  ReadStream(METAIO_STREAM::ifstream * _stream);
 
-    bool  Write(const char * _fileName=nullptr);
+    bool  Write(const char * _fileName=NULL);
 
-    bool  WriteStream(std::ofstream * _stream);
+    bool  WriteStream(METAIO_STREAM::ofstream * _stream);
 
   ////
   //
@@ -136,12 +153,12 @@ class METAIO_EXPORT MetaForm
   ////
   protected:
 
-    typedef std::vector<MET_FieldRecordType *> FieldsContainerType;
+    typedef METAIO_STL::vector<MET_FieldRecordType *> FieldsContainerType;
 
-    std::ifstream *  m_ReadStream;
-    std::ofstream *  m_WriteStream;
+    METAIO_STREAM::ifstream *  m_ReadStream;
+    METAIO_STREAM::ofstream *  m_WriteStream;
 
-    std::string m_FileName;
+    char  m_FileName[255];
 
     char  m_Comment[255];
 
@@ -174,7 +191,7 @@ class METAIO_EXPORT MetaForm
 
     virtual bool M_Write(void);
 
-};
+  };
 
 #if (METAIO_USE_NAMESPACE)
 };

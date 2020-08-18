@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,22 +35,21 @@ namespace fem
 class ITKFEM_EXPORT Element2DC0LinearLineStress : public Element1DStress<Element2DC0LinearLine>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element2DC0LinearLineStress;
-  using Superclass = Element1DStress<Element2DC0LinearLine>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element2DC0LinearLineStress            Self;
+  typedef Element1DStress<Element2DC0LinearLine> Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** Method for creation through the object factory. */
   itkSimpleNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Element2DC0LinearLineStress, Element1DStress<Element2DC0LinearLine>);
+  itkTypeMacro(Element2DC0LinearLineStress, Element1DStress<Element2DC0LinearLine> );
 
   /** CreateAnother method will clone the existing instance of this type,
    * including its internal member variables. */
-  ::itk::LightObject::Pointer
-  CreateAnother() const override;
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE;
 
   /**
    * Default constructor only clears the internal storage
@@ -67,15 +66,14 @@ public:
    * Consistent mass matrix for a line element.
    * See any finite element book for Consistent mass matrix definition.
    */
-  void
-  GetMassMatrix(MatrixType & Me) const override;
+  virtual void GetMassMatrix(MatrixType & Me) const ITK_OVERRIDE;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-}; // class Element2DC0LinearLineStress
-} // end namespace fem
-} // end namespace itk
+};  // class Element2DC0LinearLineStress
 
-#endif // itkFEMElement2DC0LinearLineStress_h
+}
+}  // end namespace itk::fem
+
+#endif  // #ifndef itkFEMElement2DC0LinearLineStress_h

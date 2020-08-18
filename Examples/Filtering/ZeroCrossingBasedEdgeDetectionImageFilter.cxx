@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,45 +51,42 @@
 #include "itkRescaleIntensityImageFilter.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  inputImageFile   outputImageFile variance maxerror"
-              << std::endl;
+    std::cerr << argv[0] << "  inputImageFile   outputImageFile variance maxerror" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = double;
-  using OutputPixelType = double;
-  using CharPixelType = unsigned char;
+  typedef double        InputPixelType;
+  typedef double        OutputPixelType;
+  typedef unsigned char CharPixelType;
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using CharImageType = itk::Image<CharPixelType, Dimension>;
+  typedef itk::Image< InputPixelType,  Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::Image< CharPixelType, Dimension >     CharImageType;
   // Software Guide : EndCodeSnippet
 
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<CharImageType>;
+  typedef itk::ImageFileReader< InputImageType  >  ReaderType;
+  typedef itk::ImageFileWriter< CharImageType >    WriterType;
 
-  using RescaleFilterType =
-    itk::RescaleIntensityImageFilter<OutputImageType, CharImageType>;
+  typedef itk::RescaleIntensityImageFilter< OutputImageType, CharImageType>
+                                                            RescaleFilterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
-  using FilterType =
-    itk::ZeroCrossingBasedEdgeDetectionImageFilter<InputImageType, OutputImageType>;
+  typedef itk::ZeroCrossingBasedEdgeDetectionImageFilter< InputImageType, OutputImageType>  FilterType;
   FilterType::Pointer filter = FilterType::New();
 
 
@@ -109,8 +106,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetVariance(std::stod(argv[3]));
-  filter->SetMaximumError(std::stod(argv[4]));
+  filter->SetVariance( atof( argv[3] ) );
+  filter->SetMaximumError( atof( argv[4] ) );
   // Software Guide : EndCodeSnippet
 
 
@@ -126,19 +123,19 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  filter->SetInput(reader->GetOutput());
-  rescaler->SetInput(filter->GetOutput());
-  writer->SetInput(rescaler->GetOutput());
+  filter->SetInput( reader->GetOutput() );
+  rescaler->SetInput( filter->GetOutput() );
+  writer->SetInput( rescaler->GetOutput() );
   // Software Guide : EndCodeSnippet
 
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetOutputMinimum(   0 );
+  rescaler->SetOutputMaximum( 255 );
 
   try
   {
-    writer->Update();
+  writer->Update();
   }
-  catch (const itk::ExceptionObject & excp)
+  catch( itk::ExceptionObject & excp )
   {
     std::cerr << excp << std::endl;
   }

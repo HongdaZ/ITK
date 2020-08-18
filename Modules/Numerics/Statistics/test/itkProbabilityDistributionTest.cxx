@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,96 +18,48 @@
 
 #include "itkProbabilityDistribution.h"
 
-namespace itk
-{
-namespace Statistics
-{
+namespace itk {
+namespace Statistics {
 
 class ProbabilityDistributionTestingHelper : public ProbabilityDistribution
 {
 public:
-  using Self = ProbabilityDistributionTestingHelper;
-  using Superclass = ProbabilityDistribution;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef ProbabilityDistributionTestingHelper     Self;
+  typedef ProbabilityDistribution                  Superclass;
+  typedef SmartPointer<Self>                       Pointer;
+  typedef SmartPointer<const Self>                 ConstPointer;
 
   itkTypeMacro(ProbabilityDistributionTestingHelper, ProbabilityDistribution);
 
   itkNewMacro(Self);
 
-  SizeValueType
-  GetNumberOfParameters() const override
-  {
-    return 42;
-  }
-  double
-  EvaluatePDF(double) const override
-  {
-    return 42.0;
-  }
-  double
-  EvaluatePDF(double, const ParametersType &) const override
-  {
-    return 42.0;
-  }
-  double
-  EvaluateCDF(double) const override
-  {
-    return 42.0;
-  }
-  double
-  EvaluateCDF(double, const ParametersType &) const override
-  {
-    return 42.0;
-  }
-  double
-  EvaluateInverseCDF(double) const override
-  {
-    return 42.0;
-  }
-  double
-  EvaluateInverseCDF(double, const ParametersType &) const override
-  {
-    return 42.0;
-  }
-  bool
-  HasMean() const override
-  {
-    return true;
-  }
-  bool
-  HasVariance() const override
-  {
-    return true;
-  }
-  double
-  GetMean() const override
-  {
-    return 42.0;
-  }
-  double
-  GetVariance() const override
-  {
-    return 42.0;
-  }
+  virtual SizeValueType GetNumberOfParameters() const ITK_OVERRIDE { return 42; }
+  virtual double EvaluatePDF(double ) const ITK_OVERRIDE { return 42.0; }
+  virtual double EvaluatePDF(double , const ParametersType&) const ITK_OVERRIDE { return 42.0; }
+  virtual double EvaluateCDF(double ) const ITK_OVERRIDE { return 42.0; }
+  virtual double EvaluateCDF(double , const ParametersType&) const ITK_OVERRIDE { return 42.0; }
+  virtual double EvaluateInverseCDF(double ) const ITK_OVERRIDE  { return 42.0; }
+  virtual double EvaluateInverseCDF(double , const ParametersType&) const ITK_OVERRIDE  { return 42.0; }
+  virtual bool HasMean() const ITK_OVERRIDE { return true; }
+  virtual bool HasVariance() const ITK_OVERRIDE { return true; }
+  virtual double GetMean() const ITK_OVERRIDE { return 42.0; }
+  virtual double GetVariance() const ITK_OVERRIDE { return 42.0; }
 
-  void
-  RunTests()
-  {
+  void RunTests()
+    {
     std::cout << "Superclass name = " << this->Superclass::GetNameOfClass() << std::endl;
     std::cout << "Parameters = " << this->Superclass::GetParameters() << std::endl;
-  }
+    }
 };
 
-} // namespace Statistics
-} // namespace itk
+}
+}
 
-int
-itkProbabilityDistributionTest(int, char *[])
+int itkProbabilityDistributionTest(int, char* [] )
 {
   std::cout << "itkProbabilityDistributionTest Test \n \n";
 
-  using DistributionType = itk::Statistics::ProbabilityDistributionTestingHelper;
+  typedef itk::Statistics::ProbabilityDistributionTestingHelper DistributionType;
 
   DistributionType::Pointer distributionFunction = DistributionType::New();
 
@@ -116,7 +68,7 @@ itkProbabilityDistributionTest(int, char *[])
   std::cout << "HasVariance()    = " << distributionFunction->HasVariance() << std::endl;
   std::cout << "Number of parameters = " << distributionFunction->GetNumberOfParameters() << std::endl;
 
-  distributionFunction->Print(std::cout);
+  distributionFunction->Print( std::cout );
 
   distributionFunction->RunTests();
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ namespace itk
  * this event periodically during their execution (with the progress,
  * parameter, the fraction of work done). The use is similar to that of
  * StartEvent and EndEvent. Filters may also check their
- * AbortGenerateData flag to determine whether to prematurely end their
+ * AbortGenerateData flag to determine whether to prematurally end their
  * execution.
  *
  * An important feature of subclasses of LightProcessObject is that it is
@@ -69,16 +69,14 @@ namespace itk
  * \ingroup DataProcessing
  * \ingroup ITKCommon
  */
-class ITKCommon_EXPORT LightProcessObject : public Object
+class ITKCommon_EXPORT LightProcessObject:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LightProcessObject);
-
-  /** Standard class type aliases. */
-  using Self = LightProcessObject;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef LightProcessObject         Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -110,25 +108,22 @@ public:
   /** Update the progress of the process object. If a ProgressMethod exists,
    * executes it.  Then set the Progress ivar to amount. The parameter amount
    * should range between (0,1).  */
-  void
-  UpdateProgress(float amount);
+  void UpdateProgress(float amount);
 
   /** Actually generate new output.  */
-  virtual void
-  UpdateOutputData();
+  virtual void UpdateOutputData();
 
 protected:
   LightProcessObject();
-  ~LightProcessObject() override;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~LightProcessObject() ITK_OVERRIDE;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** This method causes the filter to generate its output. */
-  virtual void
-  GenerateData()
-  {}
+  virtual void GenerateData() {}
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LightProcessObject);
+
   /**
    * These support the progress method and aborting filter execution.
    */

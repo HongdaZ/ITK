@@ -5,14 +5,11 @@
 */
 #include "vnl_fft_prime_factors.h"
 #include <vnl/algo/vnl_fft.h>
-#include <cassert>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_cassert.h>
 
 template <class T>
 vnl_fft_prime_factors<T>::vnl_fft_prime_factors()
-  : trigs_(nullptr)
+  : trigs_(0)
   , number_(0)
 {
 }

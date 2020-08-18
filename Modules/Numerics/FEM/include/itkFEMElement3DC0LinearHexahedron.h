@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,12 +64,12 @@ namespace fem
 class ITKFEM_EXPORT Element3DC0LinearHexahedron : public ElementStd<8, 3>
 {
 public:
-  /** Standard class type aliases. */
-  using Self = Element3DC0LinearHexahedron;
-  using TemplatedParentClass = ElementStd<8, 3>;
-  using Superclass = TemplatedParentClass;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef Element3DC0LinearHexahedron Self;
+  typedef ElementStd<8, 3>            TemplatedParentClass;
+  typedef TemplatedParentClass        Superclass;
+  typedef SmartPointer<Self>          Pointer;
+  typedef SmartPointer<const Self>    ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(Element3DC0LinearHexahedron, TemplatedParentClass);
@@ -79,11 +79,9 @@ public:
    * Methods related to numeric integration
    */
 
-  void
-  GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order) const override;
+  virtual void GetIntegrationPointAndWeight(unsigned int i, VectorType & pt, Float & w, unsigned int order) const ITK_OVERRIDE;
 
-  unsigned int
-  GetNumberOfIntegrationPoints(unsigned int order) const override;
+  virtual unsigned int GetNumberOfIntegrationPoints(unsigned int order) const ITK_OVERRIDE;
 
   // ////////////////////////////////////////////////////////////////////////
   /**
@@ -91,37 +89,30 @@ public:
    */
 
   /** Return the shape functions used to interpolate across the element */
-  VectorType
-  ShapeFunctions(const VectorType & pt) const override;
+  virtual VectorType ShapeFunctions(const VectorType & pt) const ITK_OVERRIDE;
 
   /** Return the shape functions derivatives in the shapeD matrix */
-  void
-  ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const override;
+  virtual void ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const ITK_OVERRIDE;
 
   /** Convert from global to local coordinates */
-  bool
-  GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const override;
+  virtual bool GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const ITK_OVERRIDE;
 
   /**
    * Methods used in computing parametric/local coordinates given global coordinates.
    */
-  void
-  InterpolationFunctions(const VectorType & pcoords, VectorType & sf) const;
+  void InterpolationFunctions( const VectorType & pcoords, VectorType & sf) const;
 
-  void
-  InterpolationDerivs(const VectorType & pcoords, VectorType & derivs) const;
+  void InterpolationDerivs(const VectorType & pcoords, VectorType & derivs) const;
 
-  Float
-  Determinant3x3(const VectorType & c1, const VectorType & c2, const VectorType & c3) const;
+  Float Determinant3x3(const VectorType & c1, const VectorType & c2, const VectorType & c3) const;
 
 protected:
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  PopulateEdgeIds() override;
+  virtual void PopulateEdgeIds(void) ITK_OVERRIDE;
+
 };
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem
 
-#endif // itkFEMElement3DC0LinearHexahedron_h
+#endif  // #ifndef itkFEMElement3DC0LinearHexahedron_h

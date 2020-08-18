@@ -18,10 +18,12 @@ namespace gdcm
 {
 
 Region::Region()
-= default;
+{
+}
 
 Region::~Region()
-= default;
+{
+}
 
 void Region::Print(std::ostream &) const
 {

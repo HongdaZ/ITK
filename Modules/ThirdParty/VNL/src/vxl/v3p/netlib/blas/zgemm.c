@@ -34,6 +34,7 @@ extern "C" {
     logical nota, notb;
     doublecomplex temp;
     logical conja, conjb;
+    integer ncola;
     extern logical lsame_(const char *, const char *, ftnlen, ftnlen);
     integer nrowa, nrowb;
     extern /* Subroutine */ int xerbla_(char *, integer *, ftnlen);

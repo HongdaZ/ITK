@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,43 +23,9 @@
 #include "itkProcessObject.h"
 #include "itkSimpleDataObjectDecorator.h"
 
-namespace itk
-{
-namespace Statistics
-{
-/**\class HistogramToRunLengthFeaturesFilterEnums
- * \brief Contains all enum classes used by HistogramToRunLengthFeaturesFilter class.
- * \ingroup ITKStatistics
- */
-class HistogramToRunLengthFeaturesFilterEnums
-{
-public:
-  /**
-   * \class RunLengthFeature
-   * \ingroup ITKStatistics
-   * Run-length feature types.
-   */
-  enum class RunLengthFeature : uint8_t
-  {
-    ShortRunEmphasis,
-    LongRunEmphasis,
-    GreyLevelNonuniformity,
-    RunLengthNonuniformity,
-    LowGreyLevelRunEmphasis,
-    HighGreyLevelRunEmphasis,
-    ShortRunLowGreyLevelEmphasis,
-    ShortRunHighGreyLevelEmphasis,
-    LongRunLowGreyLevelEmphasis,
-    LongRunHighGreyLevelEmphasis
-  };
-};
-// Helps for backwards compatibility
-using RunLengthFeatureEnum = HistogramToRunLengthFeaturesFilterEnums::RunLengthFeature;
-// Define how to print enumeration
-extern ITKStatistics_EXPORT std::ostream &
-                            operator<<(std::ostream & out, const HistogramToRunLengthFeaturesFilterEnums::RunLengthFeature value);
-/**
- *\class HistogramToRunLengthFeaturesFilter
+namespace itk {
+namespace Statistics {
+/** \class HistogramToRunLengthFeaturesFilter
  *  \brief This class computes texture feature coefficients from a grey level
  * run-length matrix.
  *
@@ -96,151 +62,126 @@ extern ITKStatistics_EXPORT std::ostream &
  * \ingroup ITKStatistics
  */
 
-template <typename THistogram>
+template< typename THistogram >
 class ITK_TEMPLATE_EXPORT HistogramToRunLengthFeaturesFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToRunLengthFeaturesFilter);
-
-  /** Standard type alias */
-  using Self = HistogramToRunLengthFeaturesFilter;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard typedefs */
+  typedef HistogramToRunLengthFeaturesFilter     Self;
+  typedef ProcessObject                          Superclass;
+  typedef SmartPointer<Self>                     Pointer;
+  typedef SmartPointer<const Self>               ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HistogramToRunLengthFeaturesFilter, ProcessObject);
+  itkTypeMacro( HistogramToRunLengthFeaturesFilter, ProcessObject );
 
   /** standard New() method support */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
-  using HistogramType = THistogram;
-  using HistogramPointer = typename HistogramType::Pointer;
-  using HistogramConstPointer = typename HistogramType::ConstPointer;
-  using MeasurementType = typename HistogramType::MeasurementType;
-  using MeasurementVectorType = typename HistogramType::MeasurementVectorType;
-  using IndexType = typename HistogramType::IndexType;
-  using FrequencyType = typename HistogramType::TotalAbsoluteFrequencyType;
+  typedef THistogram                                      HistogramType;
+  typedef typename HistogramType::Pointer                 HistogramPointer;
+  typedef typename HistogramType::ConstPointer            HistogramConstPointer;
+  typedef typename HistogramType::MeasurementType         MeasurementType;
+  typedef typename HistogramType::MeasurementVectorType   MeasurementVectorType;
+  typedef typename HistogramType::IndexType               IndexType;
+  typedef typename HistogramType::
+    TotalAbsoluteFrequencyType                            FrequencyType;
 
   /** Method to Set/Get the input Histogram */
   using Superclass::SetInput;
-  void
-  SetInput(const HistogramType * histogram);
-  const HistogramType *
-  GetInput() const;
+  void SetInput ( const HistogramType * histogram );
+  const HistogramType * GetInput() const;
 
   /** Smart Pointer type to a DataObject. */
-  using DataObjectPointer = DataObject::Pointer;
+  typedef DataObject::Pointer                   DataObjectPointer;
 
   /** Type of DataObjects used for scalar outputs */
-  using MeasurementObjectType = SimpleDataObjectDecorator<MeasurementType>;
+  typedef SimpleDataObjectDecorator<MeasurementType>     MeasurementObjectType;
 
   /** Methods to return the short run emphasis. */
-  MeasurementType
-  GetShortRunEmphasis() const;
-  const MeasurementObjectType *
-  GetShortRunEmphasisOutput() const;
+  MeasurementType GetShortRunEmphasis() const;
+  const MeasurementObjectType* GetShortRunEmphasisOutput() const;
 
   /** Methods to return the long run emphasis. */
-  MeasurementType
-  GetLongRunEmphasis() const;
-  const MeasurementObjectType *
-  GetLongRunEmphasisOutput() const;
+  MeasurementType GetLongRunEmphasis() const;
+  const MeasurementObjectType* GetLongRunEmphasisOutput() const;
 
   /** Methods to return the grey level nonuniformity. */
-  MeasurementType
-  GetGreyLevelNonuniformity() const;
-  const MeasurementObjectType *
-  GetGreyLevelNonuniformityOutput() const;
+  MeasurementType GetGreyLevelNonuniformity() const;
+  const MeasurementObjectType* GetGreyLevelNonuniformityOutput() const;
 
   /** Methods to return the run length nonuniformity. */
-  MeasurementType
-  GetRunLengthNonuniformity() const;
-  const MeasurementObjectType *
-  GetRunLengthNonuniformityOutput() const;
+  MeasurementType GetRunLengthNonuniformity() const;
+  const MeasurementObjectType* GetRunLengthNonuniformityOutput() const;
 
   /** Methods to return the low grey level run emphasis. */
-  MeasurementType
-  GetLowGreyLevelRunEmphasis() const;
-  const MeasurementObjectType *
-  GetLowGreyLevelRunEmphasisOutput() const;
+  MeasurementType GetLowGreyLevelRunEmphasis() const;
+  const MeasurementObjectType* GetLowGreyLevelRunEmphasisOutput() const;
 
   /** Methods to return the high grey level run emphasis. */
-  MeasurementType
-  GetHighGreyLevelRunEmphasis() const;
-  const MeasurementObjectType *
-  GetHighGreyLevelRunEmphasisOutput() const;
+  MeasurementType GetHighGreyLevelRunEmphasis() const;
+  const MeasurementObjectType* GetHighGreyLevelRunEmphasisOutput() const;
 
   /** Methods to return the short run low grey level run emphasis. */
-  MeasurementType
-  GetShortRunLowGreyLevelEmphasis() const;
-  const MeasurementObjectType *
-  GetShortRunLowGreyLevelEmphasisOutput() const;
+  MeasurementType GetShortRunLowGreyLevelEmphasis() const;
+  const MeasurementObjectType* GetShortRunLowGreyLevelEmphasisOutput() const;
 
   /** Methods to return the short run high grey level run emphasis. */
-  MeasurementType
-  GetShortRunHighGreyLevelEmphasis() const;
-  const MeasurementObjectType *
-  GetShortRunHighGreyLevelEmphasisOutput() const;
+  MeasurementType GetShortRunHighGreyLevelEmphasis() const;
+  const MeasurementObjectType* GetShortRunHighGreyLevelEmphasisOutput() const;
 
   /** Methods to return the long run low grey level run emphasis. */
-  MeasurementType
-  GetLongRunLowGreyLevelEmphasis() const;
-  const MeasurementObjectType *
-  GetLongRunLowGreyLevelEmphasisOutput() const;
+  MeasurementType GetLongRunLowGreyLevelEmphasis() const;
+  const MeasurementObjectType* GetLongRunLowGreyLevelEmphasisOutput() const;
 
   /** Methods to return the long run high grey level run emphasis. */
-  MeasurementType
-  GetLongRunHighGreyLevelEmphasis() const;
-  const MeasurementObjectType *
-  GetLongRunHighGreyLevelEmphasisOutput() const;
+  MeasurementType GetLongRunHighGreyLevelEmphasis() const;
+  const MeasurementObjectType* GetLongRunHighGreyLevelEmphasisOutput() const;
 
-  itkGetMacro(TotalNumberOfRuns, unsigned long);
+  itkGetMacro( TotalNumberOfRuns, unsigned long );
 
-#if !defined(ITK_LEGACY_REMOVE)
-  /**Exposes enums values for backwards compatibility*/
-  static constexpr RunLengthFeatureEnum ShortRunEmphasis = RunLengthFeatureEnum::ShortRunEmphasis;
-  static constexpr RunLengthFeatureEnum LongRunEmphasis = RunLengthFeatureEnum::LongRunEmphasis;
-  static constexpr RunLengthFeatureEnum GreyLevelNonuniformity = RunLengthFeatureEnum::GreyLevelNonuniformity;
-  static constexpr RunLengthFeatureEnum RunLengthNonuniformity = RunLengthFeatureEnum::RunLengthNonuniformity;
-  static constexpr RunLengthFeatureEnum LowGreyLevelRunEmphasis = RunLengthFeatureEnum::LowGreyLevelRunEmphasis;
-  static constexpr RunLengthFeatureEnum HighGreyLevelRunEmphasis = RunLengthFeatureEnum::HighGreyLevelRunEmphasis;
-  static constexpr RunLengthFeatureEnum ShortRunLowGreyLevelEmphasis =
-    RunLengthFeatureEnum::ShortRunLowGreyLevelEmphasis;
-  static constexpr RunLengthFeatureEnum ShortRunHighGreyLevelEmphasis =
-    RunLengthFeatureEnum::ShortRunHighGreyLevelEmphasis;
-  static constexpr RunLengthFeatureEnum LongRunLowGreyLevelEmphasis = RunLengthFeatureEnum::LongRunLowGreyLevelEmphasis;
-  static constexpr RunLengthFeatureEnum LongRunHighGreyLevelEmphasis =
-    RunLengthFeatureEnum::LongRunHighGreyLevelEmphasis;
-#endif
+  /** Run-length feature types */
+  typedef enum
+    {
+    ShortRunEmphasis,
+    LongRunEmphasis,
+    GreyLevelNonuniformity,
+    RunLengthNonuniformity,
+    LowGreyLevelRunEmphasis,
+    HighGreyLevelRunEmphasis,
+    ShortRunLowGreyLevelEmphasis,
+    ShortRunHighGreyLevelEmphasis,
+    LongRunLowGreyLevelEmphasis,
+    LongRunHighGreyLevelEmphasis
+    }  RunLengthFeatureName;
 
   /** convenience method to access the run length values */
-  MeasurementType
-  GetFeature(RunLengthFeatureEnum name);
+  MeasurementType GetFeature( RunLengthFeatureName name );
 
 protected:
   HistogramToRunLengthFeaturesFilter();
-  ~HistogramToRunLengthFeaturesFilter() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  ~HistogramToRunLengthFeaturesFilter() ITK_OVERRIDE {};
+  virtual void PrintSelf(std::ostream& os, Indent indent) const ITK_OVERRIDE;
 
   /** Make a DataObject to be used for output output. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType) override;
+  virtual DataObjectPointer MakeOutput( DataObjectPointerArraySizeType ) ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
 private:
-  unsigned long m_TotalNumberOfRuns;
+  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToRunLengthFeaturesFilter);
+
+  unsigned long                           m_TotalNumberOfRuns;
+
 };
 
 } // end of namespace Statistics
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkHistogramToRunLengthFeaturesFilter.hxx"
+#include "itkHistogramToRunLengthFeaturesFilter.hxx"
 #endif
 
 #endif

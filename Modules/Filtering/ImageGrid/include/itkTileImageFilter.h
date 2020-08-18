@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@
 
 namespace itk
 {
-/**
- *\class TileImageFilter
+/** \class TileImageFilter
  * \brief Tile multiple input images into a single output image.
  *
  * This filter will tile multiple images using a user-specified
@@ -42,23 +41,23 @@ namespace itk
  * specifying a layout of 1,1,0.
  * \ingroup ITKImageGrid
  *
- * \sphinx
- * \sphinxexample{Filtering/ImageGrid/Stack2DImagesInto3DImage,Stack 2D Images Into 3D Image}
- * \sphinxexample{Filtering/ImageGrid/TileImagesSideBySide,Tile Images Side By Side}
- * \endsphinx
+ * \wiki
+ * \wikiexample{ImageProcessing/TileImageFilter,Tile multiple images into another image}
+ * \wikiexample{ImageProcessing/TileImageFilter_CreateVolume,Stack multiple 2D images into a 3D image}
+ * \wikiexample{ImageProcessing/TileImageFilter_SideBySide,Tile multiple images side by side}
+ * \endwiki
  */
 
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT TileImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT TileImageFilter:
+  public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TileImageFilter);
-
-  /** Standard Self type alias */
-  using Self = TileImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard Self typedef */
+  typedef TileImageFilter                                 Self;
+  typedef ImageToImageFilter< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -66,46 +65,47 @@ public:
   /** Runtime information support. */
   itkTypeMacro(TileImageFilter, ImageToImageFilter);
 
-  /** Image pixel value type alias. */
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using OutputPixelComponentType = typename NumericTraits<OutputPixelType>::ValueType;
+  /** Image pixel value typedef. */
+  typedef typename TInputImage::PixelType  InputPixelType;
+  typedef typename TOutputImage::PixelType OutputPixelType;
 
-  /** Image related type alias. */
-  using InputImagePointer = typename TInputImage::Pointer;
-  using OutputImagePointer = typename TOutputImage::Pointer;
+  /** Image related typedefs. */
+  typedef typename TInputImage::Pointer  InputImagePointer;
+  typedef typename TOutputImage::Pointer OutputImagePointer;
 
+  typedef typename NumericTraits<OutputPixelType>::ValueType OutputPixelComponentType;
 
-  using InputSizeType = typename TInputImage::SizeType;
-  using InputIndexType = typename TInputImage::IndexType;
-  using InputImageRegionType = typename TInputImage::RegionType;
-  using OutputSizeType = typename TOutputImage::SizeType;
-  using OutputIndexType = typename TOutputImage::IndexType;
-  using OutputImageRegionType = typename TOutputImage::RegionType;
+  typedef typename TInputImage::SizeType    InputSizeType;
+  typedef typename TInputImage::IndexType   InputIndexType;
+  typedef typename TInputImage::RegionType  InputImageRegionType;
+  typedef typename TOutputImage::SizeType   OutputSizeType;
+  typedef typename TOutputImage::IndexType  OutputIndexType;
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
 
-  /** Image related type alias. */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  /**
-   *\class TileInfo
+  /** Image related typedefs. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
+  /** \class TileInfo
    * Define a tile structure
    * \ingroup ITKImageGrid
    */
   class TileInfo
   {
-  public:
-    int                   m_ImageNumber{ -1 };
+public:
+    int                   m_ImageNumber;
     OutputImageRegionType m_Region;
-    TileInfo() = default;
+    TileInfo():m_ImageNumber(-1) {}
   };
 
-  using TileImageType = Image<TileInfo, Self::OutputImageDimension>;
+  typedef Image< TileInfo, itkGetStaticConstMacro(OutputImageDimension) > TileImageType;
 
   /** LayoutArray type. */
-  using LayoutArrayType = FixedArray<unsigned int, Self::OutputImageDimension>;
+  typedef FixedArray< unsigned int, itkGetStaticConstMacro(OutputImageDimension) > LayoutArrayType;
 
   /** Set/Get the layout of the tiles. If the last Layout value is 0,
-   * the filter will compute a value that will accommodate all of the
+   * the filter will compute a value that will acoomodate all of the
    * images. */
   itkSetMacro(Layout, LayoutArrayType);
   itkGetConstMacro(Layout, LayoutArrayType);
@@ -120,37 +120,37 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(OutputEqualityComparableCheck, (Concept::EqualityComparable<OutputPixelType>));
-  itkConceptMacro(SameTypeCheck, (Concept::SameType<InputPixelType, OutputPixelType>));
-  itkConceptMacro(OutputOStreamWritableCheck, (Concept::OStreamWritable<OutputPixelType>));
+  itkConceptMacro( OutputEqualityComparableCheck,
+                   ( Concept::EqualityComparable< OutputPixelType > ) );
+  itkConceptMacro( SameTypeCheck,
+                   ( Concept::SameType< InputPixelType, OutputPixelType > ) );
+  itkConceptMacro( OutputOStreamWritableCheck,
+                   ( Concept::OStreamWritable< OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
   TileImageFilter();
-  ~TileImageFilter() override = default;
+  // ~TileImageFilter(){} default implementation ok
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void
-  GenerateOutputInformation() override;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void
-  GenerateData() override;
+  void  GenerateData() ITK_OVERRIDE;
 
-  /** Override VerifyInputInformation() since this filter's inputs do
-   * not need to occupy the same physical space.
+  /** Override VeriyInputInformation() since this filter's inputs do
+   * not need to occoupy the same physical space.
    *
    * \sa ProcessObject::VerifyInputInformation
    */
-  void
-  VerifyInputInformation() ITKv5_CONST override;
+  void VerifyInputInformation() ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TileImageFilter);
+
   typename TileImageType::Pointer m_TileImage;
 
   OutputPixelType m_DefaultPixelValue;
@@ -160,7 +160,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkTileImageFilter.hxx"
+#include "itkTileImageFilter.hxx"
 #endif
 
 #endif

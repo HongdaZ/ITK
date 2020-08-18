@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,27 +24,26 @@
 // Explicit instantiation to make sure all methods are compiled.
 template class itk::Array<float>;
 
-int
-itkArrayTest(int, char *[])
+int itkArrayTest(int, char* [] )
 {
 
-  using FloatArrayType = itk::Array<float>;
-  using DoubleArrayType = itk::Array<double>;
+  typedef itk::Array<float>  FloatArrayType;
+  typedef itk::Array<double> DoubleArrayType;
 
   FloatArrayType  fa(10);
   DoubleArrayType da(10);
 
-  /**
-   * The following section tests the functionality of the Array's
-   * memory management.
-   */
+/**
+ * The following section tests the functionality of the Array's
+ * memory management.
+ */
 
   //
   // Create an itk::Array which manages its own memory
   //
   FloatArrayType myOwnBoss;
-  myOwnBoss.SetSize(5);
-  myOwnBoss.Fill(2.0 + 1.0f / 3.0f);
+  myOwnBoss.SetSize( 5 );
+  myOwnBoss.Fill( 2.0 + 1.0f / 3.0f);
   myOwnBoss[0] = 2.0f / 3.0f;
   myOwnBoss[1] = itk::NumericTraits<float>::max();
   myOwnBoss[2] = itk::NumericTraits<float>::min();
@@ -53,16 +52,16 @@ itkArrayTest(int, char *[])
   //
   // Create an itk::Array which does not manage its own memory
   //
-  constexpr unsigned int n = 7;
-  float                  buffer[n];
-  FloatArrayType         notMyOwnBoss;
-  notMyOwnBoss.SetSize(n);
-  notMyOwnBoss.SetData(buffer, false);
-  notMyOwnBoss.Fill(4.0);
+  const unsigned int n = 7;
+  float buffer[n];
+  FloatArrayType notMyOwnBoss;
+  notMyOwnBoss.SetSize( n );
+  notMyOwnBoss.SetData( buffer, false );
+  notMyOwnBoss.Fill( 4.0 );
 
   FloatArrayType notMyOwnBossToo;
-  notMyOwnBossToo.SetSize(n);
-  notMyOwnBossToo.SetData(buffer, false);
+  notMyOwnBossToo.SetSize( n );
+  notMyOwnBossToo.SetData( buffer, false );
 
   //
   // Copy an itk::Array which manages its own memory
@@ -90,14 +89,14 @@ itkArrayTest(int, char *[])
   // Calling SetSize with an argument same as the current
   // size
   //
-  notMyOwnBossToo.SetSize(notMyOwnBossToo.GetSize());
+  notMyOwnBossToo.SetSize( notMyOwnBossToo.GetSize() );
 
   //
   // Calling SetSize with an argument different to the current
   // size
   //
-  notMyOwnBossToo.SetSize(notMyOwnBossToo.GetSize() + 1);
-  notMyOwnBossToo.Fill(6.0);
+  notMyOwnBossToo.SetSize( notMyOwnBossToo.GetSize() + 1 );
+  notMyOwnBossToo.Fill( 6.0 );
   std::cout << notMyOwnBossToo << std::endl;
 
   // Exercise operator=( VnlVectorType& )
@@ -106,10 +105,10 @@ itkArrayTest(int, char *[])
   // Test the case where we construct an array that points
   // to a user allocated buffer where the user wants to
   // maintain responsibility for deleting the array.
-  constexpr size_t testSizeForArraySetDataSameSize = 10;
-  FloatArrayType   objectToCopy(testSizeForArraySetDataSameSize);
-  auto *           data = new float[testSizeForArraySetDataSameSize];
-  objectToCopy.SetDataSameSize(data); // This implicitly means LetArrayManageMemory=false
+  const size_t testSizeForArraySetDataSameSize=10;
+  FloatArrayType objectToCopy(testSizeForArraySetDataSameSize);
+  float* data = new float[testSizeForArraySetDataSameSize];
+  objectToCopy.SetDataSameSize(data); // This implictly means LetArrayManageMemory=false
 
   // Make a copy of the array which is not managing its own memory.
   FloatArrayType copy(objectToCopy);
@@ -119,8 +118,8 @@ itkArrayTest(int, char *[])
   // Create an itk::Array which manages its own memory
   //
   DoubleArrayType myOwnDouble;
-  myOwnDouble.SetSize(5);
-  myOwnDouble.Fill(2.0 + 1.0 / 3.0);
+  myOwnDouble.SetSize( 5 );
+  myOwnDouble.Fill( 2.0 + 1.0 / 3.0);
   myOwnDouble[0] = 2.0 / 3.0;
   myOwnDouble[1] = itk::NumericTraits<double>::max();
   myOwnDouble[2] = itk::NumericTraits<double>::min();
@@ -130,4 +129,5 @@ itkArrayTest(int, char *[])
   delete[] data;
 
   return EXIT_SUCCESS;
+
 }

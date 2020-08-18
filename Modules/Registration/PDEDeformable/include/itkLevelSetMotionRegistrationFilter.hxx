@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,13 +24,15 @@ namespace itk
 /**
  * Default constructor
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::LevelSetMotionRegistrationFilter()
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::LevelSetMotionRegistrationFilter()
 {
   typename LevelSetMotionFunctionType::Pointer drfp;
   drfp = LevelSetMotionFunctionType::New();
 
-  this->SetDifferenceFunction(static_cast<FiniteDifferenceFunctionType *>(drfp.GetPointer()));
+  this->SetDifferenceFunction( static_cast< FiniteDifferenceFunctionType * >(
+                                 drfp.GetPointer() ) );
 
   // By default, no regularization of the deformation field is
   // performed in LevelSetMotionRegistration
@@ -38,61 +40,68 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   this->SmoothUpdateFieldOff();
 }
 
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::PrintSelf(std::ostream & os,
-                                                                                           Indent         indent) const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
-  os << indent << "Intensity difference threshold: " << this->GetIntensityDifferenceThreshold() << std::endl;
-  os << indent << "Gradient magnitude threshold: " << this->GetGradientMagnitudeThreshold() << std::endl;
-  os << indent << "Gradient smoothing standard deviations: " << this->GetGradientSmoothingStandardDeviations()
-     << std::endl;
+  os << indent << "Intensity difference threshold: "
+     << this->GetIntensityDifferenceThreshold() << std::endl;
+  os << indent << "Gradient magnitude threshold: "
+     << this->GetGradientMagnitudeThreshold() << std::endl;
+  os << indent << "Gradient smoothing standard deviations: "
+     << this->GetGradientSmoothingStandardDeviations() << std::endl;
 }
 
 /*
  * Set the function state values before each iteration
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::InitializeIteration()
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::InitializeIteration()
 {
   // call the superclass  implementation
   Superclass::InitializeIteration();
 
   // set the gradient selection flag
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
-  drfp->SetUseImageSpacing(this->GetUseImageSpacing());
+  drfp->SetUseImageSpacing( this->GetUseImageSpacing() );
 
   //
   // Smooth the deformation field
   //
-  if (this->GetSmoothDisplacementField())
-  {
+  if ( this->GetSmoothDisplacementField() )
+    {
     this->SmoothDisplacementField();
-  }
+    }
 }
 
 /**
  * Get the metric value from the difference function
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 bool
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::Halt()
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::Halt()
 {
   // call the superclass' version
   bool halt = Superclass::Halt();
 
-  if ((this->m_RMSChange == 0.0) && (this->GetElapsedIterations() != 0))
-  {
+  if ( ( this->m_RMSChange == 0.0 ) && ( this->GetElapsedIterations() != 0 ) )
+    {
     halt = true;
-  }
+    }
 
   return halt;
 }
@@ -100,16 +109,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  * Get the metric value from the difference function
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 double
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetMetric() const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::GetMetric() const
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   return drfp->GetMetric();
 }
@@ -117,16 +130,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 double
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetAlpha() const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::GetAlpha() const
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   return drfp->GetAlpha();
 }
@@ -134,16 +151,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetAlpha(double alpha)
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::SetAlpha(double alpha)
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   drfp->SetAlpha(alpha);
 }
@@ -151,16 +172,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 double
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetIntensityDifferenceThreshold() const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::GetIntensityDifferenceThreshold() const
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   return drfp->GetIntensityDifferenceThreshold();
 }
@@ -168,17 +193,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetIntensityDifferenceThreshold(
-  double threshold)
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::SetIntensityDifferenceThreshold(double threshold)
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   drfp->SetIntensityDifferenceThreshold(threshold);
 }
@@ -186,16 +214,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 double
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetGradientMagnitudeThreshold() const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::GetGradientMagnitudeThreshold() const
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   return drfp->GetGradientMagnitudeThreshold();
 }
@@ -203,17 +235,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetGradientMagnitudeThreshold(
-  double threshold)
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::SetGradientMagnitudeThreshold(double threshold)
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   drfp->SetGradientMagnitudeThreshold(threshold);
 }
@@ -221,17 +256,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 double
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
-  GetGradientSmoothingStandardDeviations() const
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::GetGradientSmoothingStandardDeviations() const
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   return drfp->GetGradientSmoothingStandardDeviations();
 }
@@ -239,17 +277,20 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  *
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetGradientSmoothingStandardDeviations(
-  double sigma)
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::SetGradientSmoothingStandardDeviations(double sigma)
 {
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
   drfp->SetGradientSmoothingStandardDeviations(sigma);
 }
@@ -257,27 +298,31 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
 /**
  * Get the metric value from the difference function
  */
-template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
+template< typename TFixedImage, typename TMovingImage, typename TDisplacementField >
 void
-LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::ApplyUpdate(const TimeStepType & dt)
+LevelSetMotionRegistrationFilter< TFixedImage, TMovingImage, TDisplacementField >
+::ApplyUpdate(const TimeStepType& dt)
 {
   // If we smooth the update buffer before applying it, then the are
   // approximating a viscuous problem as opposed to an elastic problem
-  if (this->GetSmoothUpdateField())
-  {
+  if ( this->GetSmoothUpdateField() )
+    {
     this->SmoothUpdateField();
-  }
+    }
 
   this->Superclass::ApplyUpdate(dt);
 
-  auto * drfp = dynamic_cast<LevelSetMotionFunctionType *>(this->GetDifferenceFunction().GetPointer());
+  LevelSetMotionFunctionType *drfp =
+    dynamic_cast< LevelSetMotionFunctionType * >
+    ( this->GetDifferenceFunction().GetPointer() );
 
-  if (!drfp)
-  {
-    itkExceptionMacro(<< "Could not cast difference function to LevelSetMotionRegistrationFunction");
-  }
+  if ( !drfp )
+    {
+    itkExceptionMacro(
+      << "Could not cast difference function to LevelSetMotionRegistrationFunction");
+    }
 
-  this->SetRMSChange(drfp->GetRMSChange());
+  this->SetRMSChange( drfp->GetRMSChange() );
 }
 } // end namespace itk
 

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@
 #include "itkIsotropicFourthOrderLevelSetImageFilter.h"
 #include <iostream>
 
-int
-itkIsotropicFourthOrderLevelSetImageFilterTest(int, char *[])
+int itkIsotropicFourthOrderLevelSetImageFilterTest(int, char* [] )
 {
-  using ImageType = itk::Image<float, 2>;
-  using IndexType = ImageType::IndexType;
+  typedef itk::Image<float, 2> ImageType;
+  typedef ImageType::IndexType IndexType;
 
   ImageType::Pointer im_init = ImageType::New();
 
   ImageType::RegionType r;
-  ImageType::SizeType   sz = { { 128, 128 } };
-  ImageType::IndexType  idx = { { 0, 0 } };
+  ImageType::SizeType   sz = {{128, 128}};
+  ImageType::IndexType  idx = {{0,0}};
   r.SetSize(sz);
   r.SetIndex(idx);
 
@@ -40,28 +39,31 @@ itkIsotropicFourthOrderLevelSetImageFilterTest(int, char *[])
 
   IndexType index;
 
-  for (index[0] = 0; index[0] < 128; index[0]++)
-    for (index[1] = 0; index[1] < 128; index[1]++)
-    {
-      if ((index[0] >= 32) && (index[0] <= 96) && (index[1] >= 32) && (index[1] <= 96))
+  for ( index[0]=0; index[0] < 128; index[0]++ )
+    for ( index[1]=0; index[1] < 128; index[1]++ )
       {
-        im_init->SetPixel(index, static_cast<float>(-1));
-      }
-      else
-      {
-        im_init->SetPixel(index, static_cast<float>(1));
-      }
-    }
+      if ( (index[0]>=32) && (index[0]<=96) &&
+           (index[1]>=32) && (index[1]<=96) )
+        {
+        im_init->SetPixel (index, static_cast<float>(-1));
 
-  using FilterType = itk::IsotropicFourthOrderLevelSetImageFilter<ImageType, ImageType>;
+        }
+      else
+        {
+        im_init->SetPixel (index, static_cast<float>(1));
+        }
+      }
+
+  typedef itk::IsotropicFourthOrderLevelSetImageFilter<ImageType,
+    ImageType> FilterType;
   FilterType::Pointer filter = FilterType::New();
-  filter->SetMaxFilterIteration(250);
+  filter->SetMaxFilterIteration (250);
 
   filter->SetInput(im_init);
-  std::cout << "max iteration = " << (filter->GetMaxFilterIteration()) << "\n";
-  std::cout << "Starting processing.\n";
+  std::cout<<"max iteration = "<<(filter->GetMaxFilterIteration())<<"\n";
+  std::cout<<"Starting processing.\n";
   filter->Update();
   filter->Print(std::cout);
-  std::cout << "Passed.\n";
+  std::cout<<"Passed.\n";
   return EXIT_SUCCESS;
 }

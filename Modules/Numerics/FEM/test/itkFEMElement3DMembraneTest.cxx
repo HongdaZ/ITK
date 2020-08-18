@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@
 #include <iostream>
 
 //
-int
-itkFEMElement3DMembraneTest(int, char *[])
+int itkFEMElement3DMembraneTest(int, char *[])
 {
 
-  using ElementType = itk::fem::Element;
-  using NodeType = ElementType::Node;
+  typedef itk::fem::Element ElementType;
+  typedef ElementType::Node NodeType;
 
   NodeType::Pointer       n0, n1, n2, n3, n4, n5, n6, n7;
   ElementType::VectorType pt(3);
@@ -79,7 +78,7 @@ itkFEMElement3DMembraneTest(int, char *[])
   pt[2] = 1.;
   n7->SetCoordinates(pt);
 
-  using ElasticityType = itk::fem::MaterialLinearElasticity;
+  typedef itk::fem::MaterialLinearElasticity ElasticityType;
   ElasticityType::Pointer m = ElasticityType::New();
   m->SetGlobalNumber(0);
   m->SetYoungsModulus(10000.0);
@@ -87,7 +86,7 @@ itkFEMElement3DMembraneTest(int, char *[])
   m->SetMomentOfInertia(.004);
   m->SetPoissonsRatio(0.4);
 
-  using ElementMembraneType = itk::fem::Element3DC0LinearHexahedronMembrane;
+  typedef itk::fem::Element3DC0LinearHexahedronMembrane ElementMembraneType;
   ElementMembraneType::Pointer e0 = ElementMembraneType::New();
 
   e0->SetGlobalNumber(0);
@@ -99,10 +98,10 @@ itkFEMElement3DMembraneTest(int, char *[])
   e0->SetNode(5, n5);
   e0->SetNode(6, n6);
   e0->SetNode(7, n7);
-  if (dynamic_cast<ElasticityType *>(m.GetPointer()))
-  {
-    e0->SetMaterial(dynamic_cast<ElasticityType *>(m.GetPointer()));
-  }
+  if (  dynamic_cast<ElasticityType *>( m.GetPointer() ))
+    {
+    e0->SetMaterial( dynamic_cast<ElasticityType *>( m.GetPointer() ) );
+    }
 
   ElementType::MatrixType D, Me;
 

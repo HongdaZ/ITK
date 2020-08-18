@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,9 +22,20 @@
 
 namespace itk
 {
-template <unsigned int VDimension, typename TInput>
+template< unsigned int VDimension, typename TInput >
+InteriorExteriorSpatialFunction< VDimension, TInput >
+::InteriorExteriorSpatialFunction()
+{}
+
+template< unsigned int VDimension, typename TInput >
+InteriorExteriorSpatialFunction< VDimension, TInput >
+::~InteriorExteriorSpatialFunction()
+{}
+
+template< unsigned int VDimension, typename TInput >
 void
-InteriorExteriorSpatialFunction<VDimension, TInput>::PrintSelf(std::ostream & os, Indent indent) const
+InteriorExteriorSpatialFunction< VDimension, TInput >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

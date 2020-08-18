@@ -24,7 +24,7 @@ namespace gdcm
 class GDCM_EXPORT Spectroscopy
 {
 public:
-  Spectroscopy() = default;
+  Spectroscopy() {}
 
 private:
 };

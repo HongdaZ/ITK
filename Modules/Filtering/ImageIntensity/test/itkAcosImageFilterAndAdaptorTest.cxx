@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,37 +20,38 @@
 #include "itkAcosImageAdaptor.h"
 #include "itkMath.h"
 #include "itkSubtractImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 #include "itkTestingMacros.h"
 
 
-int
-itkAcosImageFilterAndAdaptorTest(int, char *[])
+int itkAcosImageFilterAndAdaptorTest( int, char* [] )
 {
 
   // Define the dimension of the images
-  constexpr unsigned int ImageDimension = 3;
+  const unsigned int ImageDimension = 3;
 
   // Declare the pixel types of the images
-  using PixelType = float;
+  typedef float                PixelType;
 
   // Declare the types of the images
-  using InputImageType = itk::Image<PixelType, ImageDimension>;
-  using OutputImageType = itk::Image<PixelType, ImageDimension>;
+  typedef itk::Image< PixelType, ImageDimension > InputImageType;
+  typedef itk::Image< PixelType, ImageDimension > OutputImageType;
 
   // Declare appropriate Iterator types for each image
-  using InputIteratorType = itk::ImageRegionIteratorWithIndex<InputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  InputImageType >  InputIteratorType;
 
-  using OutputIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
+  typedef itk::ImageRegionIteratorWithIndex<
+                                  OutputImageType > OutputIteratorType;
 
   // Declare the type of the index to access images
-  using IndexType = itk::Index<ImageDimension>;
+  typedef itk::Index< ImageDimension >         IndexType;
 
   // Declare the type of the size
-  using SizeType = itk::Size<ImageDimension>;
+  typedef itk::Size< ImageDimension >          SizeType;
 
   // Declare the type of the Region
-  using RegionType = itk::ImageRegion<ImageDimension>;
+  typedef itk::ImageRegion< ImageDimension >   RegionType;
 
   // Create the input image
   InputImageType::Pointer inputImage = InputImageType::New();
@@ -67,39 +68,41 @@ itkAcosImageFilterAndAdaptorTest(int, char *[])
   start[2] = 0;
 
   RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image A
-  inputImage->SetRegions(region);
+  inputImage->SetRegions( region );
   inputImage->Allocate();
 
   // Create one iterator for the Input Image (this is a light object)
-  InputIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  InputIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image A
-  const double pi = std::atan(1.0) * 4.0;
+  const double pi    = std::atan( 1.0 ) * 4.0;
   const double value = pi / 6.0;
   it.GoToBegin();
-  while (!it.IsAtEnd())
+  while( !it.IsAtEnd() )
   {
-    it.Set(value);
+    it.Set( value );
     ++it;
   }
 
   // Declare the type for the Acos filter
-  using FilterType = itk::AcosImageFilter<InputImageType, OutputImageType>;
+  typedef itk::AcosImageFilter< InputImageType, OutputImageType > FilterType;
 
   // Create the Filter
   FilterType::Pointer filter = FilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, AcosImageFilter, UnaryGeneratorImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( filter, AcosImageFilter,
+    UnaryFunctorImageFilter );
 
-  itk::SimpleFilterWatcher watch(filter);
+  FilterWatcher watch(filter);
 
   // Set the input image
-  filter->SetInput(inputImage);
+  filter->SetInput( inputImage );
 
+  filter->SetFunctor( filter->GetFunctor() );
 
   // Execute the filter
   filter->Update();
@@ -108,49 +111,54 @@ itkAcosImageFilterAndAdaptorTest(int, char *[])
   OutputImageType::Pointer outputImage = filter->GetOutput();
 
   // Create an iterator for going through the image output
-  OutputIteratorType ot(outputImage, outputImage->GetRequestedRegion());
+  OutputIteratorType ot( outputImage, outputImage->GetRequestedRegion() );
 
   // Check the content of the result image
   const OutputImageType::PixelType epsilon = 1e-6;
   ot.GoToBegin();
   it.GoToBegin();
-  while (!ot.IsAtEnd())
-  {
-    const InputImageType::PixelType  input = it.Get();
-    const OutputImageType::PixelType output = ot.Get();
-    const OutputImageType::PixelType arccosinus = std::acos(input);
-    if (!itk::Math::FloatAlmostEqual(arccosinus, output, 10, epsilon))
+  while( !ot.IsAtEnd() )
     {
-      std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
+    const InputImageType::PixelType  input  = it.Get();
+    const OutputImageType::PixelType output = ot.Get();
+    const OutputImageType::PixelType arccosinus  = std::acos(input);
+    if( !itk::Math::FloatAlmostEqual( arccosinus, output, 10, epsilon ) )
+      {
+      std::cerr.precision( static_cast< int >( itk::Math::abs( std::log10( epsilon ) ) ) );
       std::cerr << "Error " << std::endl;
       std::cerr << " std::acos( " << input << ") = " << arccosinus << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++ot;
     ++it;
-  }
+    }
 
 
   //
   // Test the itk::AcosImageAdaptor
   //
 
-  using AdaptorType = itk::AcosImageAdaptor<InputImageType, OutputImageType::PixelType>;
+  typedef itk::AcosImageAdaptor< InputImageType,
+                          OutputImageType::PixelType > AdaptorType;
 
   AdaptorType::Pointer acosAdaptor = AdaptorType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(acosAdaptor, AcosImageAdaptor, ImageAdaptor);
+  EXERCISE_BASIC_OBJECT_METHODS( acosAdaptor, AcosImageAdaptor,
+    ImageAdaptor );
 
-  acosAdaptor->SetImage(inputImage);
+  acosAdaptor->SetImage( inputImage );
 
-  using DiffFilterType = itk::SubtractImageFilter<OutputImageType, AdaptorType, OutputImageType>;
+  typedef itk::SubtractImageFilter<
+                        OutputImageType,
+                        AdaptorType,
+                        OutputImageType > DiffFilterType;
 
   DiffFilterType::Pointer diffFilter = DiffFilterType::New();
 
-  diffFilter->SetInput1(outputImage);
-  diffFilter->SetInput2(acosAdaptor);
+  diffFilter->SetInput1( outputImage );
+  diffFilter->SetInput2( acosAdaptor );
 
   diffFilter->Update();
 
@@ -161,23 +169,23 @@ itkAcosImageFilterAndAdaptorTest(int, char *[])
   //
 
   // Create an iterator for going through the image output
-  OutputIteratorType dt(diffImage, diffImage->GetRequestedRegion());
+  OutputIteratorType dt( diffImage, diffImage->GetRequestedRegion() );
 
   dt.GoToBegin();
-  while (!dt.IsAtEnd())
-  {
-    const OutputImageType::PixelType diff = dt.Get();
-    if (std::fabs(diff) > epsilon)
+  while( !dt.IsAtEnd() )
     {
-      std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
+    const OutputImageType::PixelType diff = dt.Get();
+    if( std::fabs( diff ) > epsilon )
+      {
+      std::cerr.precision( static_cast< int >( itk::Math::abs( std::log10( epsilon ) ) ) );
       std::cerr << "Error comparing results with Adaptors" << std::endl;
       std::cerr << " difference = " << diff << std::endl;
       std::cerr << " differs from 0 ";
       std::cerr << " by more than " << epsilon << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     ++dt;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

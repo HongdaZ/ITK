@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@
 #include <iostream>
 
 
-int
-itkVersionTest(int, char *[])
+int itkVersionTest( int, char* [] )
 {
   int testPassStatus = EXIT_SUCCESS;
 
   itk::Version::Pointer version = itk::Version::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(version, Version, Object);
+  EXERCISE_BASIC_OBJECT_METHODS( version, Version, Object );
 
   const char * itkVersion = itk::Version::GetITKVersion();
   std::cout << "itk version: " << itkVersion << std::endl;

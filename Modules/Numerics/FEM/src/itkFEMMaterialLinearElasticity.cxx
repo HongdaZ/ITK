@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,19 +23,18 @@ namespace itk
 namespace fem
 {
 // Overload the CreateAnother() method
-::itk::LightObject::Pointer
-MaterialLinearElasticity::CreateAnother() const
+::itk::LightObject::Pointer MaterialLinearElasticity::CreateAnother(void) const
 {
   ::itk::LightObject::Pointer smartPtr;
-  Pointer                     copyPtr = Self::New();
+  Pointer copyPtr = Self::New();
 
-  copyPtr->SetYoungsModulus(this->GetYoungsModulus());
-  copyPtr->SetCrossSectionalArea(this->GetCrossSectionalArea());
-  copyPtr->SetMomentOfInertia(this->GetMomentOfInertia());
-  copyPtr->SetPoissonsRatio(this->GetPoissonsRatio());
-  copyPtr->SetThickness(this->GetThickness());
-  copyPtr->SetDensityHeatProduct(this->GetDensityHeatProduct());
-  copyPtr->SetGlobalNumber(this->GetGlobalNumber());
+  copyPtr->SetYoungsModulus( this->GetYoungsModulus() );
+  copyPtr->SetCrossSectionalArea( this->GetCrossSectionalArea() );
+  copyPtr->SetMomentOfInertia( this->GetMomentOfInertia() );
+  copyPtr->SetPoissonsRatio( this->GetPoissonsRatio() );
+  copyPtr->SetThickness( this->GetThickness() );
+  copyPtr->SetDensityHeatProduct( this->GetDensityHeatProduct() );
+  copyPtr->SetGlobalNumber( this->GetGlobalNumber() );
 
   smartPtr = static_cast<Pointer>(copyPtr);
 
@@ -45,82 +44,77 @@ MaterialLinearElasticity::CreateAnother() const
 /**
  * Default constructor
  */
-MaterialLinearElasticity::MaterialLinearElasticity() = default;
+MaterialLinearElasticity::MaterialLinearElasticity() :
+  m_YoungModulus(100.0),
+  m_CrossSectionalArea(1.0),
+  m_MomentOfInertia(1.0),
+  m_PoissonRatio(0.2),
+  m_Thickness(1.0),
+  m_DensityHeatCapacity(1.0)
+{
+}
 
-void
-MaterialLinearElasticity::SetCrossSectionalArea(double a)
+void MaterialLinearElasticity::SetCrossSectionalArea(double a)
 {
   this->m_CrossSectionalArea = a;
 }
 
-double
-MaterialLinearElasticity::GetCrossSectionalArea() const
+double MaterialLinearElasticity::GetCrossSectionalArea() const
 {
   return this->m_CrossSectionalArea;
 }
 
-void
-MaterialLinearElasticity::SetYoungsModulus(double y)
+void MaterialLinearElasticity::SetYoungsModulus(double y)
 {
   this->m_YoungModulus = y;
 }
 
-double
-MaterialLinearElasticity::GetYoungsModulus() const
+double MaterialLinearElasticity::GetYoungsModulus() const
 {
   return this->m_YoungModulus;
 }
 
-void
-MaterialLinearElasticity::SetThickness(double t)
+void MaterialLinearElasticity::SetThickness(double t)
 {
   this->m_Thickness = t;
 }
 
-double
-MaterialLinearElasticity::GetThickness() const
+double MaterialLinearElasticity::GetThickness() const
 {
   return this->m_Thickness;
 }
 
-void
-MaterialLinearElasticity::SetMomentOfInertia(double i)
+void MaterialLinearElasticity::SetMomentOfInertia(double i)
 {
   this->m_MomentOfInertia = i;
 }
 
-double
-MaterialLinearElasticity::GetMomentOfInertia() const
+double MaterialLinearElasticity::GetMomentOfInertia() const
 {
   return this->m_MomentOfInertia;
 }
 
-void
-MaterialLinearElasticity::SetPoissonsRatio(double pr)
+void MaterialLinearElasticity::SetPoissonsRatio(double pr)
 {
   this->m_PoissonRatio = pr;
 }
 
-double
-MaterialLinearElasticity::GetPoissonsRatio() const
+double MaterialLinearElasticity::GetPoissonsRatio() const
 {
   return this->m_PoissonRatio;
 }
 
-void
-MaterialLinearElasticity::SetDensityHeatProduct(double dhp)
+void MaterialLinearElasticity::SetDensityHeatProduct(double dhp)
 {
   this->m_DensityHeatCapacity = dhp;
 }
 
-double
-MaterialLinearElasticity::GetDensityHeatProduct() const
+double MaterialLinearElasticity::GetDensityHeatProduct() const
 {
   return this->m_DensityHeatCapacity;
 }
 
-void
-MaterialLinearElasticity::PrintSelf(std::ostream & os, Indent indent) const
+void MaterialLinearElasticity::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Young Modulus: " << this->m_YoungModulus << std::endl;
@@ -131,5 +125,5 @@ MaterialLinearElasticity::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Density Heat Capacity: " << this->m_DensityHeatCapacity << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+}
+}  // end namespace itk::fem

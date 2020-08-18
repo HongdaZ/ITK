@@ -15,7 +15,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7-stretch
+      - image: circleci/python:2.7.16-stretch
     working_directory: ~/
     resource_class: medium
     branches:
@@ -38,7 +38,6 @@ jobs:
           keys:
             - ccache-{{ arch }}-{{ .Branch }}
             - ccache-{{ arch }}-master
-            - ccache-{{ arch }}
       - run:
           name: Cloning dashboard branch
           command: |
@@ -48,7 +47,7 @@ jobs:
           command: |
             sudo apt-get install -y  rsync ninja-build ccache
             sudo pip install --upgrade pip
-            sudo pip install cmake==3.11.4 scikit-ci-addons
+            sudo pip install cmake==3.7.2 scikit-ci-addons
       - run:
           name: CCache initialization
           command: |
@@ -59,18 +58,16 @@ jobs:
       - run:
           name: Build and Testing with CTest
           environment:
-            ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS: 2
+            ITK_GLOBAL_DEFAULT_NUMBER_OF_THREAD: 2
             CTEST_OUTPUT_ON_FAILURE: 1
             CTEST_CONFIGURATION_TYPE: "Release"
-            CTEST_BUILD_FLAGS: "-j 2"
-            PARALLEL_LEVEL: 2
+            CTEST_BUILD_FLAGS: "-j 5"
+            PARALLEL_LEVEL: 4
             CTEST_CMAKE_GENERATOR: "Ninja"
           command: |
             export PATH=/usr/lib/ccache:${PATH}
             mkdir -p ${CTEST_BINARY_DIRECTORY}
-            ctest -V -Ddashboard_no_clean:BOOL=1 \
-              -DCTEST_CUSTOM_WARNING_EXCEPTION:STRING="itkIndex.h:.*warning: array subscript is above array bounds" \
-              -S "${DASHBOARD_BRANCH_DIRECTORY}/circleci.cmake"
+            ctest -V -Ddashboard_no_clean:BOOL=1 -S "${DASHBOARD_BRANCH_DIRECTORY}/circleci.cmake"
       - run:
           name: ccache stats
           when: always

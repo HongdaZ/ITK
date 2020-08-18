@@ -90,15 +90,14 @@ protected:
   bool AddFile(FileWithName &header);
   void AddRestriction(const Tag& tag);
   bool ImagePositionPatientOrdering(FileList *fileSet);
-  bool ImageNumberOrdering( FileList *fileList );
   bool FileNameOrdering( FileList *fileList );
 
-  using Rule = struct RuleStructure{
+  typedef struct {
     uint16_t group;
     uint16_t elem;
     std::string value;
     int op;
-  };
+  } Rule;
   typedef std::vector<Rule> SerieRestrictions;
 
   typedef std::map<std::string, FileList *> SingleSerieUIDFileSetmap;

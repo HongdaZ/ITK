@@ -230,7 +230,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, std::istream & infile, bool flag)
    * This makes it unsafe to use this manager and a different source
    * manager serially with the same JPEG object.  Caveat programmer.
    */
-  if (cinfo->src == nullptr) {  /* first time for this JPEG object? */
+  if (cinfo->src == NULL) {  /* first time for this JPEG object? */
     cinfo->src = (struct jpeg_source_mgr *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
           SIZEOF(my_source_mgr));
@@ -250,7 +250,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, std::istream & infile, bool flag)
   if( flag )
     {
     src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
-    src->pub.next_input_byte = nullptr; /* until buffer loaded */
+    src->pub.next_input_byte = NULL; /* until buffer loaded */
     }
 }
 
@@ -272,7 +272,7 @@ typedef struct my_error_mgr* my_error_ptr;
 class JPEGInternals
 {
 public:
-  JPEGInternals():cinfo(),jerr(),StateSuspension(0),SampBuffer(nullptr) {}
+  JPEGInternals():cinfo(),jerr(),StateSuspension(0),SampBuffer(0) {}
   jpeg_decompress_struct cinfo;
   jpeg_compress_struct cinfo_comp;
   my_error_mgr jerr;
@@ -463,10 +463,10 @@ bool JPEGBITSCodec::GetHeaderInfo(std::istream &is, TransferSyntax &ts)
       {
       assert( cinfo.num_components == 3 );
       PI = PhotometricInterpretation::YBR_FULL_422;
-      if( cinfo.process == JPROC_LOSSLESS )
-        PI = PhotometricInterpretation::RGB; // wotsit ?
+  if( cinfo.process == JPROC_LOSSLESS )
+      PI = PhotometricInterpretation::RGB; // wotsit ?
       this->PF.SetSamplesPerPixel( 3 );
-      this->PlanarConfiguration = 1;
+  this->PlanarConfiguration = 1;
       }
     else if( cinfo.jpeg_color_space == JCS_CMYK )
       {
@@ -1139,7 +1139,7 @@ jpeg_stdio_dest (j_compress_ptr cinfo, /*FILE * */ std::ostream * outfile)
    * manager serially with the same JPEG object, because their private object
    * sizes may be different.  Caveat programmer.
    */
-  if (cinfo->dest == nullptr) {  /* first time for this JPEG object? */
+  if (cinfo->dest == NULL) {  /* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
           SIZEOF(my_destination_mgr));
@@ -1161,7 +1161,7 @@ bool JPEGBITSCodec::InternalCode(const char* input, unsigned long len, std::ostr
 {
   int quality = 100; (void)len;
   (void)quality;
-  JSAMPLE * image_buffer = (JSAMPLE*)(void*)const_cast<char*>(input);  /* Points to large array of R,G,B-order data */
+  JSAMPLE * image_buffer = (JSAMPLE*)input;  /* Points to large array of R,G,B-order data */
   const unsigned int *dims = this->GetDimensions();
   int image_height = dims[1];  /* Number of rows in image */
   int image_width = dims[0];    /* Number of columns in image */
@@ -1363,7 +1363,7 @@ bool JPEGBITSCodec::InternalCode(const char* input, unsigned long len, std::ostr
 bool JPEGBITSCodec::EncodeBuffer(std::ostream &os, const char *data, size_t datalen)
 {
   (void)datalen;
-  JSAMPLE * image_buffer = (JSAMPLE*)(void*)const_cast<char*>(data);  /* Points to large array of R,G,B-order data */
+  JSAMPLE * image_buffer = (JSAMPLE*)data;  /* Points to large array of R,G,B-order data */
   const unsigned int *dims = this->GetDimensions();
   int image_height = dims[1];  /* Number of rows in image */
   int image_width = dims[0];    /* Number of columns in image */

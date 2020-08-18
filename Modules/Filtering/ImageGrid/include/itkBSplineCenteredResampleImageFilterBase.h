@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@
 namespace itk
 {
 
-/**
- *\class BSplineCenteredResampleImageFilterBase
+/** \class BSplineCenteredResampleImageFilterBase
  * \brief Evaluates the Centered B-Spline interpolation of an image.  Spline order may be from 0 to 5.
  *
  * This class defines N-Dimension CenteredB-Spline transformation.
@@ -61,18 +60,16 @@ namespace itk
  *               Requires the same order of Spline for each dimension.
  * \ingroup ITKImageGrid
  */
-template <typename TInputImage, typename TOutputImage>
-class ITK_TEMPLATE_EXPORT BSplineCenteredResampleImageFilterBase
-  : public BSplineResampleImageFilterBase<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ITK_TEMPLATE_EXPORT BSplineCenteredResampleImageFilterBase:
+  public BSplineResampleImageFilterBase< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineCenteredResampleImageFilterBase);
-
-  /** Standard class type aliases. */
-  using Self = BSplineCenteredResampleImageFilterBase;
-  using Superclass = BSplineResampleImageFilterBase<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef BSplineCenteredResampleImageFilterBase                      Self;
+  typedef BSplineResampleImageFilterBase< TInputImage, TOutputImage > Superclass;
+  typedef SmartPointer< Self >                                        Pointer;
+  typedef SmartPointer< const Self >                                  ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(BSplineCenteredResampleImageFilterBase, BSplineResampleImageFilterBase);
@@ -80,44 +77,47 @@ public:
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);
 
-  /** OutputImagePixelType type alias support */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  /** OutputImagePixelType typedef support. */
+  typedef typename Superclass::OutputImagePixelType OutputImagePixelType;
 
-  /** OutputImageIterator type alias support */
-  using OutputImageIterator = typename Superclass::OutputImageIterator;
-
-protected:
-  void
-  InitializePyramidSplineFilter(int SplineOrder) override;
-
-  void
-  Reduce1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
-                ProgressReporter &          progress) override;
-
-  void
-  Expand1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
-                ProgressReporter &          progress) override;
+  /** OutputImageIterator typedef support. */
+  typedef typename Superclass::OutputImageIterator OutputImageIterator;
 
 protected:
-  BSplineCenteredResampleImageFilterBase() = default;
-  ~BSplineCenteredResampleImageFilterBase() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+
+  virtual void InitializePyramidSplineFilter(int SplineOrder) ITK_OVERRIDE;
+
+  virtual void Reduce1DImage(
+    const std::vector< double > & In,
+    OutputImageIterator & Iter,
+    unsigned int traverseSize,
+    ProgressReporter & progress
+    ) ITK_OVERRIDE;
+
+  virtual void Expand1DImage(
+    const std::vector< double > & In,
+    OutputImageIterator & Iter,
+    unsigned int traverseSize,
+    ProgressReporter & progress
+    ) ITK_OVERRIDE;
+
+protected:
+  BSplineCenteredResampleImageFilterBase();
+  virtual ~BSplineCenteredResampleImageFilterBase() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  using IndexValueType = typename TInputImage::IndexValueType;
-  using SizeValueType = typename TInputImage::SizeValueType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineCenteredResampleImageFilterBase);
+
+  typedef typename TInputImage::IndexValueType    IndexValueType;
+  typedef typename TInputImage::SizeValueType     SizeValueType;
 
   // implemented
 };
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkBSplineCenteredResampleImageFilterBase.hxx"
+#include "itkBSplineCenteredResampleImageFilterBase.hxx"
 #endif
 
 #endif

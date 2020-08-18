@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,21 +24,23 @@ namespace itk
 /**
  * Standard CellInterface:
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-QuadraticEdgeCell<TCellInterface>::MakeCopy(CellAutoPointer & cellPointer) const
+QuadraticEdgeCell< TCellInterface >
+::MakeCopy(CellAutoPointer & cellPointer) const
 {
   cellPointer.TakeOwnership(new Self);
-  cellPointer->SetPointIds(this->GetPointIds());
+  cellPointer->SetPointIds( this->GetPointIds() );
 }
 
 /**
  * Standard CellInterface:
  * Get the topological dimension of this cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 unsigned int
-QuadraticEdgeCell<TCellInterface>::GetDimension() const
+QuadraticEdgeCell< TCellInterface >
+::GetDimension(void) const
 {
   return Self::CellDimension;
 }
@@ -47,9 +49,10 @@ QuadraticEdgeCell<TCellInterface>::GetDimension() const
  * Standard CellInterface:
  * Get the number of points required to define the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 unsigned int
-QuadraticEdgeCell<TCellInterface>::GetNumberOfPoints() const
+QuadraticEdgeCell< TCellInterface >
+::GetNumberOfPoints(void) const
 {
   return Self::NumberOfPoints;
 }
@@ -58,17 +61,18 @@ QuadraticEdgeCell<TCellInterface>::GetNumberOfPoints() const
  * Standard CellInterface:
  * Get the number of boundary entities of the given dimension.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::CellFeatureCount
-QuadraticEdgeCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::CellFeatureCount
+QuadraticEdgeCell< TCellInterface >
+::GetNumberOfBoundaryFeatures(int dimension) const
 {
-  switch (dimension)
-  {
+  switch ( dimension )
+    {
     case 0:
       return GetNumberOfVertices();
     default:
       return 0;
-  }
+    }
 }
 
 /**
@@ -77,27 +81,27 @@ QuadraticEdgeCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) co
  * cell feature Id.
  * The Id can range from 0 to GetNumberOfBoundaryFeatures(dimension)-1.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 bool
-QuadraticEdgeCell<TCellInterface>::GetBoundaryFeature(int                   dimension,
-                                                      CellFeatureIdentifier featureId,
-                                                      CellAutoPointer &     cellPointer)
+QuadraticEdgeCell< TCellInterface >
+::GetBoundaryFeature(int dimension, CellFeatureIdentifier featureId,
+                     CellAutoPointer & cellPointer)
 {
-  switch (dimension)
-  {
-    case 0:
+  switch ( dimension )
     {
-      VertexAutoPointer vertexPointer;
-      if (this->GetVertex(featureId, vertexPointer))
+    case 0:
       {
+      VertexAutoPointer vertexPointer;
+      if ( this->GetVertex(featureId, vertexPointer) )
+        {
         TransferAutoPointer(cellPointer, vertexPointer);
         return true;
-      }
+        }
       break;
-    }
+      }
     default:
-      break; // just fall through
-  }
+      break; //just fall through
+    }
   cellPointer.Reset();
   return false;
 }
@@ -108,16 +112,17 @@ QuadraticEdgeCell<TCellInterface>::GetBoundaryFeature(int                   dime
  * iterator can be incremented and safely de-referenced enough times to
  * get all the point ids needed by the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-QuadraticEdgeCell<TCellInterface>::SetPointIds(PointIdConstIterator first)
+QuadraticEdgeCell< TCellInterface >
+::SetPointIds(PointIdConstIterator first)
 {
   PointIdConstIterator ii(first);
 
-  for (unsigned int i = 0; i < Self::NumberOfPoints; ++i)
-  {
+  for ( unsigned int i = 0; i < Self::NumberOfPoints; ++i )
+    {
     m_PointIds[i] = *ii++;
-  }
+    }
 }
 
 /**
@@ -127,26 +132,28 @@ QuadraticEdgeCell<TCellInterface>::SetPointIds(PointIdConstIterator first)
  * define the cell.  The position *last is NOT referenced, so it can safely
  * be one beyond the end of an array or other container.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-QuadraticEdgeCell<TCellInterface>::SetPointIds(PointIdConstIterator first, PointIdConstIterator last)
+QuadraticEdgeCell< TCellInterface >
+::SetPointIds(PointIdConstIterator first, PointIdConstIterator last)
 {
   int                  localId = 0;
   PointIdConstIterator ii(first);
 
-  while (ii != last)
-  {
+  while ( ii != last )
+    {
     m_PointIds[localId++] = *ii++;
-  }
+    }
 }
 
 /**
  * Standard CellInterface:
  * Set an individual point identifier in the cell.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-QuadraticEdgeCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
+QuadraticEdgeCell< TCellInterface >
+::SetPointId(int localId, PointIdentifier ptId)
 {
   m_PointIds[localId] = ptId;
 }
@@ -155,9 +162,10 @@ QuadraticEdgeCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Standard CellInterface:
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::PointIdIterator
-QuadraticEdgeCell<TCellInterface>::PointIdsBegin()
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::PointIdIterator
+QuadraticEdgeCell< TCellInterface >
+::PointIdsBegin(void)
 {
   return &m_PointIds[0];
 }
@@ -167,9 +175,10 @@ QuadraticEdgeCell<TCellInterface>::PointIdsBegin()
  * Get a const begin iterator to the list of point identifiers used
  * by the cell.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::PointIdConstIterator
-QuadraticEdgeCell<TCellInterface>::PointIdsBegin() const
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::PointIdConstIterator
+QuadraticEdgeCell< TCellInterface >
+::PointIdsBegin(void) const
 {
   return &m_PointIds[0];
 }
@@ -178,9 +187,10 @@ QuadraticEdgeCell<TCellInterface>::PointIdsBegin() const
  * Standard CellInterface:
  * Get an end iterator to the list of point identifiers used by the cell.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::PointIdIterator
-QuadraticEdgeCell<TCellInterface>::PointIdsEnd()
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::PointIdIterator
+QuadraticEdgeCell< TCellInterface >
+::PointIdsEnd(void)
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -190,9 +200,10 @@ QuadraticEdgeCell<TCellInterface>::PointIdsEnd()
  * Get a const end iterator to the list of point identifiers used
  * by the cell.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::PointIdConstIterator
-QuadraticEdgeCell<TCellInterface>::PointIdsEnd() const
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::PointIdConstIterator
+QuadraticEdgeCell< TCellInterface >
+::PointIdsEnd(void) const
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -201,9 +212,10 @@ QuadraticEdgeCell<TCellInterface>::PointIdsEnd() const
  * QuadraticEdge-specific:
  * Get the number of vertices for this line.
  */
-template <typename TCellInterface>
-typename QuadraticEdgeCell<TCellInterface>::CellFeatureCount
-QuadraticEdgeCell<TCellInterface>::GetNumberOfVertices() const
+template< typename TCellInterface >
+typename QuadraticEdgeCell< TCellInterface >::CellFeatureCount
+QuadraticEdgeCell< TCellInterface >
+::GetNumberOfVertices(void) const
 {
   return Self::NumberOfVertices;
 }
@@ -213,32 +225,35 @@ QuadraticEdgeCell<TCellInterface>::GetNumberOfVertices() const
  * Get the vertex specified by the given cell feature Id.
  * The Id can range from 0 to GetNumberOfVertices()-1.
  */
-template <typename TCellInterface>
+template< typename TCellInterface >
 bool
-QuadraticEdgeCell<TCellInterface>::GetVertex(CellFeatureIdentifier vertexId, VertexAutoPointer & vertexPointer)
+QuadraticEdgeCell< TCellInterface >
+::GetVertex(CellFeatureIdentifier vertexId, VertexAutoPointer & vertexPointer)
 {
-  auto * vert = new VertexType;
+  VertexType *vert = new VertexType;
 
   vert->SetPointId(0, m_PointIds[vertexId]);
   vertexPointer.TakeOwnership(vert);
   return true;
 }
 
-template <typename TCellInterface>
+template< typename TCellInterface >
 void
-QuadraticEdgeCell<TCellInterface>::EvaluateShapeFunctions(const ParametricCoordArrayType & parametricCoordinates,
-                                                          ShapeFunctionsArrayType &        weights) const
+QuadraticEdgeCell< TCellInterface >
+::EvaluateShapeFunctions(
+  const ParametricCoordArrayType & parametricCoordinates,
+  ShapeFunctionsArrayType  & weights) const
 {
   CoordRepType x = parametricCoordinates[0]; // one-dimensional cell
 
-  if (weights.Size() != this->GetNumberOfPoints())
-  {
-    weights = ShapeFunctionsArrayType(this->GetNumberOfPoints());
-  }
+  if ( weights.Size() != this->GetNumberOfPoints() )
+    {
+    weights = ShapeFunctionsArrayType( this->GetNumberOfPoints() );
+    }
 
-  weights[0] = (2 * x - 1.0) * (x - 1.0);
-  weights[1] = (2 * x - 1.0) * (x);
-  weights[2] = 4 * (1.0 - x) * (x);
+  weights[0] =     ( 2 * x - 1.0 ) * ( x - 1.0 );
+  weights[1] =     ( 2 * x - 1.0 ) * ( x     );
+  weights[2] = 4 * ( 1.0 -   x ) * ( x     );
 }
 } // end namespace itk
 

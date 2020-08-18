@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,45 +37,37 @@ namespace itk
  * \ingroup ITKImageAdaptors
  */
 
-template <typename T>
+template< typename T >
 class GreenPixelAccessor
 {
 public:
-  /** Standard class type aliases. */
-  using Self = GreenPixelAccessor;
+  /** Standard class typedefs. */
+  typedef   GreenPixelAccessor Self;
 
-  /** External type alias. It defines the external aspect
+  /** External typedef. It defines the external aspect
    * that this class will exhibit */
-  using ExternalType = T;
+  typedef T ExternalType;
 
-  /** Internal type alias. It defines the internal real
+  /** Internal typedef. It defines the internal real
    * representation of data */
-  using InternalType = RGBPixel<T>;
+  typedef     RGBPixel< T > InternalType;
 
   /** Write access to the Green component */
-  inline void
-  Set(InternalType & output, const ExternalType & input) const
-  {
-    output.SetGreen(input);
-  }
+  inline void Set(InternalType & output, const ExternalType & input) const
+  { output.SetGreen(input); }
 
   /** Read access to the Green component */
-  inline const ExternalType &
-  Get(const InternalType & input) const
-  {
-    return input.GetGreen();
-  }
+  inline const ExternalType & Get(const InternalType & input) const
+  { return input.GetGreen(); }
 
-  bool
-  operator!=(const Self &) const
+  bool operator!=(const Self & ) const
   {
     return false;
   }
 
-  bool
-  operator==(const Self & other) const
+  bool operator==(const Self & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 };
 } // end namespace itk

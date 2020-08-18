@@ -54,7 +54,7 @@ const char* UUIDGenerator::Generate()
 #elif defined(HAVE_UUIDCREATE)
   UUID uuid;
   UuidCreate(&uuid);
-  unsigned char * str = 0;
+  BYTE * str = 0;
   UuidToString(&uuid, &str);
   Unique = (char*)str;
   RpcStringFree(&str);

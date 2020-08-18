@@ -35,10 +35,10 @@ public:
 
   SegmentReader();
 
-  ~SegmentReader() override;
+  virtual ~SegmentReader();
 
   /// Read
-  bool Read() override; // Set to protected ?
+  virtual bool Read(); // Set to protected ?
 
   //**        Segment getters/setters     **//
   const SegmentVector GetSegments() const;

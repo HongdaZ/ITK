@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -58,17 +58,16 @@
 #include "itkImageFileWriter.h"
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char *argv[] )
 {
-  if (argc < 7)
-  {
+  if( argc < 7 )
+    {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputImage  outputImage seedX1 seedY1";
     std::cerr << " lowerThreshold seedX2 seedY2" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
 
   //  Software Guide : BeginLatex
@@ -79,34 +78,36 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InternalPixelType = float;
-  constexpr unsigned int Dimension = 2;
-  using InternalImageType = itk::Image<InternalPixelType, Dimension>;
+  typedef   float           InternalPixelType;
+  const     unsigned int    Dimension = 2;
+  typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
   // Software Guide : EndCodeSnippet
 
 
-  using OutputPixelType = unsigned char;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using CastingFilterType = itk::CastImageFilter<InternalImageType, OutputImageType>;
+  typedef unsigned char                            OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CastImageFilter< InternalImageType, OutputImageType >
+                                                   CastingFilterType;
 
   CastingFilterType::Pointer caster = CastingFilterType::New();
 
 
   // We instantiate reader and writer types
   //
-  using ReaderType = itk::ImageFileReader<InternalImageType>;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef  itk::ImageFileReader< InternalImageType > ReaderType;
+  typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
 
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  reader->SetFileName( argv[1] );
+  writer->SetFileName( argv[2] );
 
 
-  using CurvatureFlowImageFilterType =
-    itk::CurvatureFlowImageFilter<InternalImageType, InternalImageType>;
-  CurvatureFlowImageFilterType::Pointer smoothing = CurvatureFlowImageFilterType::New();
+  typedef itk::CurvatureFlowImageFilter< InternalImageType, InternalImageType >
+    CurvatureFlowImageFilterType;
+  CurvatureFlowImageFilterType::Pointer smoothing =
+                         CurvatureFlowImageFilterType::New();
 
 
   //  Software Guide : BeginLatex
@@ -116,8 +117,8 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using ConnectedFilterType =
-    itk::IsolatedConnectedImageFilter<InternalImageType, InternalImageType>;
+  typedef itk::IsolatedConnectedImageFilter<InternalImageType,
+                                       InternalImageType> ConnectedFilterType;
   // Software Guide : EndCodeSnippet
 
 
@@ -139,15 +140,15 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  smoothing->SetInput(reader->GetOutput());
-  isolatedConnected->SetInput(smoothing->GetOutput());
-  caster->SetInput(isolatedConnected->GetOutput());
-  writer->SetInput(caster->GetOutput());
+  smoothing->SetInput( reader->GetOutput() );
+  isolatedConnected->SetInput( smoothing->GetOutput() );
+  caster->SetInput( isolatedConnected->GetOutput() );
+  writer->SetInput( caster->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
-  smoothing->SetNumberOfIterations(5);
-  smoothing->SetTimeStep(0.125);
+  smoothing->SetNumberOfIterations( 5 );
+  smoothing->SetTimeStep( 0.125 );
 
 
   //  Software Guide : BeginLatex
@@ -163,23 +164,23 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
 
-  InternalImageType::IndexType indexSeed1;
+  InternalImageType::IndexType  indexSeed1;
 
-  indexSeed1[0] = std::stoi(argv[3]);
-  indexSeed1[1] = std::stoi(argv[4]);
+  indexSeed1[0] = atoi( argv[3] );
+  indexSeed1[1] = atoi( argv[4] );
 
-  const InternalPixelType lowerThreshold = std::stod(argv[5]);
+  const InternalPixelType lowerThreshold = atof( argv[5] );
 
-  InternalImageType::IndexType indexSeed2;
+  InternalImageType::IndexType  indexSeed2;
 
-  indexSeed2[0] = std::stoi(argv[6]);
-  indexSeed2[1] = std::stoi(argv[7]);
+  indexSeed2[0] = atoi( argv[6] );
+  indexSeed2[1] = atoi( argv[7] );
 
 
   // Software Guide : BeginCodeSnippet
-  isolatedConnected->SetLower(lowerThreshold);
-  isolatedConnected->AddSeed1(indexSeed1);
-  isolatedConnected->AddSeed2(indexSeed2);
+  isolatedConnected->SetLower(  lowerThreshold  );
+  isolatedConnected->AddSeed1( indexSeed1 );
+  isolatedConnected->AddSeed2( indexSeed2 );
   // Software Guide : EndCodeSnippet
 
 
@@ -195,7 +196,7 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  isolatedConnected->SetReplaceValue(255);
+  isolatedConnected->SetReplaceValue( 255 );
   // Software Guide : EndCodeSnippet
 
 
@@ -208,14 +209,14 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
+    }
+  catch( itk::ExceptionObject & excep )
+    {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -230,7 +231,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   std::cout << "Isolated Value Found = ";
-  std::cout << isolatedConnected->GetIsolatedValue() << std::endl;
+  std::cout << isolatedConnected->GetIsolatedValue()  << std::endl;
   // Software Guide : EndCodeSnippet
 
 

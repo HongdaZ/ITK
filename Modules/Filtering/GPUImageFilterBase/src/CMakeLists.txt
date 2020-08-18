@@ -3,7 +3,6 @@ if (ITK_USE_GPU)
     )
 
   set(ITKGPUImageFilterBase_Kernels
-    GPUCastImageFilter.cl
     GPUNeighborhoodOperatorImageFilter.cl
     )
 

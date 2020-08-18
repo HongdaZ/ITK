@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,32 +19,31 @@
 #include "itkFastIncrementalBinaryDilateImageFilter.h"
 #include "itkBinaryCrossStructuringElement.h"
 
-int
-itkBinaryDilateImageFilterTest2(int, char *[])
+int itkBinaryDilateImageFilterTest2(int, char* [] )
 {
   unsigned int i;
 
   // Define the dimension of the images
-  constexpr unsigned int myDimension = 2;
+  const unsigned int myDimension = 2;
 
   // Define the values of the input images
-  constexpr unsigned short fgValue = 1;
-  constexpr unsigned short bgValue = 0;
+  const unsigned short fgValue = 1;
+  const unsigned short bgValue = 0;
 
   // Declare the types of the images
-  using myImageType = itk::Image<unsigned short, myDimension>;
+  typedef itk::Image<unsigned short, myDimension>  myImageType;
 
   // Declare the type of the index to access images
-  using myIndexType = itk::Index<myDimension>;
+  typedef itk::Index<myDimension>         myIndexType;
 
   // Declare the type of the size
-  using mySizeType = itk::Size<myDimension>;
+  typedef itk::Size<myDimension>          mySizeType;
 
   // Declare the type of the Region
-  using myRegionType = itk::ImageRegion<myDimension>;
+  typedef itk::ImageRegion<myDimension>        myRegionType;
 
   // Create an image
-  myImageType::Pointer inputImage = myImageType::New();
+  myImageType::Pointer inputImage  = myImageType::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -56,18 +55,18 @@ itkBinaryDilateImageFilterTest2(int, char *[])
   start[1] = 0;
 
   myRegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
+  region.SetIndex( start );
+  region.SetSize( size );
 
   // Initialize Image
-  inputImage->SetRegions(region);
+  inputImage->SetRegions( region );
   inputImage->Allocate();
 
   // Declare Iterator types apropriated for each image
-  using myIteratorType = itk::ImageRegionIterator<myImageType>;
+  typedef itk::ImageRegionIterator<myImageType>  myIteratorType;
 
   // Create one iterator for image (this is a light object)
-  myIteratorType it(inputImage, inputImage->GetBufferedRegion());
+  myIteratorType it( inputImage, inputImage->GetBufferedRegion() );
 
   // Initialize the content of Image
   std::cout << "Input image " << std::endl;
@@ -106,34 +105,37 @@ itkBinaryDilateImageFilterTest2(int, char *[])
 
   i = 0;
   it.GoToBegin();
-  while (!it.IsAtEnd())
-  {
+  while ( !it.IsAtEnd() )
+    {
     std::cout << it.Get() << "  ";
     ++it;
 
     if (++i % size[0] == 0)
-    {
+      {
       std::cout << std::endl;
+      }
     }
-  }
 
   // Declare the type for the structuring element
-  using myKernelType = itk::BinaryCrossStructuringElement<unsigned short, myDimension>;
+  typedef itk::BinaryCrossStructuringElement<unsigned short, myDimension>
+    myKernelType;
 
   // Declare the type for the morphology Filter
-  using myFilterType = itk::FastIncrementalBinaryDilateImageFilter<myImageType, myImageType, myKernelType>;
+  typedef itk::FastIncrementalBinaryDilateImageFilter<myImageType, myImageType, myKernelType>
+    myFilterType;
 
   // Create the filter
   myFilterType::Pointer filter = myFilterType::New();
+  //FilterWatcher filterWatcher(filter);
 
   // Create the structuring element
   myKernelType cross;
   cross.CreateStructuringElement();
 
   // Connect the input image
-  filter->SetInput(inputImage);
-  filter->SetKernel(cross);
-  filter->SetDilateValue(fgValue);
+  filter->SetInput( inputImage );
+  filter->SetKernel( cross );
+  filter->SetDilateValue( fgValue );
 
   // Get the Smart Pointer to the Filter Output
   myImageType::Pointer outputImage = filter->GetOutput();
@@ -152,9 +154,9 @@ itkBinaryDilateImageFilterTest2(int, char *[])
 
     //  Print the content of the result image
     std::cout << "Result with cross radius 1 (default)" << std::endl;
-    i = 0;
+    i=0;
     it2.GoToBegin();
-    while (!it2.IsAtEnd())
+    while( !it2.IsAtEnd() )
     {
       std::cout << it2.Get() << "  ";
       ++it2;
@@ -165,9 +167,9 @@ itkBinaryDilateImageFilterTest2(int, char *[])
       }
     }
   }
-  catch (const itk::ExceptionObject & e)
+  catch (itk::ExceptionObject& e)
   {
-    std::cerr << "Exception caught during filter Update\n" << e;
+    std::cerr << "Exception caught during filter Update\n"  << e;
     return -1;
   }
 
@@ -187,9 +189,9 @@ itkBinaryDilateImageFilterTest2(int, char *[])
 
     //  Print the content of the result image
     std::cout << "Result with cross radius 2" << std::endl;
-    i = 0;
+    i=0;
     it2.GoToBegin();
-    while (!it2.IsAtEnd())
+    while( !it2.IsAtEnd() )
     {
       std::cout << it2.Get() << "  ";
       ++it2;
@@ -200,9 +202,9 @@ itkBinaryDilateImageFilterTest2(int, char *[])
       }
     }
   }
-  catch (const itk::ExceptionObject & e)
+  catch (itk::ExceptionObject& e)
   {
-    std::cerr << "Exception caught during filter Update\n" << e;
+    std::cerr << "Exception caught during filter Update\n"  << e;
     return -1;
   }
 

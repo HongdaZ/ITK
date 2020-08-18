@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@
    This file tests whether fdstream compiles
 */
 
-#include "itkfdstream/fdstream.hxx"
+#include "itkfdstream/fdstream.hpp"
 
-int
-main()
+int main()
 {
   // stream with buffer reading from file descriptor 0 (standard input)
   itk::fdistream in(0);

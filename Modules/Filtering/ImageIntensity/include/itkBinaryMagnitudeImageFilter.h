@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #ifndef itkBinaryMagnitudeImageFilter_h
 #define itkBinaryMagnitudeImageFilter_h
 
-#include "itkBinaryGeneratorImageFilter.h"
+#include "itkBinaryFunctorImageFilter.h"
 
 namespace itk
 {
@@ -29,37 +29,33 @@ namespace Functor
  * \brief
  * \ingroup ITKImageIntensity
  */
-template <typename TInput1, typename TInput2, typename TOutput>
+template< typename TInput1, typename TInput2, typename TOutput >
 class Modulus2
 {
 public:
-  Modulus2() = default;
-  ~Modulus2() = default;
-  bool
-  operator!=(const Modulus2 &) const
+  Modulus2() {}
+  ~Modulus2() {}
+  bool operator!=(const Modulus2 &) const
   {
     return false;
   }
 
-  bool
-  operator==(const Modulus2 & other) const
+  bool operator==(const Modulus2 & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput1 & A, const TInput2 & B) const
+  inline TOutput operator()(const TInput1 & A,
+                            const TInput2 & B) const
   {
-    const auto dA = static_cast<double>(A);
-    const auto dB = static_cast<double>(B);
+    const double dA = static_cast< double >( A );
+    const double dB = static_cast< double >( B );
 
-    return static_cast<TOutput>(std::sqrt(dA * dA + dB * dB));
+    return static_cast< TOutput >( std::sqrt(dA * dA + dB * dB) );
   }
 };
-} // namespace Functor
-
-/**
- *\class BinaryMagnitudeImageFilter
+}
+/** \class BinaryMagnitudeImageFilter
  * \brief Computes the square root of the sum of squares of corresponding input pixels.
  *
  * This filter is templated over the types of the two
@@ -84,43 +80,51 @@ public:
  * \ingroup MultiThreaded
  * \ingroup ITKImageIntensity
  */
-template <typename TInputImage1, typename TInputImage2, typename TOutputImage>
-class BinaryMagnitudeImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+template< typename TInputImage1, typename TInputImage2, typename TOutputImage >
+class BinaryMagnitudeImageFilter:
+  public
+  BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                            Functor::Modulus2<
+                              typename TInputImage1::PixelType,
+                              typename TInputImage2::PixelType,
+                              typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMagnitudeImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = BinaryMagnitudeImageFilter;
-  using Superclass = BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::
-    Modulus2<typename TInputImage1::PixelType, typename TInputImage2::PixelType, typename TOutputImage::PixelType>;
+  /** Standard class typedefs. */
+  typedef BinaryMagnitudeImageFilter Self;
+  typedef BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+                                    Functor::Modulus2<
+                                      typename TInputImage1::PixelType,
+                                      typename TInputImage2::PixelType,
+                                      typename TOutputImage::PixelType >
+                                    >                                   Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(BinaryMagnitudeImageFilter, BinaryGeneratorImageFilter);
+  itkTypeMacro(BinaryMagnitudeImageFilter,
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(Input1ConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage1::PixelType, double>));
-  itkConceptMacro(Input2ConvertibleToDoubleCheck, (Concept::Convertible<typename TInputImage2::PixelType, double>));
-  itkConceptMacro(DoubleConvertibleToOutputCheck, (Concept::Convertible<double, typename TOutputImage::PixelType>));
+  itkConceptMacro( Input1ConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage1::PixelType, double > ) );
+  itkConceptMacro( Input2ConvertibleToDoubleCheck,
+                   ( Concept::Convertible< typename TInputImage2::PixelType, double > ) );
+  itkConceptMacro( DoubleConvertibleToOutputCheck,
+                   ( Concept::Convertible< double, typename TOutputImage::PixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  BinaryMagnitudeImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
+  BinaryMagnitudeImageFilter() {}
+  virtual ~BinaryMagnitudeImageFilter() ITK_OVERRIDE {}
 
-  ~BinaryMagnitudeImageFilter() override = default;
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMagnitudeImageFilter);
 };
 } // end namespace itk
 

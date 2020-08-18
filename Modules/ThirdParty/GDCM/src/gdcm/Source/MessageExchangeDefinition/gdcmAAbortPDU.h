@@ -31,14 +31,14 @@ class GDCM_EXPORT AAbortPDU : public BasePDU
 {
 public:
   AAbortPDU();
-  std::istream &Read(std::istream &is) override;
-  const std::ostream &Write(std::ostream &os) const override;
+  std::istream &Read(std::istream &is);
+  const std::ostream &Write(std::ostream &os) const;
 
   /// \internal Compute Size
-  size_t Size() const override;
-  void Print(std::ostream &os) const override;
+  size_t Size() const;
+  void Print(std::ostream &os) const;
 
-  bool IsLastFragment() const override { return true; }
+  bool IsLastFragment() const { return true; }
 
   void SetSource(const uint8_t s);
   void SetReason(const uint8_t r);

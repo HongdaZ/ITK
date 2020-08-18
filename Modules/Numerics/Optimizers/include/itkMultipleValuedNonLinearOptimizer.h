@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,20 +31,19 @@ namespace itk
  * \ingroup Numerics Optimizers
  * \ingroup ITKOptimizers
  */
-class ITKOptimizers_EXPORT MultipleValuedNonLinearOptimizer : public NonLinearOptimizer
+class ITKOptimizers_EXPORT MultipleValuedNonLinearOptimizer:
+  public NonLinearOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedNonLinearOptimizer);
-
-  /** Standard class type aliases. */
-  using Self = MultipleValuedNonLinearOptimizer;
-  using Superclass = NonLinearOptimizer;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef MultipleValuedNonLinearOptimizer Self;
+  typedef NonLinearOptimizer               Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
   /** Type of the Cost Function   */
-  using CostFunctionType = MultipleValuedCostFunction;
-  using CostFunctionPointer = CostFunctionType::Pointer;
+  typedef  MultipleValuedCostFunction CostFunctionType;
+  typedef  CostFunctionType::Pointer  CostFunctionPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,29 +53,30 @@ public:
 
   /**  Parameters type.
    *  It defines a position in the optimization search space. */
-  using ParametersType = Superclass::ParametersType;
+  typedef Superclass::ParametersType ParametersType;
 
   /**  Measure type.
    *  It defines a type used to return the cost function value.
    *  Here an Array is used for Multivalued functions   */
-  using MeasureType = Array<double>;
+  typedef Array< double > MeasureType;
 
   /**  Derivative type.
    *  It defines a type used to return the cost function derivative.
    *  Here a bidimensional Array is used for Multivalued functions   */
-  using DerivativeType = Array2D<double>;
+  typedef Array2D< double > DerivativeType;
 
   /** Set the cost function. */
-  virtual void
-  SetCostFunction(CostFunctionType * costFunction);
+  virtual void SetCostFunction(CostFunctionType *costFunction);
 
 protected:
   MultipleValuedNonLinearOptimizer();
-  ~MultipleValuedNonLinearOptimizer() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual ~MultipleValuedNonLinearOptimizer() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   CostFunctionPointer m_CostFunction;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultipleValuedNonLinearOptimizer);
 };
 } // end namespace itk
 

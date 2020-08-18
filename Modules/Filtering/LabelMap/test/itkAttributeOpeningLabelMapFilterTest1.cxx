@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,34 +26,33 @@
 
 #include "itkTestingMacros.h"
 
-int
-itkAttributeOpeningLabelMapFilterTest1(int argc, char * argv[])
+int itkAttributeOpeningLabelMapFilterTest1(int argc, char * argv[])
 {
-  if (argc != 5)
-  {
+  if( argc != 5 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " input output";
     std::cerr << " lambda reverseOrdering(0/1)";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 3;
+  const unsigned int Dimension = 3;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef itk::Image< PixelType, Dimension > ImageType;
 
-  using LabelObjectType = itk::AttributeLabelObject<PixelType, Dimension, int>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::AttributeLabelObject< PixelType, Dimension, int > LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >                       LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using ImageToLabelType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< ImageType, LabelMapType> ImageToLabelType;
   ImageToLabelType::Pointer imageToLabel = ImageToLabelType::New();
-  imageToLabel->SetInput(reader->GetOutput());
+  imageToLabel->SetInput( reader->GetOutput() );
 
 
   // The next step is made outside the pipeline model, so we call Update() now.
@@ -64,49 +63,50 @@ itkAttributeOpeningLabelMapFilterTest1(int argc, char * argv[])
   LabelMapType::Pointer labelMap = imageToLabel->GetOutput();
 
   int pos = 0;
-  for (LabelMapType::Iterator it(labelMap); !it.IsAtEnd(); ++it)
-  {
+  for( LabelMapType::Iterator it(labelMap); !it.IsAtEnd(); ++it )
+    {
     LabelObjectType * labelObject = it.GetLabelObject();
-    labelObject->SetAttribute(pos++);
-  }
+    labelObject->SetAttribute( pos++ );
+    }
 
 
-  using LabelOpeningType = itk::AttributeOpeningLabelMapFilter<LabelMapType>;
+  typedef itk::AttributeOpeningLabelMapFilter< LabelMapType > LabelOpeningType;
   LabelOpeningType::Pointer opening = LabelOpeningType::New();
 
-  // testing get and set macros for Lambda
-  auto lambda = static_cast<LabelOpeningType::AttributeValueType>(std::stod(argv[3]));
-  opening->SetLambda(lambda);
-  ITK_TEST_SET_GET_VALUE(lambda, opening->GetLambda());
+  //testing get and set macros for Lambda
+  LabelOpeningType::AttributeValueType lambda =
+    static_cast<LabelOpeningType::AttributeValueType>(atof( argv[3] ));
+  opening->SetLambda( lambda );
+  TEST_SET_GET_VALUE( lambda , opening->GetLambda() );
 
-  // testing get and set macros for ReverseOrdering
-  // testing boolean macro for ReverseOrdering
+  //testing get and set macros for ReverseOrdering
+  //testing boolean macro for ReverseOrdering
   opening->ReverseOrderingOn();
-  ITK_TEST_SET_GET_VALUE(true, opening->GetReverseOrdering());
+  TEST_SET_GET_VALUE( true, opening->GetReverseOrdering() );
 
   opening->ReverseOrderingOff();
-  ITK_TEST_SET_GET_VALUE(false, opening->GetReverseOrdering());
+  TEST_SET_GET_VALUE( false, opening->GetReverseOrdering() );
 
-  bool reverseOrdering = std::stoi(argv[4]);
-  opening->SetReverseOrdering(reverseOrdering);
-  ITK_TEST_SET_GET_VALUE(reverseOrdering, opening->GetReverseOrdering());
+  bool reverseOrdering = atoi( argv[4] );
+  opening->SetReverseOrdering( reverseOrdering );
+  TEST_SET_GET_VALUE( reverseOrdering , opening->GetReverseOrdering() );
 
-  opening->SetInput(labelMap);
+  opening->SetInput( labelMap );
 
   itk::SimpleFilterWatcher watcher(opening, "filter");
 
-  using LabelToImageType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> LabelToImageType;
   LabelToImageType::Pointer labelToImage = LabelToImageType::New();
-  labelToImage->SetInput(opening->GetOutput());
+  labelToImage->SetInput( opening->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
 
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(labelToImage->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( labelToImage->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

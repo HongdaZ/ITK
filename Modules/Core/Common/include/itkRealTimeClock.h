@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT RealTimeClock : public Object
+class ITKCommon_EXPORT RealTimeClock:public Object
 {
 public:
-  using Self = RealTimeClock;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef RealTimeClock              Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for defining the name of the class */
   itkTypeMacro(RealTimeClock, Object);
@@ -51,34 +51,32 @@ public:
   itkNewMacro(Self);
 
   /** Define the type for the timestap */
-  using TimeStampType = double;
+  typedef double TimeStampType;
 
   /** Define the type for the frequency of the clock */
-  using FrequencyType = double;
+  typedef double FrequencyType;
 
   /** Returns a timestamp in seconds, e.g. 52.341243 seconds */
-  TimeStampType
-  GetTimeInSeconds() const;
+  TimeStampType GetTimeInSeconds() const;
 
   /** Returns the frequency of a clock */
   itkGetConstMacro(Frequency, FrequencyType);
 
   /** Get the time as a RealTimeStamp type. */
-  RealTimeStamp
-  GetRealTimeStamp() const;
+  RealTimeStamp GetRealTimeStamp() const;
 
 protected:
+
   /** Constructor. */
   RealTimeClock();
 
   /** Destructor. */
-  ~RealTimeClock() override;
+  virtual ~RealTimeClock() ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
-  FrequencyType m_Frequency{ 1 };
+  FrequencyType m_Frequency;
   TimeStampType m_Difference;
   TimeStampType m_Origin;
 
@@ -86,9 +84,8 @@ private:
   // We hide this method in the private section, because it returns the
   // modified time of the itk::Object. That modified time is ambiguous with
   // the role of the RealTimeStamp.
-  const TimeStamp &
-  GetTimeStamp() const override;
+  virtual const TimeStamp & GetTimeStamp() const ITK_OVERRIDE;
 };
 } // end of namespace itk
 
-#endif // itkRealTimeClock_h
+#endif  // itkRealTimeClock_h

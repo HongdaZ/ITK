@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@
 #ifndef itkComplexToImaginaryImageFilter_h
 #define itkComplexToImaginaryImageFilter_h
 
-#include "itkUnaryGeneratorImageFilter.h"
+#include "itkUnaryFunctorImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
 {
-/**
- *\class ComplexToImaginaryImageFilter
+/** \class ComplexToImaginaryImageFilter
  * \brief Computes pixel-wise the imaginary part of a complex image.
  *
  * \ingroup IntensityImageFilters  MultiThreaded
@@ -32,70 +31,72 @@ namespace itk
  */
 namespace Functor
 {
-template <typename TInput, typename TOutput>
+template< typename TInput, typename TOutput >
 class ComplexToImaginary
 {
 public:
-  ComplexToImaginary() = default;
-  ~ComplexToImaginary() = default;
-  bool
-  operator!=(const ComplexToImaginary &) const
+  ComplexToImaginary() {}
+  ~ComplexToImaginary() {}
+  bool operator!=(const ComplexToImaginary &) const
   {
     return false;
   }
 
-  bool
-  operator==(const ComplexToImaginary & other) const
+  bool operator==(const ComplexToImaginary & other) const
   {
-    return !(*this != other);
+    return !( *this != other );
   }
 
-  inline TOutput
-  operator()(const TInput & A) const
+  inline TOutput operator()(const TInput & A) const
   {
-    return static_cast<TOutput>(A.imag());
+    return static_cast<TOutput>( A.imag() );
   }
 };
-} // namespace Functor
+}
 
-template <typename TInputImage, typename TOutputImage>
-class ComplexToImaginaryImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+template< typename TInputImage, typename TOutputImage >
+class ComplexToImaginaryImageFilter:
+  public
+  UnaryFunctorImageFilter< TInputImage, TOutputImage,
+                           Functor::ComplexToImaginary<
+                             typename TInputImage::PixelType,
+                             typename TOutputImage::PixelType >   >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ComplexToImaginaryImageFilter);
+  /** Standard class typedefs. */
+  typedef ComplexToImaginaryImageFilter Self;
+  typedef UnaryFunctorImageFilter<
+    TInputImage, TOutputImage,
+    Functor::ComplexToImaginary< typename TInputImage::PixelType,
+                                 typename TOutputImage::PixelType > > Superclass;
 
-  /** Standard class type aliases. */
-  using Self = ComplexToImaginaryImageFilter;
-  using Superclass = UnaryGeneratorImageFilter<TInputImage, TOutputImage>;
-
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = Functor::ComplexToImaginary<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ComplexToImaginaryImageFilter, UnaryGeneratorImageFilter);
+  itkTypeMacro(ComplexToImaginaryImageFilter,
+               UnaryFunctorImageFilter);
 
-  using InputPixelType = typename TInputImage::PixelType;
-  using OutputPixelType = typename TOutputImage::PixelType;
-  using InputPixelValueType = typename NumericTraits<InputPixelType>::ValueType;
+  typedef typename TInputImage::PixelType                     InputPixelType;
+  typedef typename TOutputImage::PixelType                    OutputPixelType;
+  typedef typename NumericTraits< InputPixelType >::ValueType InputPixelValueType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro(InputConvertibleToOutputCheck, (Concept::Convertible<InputPixelValueType, OutputPixelType>));
+  itkConceptMacro( InputConvertibleToOutputCheck,
+                   ( Concept::Convertible< InputPixelValueType, OutputPixelType > ) );
   // End concept checking
 #endif
 
 protected:
-  ComplexToImaginaryImageFilter()
-  {
-#if !defined(ITK_WRAPPING_PARSER)
-    Superclass::SetFunctor(FunctorType());
-#endif
-  }
-  ~ComplexToImaginaryImageFilter() override = default;
+  ComplexToImaginaryImageFilter() {}
+  virtual ~ComplexToImaginaryImageFilter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ComplexToImaginaryImageFilter);
 };
 } // end namespace itk
 

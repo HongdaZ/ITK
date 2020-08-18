@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,28 +24,23 @@
 
 namespace itk
 {
-/**
- *\class DCMTKImageIOFactory
+/** \class DCMTKImageIOFactory
  * \brief Create instances of DCMTKImageIO objects using an object factory.
  * \ingroup ITKIODCMTK
  */
-class ITKIODCMTK_EXPORT DCMTKImageIOFactory : public ObjectFactoryBase
+class ITKIODCMTK_EXPORT DCMTKImageIOFactory:public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKImageIOFactory);
-
-  /** Standard class type aliases. */
-  using Self = DCMTKImageIOFactory;
-  using Superclass = ObjectFactoryBase;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef DCMTKImageIOFactory        Self;
+  typedef ObjectFactoryBase          Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char *
-  GetITKSourceVersion() const override;
+  virtual const char * GetITKSourceVersion() const ITK_OVERRIDE;
 
-  const char *
-  GetDescription() const override;
+  virtual const char * GetDescription() const ITK_OVERRIDE;
 
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -54,8 +49,7 @@ public:
   itkTypeMacro(DCMTKImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void
-  RegisterOneFactory()
+  static void RegisterOneFactory(void)
   {
     DCMTKImageIOFactory::Pointer DCMTKFactory = DCMTKImageIOFactory::New();
 
@@ -64,7 +58,9 @@ public:
 
 protected:
   DCMTKImageIOFactory();
-  ~DCMTKImageIOFactory() override;
+  ~DCMTKImageIOFactory();
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKImageIOFactory);
 };
 } // end namespace itk
 

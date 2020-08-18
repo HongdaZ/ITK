@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,11 +24,10 @@
 namespace itk
 {
 
-/**
- *\class LabelImageGaussianInterpolateImageFunction
+/** \class LabelImageGaussianInterpolateImageFunction
  * \brief Interpolation function for multi-label images that implicitly smooths each
  * unique value in the image corresponding to each label set element and returns the
- * corresponding label set element with the largest weight.
+ * corresponding label set element with the largest wieght.
  *
  * This filter is an alternative to nearest neighbor interpolation for multi-label
  * images. Given a multi-label image \c I with label set \c L, this function returns a
@@ -59,80 +58,75 @@ namespace itk
  * \author Nick Tustison
  *
  * \ingroup ITKImageFunction
- *
- * \sphinx
- * \sphinxexample{Core/ImageFunction/ResampleSegmentedImage,Resample Segmented Image}
- * \endsphinx
  */
 
-template <typename TInputImage,
-          typename TCoordRep = double,
-          typename TPixelCompare = std::less<typename itk::NumericTraits<typename TInputImage::PixelType>::RealType>>
-class ITK_TEMPLATE_EXPORT LabelImageGaussianInterpolateImageFunction
-  : public GaussianInterpolateImageFunction<TInputImage, TCoordRep>
+template <typename TInputImage, typename TCoordRep = double,
+          typename TPixelCompare = std::less<typename itk::NumericTraits<typename TInputImage::PixelType>::RealType> >
+class ITK_TEMPLATE_EXPORT LabelImageGaussianInterpolateImageFunction :
+  public GaussianInterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelImageGaussianInterpolateImageFunction);
-
-  /** Standard class type aliases. */
-  using Self = LabelImageGaussianInterpolateImageFunction;
-  using Superclass = GaussianInterpolateImageFunction<TInputImage, TCoordRep>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using InputPixelType = typename TInputImage::PixelType;
+  /** Standard class typedefs. */
+  typedef LabelImageGaussianInterpolateImageFunction                Self;
+  typedef GaussianInterpolateImageFunction<TInputImage, TCoordRep>  Superclass;
+  typedef SmartPointer<Self>                                        Pointer;
+  typedef SmartPointer<const Self>                                  ConstPointer;
+  typedef typename TInputImage::PixelType                           InputPixelType;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LabelImageGaussianInterpolateImageFunction, GaussianInterpolateImageFunction);
+  itkTypeMacro( LabelImageGaussianInterpolateImageFunction, GaussianInterpolateImageFunction );
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro( Self );
 
   /** ImageDimension constant */
-  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
+  itkStaticConstMacro( ImageDimension, unsigned int, TInputImage::ImageDimension );
 
-  /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  /** OutputType typedef support. */
+  typedef typename Superclass::OutputType OutputType;
 
-  /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  /** InputImageType typedef support. */
+  typedef typename Superclass::InputImageType InputImageType;
 
-  /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  /** RealType typedef support. */
+  typedef typename Superclass::RealType RealType;
 
-  /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  /** Index typedef support. */
+  typedef typename Superclass::IndexType IndexType;
 
-  /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  /** ContinuousIndex typedef support. */
+  typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
 
-  /** Array type alias support */
-  using ArrayType = typename Superclass::ArrayType;
+  /** Array typedef support */
+  typedef typename Superclass::ArrayType ArrayType;
 
   /**
    * Evaluate at the given index
    */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override
-  {
-    return this->EvaluateAtContinuousIndex(cindex, nullptr);
-  }
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType & cindex ) const ITK_OVERRIDE
+    {
+    return this->EvaluateAtContinuousIndex( cindex, ITK_NULLPTR );
+    }
 
 protected:
-  LabelImageGaussianInterpolateImageFunction() = default;
-  ~LabelImageGaussianInterpolateImageFunction() override = default;
+  LabelImageGaussianInterpolateImageFunction();
+  ~LabelImageGaussianInterpolateImageFunction() ITK_OVERRIDE {};
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LabelImageGaussianInterpolateImageFunction);
+
   /**
    * Evaluate function value at the given index
    */
-  OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType &, OutputType *) const override;
+  virtual OutputType EvaluateAtContinuousIndex(
+    const ContinuousIndexType &, OutputType * ) const ITK_OVERRIDE;
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkLabelImageGaussianInterpolateImageFunction.hxx"
+#include "itkLabelImageGaussianInterpolateImageFunction.hxx"
 #endif
 
 #endif

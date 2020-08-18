@@ -1,7 +1,6 @@
 set(DOCUMENTATION "This module contains denoising algorithms such as patch-based denoising.")
 
 itk_module(ITKDenoising
-  ENABLE_SHARED
   COMPILE_DEPENDS
     ITKImageAdaptors
     ITKImageGrid

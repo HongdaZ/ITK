@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ namespace itk
 {
 namespace watershed
 {
-/**
- *\class Relabeler
+/** \class Relabeler
  *
  * This filter implements the final step in the watershed segmentation
  * algorithm.  It is responsible for relabeling a segmented image according to
@@ -61,78 +60,74 @@ namespace watershed
  * \sa itk::watershed::SegmentTree
  * \ingroup ITKWatersheds
  */
-template <typename TScalar, unsigned int TImageDimension>
-class ITK_TEMPLATE_EXPORT Relabeler : public ProcessObject
+template< typename TScalar, unsigned int TImageDimension >
+class ITK_TEMPLATE_EXPORT Relabeler:
+  public ProcessObject
 {
 public:
   /** Define smart pointers for this object */
-  using Self = Relabeler;
-  using Superclass = ProcessObject;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef Relabeler                  Self;
+  typedef ProcessObject              Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   itkTypeMacro(WatershedRelabeler, ProcessObject);
 
   /** Expose the ImageDimension template parameter at run time */
-  static constexpr unsigned int ImageDimension = TImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int, TImageDimension);
 
-  /** Some convenient type alias */
-  using ScalarType = TScalar;
-  using ImageType = Image<IdentifierType, TImageDimension>;
-  using SegmentTreeType = SegmentTree<ScalarType>;
-  using SegmenterType = Segmenter<Image<ScalarType, TImageDimension>>;
-  using DataObjectPointer = DataObject::Pointer;
+  /** Some convenient typedefs */
+  typedef TScalar                                           ScalarType;
+  typedef Image< IdentifierType, TImageDimension >          ImageType;
+  typedef SegmentTree< ScalarType >                         SegmentTreeType;
+  typedef Segmenter< Image< ScalarType, TImageDimension > > SegmenterType;
+  typedef DataObject::Pointer                               DataObjectPointer;
 
   /** Standard itk::ProcessObject subclass method. */
-  using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
+  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   /** Set/Get the input image */
-  void
-  SetInputImage(ImageType * img)
+  void SetInputImage(ImageType *img)
   {
     this->ProcessObject::SetNthInput(0, img);
   }
 
-  ImageType *
-  GetInputImage()
+  ImageType * GetInputImage(void)
   {
-    return itkDynamicCastInDebugMode<ImageType *>(this->ProcessObject::GetInput(0));
+    return itkDynamicCastInDebugMode< ImageType * >
+           ( this->ProcessObject::GetInput(0) );
   }
 
   /** Set/Get the output image */
-  void
-  SetOutputImage(ImageType * img)
+  void SetOutputImage(ImageType *img)
   {
     this->ProcessObject::SetNthOutput(0, img);
   }
 
-  ImageType *
-  GetOutputImage()
+  ImageType * GetOutputImage(void)
   {
-    return itkDynamicCastInDebugMode<ImageType *>(this->ProcessObject::GetOutput(0));
+    return itkDynamicCastInDebugMode< ImageType * >
+           ( this->ProcessObject::GetOutput(0) );
   }
 
   /** Set/Get the input tree that defines segment merges */
-  void
-  SetInputSegmentTree(SegmentTreeType * et)
+  void SetInputSegmentTree(SegmentTreeType *et)
   {
     this->ProcessObject::SetNthInput(1, et);
   }
 
-  SegmentTreeType *
-  GetInputSegmentTree()
+  SegmentTreeType * GetInputSegmentTree(void)
   {
-    return itkDynamicCastInDebugMode<SegmentTreeType *>(this->ProcessObject::GetInput(1));
+    return itkDynamicCastInDebugMode< SegmentTreeType * >
+           ( this->ProcessObject::GetInput(1) );
   }
 
   /** Standard non-threaded pipeline method */
-  void
-  GenerateData() override;
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** Set/Get the percentage of the maximum saliency level
    * to merge to. */
@@ -140,34 +135,27 @@ public:
   itkGetConstMacro(FloodLevel, double);
 
   /** Standard ProcessObject method used in implementing mini-pipelines */
-  void
-  GraftOutput(ImageType * graft);
+  void GraftOutput(ImageType *graft);
 
-  void
-  GraftNthOutput(unsigned int idx, ImageType * graft);
+  void GraftNthOutput(unsigned int idx, ImageType *graft);
 
 protected:
   Relabeler();
-  ~Relabeler() override = default;
+  virtual ~Relabeler() ITK_OVERRIDE {}
   Relabeler(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void operator=(const Self &) {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  double m_FloodLevel{ 0.0 };
-  void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  double m_FloodLevel;
+  virtual void GenerateOutputRequestedRegion(DataObject *output) ITK_OVERRIDE;
 
-  void
-  GenerateInputRequestedRegion() override;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 };
 } // end namespace watershed
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkWatershedRelabeler.hxx"
+#include "itkWatershedRelabeler.hxx"
 #endif
 
 #endif

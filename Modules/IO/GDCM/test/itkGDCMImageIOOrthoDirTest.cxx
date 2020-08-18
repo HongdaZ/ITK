@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,42 +20,41 @@
 #include "itkGDCMImageIO.h"
 #include "itkVersor.h"
 
-// Specific ImageIO test
+#define SPECIFIC_IMAGEIO_MODULE_TEST
 
 /** This test verifies that the direction cosines
  *  computed in itkGDCMImageIO are orthogonal
  */
-int
-itkGDCMImageIOOrthoDirTest(int ac, char * av[])
+int itkGDCMImageIOOrthoDirTest(int ac, char* av[])
 {
 
-  if (ac < 2)
-  {
+  if(ac < 2)
+    {
     std::cerr << "Usage: " << av[0] << " DicomImage\n";
     return EXIT_FAILURE;
-  }
+    }
 
-  using InputPixelType = short;
-  using InputImageType = itk::Image<InputPixelType, 3>;
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using ImageIOType = itk::GDCMImageIO;
+  typedef short                                  InputPixelType;
+  typedef itk::Image< InputPixelType, 3 >        InputImageType;
+  typedef itk::ImageFileReader< InputImageType > ReaderType;
+  typedef itk::GDCMImageIO                       ImageIOType;
 
   ImageIOType::Pointer dcmImageIO = ImageIOType::New();
 
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(av[1]);
-  reader->SetImageIO(dcmImageIO);
+  reader->SetFileName( av[1] );
+  reader->SetImageIO( dcmImageIO );
 
   try
-  {
+    {
     reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   InputImageType::DirectionType directionCosines;
   directionCosines = reader->GetOutput()->GetDirection();
@@ -65,15 +64,16 @@ itkGDCMImageIOOrthoDirTest(int ac, char * av[])
   itk::Versor<itk::SpacePrecisionType> rotation;
 
   try
-  {
+    {
     rotation.Set(directionCosines);
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch (itk::ExceptionObject & e)
+    {
     std::cerr << "exception setting matrix" << std::endl;
     std::cerr << e << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
+
 }

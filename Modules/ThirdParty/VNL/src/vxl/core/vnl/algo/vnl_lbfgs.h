@@ -1,6 +1,9 @@
 // This is core/vnl/algo/vnl_lbfgs.h
 #ifndef vnl_lbfgs_h_
 #define vnl_lbfgs_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 // \file
 // \brief Limited memory Broyden Fletcher Goldfarb Shannon minimization
@@ -68,7 +71,7 @@ class VNL_ALGO_EXPORT vnl_lbfgs : public vnl_nonlinear_minimizer
 
  private:
   void init_parameters();
-  vnl_cost_function *f_{nullptr};
+  vnl_cost_function* f_;
   //  vnl_lbfgs() {} // default constructor makes no sense
   // does too.  Can set values for parameters.
 };

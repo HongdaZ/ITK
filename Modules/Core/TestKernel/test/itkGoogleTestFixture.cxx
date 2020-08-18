@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,26 +23,22 @@
 
 namespace
 {
-class GoogleTestFixture : public ::testing::Test
+class GoogleTestFixture
+  : public ::testing::Test
 {
 public:
-  GoogleTestFixture() = default;
-  ~GoogleTestFixture() override = default;
+  GoogleTestFixture() : m_C(1) {}
+  ~GoogleTestFixture() {}
 
 protected:
-  void
-  SetUp() override
-  {}
-  void
-  TearDown() override
-  {}
+  void SetUp() {}
+  void TearDown() {}
 
-  int m_C{ 1 };
+  int m_C;
 };
-} // namespace
+}
 
 
-TEST_F(GoogleTestFixture, t)
-{
+TEST_F(GoogleTestFixture,t) {
   EXPECT_EQ(1, m_C);
 }

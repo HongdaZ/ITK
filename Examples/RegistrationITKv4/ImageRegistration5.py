@@ -1,6 +1,6 @@
 #==========================================================================
 #
-#   Copyright NumFOCUS
+#   Copyright Insight Software Consortium
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ from sys import argv
 #
 if len(argv) < 4:
     print 'Missing Parameters'
-    print 'Usage: ImageRegistration5.py fixedImageFile  movingImageFile outputImagefile'
+    print 'Usage: ImageRegistration3.py fixedImageFile  movingImageFile outputImagefile'
     exit()
 
 

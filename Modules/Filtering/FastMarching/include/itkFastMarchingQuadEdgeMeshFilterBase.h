@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,15 +24,14 @@
 
 namespace itk
 {
-/**
- *\class FastMarchingQuadEdgeMeshFilterBase
+/** \class FastMarchingQuadEdgeMeshFilterBase
   \brief Fast Marching Method on QuadEdgeMesh
 
   The speed function is specified by the input mesh. Data associated to each
   point is considered as the speed function. The speed function is set using
   the method SetInput().
 
-  If the speed function is constant and of value one, fast marching results is
+  If the speed function is contant and of value one, fast marching results is
   an approximate geodesic function from the initial alive points.
 
   Implementation of this class is based on
@@ -41,17 +40,16 @@ namespace itk
 
   \ingroup ITKFastMarching
 */
-template <typename TInput, typename TOutput>
-class ITK_TEMPLATE_EXPORT FastMarchingQuadEdgeMeshFilterBase : public FastMarchingBase<TInput, TOutput>
+template< typename TInput, typename TOutput >
+class ITK_TEMPLATE_EXPORT FastMarchingQuadEdgeMeshFilterBase :
+    public FastMarchingBase< TInput, TOutput >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingQuadEdgeMeshFilterBase);
-
-  using Self = FastMarchingQuadEdgeMeshFilterBase;
-  using Superclass = FastMarchingBase<TInput, TOutput>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  typedef FastMarchingQuadEdgeMeshFilterBase     Self;
+  typedef FastMarchingBase< TInput, TOutput >    Superclass;
+  typedef SmartPointer< Self >                   Pointer;
+  typedef SmartPointer< const Self >             ConstPointer;
+  typedef typename Superclass::Traits            Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,127 +57,122 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(FastMarchingQuadEdgeMeshFilterBase, FastMarchingBase);
 
-  using InputMeshType = typename Superclass::InputDomainType;
-  using InputMeshPointer = typename Superclass::InputDomainPointer;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using InputPointType = typename InputMeshType::PointType;
-  using InputPointIdentifierType = typename InputMeshType::PointIdentifier;
+  typedef typename Superclass::InputDomainType     InputMeshType;
+  typedef typename Superclass::InputDomainPointer  InputMeshPointer;
+  typedef typename Superclass::InputPixelType      InputPixelType;
+  typedef typename InputMeshType::PointType        InputPointType;
+  typedef typename InputMeshType::PointIdentifier  InputPointIdentifierType;
 
-  using OutputMeshType = typename Superclass::OutputDomainType;
-  using OutputMeshPointer = typename Superclass::OutputDomainPointer;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using OutputPointType = typename OutputMeshType::PointType;
-  using OutputVectorType = typename OutputPointType::VectorType;
-  using OutputVectorRealType = typename OutputVectorType::RealValueType;
-  using OutputQEType = typename OutputMeshType::QEType;
-  using OutputPointIdentifierType = typename OutputMeshType::PointIdentifier;
-  using OutputPointsContainer = typename OutputMeshType::PointsContainer;
-  using OutputPointsContainerPointer = typename OutputPointsContainer::Pointer;
-  using OutputPointsContainerIterator = typename OutputPointsContainer::Iterator;
-  using OutputPointDataContainer = typename OutputMeshType::PointDataContainer;
-  using OutputPointDataContainerPointer = typename OutputPointDataContainer::Pointer;
+  typedef typename Superclass::OutputDomainType     OutputMeshType;
+  typedef typename Superclass::OutputDomainPointer  OutputMeshPointer;
+  typedef typename Superclass::OutputPixelType      OutputPixelType;
+  typedef typename OutputMeshType::PointType        OutputPointType;
+  typedef typename OutputPointType::VectorType      OutputVectorType;
+  typedef typename OutputVectorType::RealValueType  OutputVectorRealType;
+  typedef typename OutputMeshType::QEType           OutputQEType;
+  typedef typename OutputMeshType::PointIdentifier  OutputPointIdentifierType;
+  typedef typename OutputMeshType::PointsContainer  OutputPointsContainer;
+  typedef typename OutputPointsContainer::Pointer   OutputPointsContainerPointer;
+  typedef typename OutputPointsContainer::Iterator  OutputPointsContainerIterator;
+  typedef typename OutputMeshType::PointDataContainer
+                                                    OutputPointDataContainer;
+  typedef typename OutputPointDataContainer::Pointer
+                                                    OutputPointDataContainerPointer;
 
-  using OutputCellsContainer = typename OutputMeshType::CellsContainer;
-  using OutputCellsContainerPointer = typename OutputCellsContainer::Pointer;
-  using OutputCellsContainerConstIterator = typename OutputCellsContainer::ConstIterator;
-  using OutputCellType = typename OutputMeshType::CellType;
+  typedef typename OutputMeshType::CellsContainer   OutputCellsContainer;
+  typedef typename OutputCellsContainer::Pointer    OutputCellsContainerPointer;
+  typedef typename OutputCellsContainer::ConstIterator
+                                                    OutputCellsContainerConstIterator;
+  typedef typename OutputMeshType::CellType         OutputCellType;
 
 
-  using NodeType = typename Traits::NodeType;
-  using NodePairType = typename Traits::NodePairType;
-  using NodePairContainerType = typename Traits::NodePairContainerType;
-  using NodePairContainerPointer = typename Traits::NodePairContainerPointer;
-  using NodePairContainerConstIterator = typename Traits::NodePairContainerConstIterator;
+  typedef typename Traits::NodeType                 NodeType;
+  typedef typename Traits::NodePairType             NodePairType;
+  typedef typename Traits::NodePairContainerType    NodePairContainerType;
+  typedef typename Traits::NodePairContainerPointer NodePairContainerPointer;
+  typedef typename Traits::NodePairContainerConstIterator
+    NodePairContainerConstIterator;
 
-  //  using NodeContainerType = typename Traits::NodeContainerType;
-  //  using NodeContainerPointer = typename Traits::NodeContainerPointer;
-  //  using NodeContainerConstIterator = typename Traits::NodeContainerConstIterator;
+//  typedef typename Traits::NodeContainerType        NodeContainerType;
+//  typedef typename Traits::NodeContainerPointer     NodeContainerPointer;
+//  typedef typename Traits::NodeContainerConstIterator
+//    NodeContainerConstIterator;
 
-  using LabelType = typename Superclass::LabelType;
+  typedef typename Superclass::LabelType LabelType;
 
-  using NodeLabelMapType = std::map<NodeType, LabelType>;
-  using NodeLabelMapIterator = typename NodeLabelMapType::iterator;
-  using NodeLabelMapConstIterator = typename NodeLabelMapType::const_iterator;
+  typedef std::map< NodeType, LabelType >           NodeLabelMapType;
+  typedef typename NodeLabelMapType::iterator       NodeLabelMapIterator;
+  typedef typename NodeLabelMapType::const_iterator NodeLabelMapConstIterator;
 
 protected:
+
   FastMarchingQuadEdgeMeshFilterBase();
-  ~FastMarchingQuadEdgeMeshFilterBase() override = default;
+  virtual ~FastMarchingQuadEdgeMeshFilterBase() ITK_OVERRIDE;
 
   NodeLabelMapType m_Label;
 
-  IdentifierType
-  GetTotalNumberOfNodes() const override;
+  IdentifierType GetTotalNumberOfNodes() const ITK_OVERRIDE;
 
-  void
-  SetOutputValue(OutputMeshType * oMesh, const NodeType & iNode, const OutputPixelType & iValue) override;
+  void SetOutputValue( OutputMeshType* oMesh,
+                      const NodeType& iNode,
+                      const OutputPixelType& iValue ) ITK_OVERRIDE;
 
-  const OutputPixelType
-  GetOutputValue(OutputMeshType * oMesh, const NodeType & iNode) const override;
+  const OutputPixelType GetOutputValue( OutputMeshType* oMesh,
+                                  const NodeType& iNode ) const ITK_OVERRIDE;
 
-  unsigned char
-  GetLabelValueForGivenNode(const NodeType & iNode) const override;
+  unsigned char GetLabelValueForGivenNode( const NodeType& iNode ) const ITK_OVERRIDE;
 
-  void
-  SetLabelValueForGivenNode(const NodeType & iNode, const LabelType & iLabel) override;
+  void SetLabelValueForGivenNode( const NodeType& iNode,
+                                  const LabelType& iLabel ) ITK_OVERRIDE;
 
-  void
-  UpdateNeighbors(OutputMeshType * oMesh, const NodeType & iNode) override;
+  void UpdateNeighbors( OutputMeshType* oMesh,
+                        const NodeType& iNode ) ITK_OVERRIDE;
 
-  void
-  UpdateValue(OutputMeshType * oMesh, const NodeType & iNode) override;
+  void UpdateValue( OutputMeshType* oMesh,
+                    const NodeType& iNode ) ITK_OVERRIDE;
 
   const OutputVectorRealType
-  Solve(OutputMeshType *             oMesh,
-        const NodeType &             iId,
-        const OutputPointType &      iCurrentPoint,
-        const OutputVectorRealType & iF,
-        const NodeType &             iId1,
-        const OutputPointType &      iP1,
-        const bool &                 iIsFar1,
-        const OutputVectorRealType   iVal1,
-        const NodeType &             iId2,
-        const OutputPointType &      iP2,
-        const bool &                 iIsFar2,
-        const OutputVectorRealType & iVal2) const;
+  Solve( OutputMeshType* oMesh,
+         const NodeType& iId, const OutputPointType& iCurrentPoint,
+         const OutputVectorRealType& iF,
+         const NodeType& iId1, const OutputPointType& iP1,
+         const bool& iIsFar1, const OutputVectorRealType iVal1,
+         const NodeType& iId2, const OutputPointType& iP2,
+         const bool& iIsFar2, const OutputVectorRealType& iVal2 )
+  const;
 
 
   const OutputVectorRealType
-  ComputeUpdate(const OutputVectorRealType & iVal1,
-                const OutputVectorRealType & iVal2,
-                const OutputVectorRealType & iNorm1,
-                const OutputVectorRealType & iSqNorm1,
-                const OutputVectorRealType & iNorm2,
-                const OutputVectorRealType & iSqNorm2,
-                const OutputVectorRealType & iDot,
-                const OutputVectorRealType & iF) const;
+  ComputeUpdate(
+    const OutputVectorRealType& iVal1, const OutputVectorRealType& iVal2,
+    const OutputVectorRealType& iNorm1, const OutputVectorRealType& iSqNorm1,
+    const OutputVectorRealType& iNorm2, const OutputVectorRealType& iSqNorm2,
+    const OutputVectorRealType& iDot, const OutputVectorRealType& iF )
+    const;
 
-  bool
-  UnfoldTriangle(OutputMeshType *                  oMesh,
-                 const OutputPointIdentifierType & iId,
-                 const OutputPointType &           iP,
-                 const OutputPointIdentifierType & iId1,
-                 const OutputPointType &           iP1,
-                 const OutputPointIdentifierType & iId2,
-                 const OutputPointType &           iP2,
-                 OutputVectorRealType &            oNorm,
-                 OutputVectorRealType &            oSqNorm,
-                 OutputVectorRealType &            oDot1,
-                 OutputVectorRealType &            oDot2,
-                 OutputPointIdentifierType &       oId) const;
+  bool UnfoldTriangle(
+    OutputMeshType* oMesh,
+    const OutputPointIdentifierType& iId, const OutputPointType& iP,
+    const OutputPointIdentifierType& iId1, const OutputPointType& iP1,
+    const OutputPointIdentifierType& iId2, const OutputPointType &iP2,
+    OutputVectorRealType& oNorm, OutputVectorRealType& oSqNorm,
+    OutputVectorRealType& oDot1, OutputVectorRealType& oDot2,
+    OutputPointIdentifierType& oId ) const;
 
-  bool
-  CheckTopology(OutputMeshType * oMesh, const NodeType & iNode) override;
+  bool CheckTopology( OutputMeshType* oMesh,
+                      const NodeType& iNode ) ITK_OVERRIDE;
 
-  void
-  InitializeOutput(OutputMeshType * oMesh) override;
+  void InitializeOutput( OutputMeshType* oMesh ) ITK_OVERRIDE;
 
 private:
-  const InputMeshType * m_InputMesh;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingQuadEdgeMeshFilterBase);
+
+  const InputMeshType *m_InputMesh;
 };
-} // namespace itk
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkFastMarchingQuadEdgeMeshFilterBase.hxx"
+#include "itkFastMarchingQuadEdgeMeshFilterBase.hxx"
 #endif
 
 #endif // itkFastMarchingQuadEdgeMeshFilterBase_h

@@ -8,10 +8,8 @@
 // presents itself in a templated and more object-oriented manner.
 
 #include <vector>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
-#include "vnl_matrix.h"
+#include <vcl_compiler.h>
+#include <vnl/vnl_matrix.h>
 #include "vnl/vnl_export.h"
 
 //: Find the best column to row assignment given a cost matrix.
@@ -31,7 +29,7 @@
 //
 //  \relatesalso vnl_matrix
 template <class T>
-class VNL_EXPORT vnl_hungarian_algorithm
+class VNL_TEMPLATE_EXPORT vnl_hungarian_algorithm
 {
  public:
 
@@ -59,7 +57,7 @@ class VNL_EXPORT vnl_hungarian_algorithm
 
   vnl_hungarian_algorithm() : m_TotalCost(0) {}
 
-  ~vnl_hungarian_algorithm() = default;
+  ~vnl_hungarian_algorithm() {}
 
   //: This constructor (and the following cast operator) is provided for backward compatibility with the original function implementation
   vnl_hungarian_algorithm(vnl_matrix<T> const& cost) { SetCostMatrix(cost); StartAssignment(); }

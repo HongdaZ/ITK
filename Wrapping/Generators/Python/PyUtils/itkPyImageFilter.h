@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@
 // The python header defines _POSIX_C_SOURCE without a preceding #undef
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
-#include "Python.h"
+// For Python 2.7 hypot bug, see https://bugs.python.org/issue11566
+#include "PatchedPython27pyconfig.h"
+#include <Python.h>
 
 namespace itk
 {
@@ -36,16 +38,14 @@ namespace itk
 
 
 template <class TInputImage, class TOutputImage>
-class PyImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+class PyImageFilter : public ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PyImageFilter);
-
-  /** Standard class type aliases. */
-  using Self = PyImageFilter;
-  using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef PyImageFilter                                 Self;
+  typedef ImageToImageFilter<TInputImage,TOutputImage>  Superclass;
+  typedef SmartPointer<Self>                            Pointer;
+  typedef SmartPointer<const Self>                      ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,39 +53,41 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(PyImageFilter, ImageToImageFilter);
 
-  /** Some convenient type alias. */
-  using InputImageType = TInputImage;
-  using InputImagePointer = typename InputImageType::Pointer;
-  using InputImageRegionType = typename InputImageType::RegionType;
-  using InputImagePixelType = typename InputImageType::PixelType;
-  using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
-  using OutputImagePixelType = typename OutputImageType::PixelType;
+  /** Some convenient typedefs. */
+  typedef TInputImage                              InputImageType;
+  typedef typename    InputImageType::Pointer      InputImagePointer;
+  typedef typename    InputImageType::RegionType   InputImageRegionType;
+  typedef typename    InputImageType::PixelType    InputImagePixelType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename     OutputImageType::Pointer    OutputImagePointer;
+  typedef typename     OutputImageType::RegionType OutputImageRegionType;
+  typedef typename     OutputImageType::PixelType  OutputImagePixelType;
 
   /** ImageDimension enumeration */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int,
+                      TOutputImage::ImageDimension);
 
 
-  void
-  SetPyGenerateData(PyObject * obj);
+  void SetPyGenerateData(PyObject *obj);
 
 protected:
   PyImageFilter();
   virtual ~PyImageFilter();
-  virtual void
-  GenerateData();
+  virtual void GenerateData();
 
 private:
-  PyObject * m_Object;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PyImageFilter);
+  PyObject *m_Object;
+
 };
 
 } // end namespace itk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkPyImageFilter.hxx"
+#include "itkPyImageFilter.hxx"
 #endif
 
 #endif // _itkPyImageFilter_h

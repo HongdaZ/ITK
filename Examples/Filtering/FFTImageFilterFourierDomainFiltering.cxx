@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,14 +59,13 @@
 // Software Guide : EndCodeSnippet
 
 
-int
-main(int argc, char * argv[])
+int main( int argc, char * argv [] )
 {
-  if (argc < 4)
-  {
+  if( argc < 4 )
+    {
     std::cerr << "Usage: " << argv[0] << " inputScalarImage  inputMaskImage";
     std::cerr << " outputFilteredImage" << std::endl;
-  }
+    }
 
   // Software Guide : BeginLatex
   //
@@ -76,10 +75,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using InputPixelType = float;
-  constexpr unsigned int Dimension = 2;
+  typedef float  InputPixelType;
+  const unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType, Dimension > InputImageType;
   // Software Guide : EndCodeSnippet
 
 
@@ -91,9 +90,9 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using MaskPixelType = unsigned char;
+  typedef unsigned char  MaskPixelType;
 
-  using MaskImageType = itk::Image<MaskPixelType, Dimension>;
+  typedef itk::Image< MaskPixelType, Dimension > MaskImageType;
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -104,14 +103,14 @@ main(int argc, char * argv[])
   //
   // Software Guide : EndLatex
 
-  using InputReaderType = itk::ImageFileReader<InputImageType>;
-  using MaskReaderType = itk::ImageFileReader<MaskImageType>;
+  typedef itk::ImageFileReader< InputImageType >    InputReaderType;
+  typedef itk::ImageFileReader< MaskImageType  >    MaskReaderType;
 
   InputReaderType::Pointer inputReader = InputReaderType::New();
-  MaskReaderType::Pointer  maskReader = MaskReaderType::New();
+  MaskReaderType::Pointer  maskReader  = MaskReaderType::New();
 
-  inputReader->SetFileName(argv[1]);
-  maskReader->SetFileName(argv[2]);
+  inputReader->SetFileName( argv[1] );
+  maskReader->SetFileName( argv[2] );
 
   // Software Guide : BeginLatex
   //
@@ -123,11 +122,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using FFTFilterType = itk::VnlForwardFFTImageFilter<InputImageType>;
+  typedef itk::VnlForwardFFTImageFilter< InputImageType >  FFTFilterType;
 
   FFTFilterType::Pointer fftFilter = FFTFilterType::New();
 
-  fftFilter->SetInput(inputReader->GetOutput());
+  fftFilter->SetInput( inputReader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
@@ -141,10 +140,11 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SpectralImageType = FFTFilterType::OutputImageType;
+  typedef FFTFilterType::OutputImageType    SpectralImageType;
 
-  using MaskFilterType =
-    itk::MaskImageFilter<SpectralImageType, MaskImageType, SpectralImageType>;
+  typedef itk::MaskImageFilter< SpectralImageType,
+                                    MaskImageType,
+                                    SpectralImageType >  MaskFilterType;
 
   MaskFilterType::Pointer maskFilter = MaskFilterType::New();
   // Software Guide : EndCodeSnippet
@@ -159,8 +159,8 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  maskFilter->SetInput1(fftFilter->GetOutput());
-  maskFilter->SetInput2(maskReader->GetOutput());
+  maskFilter->SetInput1( fftFilter->GetOutput() );
+  maskFilter->SetInput2( maskReader->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -171,10 +171,10 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using SpectralWriterType = itk::ImageFileWriter<SpectralImageType>;
+  typedef itk::ImageFileWriter< SpectralImageType > SpectralWriterType;
   SpectralWriterType::Pointer spectralWriter = SpectralWriterType::New();
   spectralWriter->SetFileName("filteredSpectrum.mhd");
-  spectralWriter->SetInput(maskFilter->GetOutput());
+  spectralWriter->SetInput( maskFilter->GetOutput() );
   spectralWriter->Update();
   // Software Guide : EndCodeSnippet
 
@@ -189,11 +189,12 @@ main(int argc, char * argv[])
 
 
   // Software Guide : BeginCodeSnippet
-  using IFFTFilterType = itk::VnlInverseFFTImageFilter<SpectralImageType>;
+  typedef itk::VnlInverseFFTImageFilter<
+    SpectralImageType >  IFFTFilterType;
 
   IFFTFilterType::Pointer fftInverseFilter = IFFTFilterType::New();
 
-  fftInverseFilter->SetInput(maskFilter->GetOutput());
+  fftInverseFilter->SetInput( maskFilter->GetOutput() );
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -207,15 +208,15 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   try
-  {
+    {
     fftInverseFilter->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Error: " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
   // Software Guide : EndCodeSnippet
 
 
@@ -228,23 +229,23 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using WriterType = itk::ImageFileWriter<InputImageType>;
+  typedef itk::ImageFileWriter< InputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[3]);
-  writer->SetInput(fftInverseFilter->GetOutput());
+  writer->SetFileName( argv[3] );
+  writer->SetInput( fftInverseFilter->GetOutput() );
   // Software Guide : EndCodeSnippet
 
 
   try
-  {
+    {
     writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
+    }
+  catch( itk::ExceptionObject & excp )
+    {
     std::cerr << "Error writing the real image: " << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Software Guide : BeginLatex
   //

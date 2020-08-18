@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,10 +25,11 @@ namespace itk
 /**
  * Constructor
  */
-template <typename TInputImage, typename TOutput, typename TCoordRep>
-ImageFunction<TInputImage, TOutput, TCoordRep>::ImageFunction()
+template< typename TInputImage, typename TOutput, typename TCoordRep >
+ImageFunction< TInputImage, TOutput, TCoordRep >
+::ImageFunction()
 {
-  m_Image = nullptr;
+  m_Image = ITK_NULLPTR;
   m_StartIndex.Fill(0);
   m_EndIndex.Fill(0);
   m_StartContinuousIndex.Fill(0.0f);
@@ -38,9 +39,12 @@ ImageFunction<TInputImage, TOutput, TCoordRep>::ImageFunction()
 /**
  * Standard "PrintSelf" method
  */
-template <typename TInputImage, typename TOutput, typename TCoordRep>
+template< typename TInputImage, typename TOutput, typename TCoordRep >
 void
-ImageFunction<TInputImage, TOutput, TCoordRep>::PrintSelf(std::ostream & os, Indent indent) const
+ImageFunction< TInputImage, TOutput, TCoordRep >
+::PrintSelf(
+  std::ostream & os,
+  Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "InputImage: " << m_Image.GetPointer() << std::endl;
@@ -53,25 +57,27 @@ ImageFunction<TInputImage, TOutput, TCoordRep>::PrintSelf(std::ostream & os, Ind
 /**
  * Initialize by setting the input image
  */
-template <typename TInputImage, typename TOutput, typename TCoordRep>
+template< typename TInputImage, typename TOutput, typename TCoordRep >
 void
-ImageFunction<TInputImage, TOutput, TCoordRep>::SetInputImage(const InputImageType * ptr)
+ImageFunction< TInputImage, TOutput, TCoordRep >
+::SetInputImage(
+  const InputImageType *ptr)
 {
   // set the input image
   m_Image = ptr;
 
-  if (ptr)
-  {
+  if ( ptr )
+    {
     typename InputImageType::SizeType size = ptr->GetBufferedRegion().GetSize();
     m_StartIndex = ptr->GetBufferedRegion().GetIndex();
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
-    {
-      m_EndIndex[j] = m_StartIndex[j] + static_cast<IndexValueType>(size[j]) - 1;
-      m_StartContinuousIndex[j] = static_cast<CoordRepType>(m_StartIndex[j] - 0.5);
-      m_EndContinuousIndex[j] = static_cast<CoordRepType>(m_EndIndex[j] + 0.5);
+    for ( unsigned int j = 0; j < ImageDimension; j++ )
+      {
+      m_EndIndex[j] = m_StartIndex[j] + static_cast< IndexValueType >( size[j] ) - 1;
+      m_StartContinuousIndex[j] = static_cast< CoordRepType >( m_StartIndex[j] - 0.5 );
+      m_EndContinuousIndex[j]   = static_cast< CoordRepType >( m_EndIndex[j] + 0.5 );
+      }
     }
-  }
 }
 } // end namespace itk
 

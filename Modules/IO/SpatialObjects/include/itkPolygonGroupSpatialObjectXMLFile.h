@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,34 +19,32 @@
 #define itkPolygonGroupSpatialObjectXMLFile_h
 
 
+#include "itkPolygonGroupSpatialObject.h"
 #include "itkXMLFile.h"
-#include "itkGroupSpatialObject.h"
-#include "itkPolygonSpatialObject.h"
-
 namespace itk
 {
+/* 3D Polygon Groups only ones that make sense for this data type */
+typedef PolygonGroupSpatialObject< 3 > PGroupSpatialObjectType;
+
 /** \class PolygonGroupSpatialObjectXMLFileReader
  *
  * Reads an XML-format file containing a list of polygons, and
  * creates a corresponding PolygonGroupSpatialObject
  * \ingroup ITKIOSpatialObjects
  */
-class PolygonGroupSpatialObjectXMLFileReader : public XMLReader<GroupSpatialObject<3>>
+class PolygonGroupSpatialObjectXMLFileReader:
+  public XMLReader< PGroupSpatialObjectType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileReader);
+  /** Standard typedefs */
+  typedef PolygonGroupSpatialObjectXMLFileReader Self;
+  typedef XMLReader< PGroupSpatialObjectType >   Superclass;
+  typedef SmartPointer< Self >                   Pointer;
 
-  /** Standard type alias */
-  using Self = PolygonGroupSpatialObjectXMLFileReader;
-  using Superclass = XMLReader<GroupSpatialObject<3>>;
-  using Pointer = SmartPointer<Self>;
-
-  using GroupSpatialObjectType = GroupSpatialObject<3>;
-
-  using GroupType = GroupSpatialObjectType;
-  using PolygonSpatialObjectType = PolygonSpatialObject<3>;
-  using PolygonPointType = SpatialObjectPoint<3>;
-  using PolygonPointListType = std::vector<PolygonPointType>;
+  typedef PGroupSpatialObjectType   PolygonGroupType;
+  typedef PolygonSpatialObject< 3 > PolygonSpatialObjectType;
+  typedef SpatialObjectPoint< 3 >   PointType;
+  typedef std::vector< PointType >  PointListType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(PolygonGroupSpatialObjectXMLFileReader, XMLReader);
@@ -56,66 +54,62 @@ public:
 
 public:
   /** Determine if a file can be read */
-  int
-  CanReadFile(const char * name) override;
+  virtual int CanReadFile(const char *name) ITK_OVERRIDE;
 
 protected:
-  PolygonGroupSpatialObjectXMLFileReader() = default;
-  ~PolygonGroupSpatialObjectXMLFileReader() override = default;
+  PolygonGroupSpatialObjectXMLFileReader() {}
+  virtual ~PolygonGroupSpatialObjectXMLFileReader() ITK_OVERRIDE {}
 
-  void
-  StartElement(const char * name, const char ** atts) override;
+  virtual void StartElement(const char *name, const char **atts) ITK_OVERRIDE;
 
-  void
-  EndElement(const char * name) override;
+  virtual void EndElement(const char *name) ITK_OVERRIDE;
 
-  void
-  CharacterDataHandler(const char * inData, int inLength) override;
+  virtual void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
 
 private:
-  GroupSpatialObjectType::Pointer   m_Group;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileReader);
+
+  PGroupSpatialObjectType::Pointer  m_PGroup;
   PolygonSpatialObjectType::Pointer m_CurPoly;
-  PolygonPointListType              m_CurPointList;
+  PointListType                     m_CurPointList;
   std::string                       m_CurCharacterData;
 };
 
 /** \class PolygonGroupSpatialObjectXMLFileWriter
  *
  * Writes an XML-format file containing a list of polygons,
- * based on a GroupSpatialObject.
+ * based on a PolygonGroupSpatialObject.
  * \ingroup ITKIOSpatialObjects
  */
-class PolygonGroupSpatialObjectXMLFileWriter : public XMLWriterBase<GroupSpatialObject<3>>
+class PolygonGroupSpatialObjectXMLFileWriter:
+  public XMLWriterBase< PGroupSpatialObjectType >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileWriter);
-
-  /** standard type alias */
-  using Superclass = XMLWriterBase<GroupSpatialObject<3>>;
-  using Self = PolygonGroupSpatialObjectXMLFileWriter;
-  using Pointer = SmartPointer<Self>;
+  /** standard typedefs */
+  typedef XMLWriterBase< PGroupSpatialObjectType > Superclass;
+  typedef PolygonGroupSpatialObjectXMLFileWriter   Self;
+  typedef SmartPointer< Self >                     Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(PolygonGroupSpatialObjectXMLFileWriter, XMLWriterBase<GroupSpatialObjectType>);
-
-  using GroupType = GroupSpatialObject<3>;
-
-  using PolygonSpatialObjectType = PolygonSpatialObject<3>;
-
+  itkTypeMacro(PolygonGroupSpatialObjectXMLFileWriter,
+               XMLWriterBase< PGroupSpatialObjectType > );
+  typedef PGroupSpatialObjectType   PolygonGroupType;
+  typedef PolygonSpatialObject< 3 > PolygonSpatialObjectType;
   /** Test whether a file is writable. */
-  int
-  CanWriteFile(const char * name) override;
+  virtual int CanWriteFile(const char *name) ITK_OVERRIDE;
 
   /** Actually write out the file in question */
-  int
-  WriteFile() override;
+  virtual int WriteFile() ITK_OVERRIDE;
 
 protected:
-  PolygonGroupSpatialObjectXMLFileWriter() = default;
-  ~PolygonGroupSpatialObjectXMLFileWriter() override = default;
+  PolygonGroupSpatialObjectXMLFileWriter() {}
+  virtual ~PolygonGroupSpatialObjectXMLFileWriter() ITK_OVERRIDE {}
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileWriter);
 };
-} // namespace itk
+}
 #endif

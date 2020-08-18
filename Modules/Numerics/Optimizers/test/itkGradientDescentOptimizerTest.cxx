@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  *
  *=========================================================================*/
 
-#include <set>
 #include "itkGradientDescentOptimizer.h"
 #include "itkMath.h"
 
@@ -40,27 +39,26 @@
 class gradientCostFunction : public itk::SingleValuedCostFunction
 {
 public:
-  using Self = gradientCostFunction;
-  using Superclass = itk::SingleValuedCostFunction;
-  using Pointer = itk::SmartPointer<Self>;
-  using ConstPointer = itk::SmartPointer<const Self>;
-  itkNewMacro(Self);
-  itkTypeMacro(gradientCostFunction, SingleValuedCostFunction);
 
-  enum
+  typedef gradientCostFunction            Self;
+  typedef itk::SingleValuedCostFunction   Superclass;
+  typedef itk::SmartPointer<Self>         Pointer;
+  typedef itk::SmartPointer<const Self>   ConstPointer;
+  itkNewMacro( Self );
+  itkTypeMacro( gradientCostFunction, SingleValuedCostFunction );
+
+  enum { SpaceDimension=2 };
+
+  typedef Superclass::ParametersType      ParametersType;
+  typedef Superclass::DerivativeType      DerivativeType;
+  typedef Superclass::MeasureType         MeasureType;
+
+  gradientCostFunction()
   {
-    SpaceDimension = 2
-  };
-
-  using ParametersType = Superclass::ParametersType;
-  using DerivativeType = Superclass::DerivativeType;
-  using MeasureType = Superclass::MeasureType;
-
-  gradientCostFunction() = default;
+  }
 
 
-  MeasureType
-  GetValue(const ParametersType & parameters) const override
+  virtual MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
 
     double x = parameters[0];
@@ -70,15 +68,16 @@ public:
     std::cout << x << " ";
     std::cout << y << ") = ";
 
-    MeasureType measure = 0.5 * (3 * x * x + 4 * x * y + 6 * y * y) - 2 * x + 8 * y;
+    MeasureType measure = 0.5*(3*x*x+4*x*y+6*y*y) - 2*x + 8*y;
 
     std::cout << measure << std::endl;
 
     return measure;
+
   }
 
-  void
-  GetDerivative(const ParametersType & parameters, DerivativeType & derivative) const override
+  void GetDerivative( const ParametersType & parameters,
+                            DerivativeType & derivative ) const ITK_OVERRIDE
   {
 
     double x = parameters[0];
@@ -89,72 +88,74 @@ public:
     std::cout << y << ") = ";
 
     DerivativeType temp(SpaceDimension);
-    temp.Fill(0);
+    temp.Fill( 0 );
     derivative = temp;
-    derivative[0] = 3 * x + 2 * y - 2;
-    derivative[1] = 2 * x + 6 * y + 8;
+    derivative[0] = 3 * x + 2 * y -2;
+    derivative[1] = 2 * x + 6 * y +8;
 
     std::cout << derivative << std::endl;
+
   }
 
 
-  unsigned int
-  GetNumberOfParameters() const override
-  {
+  virtual unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
+    {
     return SpaceDimension;
-  }
+    }
 
 private:
+
+
 };
 
-int
-itkGradientDescentOptimizerTest(int, char *[])
+int itkGradientDescentOptimizerTest(int, char* [] )
 {
   std::cout << "Gradient Descent Optimizer Test ";
   std::cout << std::endl << std::endl;
 
-  using OptimizerType = itk::GradientDescentOptimizer;
+  typedef  itk::GradientDescentOptimizer  OptimizerType;
 
 
   // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  OptimizerType::Pointer  itkOptimizer = OptimizerType::New();
 
 
   // Declaration of the CostFunction
   gradientCostFunction::Pointer costFunction = gradientCostFunction::New();
 
 
-  itkOptimizer->SetCostFunction(costFunction);
+  itkOptimizer->SetCostFunction( costFunction.GetPointer() );
 
 
-  using ParametersType = gradientCostFunction::ParametersType;
+  typedef gradientCostFunction::ParametersType    ParametersType;
 
-  const unsigned int spaceDimension = costFunction->GetNumberOfParameters();
+  const unsigned int spaceDimension =
+                      costFunction->GetNumberOfParameters();
 
   // We start not so far from  | 2 -2 |
-  ParametersType initialPosition(spaceDimension);
+  ParametersType  initialPosition( spaceDimension );
 
-  initialPosition[0] = 100;
+  initialPosition[0] =  100;
   initialPosition[1] = -100;
 
   itkOptimizer->MinimizeOn();
-  itkOptimizer->SetLearningRate(0.1);
-  itkOptimizer->SetNumberOfIterations(50);
+  itkOptimizer->SetLearningRate( 0.1 );
+  itkOptimizer->SetNumberOfIterations( 50 );
 
-  itkOptimizer->SetInitialPosition(initialPosition);
+  itkOptimizer->SetInitialPosition( initialPosition );
 
   try
-  {
+    {
     itkOptimizer->StartOptimization();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
+    }
+  catch( itk::ExceptionObject & e )
+    {
     std::cout << "Exception thrown ! " << std::endl;
     std::cout << "An error occurred during Optimization" << std::endl;
-    std::cout << "Location    = " << e.GetLocation() << std::endl;
+    std::cout << "Location    = " << e.GetLocation()    << std::endl;
     std::cout << "Description = " << e.GetDescription() << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   ParametersType finalPosition = itkOptimizer->GetCurrentPosition();
   std::cout << "Solution        = (";
@@ -164,13 +165,13 @@ itkGradientDescentOptimizerTest(int, char *[])
   //
   // check results to see if it is within range
   //
-  bool   pass = true;
+  bool pass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
-  {
-    if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
+  for( unsigned int j = 0; j < 2; j++ )
+    {
+    if( itk::Math::abs( finalPosition[j] - trueParameters[j] ) > 0.01 )
       pass = false;
-  }
+    }
 
   // Exercise various member functions.
   std::cout << "Maximize: " << itkOptimizer->GetMaximize() << std::endl;
@@ -179,27 +180,17 @@ itkGradientDescentOptimizerTest(int, char *[])
   std::cout << "NumberOfIterations: " << itkOptimizer->GetNumberOfIterations();
   std::cout << std::endl;
 
-  itkOptimizer->Print(std::cout);
+  itkOptimizer->Print( std::cout );
   std::cout << "Stop description   = " << itkOptimizer->GetStopConditionDescription() << std::endl;
 
-  // Test streaming enumeration for GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer elements
-  const std::set<itk::GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer>
-    allStopConditionGradientDescentOptimizer{
-      itk::GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer::MaximumNumberOfIterations,
-      itk::GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer::MetricError
-    };
-  for (const auto & ee : allStopConditionGradientDescentOptimizer)
-  {
-    std::cout << "STREAMED ENUM VALUE GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer: " << ee
-              << std::endl;
-  }
-
-  if (!pass)
-  {
+  if( !pass )
+    {
     std::cout << "Test failed." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;
+
+
 }

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "itkComplexToComplexFFTImageFilter.h"
-
 #ifndef itkFFTWComplexToComplexFFTImageFilter_h
-#  define itkFFTWComplexToComplexFFTImageFilter_h
+#define itkFFTWComplexToComplexFFTImageFilter_h
 
-#  include "itkFFTWCommon.h"
+#include "itkComplexToComplexFFTImageFilter.h"
+#include "itkFFTWCommon.h"
 
 
 namespace itk
 {
-/**
- *\class FFTWComplexToComplexFFTImageFilter
+/** \class FFTWComplexToComplexFFTImageFilter
  *
  *  \brief Implements an API to enable the Fourier transform or the inverse
  *  Fourier transform of images with complex valued voxels to be computed using
@@ -56,23 +54,22 @@ namespace itk
  *
  * \sa FFTWGlobalConfiguration
  */
-template <typename TImage>
-class ITK_TEMPLATE_EXPORT FFTWComplexToComplexFFTImageFilter : public ComplexToComplexFFTImageFilter<TImage>
+template< typename TImage >
+class ITK_TEMPLATE_EXPORT FFTWComplexToComplexFFTImageFilter:
+  public ComplexToComplexFFTImageFilter< TImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FFTWComplexToComplexFFTImageFilter);
+  /** Standard class typedefs. */
+  typedef FFTWComplexToComplexFFTImageFilter       Self;
+  typedef ComplexToComplexFFTImageFilter< TImage > Superclass;
+  typedef SmartPointer< Self >                     Pointer;
+  typedef SmartPointer< const Self >               ConstPointer;
 
-  /** Standard class type aliases. */
-  using Self = FFTWComplexToComplexFFTImageFilter;
-  using Superclass = ComplexToComplexFFTImageFilter<TImage>;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
-
-  using ImageType = TImage;
-  using PixelType = typename ImageType::PixelType;
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImageRegionType = typename OutputImageType::RegionType;
+  typedef TImage                               ImageType;
+  typedef typename ImageType::PixelType        PixelType;
+  typedef typename Superclass::InputImageType  InputImageType;
+  typedef typename Superclass::OutputImageType OutputImageType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   // the proxy type is a wrapper for the fftw API
   // since the proxy is only defined over double and float,
@@ -80,18 +77,20 @@ public:
   // is trying to use double if only the float FFTW version is
   // configured in, or float if only double is configured.
   //
-  using FFTWProxyType = typename fftw::Proxy<typename PixelType::value_type>;
+  typedef typename fftw::Proxy< typename PixelType::value_type > FFTWProxyType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FFTWComplexToComplexFFTImageFilter, ComplexToComplexFFTImageFilter);
+  itkTypeMacro(FFTWComplexToComplexFFTImageFilter,
+               ComplexToComplexFFTImageFilter);
 
-  static constexpr unsigned int ImageDimension = ImageType::ImageDimension;
+  itkStaticConstMacro(ImageDimension, unsigned int,
+                      ImageType::ImageDimension);
 
-  /** Image type type alias support */
-  using ImageSizeType = typename ImageType::SizeType;
+  /** Image type typedef support. */
+  typedef typename ImageType::SizeType ImageSizeType;
 
   /**
    * Set/Get the behavior of wisdom plan creation. The default is
@@ -99,60 +98,51 @@ public:
    *
    * The parameter is one of the FFTW planner rigor flags FFTW_ESTIMATE, FFTW_MEASURE,
    * FFTW_PATIENT, FFTW_EXHAUSTIVE provided by FFTWGlobalConfiguration.
-   *
-   * This is not used when ITK_USE_CUFFTW is enabled.
-   *
    * /sa FFTWGlobalConfiguration
    */
-  virtual void
-  SetPlanRigor(const int & value)
+  virtual void SetPlanRigor( const int & value )
   {
-#  ifndef ITK_USE_CUFFTW
     // use that method to check the value
-    FFTWGlobalConfiguration::GetPlanRigorName(value);
-#  endif
-    if (m_PlanRigor != value)
-    {
+    FFTWGlobalConfiguration::GetPlanRigorName( value );
+    if( m_PlanRigor != value )
+      {
       m_PlanRigor = value;
       this->Modified();
-    }
+      }
   }
-  itkGetConstReferenceMacro(PlanRigor, int);
-  void
-  SetPlanRigor(const std::string & name)
+  itkGetConstReferenceMacro( PlanRigor, int );
+  void SetPlanRigor( const std::string & name )
   {
-#  ifndef ITK_USE_CUFFTW
-    this->SetPlanRigor(FFTWGlobalConfiguration::GetPlanRigorValue(name));
-#  endif
+    this->SetPlanRigor( FFTWGlobalConfiguration::GetPlanRigorValue( name ) );
   }
 
 protected:
   FFTWComplexToComplexFFTImageFilter();
-  ~FFTWComplexToComplexFFTImageFilter() override = default;
+  virtual ~FFTWComplexToComplexFFTImageFilter() {}
 
-  void
-  UpdateOutputData(DataObject * output) override;
+  virtual void UpdateOutputData(DataObject *output) ITK_OVERRIDE;
 
-  void
-  BeforeThreadedGenerateData() override;
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                            ThreadIdType threadId ) ITK_OVERRIDE;
 
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
 private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FFTWComplexToComplexFFTImageFilter);
+
   bool m_CanUseDestructiveAlgorithm;
 
   int m_PlanRigor;
+
 };
 
 
 } // namespace itk
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkFFTWComplexToComplexFFTImageFilter.hxx"
-#  endif
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkFFTWComplexToComplexFFTImageFilter.hxx"
+#endif
 
-#endif // itkFFTWComplexToComplexFFTImageFilter_h
+#endif //itkFFTWComplexToComplexFFTImageFilter_h

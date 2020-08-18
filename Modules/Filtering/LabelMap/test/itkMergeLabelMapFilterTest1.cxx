@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,97 +25,85 @@
 
 #include "itkTestingMacros.h"
 
-int
-itkMergeLabelMapFilterTest1(int argc, char * argv[])
+int itkMergeLabelMapFilterTest1( int argc, char * argv[] )
 {
-  if (argc != 8)
-  {
+  if( argc != 8 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " input1 input2 output background1 background2 method expectfailure" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int dim = 2;
-  using PixelType = unsigned char;
+  const unsigned int dim = 2;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, dim>;
+  typedef itk::Image< PixelType, dim > ImageType;
 
-  using LabelObjectType = itk::LabelObject<PixelType, dim>;
-  using LabelMapType = itk::LabelMap<LabelObjectType>;
+  typedef itk::LabelObject< PixelType, dim >      LabelObjectType;
+  typedef itk::LabelMap< LabelObjectType >        LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using I2LType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< ImageType, LabelMapType> I2LType;
   I2LType::Pointer i2l = I2LType::New();
-  i2l->SetInput(reader->GetOutput());
+  i2l->SetInput( reader->GetOutput() );
 
-  const PixelType background1 = std::stoi(argv[4]);
-  i2l->SetBackgroundValue(background1);
-  ITK_TEST_SET_GET_VALUE(background1, i2l->GetBackgroundValue());
+  const PixelType background1 = atoi(argv[4]);
+  i2l->SetBackgroundValue( background1 );
+  TEST_SET_GET_VALUE( background1, i2l->GetBackgroundValue() );
 
   ReaderType::Pointer reader2 = ReaderType::New();
-  reader2->SetFileName(argv[2]);
+  reader2->SetFileName( argv[2] );
   I2LType::Pointer i2l2 = I2LType::New();
-  i2l2->SetInput(reader2->GetOutput());
+  i2l2->SetInput( reader2->GetOutput() );
 
-  const PixelType background2 = std::stoi(argv[5]);
-  i2l2->SetBackgroundValue(background2);
-  ITK_TEST_SET_GET_VALUE(background2, i2l2->GetBackgroundValue());
+  const PixelType background2 = atoi(argv[5]);
+  i2l2->SetBackgroundValue( background2 );
+  TEST_SET_GET_VALUE( background2, i2l2->GetBackgroundValue() );
 
-  using ChangeType = itk::MergeLabelMapFilter<LabelMapType>;
+  typedef itk::MergeLabelMapFilter< LabelMapType > ChangeType;
   ChangeType::Pointer change = ChangeType::New();
-  change->SetInput(i2l->GetOutput());
-  change->SetInput(1, i2l2->GetOutput());
+  change->SetInput( i2l->GetOutput() );
+  change->SetInput( 1, i2l2->GetOutput() );
   std::cout << "======" << change->GetInputNames()[0] << std::endl;
   std::cout << "======" << change->GetInputNames()[1] << std::endl;
 
-  auto method = static_cast<itk::ChoiceMethodEnum>(std::stoi(argv[6]));
+  typedef ChangeType::MethodChoice MethodChoice;
+  MethodChoice method = static_cast<MethodChoice>( atoi( argv[6] ) );
 
-  change->SetMethod(itk::ChoiceMethodEnum::STRICT);
-  ITK_TEST_SET_GET_VALUE(itk::ChoiceMethodEnum::STRICT, change->GetMethod());
+  change->SetMethod( ChangeType::STRICT );
+  TEST_SET_GET_VALUE( ChangeType::STRICT, change->GetMethod() );
 
-  change->SetMethod(itk::ChoiceMethodEnum::KEEP);
-  ITK_TEST_SET_GET_VALUE(itk::ChoiceMethodEnum::KEEP, change->GetMethod());
+  change->SetMethod( ChangeType::KEEP );
+  TEST_SET_GET_VALUE( ChangeType::KEEP, change->GetMethod() );
 
-  change->SetMethod(method);
+  change->SetMethod( method );
   itk::SimpleFilterWatcher watcher6(change, "filter");
 
-  using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> L2IType;
   L2IType::Pointer l2i = L2IType::New();
-  l2i->SetInput(change->GetOutput());
+  l2i->SetInput( change->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(l2i->GetOutput());
-  writer->SetFileName(argv[3]);
+  writer->SetInput( l2i->GetOutput() );
+  writer->SetFileName( argv[3] );
   writer->UseCompressionOn();
 
-  bool expectfailure = std::stoi(argv[7]);
+  bool expectfailure = atoi( argv[7] );
 
-  if (expectfailure)
-  {
-    ITK_TRY_EXPECT_EXCEPTION(writer->Update());
-  }
+  if( expectfailure )
+    {
+    TRY_EXPECT_EXCEPTION( writer->Update() );
+    }
   else
-  {
-    ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
-  }
+    {
+    TRY_EXPECT_NO_EXCEPTION( writer->Update() );
+    }
 
-  ITK_TEST_SET_GET_VALUE(background1, change->GetOutput()->GetBackgroundValue());
-
-  // Test streaming enumeration for MergeLabelMapFilterEnums::ChoiceMethod elements
-  const std::set<itk::MergeLabelMapFilterEnums::ChoiceMethod> allChoiceMethod{
-    itk::MergeLabelMapFilterEnums::ChoiceMethod::KEEP,
-    itk::MergeLabelMapFilterEnums::ChoiceMethod::AGGREGATE,
-    itk::MergeLabelMapFilterEnums::ChoiceMethod::PACK,
-    itk::MergeLabelMapFilterEnums::ChoiceMethod::STRICT
-  };
-  for (const auto & ee : allChoiceMethod)
-  {
-    std::cout << "STREAMED ENUM VALUE MergeLabelMapFilterEnums::ChoiceMethod: " << ee << std::endl;
-  }
+  TEST_SET_GET_VALUE( background1, change->GetOutput()->GetBackgroundValue() );
 
   return EXIT_SUCCESS;
 }

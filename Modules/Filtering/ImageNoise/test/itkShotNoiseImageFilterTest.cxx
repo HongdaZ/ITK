@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,49 +23,50 @@
 #include "itkShotNoiseImageFilter.h"
 #include "itkTestingMacros.h"
 
-int
-itkShotNoiseImageFilterTest(int argc, char * argv[])
+int itkShotNoiseImageFilterTest(int argc, char * argv[])
 {
 
-  if (argc < 3)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " input output [scale]" << std::endl;
+  if( argc < 3 )
+    {
+    std::cerr << "usage: " << argv[0] << " input output [scale]" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
-  using ImageType = itk::Image<PixelType, Dimension>;
+  typedef unsigned char                       PixelType;
+  typedef itk::Image< PixelType, Dimension >  ImageType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  using ShotNoiseImageFilterType = itk::ShotNoiseImageFilter<ImageType, ImageType>;
+  typedef itk::ShotNoiseImageFilter< ImageType, ImageType >
+    ShotNoiseImageFilterType;
   ShotNoiseImageFilterType::Pointer shotNoiseImageFilter = ShotNoiseImageFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(shotNoiseImageFilter, ShotNoiseImageFilter, NoiseBaseImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( shotNoiseImageFilter, ShotNoiseImageFilter,
+    NoiseBaseImageFilter );
 
   double scale = 1.0;
-  if (argc >= 4)
-  {
-    scale = std::stod(argv[3]);
-  }
-  shotNoiseImageFilter->SetScale(scale);
-  ITK_TEST_SET_GET_VALUE(scale, shotNoiseImageFilter->GetScale());
+  if( argc >= 4 )
+    {
+    scale = atof( argv[3] );
+    }
+  shotNoiseImageFilter->SetScale( scale );
+  TEST_SET_GET_VALUE( scale, shotNoiseImageFilter->GetScale() );
 
 
-  shotNoiseImageFilter->SetInput(reader->GetOutput());
+  shotNoiseImageFilter->SetInput( reader->GetOutput() );
 
-  itk::SimpleFilterWatcher watcher(shotNoiseImageFilter, "ShotNoiseImageFilter");
+  itk::SimpleFilterWatcher watcher( shotNoiseImageFilter, "ShotNoiseImageFilter" );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(shotNoiseImageFilter->GetOutput());
-  writer->SetFileName(argv[2]);
+  writer->SetInput( shotNoiseImageFilter->GetOutput() );
+  writer->SetFileName( argv[2] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }

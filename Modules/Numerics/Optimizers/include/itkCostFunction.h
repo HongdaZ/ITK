@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,46 +32,45 @@ namespace itk
  *
  * \ingroup ITKOptimizers
  */
-template <typename TInternalComputationValueType>
-class ITK_TEMPLATE_EXPORT CostFunctionTemplate : public Object
+template< typename TInternalComputationValueType >
+class ITK_TEMPLATE_EXPORT CostFunctionTemplate:public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CostFunctionTemplate);
-
-  /** Standard class type aliases. */
-  using Self = CostFunctionTemplate;
-  using Superclass = Object;
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  /** Standard class typedefs. */
+  typedef CostFunctionTemplate       Self;
+  typedef Object                     Superclass;
+  typedef SmartPointer< Self >       Pointer;
+  typedef SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CostFunctionTemplate, Object);
 
-  /**  ParametersType type alias.
+  /**  ParametersType typedef.
    *  It defines a position in the optimization search space. */
-  using ParametersValueType = TInternalComputationValueType;
-  using ParametersType = OptimizerParameters<TInternalComputationValueType>;
+  typedef TInternalComputationValueType                        ParametersValueType;
+  typedef OptimizerParameters< TInternalComputationValueType > ParametersType;
 
   /** Return the number of parameters required to compute
    *  this cost function.
    *  This method MUST be overloaded by derived classes. */
-  virtual unsigned int
-  GetNumberOfParameters() const = 0;
+  virtual unsigned int GetNumberOfParameters(void) const  = 0;
 
 protected:
-  CostFunctionTemplate() = default;
-  ~CostFunctionTemplate() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+  CostFunctionTemplate() {}
+  virtual ~CostFunctionTemplate() ITK_OVERRIDE {}
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CostFunctionTemplate);
 };
 
 /** This helps to meet backward compatibility */
-using CostFunction = CostFunctionTemplate<double>;
+typedef CostFunctionTemplate<double> CostFunction;
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkCostFunction.hxx"
+#include "itkCostFunction.hxx"
 #endif
 
 #endif

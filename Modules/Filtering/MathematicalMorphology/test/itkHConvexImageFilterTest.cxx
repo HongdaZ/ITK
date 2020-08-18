@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,78 +17,82 @@
  *=========================================================================*/
 
 #include "itkHConvexImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
+#include "itkFilterWatcher.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkTestingMacros.h"
 
-int
-itkHConvexImageFilterTest(int argc, char * argv[])
+int itkHConvexImageFilterTest( int argc, char * argv[] )
 {
-  if (argc < 5)
-  {
+  if( argc < 5 )
+    {
     std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputImageFile"
-              << " outputImageFile"
-              << " height"
-              << " fullyConnected" << std::endl;
+    std::cerr << argv[0]
+      << " inputImageFile"
+      << " outputImageFile"
+      << " height"
+      << " fullyConnected" << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   //
   // The following code defines the input and output pixel types and their
   // associated image types.
   //
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using InputPixelType = short;
-  using OutputPixelType = unsigned char;
+  typedef short         InputPixelType;
+  typedef unsigned char OutputPixelType;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  typedef itk::Image< InputPixelType, Dimension >   InputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
 
   // Read the input image
-  using ReaderType = itk::ImageFileReader<InputImageType>;
+  typedef itk::ImageFileReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(argv[1]);
+  reader->SetFileName( argv[1] );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+  TRY_EXPECT_NO_EXCEPTION( reader->Update() );
 
 
   // Define the itk::HConvexImageFilter filter type
-  using HConvexFilterType = itk::HConvexImageFilter<InputImageType, OutputImageType>;
+  typedef itk::HConvexImageFilter<
+                            InputImageType,
+                            OutputImageType > HConvexFilterType;
 
   // Create the filter
   HConvexFilterType::Pointer hConvexFilter = HConvexFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(hConvexFilter, HConvexImageFilter, ImageToImageFilter);
+  EXERCISE_BASIC_OBJECT_METHODS( hConvexFilter, HConvexImageFilter,
+    ImageToImageFilter );
 
-  itk::SimpleFilterWatcher watchConvex(hConvexFilter, "HConvexImageFilter");
+  FilterWatcher watchConvex( hConvexFilter, "HConvexImageFilter" );
 
   // Set up the filter
-  auto height = static_cast<HConvexFilterType::InputImagePixelType>(std::stod(argv[3]));
+  HConvexFilterType::InputImagePixelType height =
+    static_cast< HConvexFilterType::InputImagePixelType >( atof( argv[3] ) );
 
-  hConvexFilter->SetHeight(height);
-  ITK_TEST_SET_GET_VALUE(height, hConvexFilter->GetHeight());
+  hConvexFilter->SetHeight( height );
+  TEST_SET_GET_VALUE( height, hConvexFilter->GetHeight() );
 
-  auto fullyConnected = static_cast<bool>(std::stod(argv[4]));
-  ITK_TEST_SET_GET_BOOLEAN(hConvexFilter, FullyConnected, fullyConnected);
+  bool fullyConnected = static_cast< bool >( atof( argv[4] ) );
+  TEST_SET_GET_BOOLEAN( hConvexFilter, FullyConnected, fullyConnected );
 
 
-  hConvexFilter->SetInput(reader->GetOutput());
+  hConvexFilter->SetInput( reader->GetOutput() );
 
   // Run the filter
-  ITK_TRY_EXPECT_NO_EXCEPTION(hConvexFilter->Update());
+  TRY_EXPECT_NO_EXCEPTION( hConvexFilter->Update() );
 
 
   // Write the output
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(argv[2]);
-  writer->SetInput(hConvexFilter->GetOutput());
+  writer->SetFileName( argv[2] );
+  writer->SetInput( hConvexFilter->GetOutput() );
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
 
   std::cout << "Test finished." << std::endl;

@@ -1,6 +1,9 @@
 // This is core/vnl/algo/vnl_conjugate_gradient.h
 #ifndef vnl_conjugate_gradient_h_
 #define vnl_conjugate_gradient_h_
+#ifdef VCL_NEEDS_PRAGMA_INTERFACE
+#pragma interface
+#endif
 //:
 //  \file
 //  \brief  real function minimization
@@ -17,9 +20,7 @@
 //-----------------------------------------------------------------------------
 
 #include <iosfwd>
-#ifdef _MSC_VER
-#  include <vcl_msvc_warnings.h>
-#endif
+#include <vcl_compiler.h>
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_nonlinear_minimizer.h>
@@ -47,7 +48,7 @@ class VNL_ALGO_EXPORT vnl_conjugate_gradient : public vnl_nonlinear_minimizer
   void init(vnl_cost_function &f);
 
   //: Destructor.
-  ~vnl_conjugate_gradient() override;
+  ~vnl_conjugate_gradient();
 
   // Operations----------------------------------------------------------------
 

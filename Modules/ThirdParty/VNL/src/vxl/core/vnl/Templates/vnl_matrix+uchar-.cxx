@@ -1,8 +1,9 @@
+#include <vcl_compiler.h>
 // Disable warning
-#ifdef _MSC_VER
+#ifdef VCL_VC_DOTNET
 // 4146: unary minus operator applied to unsigned type, result still unsigned
-#  pragma warning(disable : 4146)
-#endif //_MSC_VER
+# pragma warning(disable:4146)
+#endif //VCL_VC_DOTNET
 
-#include "vnl/vnl_matrix.hxx"
+#include <vnl/vnl_matrix.hxx>
 VNL_MATRIX_INSTANTIATE(unsigned char);

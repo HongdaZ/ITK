@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@
 
 namespace itk
 {
-/**
- *\class ParametricPath
+/** \class ParametricPath
  * \brief  Represent a parametric path through ND Space
  *
  * This virtual class is intended to represent a parametric path through an
@@ -58,39 +57,36 @@ namespace itk
  * \ingroup PathObjects
  * \ingroup ITKPath
  */
-template <unsigned int VDimension>
-class ITK_TEMPLATE_EXPORT ParametricPath
-  : public Path<double, ContinuousIndex<SpacePrecisionType, VDimension>, VDimension>
+template< unsigned int VDimension >
+class ITK_TEMPLATE_EXPORT ParametricPath:public
+  Path< double, ContinuousIndex< SpacePrecisionType, VDimension >, VDimension >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricPath);
-
-  /** Standard class type aliases. */
-  using Self = ParametricPath;
+  /** Standard class typedefs. */
+  typedef ParametricPath                                   Self;
   /** All paths must be mapable to index space */
-  using ContinuousIndexType = ContinuousIndex<SpacePrecisionType, VDimension>;
-  using Superclass = Path<double, ContinuousIndexType, VDimension>;
+  typedef ContinuousIndex< SpacePrecisionType,VDimension > ContinuousIndexType;
+  typedef Path< double, ContinuousIndexType, VDimension >  Superclass;
 
-  using Pointer = SmartPointer<Self>;
-  using ConstPointer = SmartPointer<const Self>;
+  typedef SmartPointer< Self >                             Pointer;
+  typedef SmartPointer< const Self >                       ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ParametricPath, Path);
 
   /** Input type */
-  using InputType = typename Superclass::InputType;
+  typedef typename Superclass::InputType InputType;
 
   /** Output type */
-  using OutputType = typename Superclass::OutputType;
+  typedef typename Superclass::OutputType OutputType;
 
-  using IndexType = Index<VDimension>;
-  using OffsetType = Offset<VDimension>;
-  using VectorType = Vector<double, VDimension>;
+  typedef Index<  VDimension >                  IndexType;
+  typedef Offset< VDimension >                  OffsetType;
+  typedef Vector< double, VDimension >          VectorType;
 
   /** Return the nearest index to the parametric path at the specified location.
    * This is a wrapper to Evaluate(). */
-  IndexType
-  EvaluateToIndex(const InputType & input) const override;
+  virtual IndexType EvaluateToIndex(const InputType & input) const ITK_OVERRIDE;
 
   /** Increment the input variable passed by reference such that the ND index of
    * the path  moves to its next vertex-connected (8-connected in 2D) neighbor.
@@ -107,27 +103,26 @@ public:
    * WARNING:  This default implementation REQUIRES that the ND endpoint of
    * the path be either unique or coincident only with the startpoint, since it
    * uses the endpoint as a stopping condition. */
-  OffsetType
-  IncrementInput(InputType & input) const override;
+  virtual OffsetType IncrementInput(InputType & input) const ITK_OVERRIDE;
 
   /** Evaluate the first derivative of the ND output with respect to the 1D
-   * input.  This is a very simple and naive numerical derivative, and it
-   * should be overloaded with a proper closed-form derivative function in
-   * all children.  Nevertheless, users who need to create their own parametric
-   * classes for their private research need not reimplement this function if
-   * their work does not need the derivative operator. */
-  virtual VectorType
-  EvaluateDerivative(const InputType & input) const;
+    * input.  This is a very simple and naive numerical derivative, and it
+    * should be overloaded with a proper closed-form derivative function in
+    * all children.  Nevertheless, users who need to create their own parametric
+    * classes for their private research need not reimplement this function if
+    * their work does not need the derivative operator. */
+  virtual VectorType EvaluateDerivative(const InputType & input) const;
 
-  itkSetMacro(DefaultInputStepSize, InputType) itkGetConstReferenceMacro(DefaultInputStepSize, InputType)
+  itkSetMacro(DefaultInputStepSize, InputType)
+  itkGetConstReferenceMacro(DefaultInputStepSize, InputType)
 
-    protected : ParametricPath();
-  ~ParametricPath() override = default;
-  void
-  PrintSelf(std::ostream & os, Indent indent) const override;
+protected:
+  ParametricPath();
+  ~ParametricPath() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
   /** Default 1D input increment amount to trace along the path.  Also, the
-   * value used by the default implementation of EvaluateDerivative() for
+   * value used by the defualt implementation of EvaluateDerivative() for
    * numerically approximating the derivative with the change over a single
    * default-sized step.  (NOTE that the default implementation of
    * EvaluateDerivative() should never be used in practice, but users or lazzy
@@ -137,12 +132,15 @@ public:
    * constructor of all instantiable children.  Values set in child constructors
    * overwrite values set in parent constructors. */
   InputType m_DefaultInputStepSize;
+
+private:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricPath);
 };
 
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkParametricPath.hxx"
+#include "itkParametricPath.hxx"
 #endif
 
 #endif // itkParametricPath.h

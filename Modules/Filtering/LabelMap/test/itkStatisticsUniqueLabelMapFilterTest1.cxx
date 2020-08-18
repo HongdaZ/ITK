@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright NumFOCUS
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,119 +29,118 @@
 #include "itkGrayscaleDilateImageFilter.h"
 #include "itkObjectByObjectLabelMapFilter.h"
 
-int
-itkStatisticsUniqueLabelMapFilterTest1(int argc, char * argv[])
+int itkStatisticsUniqueLabelMapFilterTest1(int argc, char * argv[])
 {
   // ToDo: remove dilationOutput once the JIRA issue 3370 has been solved
   // Then, argc != 6
-  if (argc != 7)
-  {
+  if( argc != 7 )
+    {
     std::cerr << "Usage: " << argv[0];
     std::cerr << " input feature output dilationOutput";
     std::cerr << " reverseOrdering attribute";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-  }
-  const char *       inputImage = argv[1];
-  const char *       featureImage = argv[2];
-  const char *       outputImage = argv[3];
-  const char *       dilationOutput = argv[4];
-  const bool         reverseOrdering = std::stoi(argv[5]);
-  const unsigned int attribute = std::stoi(argv[6]);
+    }
+  const char * inputImage = argv[1];
+  const char * featureImage = argv[2];
+  const char * outputImage = argv[3];
+  const char * dilationOutput = argv[4];
+  const bool reverseOrdering = atoi( argv[5] );
+  const unsigned int attribute = atoi( argv[6] );
 
-  constexpr unsigned int Dimension = 2;
+  const unsigned int Dimension = 2;
 
-  using PixelType = unsigned char;
+  typedef unsigned char PixelType;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
-  using StatisticsLabelObjectType = itk::StatisticsLabelObject<PixelType, Dimension>;
-  using LabelMapType = itk::LabelMap<StatisticsLabelObjectType>;
+  typedef itk::Image< PixelType, Dimension >                 ImageType;
+  typedef itk::StatisticsLabelObject< PixelType, Dimension > StatisticsLabelObjectType;
+  typedef itk::LabelMap< StatisticsLabelObjectType >         LabelMapType;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
+  typedef itk::ImageFileReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(inputImage);
+  reader->SetFileName( inputImage );
 
   ReaderType::Pointer reader2 = ReaderType::New();
-  reader2->SetFileName(featureImage);
+  reader2->SetFileName( featureImage );
 
 
   // Dilate each label object to form overlapping label objects.
-  constexpr unsigned int radiusValue = 5;
+  const unsigned int radiusValue = 5;
 
-  using LabelImageToLabelMapFilterType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
+  typedef itk::LabelImageToLabelMapFilter< ImageType, LabelMapType > LabelImageToLabelMapFilterType;
   LabelImageToLabelMapFilterType::Pointer labelMapConverter = LabelImageToLabelMapFilterType::New();
-  labelMapConverter->SetInput(reader->GetOutput());
-  labelMapConverter->SetBackgroundValue(itk::NumericTraits<PixelType>::ZeroValue());
+  labelMapConverter->SetInput( reader->GetOutput() );
+  labelMapConverter->SetBackgroundValue( itk::NumericTraits< PixelType >::ZeroValue() );
 
-  using StructuringElementType = itk::FlatStructuringElement<Dimension>;
+  typedef itk::FlatStructuringElement< Dimension > StructuringElementType;
   StructuringElementType::RadiusType radius;
-  radius.Fill(radiusValue);
+  radius.Fill( radiusValue );
 
-  StructuringElementType structuringElement = StructuringElementType::Box(radius);
+  StructuringElementType structuringElement = StructuringElementType::Box( radius );
 
-  using MorphologicalFilterType = itk::GrayscaleDilateImageFilter<ImageType, ImageType, StructuringElementType>;
+  typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType, StructuringElementType > MorphologicalFilterType;
   MorphologicalFilterType::Pointer grayscaleDilateFilter = MorphologicalFilterType::New();
-  grayscaleDilateFilter->SetInput(reader->GetOutput());
-  grayscaleDilateFilter->SetKernel(structuringElement);
+  grayscaleDilateFilter->SetInput( reader->GetOutput() );
+  grayscaleDilateFilter->SetKernel( structuringElement );
 
-  using ObjectByObjectLabelMapFilterType = itk::ObjectByObjectLabelMapFilter<LabelMapType>;
+  typedef itk::ObjectByObjectLabelMapFilter< LabelMapType > ObjectByObjectLabelMapFilterType;
   ObjectByObjectLabelMapFilterType::Pointer objectByObjectLabelMapFilter = ObjectByObjectLabelMapFilterType::New();
-  objectByObjectLabelMapFilter->SetInput(labelMapConverter->GetOutput());
-  objectByObjectLabelMapFilter->SetBinaryInternalOutput(false);
-  objectByObjectLabelMapFilter->SetFilter(grayscaleDilateFilter);
+  objectByObjectLabelMapFilter->SetInput( labelMapConverter->GetOutput() );
+  objectByObjectLabelMapFilter->SetBinaryInternalOutput( false );
+  objectByObjectLabelMapFilter->SetFilter( grayscaleDilateFilter );
 
-  using StatisticsFilterType = itk::StatisticsLabelMapFilter<LabelMapType, ImageType>;
+  typedef itk::StatisticsLabelMapFilter< LabelMapType, ImageType > StatisticsFilterType;
   StatisticsFilterType::Pointer statisticsFilter = StatisticsFilterType::New();
-  statisticsFilter->SetInput1(objectByObjectLabelMapFilter->GetOutput());
-  statisticsFilter->SetFeatureImage(reader2->GetOutput());
+  statisticsFilter->SetInput1( objectByObjectLabelMapFilter->GetOutput()  );
+  statisticsFilter->SetFeatureImage( reader2->GetOutput() );
 
-  using LabelUniqueType = itk::StatisticsUniqueLabelMapFilter<LabelMapType>;
+  typedef itk::StatisticsUniqueLabelMapFilter< LabelMapType > LabelUniqueType;
   LabelUniqueType::Pointer unique = LabelUniqueType::New();
 
-  // testing boolean macro for ReverseOrdering
+  //testing boolean macro for ReverseOrdering
   unique->ReverseOrderingOn();
-  ITK_TEST_SET_GET_VALUE(true, unique->GetReverseOrdering());
+  TEST_SET_GET_VALUE( true, unique->GetReverseOrdering() );
 
   unique->ReverseOrderingOff();
-  ITK_TEST_SET_GET_VALUE(false, unique->GetReverseOrdering());
+  TEST_SET_GET_VALUE( false, unique->GetReverseOrdering() );
 
-  // testing get and set macros for ReverseOrdering
+  //testing get and set macros for ReverseOrdering
   // ToDo: decrease reverseOrdering argv index once the JIRA issue 3370 has been solved
   // Then, argv[4]
-  unique->SetReverseOrdering(reverseOrdering);
-  ITK_TEST_SET_GET_VALUE(reverseOrdering, unique->GetReverseOrdering());
+  unique->SetReverseOrdering( reverseOrdering );
+  TEST_SET_GET_VALUE( reverseOrdering , unique->GetReverseOrdering() );
 
 
-  // testing get and set macros for Attribute
+  //testing get and set macros for Attribute
   // ToDo: decrease attribute argv index once the JIRA issue 3370 has been solved
   // Then, argv[5]
-  unique->SetAttribute(attribute);
-  ITK_TEST_SET_GET_VALUE(attribute, unique->GetAttribute());
+  unique->SetAttribute( attribute );
+  TEST_SET_GET_VALUE( attribute, unique->GetAttribute() );
 
-  unique->SetInput(statisticsFilter->GetOutput());
+  unique->SetInput( statisticsFilter->GetOutput() );
 
   itk::SimpleFilterWatcher watcher(unique, "filter");
 
-  using LabelMapToImageFilterType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
+  typedef itk::LabelMapToLabelImageFilter< LabelMapType, ImageType> LabelMapToImageFilterType;
   LabelMapToImageFilterType::Pointer labelMapToImageFilter = LabelMapToImageFilterType::New();
-  labelMapToImageFilter->SetInput(unique->GetOutput());
+  labelMapToImageFilter->SetInput( unique->GetOutput() );
 
-  using WriterType = itk::ImageFileWriter<ImageType>;
+  typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(labelMapToImageFilter->GetOutput());
-  writer->SetFileName(outputImage);
+  writer->SetInput( labelMapToImageFilter->GetOutput() );
+  writer->SetFileName( outputImage );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
 
   // WARNING: TEMPORARY: JIRA ISSUE 3370
   // Writing an additional output of just the dilated label
-  writer->SetInput(grayscaleDilateFilter->GetOutput());
-  writer->SetFileName(dilationOutput);
+  writer->SetInput( grayscaleDilateFilter->GetOutput() );
+  writer->SetFileName( dilationOutput );
   writer->UseCompressionOn();
 
-  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
 }
